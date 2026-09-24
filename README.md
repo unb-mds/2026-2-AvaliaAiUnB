@@ -130,7 +130,7 @@ O sistema foi planejado com uma **arquitetura modular em camadas**:
                      │
 ┌────────────────────▼────────────────────┐
 │               Dados                     │
-│       SQLite · Sessões · SIGAA          │
+│       SQLite(MVP)PostGree(Final Version) · Sessões · SIGAA          │
 └─────────────────────────────────────────┘
 ```
 
