@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ professor.nome }} - AvaliaAi</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='indicadores.css') }}">
+</head>
+<body>
+    <main class="perfil-card">
+        <h1>{{ professor.nome }}</h1>
+        <p><strong>Departamento:</strong> {{ professor.departamento }}</p>
+        {% if disciplinas %}
+        <form method="get">
+            <label for="disciplina_id">Disciplina</label>
+            <select name="disciplina_id" id="disciplina_id">
+                {% for item in disciplinas %}
+                <option value="{{ item.id }}" {% if item.id == disciplina.id %}selected{% endif %}>{{ item.nome }}{% if item.codigo %} — {{ item.codigo }}{% endif %}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">Consultar</button>
+        </form>
+        <h2>Médias Consolidadas</h2>
+        <p>{{ disciplina.nome }} · {{ indicadores.quantidade }} {{ 'avaliação' if indicadores.quantidade == 1 else 'avaliações' }}</p>
+        {% if indicadores.quantidade %}
+        <ul class="indicadores">
+            {% for criterio, titulo in criterios.items() %}
+            <li><span>{{ titulo }}</span><strong>{{ ('%.1f'|format(indicadores.medias[criterio]))|replace('.', ',') }} / 5 <span aria-hidden="true">★</span></strong></li>
+            {% endfor %}
+        </ul>
+        <p class="ajuda">Dificuldade: 1 = muito fácil; 5 = muito difícil. Nos demais critérios, 5 = excelente.</p>
+        {% else %}
+        <p role="status">Ainda não há avaliações nesta disciplina.</p>
+        {% endif %}
+        <a href="{{ url_for('professores.avaliar', professor_id=professor.id, disciplina_id=disciplina.id) }}" class="btn-avaliar">Avaliar este Professor</a>
+        {% else %}
+        <p>Ainda não há disciplinas cadastradas para este professor.</p>
+        {% endif %}
+    </main>
+</body>
+</html>

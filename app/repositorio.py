@@ -1,5 +1,8 @@
 from app.models import Usuario
 from app.database import get_db_connection
+from app.validacoes import CRITERIOS
+from contextlib import closing
+import sqlite3
 
 
 class UsuarioRepository:
@@ -9,6 +12,12 @@ class UsuarioRepository:
         conexao = get_db_connection()
 
         try:
+            # Serializa a verificação e a inserção, inclusive para e-mails legados
+            # com letras maiúsculas. A restrição UNIQUE existente é preservada.
+            conexao.execute('BEGIN IMMEDIATE')
+            if conexao.execute('SELECT 1 FROM usuarios WHERE email = ? COLLATE NOCASE',
+                               (usuario.email,)).fetchone():
+                return False, 'Erro: Este e-mail já está cadastrado.'
             cursor = conexao.execute('''
                 INSERT INTO usuarios (nome, email, senha)
                 VALUES (?, ?, ?)
@@ -18,11 +27,6 @@ class UsuarioRepository:
             # Atualiza o ID do objeto com o ID gerado pelo banco
             usuario.id = cursor.lastrowid
             return True, "Usuário criado com sucesso!"
-
-        except conexao.IntegrityError:
-            # O SQLite vai disparar este erro se tentarmos usar um e-mail que já
-            # existe (porque definimos como UNIQUE na Issue 24)
-            return False, "Erro: Este e-mail já está cadastrado."
 
         finally:
             conexao.close()
@@ -45,7 +49,7 @@ class UsuarioRepository:
     def buscar_usuario_por_email(self, email):
         conexao = get_db_connection()
         linha = conexao.execute(
-            'SELECT id, nome, email, senha FROM usuarios WHERE email = ?',
+            'SELECT id, nome, email, senha FROM usuarios WHERE email = ? COLLATE NOCASE',
             (email,)
         ).fetchone()
         conexao.close()
@@ -53,3 +57,58 @@ class UsuarioRepository:
         if linha:
             return Usuario(id=linha["id"], nome=linha["nome"], email=linha["email"], senha=linha["senha"])
         return None
+
+
+class ProfessorRepository:
+    def buscar_por_id(self, professor_id):
+        with closing(get_db_connection()) as conexao:
+            return conexao.execute('SELECT id, nome, departamento FROM professores WHERE id = ?',
+                                  (professor_id,)).fetchone()
+
+    def listar_disciplinas(self, professor_id):
+        with closing(get_db_connection()) as conexao:
+            return conexao.execute('''SELECT d.id, d.nome, d.codigo FROM disciplinas d
+                JOIN professor_disciplinas pd ON pd.disciplina_id = d.id
+                WHERE pd.professor_id = ? ORDER BY d.nome, d.id''', (professor_id,)).fetchall()
+
+
+class AvaliacaoRepository:
+    # O campo legado nota contém a avaliação geral, sem misturar dificuldade
+    # (em que uma nota maior significa mais difícil) com qualidade.
+    COLUNAS = {c: ('nota' if c == 'avaliacao_geral' else c) for c in CRITERIOS}
+
+    def calcular_medias(self, professor_id, disciplina_id):
+        agregacoes = ', '.join(f'AVG({coluna}) AS {criterio}'
+                              for criterio, coluna in self.COLUNAS.items())
+        validas = ' AND '.join(f"typeof({coluna}) = 'integer' AND {coluna} BETWEEN 1 AND 5"
+                              for coluna in self.COLUNAS.values())
+        with closing(get_db_connection()) as conexao:
+            linha = conexao.execute(f'''SELECT COUNT(*) AS quantidade, {agregacoes}
+                FROM avaliacoes WHERE professor_id = ? AND disciplina_id = ? AND {validas}''',
+                (professor_id, disciplina_id)).fetchone()
+        return {'quantidade': linha['quantidade'],
+                'medias': {criterio: linha[criterio] for criterio in CRITERIOS}}
+
+    def salvar(self, usuario_id, professor_id, disciplina_id, notas):
+        if any(type(notas.get(c)) is not int or not 1 <= notas[c] <= 5 for c in CRITERIOS):
+            raise ValueError('Todos os critérios devem ter notas inteiras de 1 a 5.')
+        with closing(get_db_connection()) as conexao:
+            with conexao:
+                vinculo = conexao.execute('''SELECT 1 FROM professor_disciplinas
+                    WHERE professor_id = ? AND disciplina_id = ?''',
+                    (professor_id, disciplina_id)).fetchone()
+                if vinculo is None:
+                    raise ValueError('Disciplina não vinculada ao professor.')
+                try:
+                    conexao.execute('''INSERT INTO avaliacoes
+                        (usuario_id, professor_id, disciplina_id, nota, didatica,
+                         organizacao, dificuldade, disponibilidade)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)''',
+                        (usuario_id, professor_id, disciplina_id, notas['avaliacao_geral'],
+                         notas['didatica'], notas['organizacao'], notas['dificuldade'],
+                         notas['disponibilidade']))
+                except sqlite3.IntegrityError as erro:
+                    if erro.sqlite_errorcode == sqlite3.SQLITE_CONSTRAINT_UNIQUE:
+                        return False
+                    raise
+        return True

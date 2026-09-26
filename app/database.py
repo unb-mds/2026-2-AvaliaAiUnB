@@ -1,4 +1,5 @@
 import sqlite3
+from flask import current_app, has_app_context
 
 CAMINHO_BANCO = 'banco.db'
 
@@ -10,14 +11,15 @@ def get_db_connection():
     - row_factory = sqlite3.Row permite acessar colunas por nome (ex: usuario["email"])
     - PRAGMA foreign_keys garante que os relacionamentos (FOREIGN KEY) sejam respeitados
     """
-    conexao = sqlite3.connect(CAMINHO_BANCO)
+    caminho = current_app.config.get('DATABASE', CAMINHO_BANCO) if has_app_context() else CAMINHO_BANCO
+    conexao = sqlite3.connect(caminho)
     conexao.row_factory = sqlite3.Row
     conexao.execute("PRAGMA foreign_keys = ON")
     return conexao
 
 
 def inicializar_banco():
-    conexao = sqlite3.connect(CAMINHO_BANCO)
+    conexao = get_db_connection()
     cursor = conexao.cursor()
 
     # Cria a tabela de Usuarios
@@ -58,6 +60,41 @@ def inicializar_banco():
         )
     ''')
 
+    # Estrutura mínima para consultar o perfil por professor + disciplina.
+    # A população do catálogo continua sob responsabilidade da importação (#29/#30).
+    cursor.executescript('''
+        CREATE TABLE IF NOT EXISTS professores (
+            id INTEGER PRIMARY KEY,
+            nome TEXT NOT NULL,
+            departamento TEXT NOT NULL DEFAULT ''
+        );
+        CREATE TABLE IF NOT EXISTS disciplinas (
+            id INTEGER PRIMARY KEY,
+            nome TEXT NOT NULL,
+            codigo TEXT UNIQUE
+        );
+        CREATE TABLE IF NOT EXISTS professor_disciplinas (
+            professor_id INTEGER NOT NULL REFERENCES professores(id),
+            disciplina_id INTEGER NOT NULL REFERENCES disciplinas(id),
+            PRIMARY KEY (professor_id, disciplina_id)
+        );
+    ''')
+    # Migração aditiva e idempotente: nota representa a avaliação geral.
+    # Registros legados ficam intactos, sem inventar disciplina ou critérios.
+    colunas = {linha['name'] for linha in cursor.execute('PRAGMA table_info(avaliacoes)')}
+    novas_colunas = {
+        'disciplina_id': 'INTEGER REFERENCES disciplinas(id)',
+        'didatica': 'INTEGER CHECK (didatica BETWEEN 1 AND 5)',
+        'organizacao': 'INTEGER CHECK (organizacao BETWEEN 1 AND 5)',
+        'disponibilidade': 'INTEGER CHECK (disponibilidade BETWEEN 1 AND 5)',
+        'dificuldade': 'INTEGER CHECK (dificuldade BETWEEN 1 AND 5)',
+    }
+    for nome, definicao in novas_colunas.items():
+        if nome not in colunas:
+            cursor.execute(f'ALTER TABLE avaliacoes ADD COLUMN {nome} {definicao}')
+    cursor.execute('''CREATE UNIQUE INDEX IF NOT EXISTS avaliacao_usuario_professor_disciplina
+                      ON avaliacoes(usuario_id, professor_id, disciplina_id)
+                      WHERE disciplina_id IS NOT NULL''')
     conexao.commit()
     conexao.close()
 
