@@ -1,0 +1,12 @@
+body { font-family: Arial, sans-serif; color: #202124; max-width: 720px; margin: 48px auto; padding: 0 20px; }
+h1 { font-size: 1.6rem; overflow-wrap: anywhere; }
+h2 { font-size: 1.2rem; margin-top: 32px; }
+label { display: block; margin: 16px 0 6px; }
+select { max-width: 100%; padding: 10px; font: inherit; }
+button, .btn-avaliar { display: inline-block; padding: 10px 16px; margin: 16px 8px 16px 0; cursor: pointer; font: inherit; }
+a { color: #174b83; }
+.indicadores { list-style: none; padding: 0; }
+.indicadores li { display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; border-bottom: 1px solid #ddd; padding: 16px 0; }
+.indicadores strong { white-space: nowrap; }
+.ajuda { color: #4f5357; line-height: 1.5; }
+.erros { color: #a01818; line-height: 1.6; }

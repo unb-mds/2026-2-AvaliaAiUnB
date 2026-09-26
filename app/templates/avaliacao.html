@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Avaliar Professor - AvaliaAi</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='indicadores.css') }}">
+</head>
+<body>
+    <main class="avaliacao-container">
+        <h1>Avaliar {{ professor.nome }}</h1>
+        <p>{{ disciplina.nome }}{% if disciplina.codigo %} — {{ disciplina.codigo }}{% endif %}</p>
+        <p>Sua identidade não será exibida nas avaliações públicas.</p>
+        {% if erros %}
+        <ul class="erros" role="alert">{% for erro in erros.values() %}<li>{{ erro }}</li>{% endfor %}</ul>
+        {% endif %}
+        <form id="formAvaliacao" action="{{ url_for('professores.avaliar', professor_id=professor.id) }}" method="POST">
+            <input type="hidden" name="disciplina_id" value="{{ disciplina.id }}">
+            {% for criterio, titulo in criterios.items() %}
+            <div class="form-group">
+                <label for="{{ criterio }}">{{ titulo }} (1 a 5)</label>
+                <select name="{{ criterio }}" id="{{ criterio }}" required>
+                    <option value="">Selecione...</option>
+                    {% for nota in range(1, 6) %}
+                    <option value="{{ nota }}" {% if dados.get(criterio) == nota|string %}selected{% endif %}>{{ nota }}{% if nota == 1 %} — {{ 'Muito fácil' if criterio == 'dificuldade' else 'Muito ruim' }}{% elif nota == 5 %} — {{ 'Muito difícil' if criterio == 'dificuldade' else 'Excelente' }}{% endif %}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endfor %}
+            <button type="submit">Enviar Avaliação</button>
+            <a href="{{ url_for('professores.perfil', professor_id=professor.id, disciplina_id=disciplina.id) }}">Cancelar</a>
+        </form>
+    </main>
+</body>
+</html>

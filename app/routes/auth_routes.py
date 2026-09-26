@@ -13,6 +13,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from app.models import Usuario
 from app.repositorio import UsuarioRepository
+from app.validacoes import validar_cadastro
 from app.controllers.session_controller import (
     criar_sessao,
     encerrar_sessao,
@@ -29,9 +30,15 @@ def cadastro():
     if request.method == "GET":
         return render_template("cadastro.html")
 
-    nome = request.form["nome"]
-    email = request.form["email"]
-    senha = request.form["senha"]
+    dados, erros = validar_cadastro(request.form)
+    # O formulário explicita a resposta HTML também em navegadores embutidos
+    # que enviam Accept genérico ao submeter formulários.
+    resposta_html = request.form.get('formato') == 'html' or request.accept_mimetypes.best == 'text/html'
+    if erros:
+        if resposta_html:
+            return render_template('cadastro.html', erros=erros, dados=dados), 400
+        return jsonify({'erro': 'Revise os dados de cadastro.', 'erros': erros}), 400
+    nome, email, senha = dados['nome'], dados['email'], dados['senha']
 
     # A coluna do banco se chama "senha", mas o valor salvo e sempre o
     # HASH da senha, nunca a senha em texto puro.
@@ -39,8 +46,12 @@ def cadastro():
 
     sucesso, mensagem = usuario_repo.criar_usuario(novo_usuario)
     if not sucesso:
+        if resposta_html:
+            return render_template('cadastro.html', erros={'email': mensagem}, dados=dados), 409
         return jsonify({"erro": mensagem}), 409
 
+    if resposta_html:
+        return render_template('cadastro.html', sucesso=mensagem), 200
     return jsonify({"mensagem": mensagem}), 201
 
 
@@ -49,8 +60,8 @@ def login():
     if request.method == "GET":
         return render_template("login.html")
 
-    email = request.form["email"]
-    senha = request.form["senha"]
+    email = request.form.get("email", "").strip()
+    senha = request.form.get("senha", "")
 
     usuario = usuario_repo.buscar_usuario_por_email(email)
 
@@ -73,10 +84,10 @@ def logout():
 @login_required  # 3. proteção da rota
 def perfil():
     usuario_logado = obter_usuario_atual()  # 2. identificação do usuário autenticado
- 
+
     if request.accept_mimetypes.accept_html:
         return render_template("perfil.html", usuario=usuario_logado)
- 
+
     return jsonify(
         {"id": usuario_logado["id"], "nome": usuario_logado["nome"], "email": usuario_logado["email"]}
     )
