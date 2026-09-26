@@ -98,6 +98,24 @@ class ProfessorRepository:
                 WHERE nome LIKE ? COLLATE NOCASE ORDER BY nome, id''',
                 (f'%{trecho}%',)).fetchall()
 
+    def filtrar(self, nome='', disciplina=''):
+        def trecho(texto):
+            # %, _ e \ digitados pelo usuário valem como texto, não como curinga do LIKE.
+            escapado = texto.strip().replace('\\', '\\\\').replace('%', '\\%').replace('_', '\\_')
+            return f'%{escapado}%'
+
+        condicoes, parametros = ["p.nome LIKE ? ESCAPE '\\' COLLATE NOCASE"], [trecho(nome)]
+        if disciplina.strip():
+            condicoes.append('''EXISTS (SELECT 1 FROM professor_disciplinas pd
+                JOIN disciplinas d ON d.id = pd.disciplina_id
+                WHERE pd.professor_id = p.id
+                AND (d.nome LIKE ? ESCAPE '\\' COLLATE NOCASE
+                     OR d.codigo LIKE ? ESCAPE '\\' COLLATE NOCASE))''')
+            parametros += [trecho(disciplina)] * 2
+        with closing(get_db_connection()) as conexao:
+            return conexao.execute(f'''SELECT p.id, p.nome, p.departamento FROM professores p
+                WHERE {' AND '.join(condicoes)} ORDER BY p.nome, p.id''', parametros).fetchall()
+
     def listar_disciplinas(self, professor_id):
         with closing(get_db_connection()) as conexao:
             return conexao.execute('''SELECT d.id, d.nome, d.codigo FROM disciplinas d
