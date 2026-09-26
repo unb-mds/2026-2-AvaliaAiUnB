@@ -87,6 +87,11 @@ class ProfessorRepository:
             return conexao.execute('SELECT id, nome, departamento FROM professores WHERE id = ?',
                                   (professor_id,)).fetchone()
 
+    def listar(self):
+        with closing(get_db_connection()) as conexao:
+            return conexao.execute('''SELECT id, nome, departamento FROM professores
+                ORDER BY nome, id''').fetchall()
+
     def buscar_por_nome(self, trecho):
         with closing(get_db_connection()) as conexao:
             return conexao.execute('''SELECT id, nome, departamento FROM professores

@@ -10,3 +10,8 @@ a { color: #174b83; }
 .indicadores strong { white-space: nowrap; }
 .ajuda { color: #4f5357; line-height: 1.5; }
 .erros { color: #a01818; line-height: 1.6; }
+.lista-professores { list-style: none; padding: 0; }
+.lista-professores > li { border-bottom: 1px solid #ddd; padding: 16px 0; }
+.lista-professores h2 { margin: 0 0 4px; overflow-wrap: anywhere; }
+.lista-professores p { margin: 4px 0; }
+.lista-professores ul { margin: 8px 0 0; padding-left: 20px; line-height: 1.5; }

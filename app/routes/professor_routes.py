@@ -32,6 +32,13 @@ def carregar_perfil(professor_id):
     return professor, disciplinas, disciplina
 
 
+@professor_bp.get('/professores')
+def listar():
+    catalogo = [(professor, professores.listar_disciplinas(professor['id']))
+                for professor in professores.listar()]
+    return render_template('lista_professores.html', catalogo=catalogo)
+
+
 @professor_bp.get('/professores/<int:professor_id>')
 def perfil(professor_id):
     professor, disciplinas, disciplina = carregar_perfil(professor_id)
