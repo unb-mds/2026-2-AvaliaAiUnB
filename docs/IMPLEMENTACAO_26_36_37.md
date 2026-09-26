@@ -72,11 +72,36 @@ Para outra base isolada, usar `create_app({'DATABASE': caminho})`.
 
 ## Validação
 
-36 testes passaram, incluindo o teste anterior da equipe. Cobertura: entradas
+43 testes passaram, incluindo o teste anterior da equipe. Cobertura: entradas
 de cadastro, mensagens HTML/JSON, hash, duplicidade, login/sessão/logout,
 migração idempotente sem perda de registros, médias e separação por disciplina,
 estado vazio, anonimato e submissão até o perfil com indicadores atualizados.
 Os testes usam bancos temporários. `banco.db` versionado permanece intacto.
+
+### Issue #44 — Testar cálculo das médias
+
+A issue não apresenta critérios adicionais na descrição consultada. A validação
+usa os requisitos de médias por critério e por professor/disciplina do documento
+fornecido. A classe `TestMedias` contém 17 testes; sete foram acrescentados para
+esta issue, aproveitando os dez existentes, sem duplicar a suíte.
+
+Os cenários adicionais verificam médias diferentes nos cinco critérios, notas
+nos limites 1 e 5, exclusão de registros inválidos/incompletos sem diluir a média
+válida, exclusão da última avaliação, edição de todos os critérios sem afetar
+outra disciplina e preservação das médias após submissões rejeitadas.
+Edição e exclusão são simuladas no banco de teste; não representam interfaces
+de edição/exclusão implementadas no produto. Nenhuma regra de produção foi
+alterada nesta entrega de testes.
+
+Executar somente os testes de médias:
+
+```powershell
+python -B -m unittest app.test_implementacao.TestMedias -v
+```
+
+Resultado da execução local: **17 testes de médias passando; 43 testes no total,
+sem falhas**. Antes de encerrar a #44, enviar as alterações para revisão e
+vincular a issue ao PR que as incorporar.
 
 ## Preparar o envio
 

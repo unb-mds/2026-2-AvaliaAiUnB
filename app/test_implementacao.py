@@ -1,4 +1,4 @@
-"""Testes de integração das issues #26, #36 e #37, sem usar banco.db real."""
+"""Testes das issues #26, #36, #37 e #44, sem usar banco.db real."""
 import sqlite3
 import tempfile
 import unittest
@@ -150,6 +150,77 @@ class BaseAvaliacoes(BancoIsolado):
 
 
 class TestMedias(BaseAvaliacoes):
+    def test_cada_criterio_tem_sua_propria_media(self):
+        self.avaliar(usuario=1, didatica=1, organizacao=2, dificuldade=3,
+                     disponibilidade=4, avaliacao_geral=5)
+        self.avaliar(usuario=2, didatica=2, organizacao=3, dificuldade=4,
+                     disponibilidade=5, avaliacao_geral=5)
+        resultado = self.repo.calcular_medias(1, 10)
+        self.assertEqual(resultado, {'quantidade': 2, 'medias': {
+            'didatica': 1.5, 'organizacao': 2.5, 'dificuldade': 3.5,
+            'disponibilidade': 4.5, 'avaliacao_geral': 5.0}})
+
+    def test_limites_um_e_cinco_em_todos_os_criterios(self):
+        self.avaliar(usuario=1, nota=1)
+        resultado = self.repo.calcular_medias(1, 10)
+        self.assertEqual(resultado['quantidade'], 1)
+        self.assertEqual(resultado['medias'], {c: 1.0 for c in CRITERIOS})
+        self.avaliar(usuario=2, nota=5)
+        resultado = self.repo.calcular_medias(1, 10)
+        self.assertEqual(resultado['quantidade'], 2)
+        self.assertEqual(resultado['medias'], {c: 3.0 for c in CRITERIOS})
+
+    def test_registros_invalidos_nao_diluem_media_valida(self):
+        self.avaliar(nota=4)
+        # Simula dados antigos/importados que não passaram pelo repositório.
+        # nota não tinha CHECK no esquema legado; os CHECKs novos seguem ativos.
+        for nota in (0, 6, 'invalida', 2.5):
+            with self.subTest(nota=nota):
+                self.sql('''INSERT INTO avaliacoes
+                    (usuario_id, professor_id, disciplina_id, nota, didatica,
+                     organizacao, dificuldade, disponibilidade)
+                    VALUES (2, 1, 10, ?, 5, 5, 5, 5)''', (nota,))
+                resultado = self.repo.calcular_medias(1, 10)
+                self.assertEqual(resultado['quantidade'], 1)
+                self.assertEqual(resultado['medias'], {c: 4.0 for c in CRITERIOS})
+                self.sql('DELETE FROM avaliacoes WHERE usuario_id = 2')
+
+    def test_criterio_ausente_exclui_registro_inteiro_da_media(self):
+        self.avaliar(nota=3)
+        self.sql('''INSERT INTO avaliacoes
+            (usuario_id, professor_id, disciplina_id, nota, organizacao,
+             dificuldade, disponibilidade) VALUES (2, 1, 10, 5, 5, 5, 5)''')
+        resultado = self.repo.calcular_medias(1, 10)
+        self.assertEqual(resultado['quantidade'], 1)
+        self.assertEqual(resultado['medias'], {c: 3.0 for c in CRITERIOS})
+
+    def test_excluir_ultima_avaliacao_retorna_medias_nulas(self):
+        self.avaliar()
+        self.sql('DELETE FROM avaliacoes WHERE professor_id = 1 AND disciplina_id = 10')
+        self.assertEqual(self.repo.calcular_medias(1, 10), {
+            'quantidade': 0, 'medias': {c: None for c in CRITERIOS}})
+
+    def test_edicao_atualiza_todos_os_criterios_sem_afetar_outra_disciplina(self):
+        self.avaliar(nota=5)
+        self.avaliar(disciplina=20, nota=4)
+        self.sql('''UPDATE avaliacoes SET didatica = 1, organizacao = 2,
+            dificuldade = 3, disponibilidade = 4, nota = 5
+            WHERE professor_id = 1 AND disciplina_id = 10''')
+        self.assertEqual(self.repo.calcular_medias(1, 10), {'quantidade': 1, 'medias': {
+            'didatica': 1.0, 'organizacao': 2.0, 'dificuldade': 3.0,
+            'disponibilidade': 4.0, 'avaliacao_geral': 5.0}})
+        self.assertEqual(self.repo.calcular_medias(1, 20), {
+            'quantidade': 1, 'medias': {c: 4.0 for c in CRITERIOS}})
+
+    def test_submissao_rejeitada_preserva_todas_as_medias(self):
+        self.avaliar(nota=4)
+        antes = self.repo.calcular_medias(1, 10)
+        self.assertFalse(self.avaliar(nota=1))
+        self.assertEqual(self.repo.calcular_medias(1, 10), antes)
+        with self.assertRaises(ValueError):
+            self.avaliar(usuario=2, disponibilidade=6)
+        self.assertEqual(self.repo.calcular_medias(1, 10), antes)
+
     def test_nenhuma_avaliacao(self):
         indicadores = self.repo.calcular_medias(1, 10)
         self.assertEqual(indicadores['quantidade'], 0)
