@@ -60,16 +60,74 @@ class UsuarioRepository:
 
 
 class ProfessorRepository:
+    def criar(self, professor):
+        with closing(get_db_connection()) as conexao:
+            with conexao:
+                cursor = conexao.execute(
+                    'INSERT INTO professores (nome, departamento) VALUES (?, ?)',
+                    (professor.nome, professor.departamento))
+        professor.id = cursor.lastrowid
+        return True, 'Professor criado com sucesso!'
+
+    def vincular(self, professor_id, disciplina_id):
+        with closing(get_db_connection()) as conexao:
+            try:
+                with conexao:
+                    conexao.execute('''INSERT OR IGNORE INTO professor_disciplinas
+                        (professor_id, disciplina_id) VALUES (?, ?)''',
+                        (professor_id, disciplina_id))
+            except sqlite3.IntegrityError as erro:
+                if erro.sqlite_errorcode == sqlite3.SQLITE_CONSTRAINT_FOREIGNKEY:
+                    return False, 'Erro: Professor ou disciplina não encontrado.'
+                raise
+        return True, 'Professor vinculado à disciplina com sucesso!'
+
     def buscar_por_id(self, professor_id):
         with closing(get_db_connection()) as conexao:
             return conexao.execute('SELECT id, nome, departamento FROM professores WHERE id = ?',
                                   (professor_id,)).fetchone()
+
+    def buscar_por_nome(self, trecho):
+        with closing(get_db_connection()) as conexao:
+            return conexao.execute('''SELECT id, nome, departamento FROM professores
+                WHERE nome LIKE ? COLLATE NOCASE ORDER BY nome, id''',
+                (f'%{trecho}%',)).fetchall()
 
     def listar_disciplinas(self, professor_id):
         with closing(get_db_connection()) as conexao:
             return conexao.execute('''SELECT d.id, d.nome, d.codigo FROM disciplinas d
                 JOIN professor_disciplinas pd ON pd.disciplina_id = d.id
                 WHERE pd.professor_id = ? ORDER BY d.nome, d.id''', (professor_id,)).fetchall()
+
+
+class DisciplinaRepository:
+    def criar(self, disciplina):
+        with closing(get_db_connection()) as conexao:
+            try:
+                with conexao:
+                    cursor = conexao.execute(
+                        'INSERT INTO disciplinas (nome, codigo) VALUES (?, ?)',
+                        (disciplina.nome, disciplina.codigo))
+            except sqlite3.IntegrityError:
+                return False, 'Erro: Este código de disciplina já está cadastrado.'
+        disciplina.id = cursor.lastrowid
+        return True, 'Disciplina criada com sucesso!'
+
+    def buscar_por_id(self, disciplina_id):
+        with closing(get_db_connection()) as conexao:
+            return conexao.execute('SELECT id, nome, codigo FROM disciplinas WHERE id = ?',
+                                  (disciplina_id,)).fetchone()
+
+    def buscar_por_codigo(self, codigo):
+        with closing(get_db_connection()) as conexao:
+            return conexao.execute('SELECT id, nome, codigo FROM disciplinas WHERE codigo = ?',
+                                  (codigo,)).fetchone()
+
+    def listar_professores(self, disciplina_id):
+        with closing(get_db_connection()) as conexao:
+            return conexao.execute('''SELECT p.id, p.nome, p.departamento FROM professores p
+                JOIN professor_disciplinas pd ON pd.professor_id = p.id
+                WHERE pd.disciplina_id = ? ORDER BY p.nome, p.id''', (disciplina_id,)).fetchall()
 
 
 class AvaliacaoRepository:
