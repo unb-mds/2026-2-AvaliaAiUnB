@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Professores - AvaliaAi</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='indicadores.css') }}">
+</head>
+<body>
+    <main>
+        <h1>Professores</h1>
+        <form method="get" action="{{ url_for('professores.listar') }}" class="filtros">
+            <div>
+                <label for="nome">Nome do professor</label>
+                <input type="search" id="nome" name="nome" value="{{ filtros.nome }}">
+            </div>
+            <div>
+                <label for="disciplina">Disciplina (nome ou código)</label>
+                <input type="search" id="disciplina" name="disciplina" value="{{ filtros.disciplina }}">
+            </div>
+            <button type="submit">Buscar</button>
+        </form>
+        {% if catalogo %}
+        <ul class="lista-professores">
+            {% for professor, disciplinas in catalogo %}
+            <li>
+                <h2><a href="{{ url_for('professores.perfil', professor_id=professor.id) }}">{{ professor.nome }}</a></h2>
+                <p>{{ professor.departamento }}</p>
+                {% if disciplinas %}
+                <ul>
+                    {% for disciplina in disciplinas %}
+                    <li>{{ disciplina.nome }}{% if disciplina.codigo %} — {{ disciplina.codigo }}{% endif %}</li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="ajuda">Ainda não há disciplinas cadastradas para este professor.</p>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+        {% elif filtros.nome or filtros.disciplina %}
+        <p role="status">Nenhum professor encontrado para os filtros informados.
+            <a href="{{ url_for('professores.listar') }}">Limpar filtros</a></p>
+        {% else %}
+        <p role="status">Ainda não há professores cadastrados.</p>
+        {% endif %}
+    </main>
+</body>
+</html>

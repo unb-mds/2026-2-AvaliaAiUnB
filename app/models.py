@@ -14,6 +14,32 @@ class Usuario:
             # A senha NUNCA vai no to_dict por segurança
         }
 
+class Professor:
+    def __init__(self, nome, departamento='', id=None):
+        self.id = id
+        self.nome = nome
+        self.departamento = departamento
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "nome": self.nome,
+            "departamento": self.departamento
+        }
+
+class Disciplina:
+    def __init__(self, nome, codigo=None, id=None):
+        self.id = id
+        self.nome = nome
+        self.codigo = codigo
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "nome": self.nome,
+            "codigo": self.codigo
+        }
+
 class Avaliacao:
     def __init__(self, nota, comentario, usuario_id, professor_id=None, id=None):
         self.id = id
