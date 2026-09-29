@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil do Professor - AvaliaAi</title>
+    <style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        margin: 60px auto;
+        padding: 0 20px;
+        max-width: 600px;
+    }
+
+    .perfil-card {
+        width: 100%;
+    }
+
+    h1 {
+        font-size: 1.6rem;
+        margin-bottom: 10px;
+    }
+
+    p {
+        font-size: 1rem;
+        word-wrap: break-word;
+    }
+
+    h3 {
+        margin-top: 24px;
+    }
+
+    ul {
+        padding-left: 20px;
+    }
+
+    li {
+        margin-bottom: 8px;
+    }
+
+    .btn-avaliar {
+        display: block;
+        width: 100%;
+        margin-top: 24px;
+        padding: 12px 16px;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 4px;
+        background-color: #eee;
+        color: #000;
+    }
+
+    @media (max-width: 480px) {
+        body {
+            margin: 30px auto;
+            padding: 0 16px;
+        }
+
+        h1 {
+            font-size: 1.4rem;
+        }
+
+        p,
+        li {
+            font-size: 1rem;
+        }
+
+        .btn-avaliar {
+            font-size: 1rem;
+        }
+    }
+</style>
+</head>
+<body>
+    <div class="perfil-card">
+        <h1>{{ professor.nome }}</h1>
+        <p><strong>Departamento:</strong> {{ professor.departamento }}</p>
+
+        <h3>Médias Consolidadas</h3>
+        <ul>
+            <li>Didática: {{ professor.media_didatica }}/5</li>
+            <li>Clareza: {{ professor.media_clareza }}/5</li>
+            <li>Organização: {{ professor.media_organizacao }}/5</li>
+            <li>Disponibilidade: {{ professor.media_disponibilidade }}/5</li>
+            <li>Dificuldade: {{ professor.media_dificuldade }}/5</li>
+        </ul>
+
+        <!-- Botão que leva para a página de avaliação -->
+        <a href="/avaliar/{{ professor.id }}" class="btn-avaliar">Avaliar este Professor</a>
+    </div>
+</body>
+</html>

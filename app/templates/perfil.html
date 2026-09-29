@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Perfil - AvaliaAi UnB</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 400px; margin: 60px auto; }
+        h1 { font-size: 1.4rem; }
+        p { font-size: 0.95rem; }
+        button { margin-top: 20px; padding: 10px 16px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Perfil</h1>
+    <p><strong>Nome:</strong> {{ usuario.nome }}</p>
+    <p><strong>E-mail:</strong> {{ usuario.email }}</p>
+
+    <form action="/logout" method="POST">
+        <button type="submit">Sair</button>
+    </form>
+</body>
+</html>
