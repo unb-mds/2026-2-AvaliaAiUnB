@@ -14,10 +14,8 @@ from routes.auth_routes import auth_bp
 from routes.professor_routes import professor_bp
 
 
-def create_app(config=None) -> Flask:
+def create_app() -> Flask:
     app = Flask(__name__)
-    if config:
-        app.config.update(config)
     app.register_blueprint(auth_bp)
     app.register_blueprint(professor_bp)
 
