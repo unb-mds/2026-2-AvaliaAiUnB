@@ -13,8 +13,10 @@ from database import init_db
 from routes.auth_routes import auth_bp
 
 
-def create_app() -> Flask:
+def create_app(config=None) -> Flask:
     app = Flask(__name__)
+    if config:
+        app.config.update(config)
     app.register_blueprint(auth_bp)
 
     with app.app_context():
