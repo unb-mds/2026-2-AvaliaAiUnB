@@ -130,7 +130,7 @@ O sistema foi planejado com uma **arquitetura modular em camadas**:
                      │
 ┌────────────────────▼────────────────────┐
 │               Dados                     │
-│       SQLite(MVP)PostGree(Final Version) · Sessões · SIGAA          │
+│SQLite(MVP) PostGree · Sessões · SIGAA   │
 └─────────────────────────────────────────┘
 ```
 
@@ -235,7 +235,7 @@ De acordo com o documento de visão, o desenvolvimento deve:
         ↓
 [✓] Definição da visão e requisitos
         ↓
-[ ] Implementação do MVP
+[✓] Implementação do MVP
         ↓
 [ ] Autenticação e cadastro
         ↓

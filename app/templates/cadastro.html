@@ -1,37 +1,138 @@
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro - AvaliaAi UnB</title>
+
     <style>
-        body { font-family: Arial, sans-serif; max-width: 400px; margin: 60px auto; }
-        h1 { font-size: 1.4rem; }
-        label { display: block; margin-top: 12px; font-size: 0.9rem; }
-        input { width: 100%; padding: 8px; margin-top: 4px; box-sizing: border-box; }
-        button { margin-top: 20px; padding: 10px 16px; cursor: pointer; }
-        p.link { margin-top: 16px; font-size: 0.9rem; }
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 400px;
+            margin: 60px auto;
+            padding: 0 20px;
+        }
+
+        h1 {
+            font-size: 1.4rem;
+        }
+
+        label {
+            display: block;
+            margin-top: 12px;
+            font-size: 0.9rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 4px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 16px;
+            cursor: pointer;
+            width: 100%;
+            border: none;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                margin: 30px auto;
+                padding: 0 16px;
+            }
+
+            h1 {
+                font-size: 1.3rem;
+            }
+
+            input,
+            button {
+                font-size: 1rem;
+            }
+        }
     </style>
 </head>
 <body>
     <h1>Criar conta</h1>
 
+    {% set dados = dados|default({}) %}
+    {% set erros = erros|default({}) %}
+
     {% if erro %}
-    <p style="color: red;">{{ erro }}</p>
+    <p role="alert" style="color: #a01818;">{{ erro }}</p>
+    {% endif %}
+
+    {% if erros %}
+    <ul role="alert" style="color: #a01818;">
+        {% for mensagem in erros.values() %}
+        <li>{{ mensagem }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if sucesso %}
+    <p role="status">
+        {{ sucesso }} <a href="/login">Entrar</a>
+    </p>
     {% endif %}
 
     <form action="/cadastro" method="POST">
+        <input type="hidden" name="formato" value="html">
+
         <label for="nome">Nome</label>
-        <input type="text" id="nome" name="nome" required>
+        <input
+            type="text"
+            id="nome"
+            name="nome"
+            value="{{ dados.get('nome', '') }}"
+            autocomplete="name"
+            required
+        >
 
         <label for="email">E-mail</label>
-        <input type="email" id="email" name="email" required>
+        <input
+            type="email"
+            id="email"
+            name="email"
+            value="{{ dados.get('email', '') }}"
+            autocomplete="email"
+            required
+        >
 
         <label for="senha">Senha</label>
-        <input type="password" id="senha" name="senha" required>
+        <input
+            type="password"
+            id="senha"
+            name="senha"
+            minlength="8"
+            autocomplete="new-password"
+            aria-describedby="senha-ajuda"
+            required
+        >
+
+        <p id="senha-ajuda">Use pelo menos 8 caracteres.</p>
+
+        <label for="confirmar_senha">Confirmar senha</label>
+        <input
+            type="password"
+            id="confirmar_senha"
+            name="confirmar_senha"
+            minlength="8"
+            autocomplete="new-password"
+            required
+        >
 
         <button type="submit">Cadastrar</button>
     </form>
-
-    <p class="link">Já tem conta? <a href="/login">Entrar</a></p>
 </body>
 </html>
