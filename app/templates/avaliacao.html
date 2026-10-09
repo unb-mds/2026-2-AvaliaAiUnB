@@ -1,172 +1,166 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Avaliar Professor - AvaliaAi</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='indicadores.css') }}">
+
     <style>
-    * {
-        box-sizing: border-box;
-    }
-
-    body {
-        font-family: Arial, sans-serif;
-        max-width: 600px;
-        margin: 60px auto;
-        padding: 0 20px;
-    }
-
-    .avaliacao-container {
-        width: 100%;
-    }
-
-    h2 {
-        font-size: 1.5rem;
-        margin-bottom: 24px;
-    }
-
-    .form-group {
-        margin-bottom: 16px;
-    }
-
-    label {
-        display: block;
-        margin-bottom: 6px;
-        font-size: 0.95rem;
-    }
-
-    select {
-        width: 100%;
-        padding: 10px;
-        font-size: 1rem;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        background-color: white;
-    }
-
-    button {
-        width: 100%;
-        margin-top: 8px;
-        padding: 12px 16px;
-        cursor: pointer;
-        border: none;
-        border-radius: 4px;
-        font-size: 1rem;
-    }
-
-    #mensagemErro {
-        font-size: 0.9rem;
-        margin-top: 16px;
-    }
-
-    @media (max-width: 480px) {
-        body {
-            margin: 30px auto;
-            padding: 0 16px;
+        * {
+            box-sizing: border-box;
         }
 
-        h2 {
-            font-size: 1.3rem;
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 60px auto;
+            padding: 0 20px;
+        }
+
+        .avaliacao-container {
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
         }
 
         label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.95rem;
+        }
+
+        select {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: white;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 8px;
+            padding: 12px 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
             font-size: 1rem;
         }
 
-        select,
-        button {
-            font-size: 1rem;
+        .acoes {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
-    }
-</style>
+
+        .cancelar {
+            display: block;
+            text-align: center;
+            padding: 10px;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                margin: 30px auto;
+                padding: 0 16px;
+            }
+
+            h1 {
+                font-size: 1.3rem;
+            }
+
+            label {
+                font-size: 1rem;
+            }
+
+            select,
+            button {
+                font-size: 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="avaliacao-container">
-        <h2>Avaliar {{ professor.nome }}</h2>
+    <main class="avaliacao-container">
+        <h1>Avaliar {{ professor.nome }}</h1>
 
-        <form id="formAvaliacao" action="/avaliar/{{ professor.id }}" method="POST">
+        <p>
+            {{ disciplina.nome }}
+            {% if disciplina.codigo %}
+                — {{ disciplina.codigo }}
+            {% endif %}
+        </p>
+
+        <p>Sua identidade não será exibida nas avaliações públicas.</p>
+
+        {% if erros %}
+        <ul class="erros" role="alert">
+            {% for erro in erros.values() %}
+            <li>{{ erro }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        <form
+            id="formAvaliacao"
+            action="{{ url_for('professores.avaliar', professor_id=professor.id) }}"
+            method="POST"
+        >
+            <input
+                type="hidden"
+                name="disciplina_id"
+                value="{{ disciplina.id }}"
+            >
+
+            {% for criterio, titulo in criterios.items() %}
             <div class="form-group">
-            <label for="didatica">Didática (1 a 5):</label>
-            <select name="didatica" id="didatica">
-                <option value="">Selecione...</option>
-                <option value="1">1 - Ruim</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5 - Excelente</option>
-            </select>
-        </div>
+                <label for="{{ criterio }}">
+                    {{ titulo }} (1 a 5)
+                </label>
 
-        <div class="form-group">
-            <label for="clareza">Clareza (1 a 5):</label>
-            <select name="clareza" id="clareza">
-                <option value="">Selecione...</option>
-                <option value="1">1 - Confusa</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5 - Muito clara</option>
-            </select>
-        </div>
+                <select name="{{ criterio }}" id="{{ criterio }}" required>
+                    <option value="">Selecione...</option>
 
-        <div class="form-group">
-            <label for="organizacao">Organização (1 a 5):</label>
-            <select name="organizacao" id="organizacao">
-                <option value="">Selecione...</option>
-                <option value="1">1 - Desorganizado</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5 - Impecável</option>
-            </select>
-        </div>
+                    {% for nota in range(1, 6) %}
+                    <option
+                        value="{{ nota }}"
+                        {% if dados.get(criterio) == nota|string %}selected{% endif %}
+                    >
+                        {{ nota }}
+                        {% if nota == 1 %}
+                            — {{ 'Muito fácil' if criterio == 'dificuldade' else 'Muito ruim' }}
+                        {% elif nota == 5 %}
+                            — {{ 'Muito difícil' if criterio == 'dificuldade' else 'Excelente' }}
+                        {% endif %}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endfor %}
 
-        <div class="form-group">
-            <label for="disponibilidade">Disponibilidade (1 a 5):</label>
-            <select name="disponibilidade" id="disponibilidade">
-                <option value="">Selecione...</option>
-                <option value="1">1 - Inacessível</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5 - Sempre disponível</option>
-            </select>
-        </div>
+            <div class="acoes">
+                <button type="submit">Enviar Avaliação</button>
 
-        <div class="form-group">
-            <label for="dificuldade">Dificuldade (1 a 5):</label>
-            <select name="dificuldade" id="dificuldade">
-                <option value="">Selecione...</option>
-                <option value="1">1 - Muito fácil</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5 - Muito difícil</option>
-            </select>
-        </div>
-
-            <p id="mensagemErro" style="color: red; display: none;">Por favor, preencha todos os critérios.</p>
-            <button type="submit">Enviar Avaliação</button>
+                <a
+                    class="cancelar"
+                    href="{{ url_for('professores.perfil', professor_id=professor.id, disciplina_id=disciplina.id) }}"
+                >
+                    Cancelar
+                </a>
+            </div>
         </form>
-    </div>
-
-    <script>
-        document.getElementById('formAvaliacao').addEventListener('submit', function(evento) {
-            const didatica = document.getElementById('didatica').value;
-            const clareza = document.getElementById('clareza').value;
-            const organizacao = document.getElementById('organizacao').value;
-            const disponibilidade = document.getElementById('disponibilidade').value;
-            const dificuldade = document.getElementById('dificuldade').value;
-            const mensagemErro = document.getElementById('mensagemErro');
-
-            if (!didatica || !clareza || !organizacao || !disponibilidade || !dificuldade) {
-                evento.preventDefault();
-                mensagemErro.style.display = 'block';
-            } else {
-                mensagemErro.style.display = 'none';
-            }
-        });
-    </script>
-
+    </main>
 </body>
 </html>
