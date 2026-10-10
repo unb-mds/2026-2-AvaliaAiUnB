@@ -1,0 +1,7 @@
+site_name: AvaliaAi UnB
+site_description: Documentação do AvaliaAi UnB
+theme:
+  name: material
+  language: pt-BR
+exclude_docs: |
+  IMPLEMENTACAO_26_36_37.md
