@@ -92,18 +92,18 @@ Professores que desejam receber feedback estruturado e construtivo sobre sua atu
 
 | Funcionalidade | Status no documento |
 |---|:---:|
-| Cadastro de usuário | 🚀 MVP |
-| Login / autenticação | 🚀 MVP |
-| Busca de professores e disciplinas | 🚀 MVP |
-| Perfil do professor | 🚀 MVP |
-| Avaliação por critérios | 🚀 MVP |
-| Visualização de médias | 🚀 MVP |
-| Ranking de professores | 🔮 Pós-MVP |
-| Comparação entre professores | 🔮 Pós-MVP |
-| Filtros avançados | 🔮 Pós-MVP |
-| Moderação de avaliações | 🔮 Pós-MVP |
-| Favoritar professores | 🔮 Pós-MVP |
-| Gráficos de desempenho | 🔮 Pós-MVP |
+| Cadastro de usuário | 🚀 R1 |
+| Login / autenticação | 🚀 R1 |
+| Busca de professores e disciplinas | 🚀 R1 |
+| Perfil do professor | 🚀 R1 |
+| Avaliação por critérios | 🚀 R1 |
+| Visualização de médias | 🚀 R1 |
+| Ranking de professores | 🔮 R2 |
+| Comparação entre professores | 🔮 R2 |
+| Filtros avançados | 🔮 R2 |
+| Moderação de avaliações | 🔮 R2 |
+| Favoritar professores | 🔮 R2 |
+| Gráficos de desempenho | 🔮 R2 |
 
 ---
 
