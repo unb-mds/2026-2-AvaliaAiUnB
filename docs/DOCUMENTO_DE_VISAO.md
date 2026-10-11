@@ -111,18 +111,18 @@ O sistema é estruturado em uma arquitetura modular em camadas:
 
 | Código | Nome | Descrição | Prioridade |
 | --- | --- | --- | --- |
-| **RF01** | Cadastro de Usuário | Permitir que estudantes criem uma conta no AvaliaAi. | Alta (MVP) |
-| **RF02** | Login / Autenticação | Permitir que usuários cadastrados façam login com credenciais seguras. | Alta (MVP) |
-| **RF03** | Busca de Professores e Disciplinas | Pesquisar professores por nome, código, departamento ou disciplina. | Alta (MVP) |
-| **RF04** | Perfil do Professor | Exibir informações do professor, disciplinas ministradas e histórico de notas. | Alta (MVP) |
-| **RF05** | Avaliação por Critérios | Permitir avaliar o professor em critérios: didática, organização, clareza, disponibilidade e dificuldade. | Alta (MVP) |
-| **RF06** | Visualização de Médias | Exibir o cálculo de médias agregadas e estatísticas dos professores. | Alta (MVP) |
-| **RF07** | Ranking de Professores | Exibir a classificação dos professores mais bem avaliados por departamento ou geral. | Média (Pós-MVP) |
-| **RF08** | Comparação entre Professores | Selecionar e comparar lado a lado dois ou mais professores da mesma disciplina. | Média (Pós-MVP) |
-| **RF09** | Filtros Avançados | Filtrar professores por faixa de nota, departamento e volume de avaliações. | Média (Pós-MVP) |
-| **RF10** | Moderação de Avaliações | Permitir a denúncia e remoção de comentários com linguagem ofensiva. | Média (Pós-MVP) |
-| **RF11** | Favoritar Professores | Salvar professores na lista pessoal do usuário para acompanhamento rápido. | Baixa (Pós-MVP) |
-| **RF12** | Gráficos de Desempenho | Apresentar gráficos visuais da evolução das notas do professor ao longo dos semestres. | Baixa (Pós-MVP) |
+| **RF01** | Cadastro de Usuário | Permitir que estudantes criem uma conta no AvaliaAi. | Alta (R1) |
+| **RF02** | Login / Autenticação | Permitir que usuários cadastrados façam login com credenciais seguras. | Alta (R1) |
+| **RF03** | Busca de Professores e Disciplinas | Pesquisar professores por nome, código, departamento ou disciplina. | Alta (R1) |
+| **RF04** | Perfil do Professor | Exibir informações do professor, disciplinas ministradas e histórico de notas. | Alta (R1) |
+| **RF05** | Avaliação por Critérios | Permitir avaliar o professor em critérios: didática, organização, clareza, disponibilidade e dificuldade. | Alta (R1) |
+| **RF06** | Visualização de Médias | Exibir o cálculo de médias agregadas e estatísticas dos professores. | Alta (R1) |
+| **RF07** | Ranking de Professores | Exibir a classificação dos professores mais bem avaliados por departamento ou geral. | Média (R2) |
+| **RF08** | Comparação entre Professores | Selecionar e comparar lado a lado dois ou mais professores da mesma disciplina. | Média (R2) |
+| **RF09** | Filtros Avançados | Filtrar professores por faixa de nota, departamento e volume de avaliações. | Média (R2) |
+| **RF10** | Moderação de Avaliações | Permitir a denúncia e remoção de comentários com linguagem ofensiva. | Média (R2) |
+| **RF11** | Favoritar Professores | Salvar professores na lista pessoal do usuário para acompanhamento rápido. | Baixa (R2) |
+| **RF12** | Gráficos de Desempenho | Apresentar gráficos visuais da evolução das notas do professor ao longo dos semestres. | Baixa (R2) |
 
 ---
 
