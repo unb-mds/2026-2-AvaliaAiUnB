@@ -189,9 +189,9 @@ O diretório `docs/` concentra a documentação de visão do projeto.
 
 ---
 
-## 🚀 MVP
+## 🚀 Release 1
 
-O MVP prioriza o fluxo essencial para consulta e avaliação:
+A realese 1 prioriza o fluxo essencial para consulta e avaliação:
 
 ```text
 Cadastro
@@ -235,7 +235,7 @@ De acordo com o documento de visão, o desenvolvimento deve:
         ↓
 [✓] Definição da visão e requisitos
         ↓
-[✓] Implementação do MVP
+[✓] Entrega de Release 1
         ↓
 [ ] Autenticação e cadastro
         ↓
@@ -245,7 +245,7 @@ De acordo com o documento de visão, o desenvolvimento deve:
         ↓
 [ ] Médias e estatísticas
         ↓
-[ ] Funcionalidades pós-MVP
+[ ] Funcionalidades da Release 2
 ```
 
 ---
