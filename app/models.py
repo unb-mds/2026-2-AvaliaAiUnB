@@ -41,12 +41,24 @@ class Disciplina:
         }
 
 class Avaliacao:
-    def __init__(self, nota, comentario, usuario_id, professor_id=None, id=None):
+    def __init__(self, criterio_1=None, criterio_2=None, criterio_3=None, usuario_id=None, professor_id=None, id=None):
         self.id = id
-        self.nota = nota
-        self.comentario = comentario
+        self.criterio_1 = criterio_1  # Representa a nota em estrelas da 1ª valência
+        self.criterio_2 = criterio_2  # Representa a nota em estrelas da 2ª valência
+        self.criterio_3 = criterio_3  # Representa a nota em estrelas da 3ª valência
+        #PODEMOS CRIAR MAIS MEIOS DE AVALIÇÃO COM O DECORRER DO TRABALHO!
         self.usuario_id = usuario_id
         self.professor_id = professor_id
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "criterio_1": self.criterio_1,
+            "criterio_2": self.criterio_2,
+            "criterio_3": self.criterio_3,
+            "usuario_id": self.usuario_id,
+            "professor_id": self.professor_id
+        }
 
     def to_dict(self):
         return {
