@@ -1,8 +1,17 @@
 import sqlite3
+import unicodedata
 from flask import current_app, has_app_context
 
 CAMINHO_BANCO = 'banco.db'
 
+def normalizar_busca(texto):
+    """Padroniza texto para buscas sem distinção de acentos, caixa ou espaços."""
+    texto = unicodedata.normalize('NFKD', str(texto or ''))
+    texto = ''.join(
+        caractere for caractere in texto
+        if not unicodedata.combining(caractere)
+    )
+    return ''.join(texto.casefold().split())
 
 def get_db_connection():
     """
@@ -15,6 +24,7 @@ def get_db_connection():
     conexao = sqlite3.connect(caminho)
     conexao.row_factory = sqlite3.Row
     conexao.execute("PRAGMA foreign_keys = ON")
+    conexao.create_function("NORMALIZAR_BUSCA", 1, normalizar_busca)
     return conexao
 
 

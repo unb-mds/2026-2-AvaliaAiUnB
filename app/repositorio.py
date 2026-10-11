@@ -1,5 +1,5 @@
 from app.models import Usuario
-from app.database import get_db_connection
+from app.database import get_db_connection, normalizar_busca
 from app.validacoes import CRITERIOS
 from contextlib import closing
 import sqlite3
@@ -98,23 +98,45 @@ class ProfessorRepository:
                 WHERE nome LIKE ? COLLATE NOCASE ORDER BY nome, id''',
                 (f'%{trecho}%',)).fetchall()
 
+    
     def filtrar(self, nome='', disciplina=''):
         def trecho(texto):
-            # %, _ e \ digitados pelo usuário valem como texto, não como curinga do LIKE.
-            escapado = texto.strip().replace('\\', '\\\\').replace('%', '\\%').replace('_', '\\_')
-            return f'%{escapado}%'
+            # Trata caracteres especiais do LIKE como texto literal.
+            escapado = (
+                texto.strip()
+                .replace('\\', '\\\\')
+                .replace('%', '\\%')
+                .replace('_', '\\_')
+            )
+            return f'%{normalizar_busca(escapado)}%'
 
-        condicoes, parametros = ["p.nome LIKE ? ESCAPE '\\' COLLATE NOCASE"], [trecho(nome)]
+        condicoes = [
+            "NORMALIZAR_BUSCA(p.nome) LIKE ? ESCAPE '\\'"
+        ]
+        parametros = [trecho(nome)]
+
         if disciplina.strip():
-            condicoes.append('''EXISTS (SELECT 1 FROM professor_disciplinas pd
-                JOIN disciplinas d ON d.id = pd.disciplina_id
-                WHERE pd.professor_id = p.id
-                AND (d.nome LIKE ? ESCAPE '\\' COLLATE NOCASE
-                     OR d.codigo LIKE ? ESCAPE '\\' COLLATE NOCASE))''')
+            condicoes.append('''
+                EXISTS (
+                    SELECT 1
+                    FROM professor_disciplinas pd
+                    JOIN disciplinas d ON d.id = pd.disciplina_id
+                    WHERE pd.professor_id = p.id
+                    AND (
+                        NORMALIZAR_BUSCA(d.nome) LIKE ? ESCAPE '\\'
+                        OR NORMALIZAR_BUSCA(d.codigo) LIKE ? ESCAPE '\\'
+                    )
+                )
+            ''')
             parametros += [trecho(disciplina)] * 2
+
         with closing(get_db_connection()) as conexao:
-            return conexao.execute(f'''SELECT p.id, p.nome, p.departamento FROM professores p
-                WHERE {' AND '.join(condicoes)} ORDER BY p.nome, p.id''', parametros).fetchall()
+            return conexao.execute(f'''
+                SELECT p.id, p.nome, p.departamento
+                FROM professores p
+                WHERE {' AND '.join(condicoes)}
+                ORDER BY p.nome, p.id
+            ''', parametros).fetchall()
 
     def listar_disciplinas(self, professor_id):
         with closing(get_db_connection()) as conexao:
