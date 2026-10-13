@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AvaliaAi - Início</title>
+    <!-- Referência ao CSS existente -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='indicadores.css') }}">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .botoes {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .btn {
+            padding: 10px 20px;
+            text-decoration: none;
+            background-color: #007BFF;
+            color: white;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Bem-vindo ao AvaliaAi</h1>
+    <p>A plataforma para consulta e avaliação de professores e disciplinas da UNB.</p>
+    
+    <div class="botoes">
+        <!-- Links para as páginas existentes -->
+        <a href="/professores" class="btn">Consulta de Professores</a>
+        <a href="/login" class="btn">Login</a>
+        <a href="/cadastro" class="btn">Cadastro</a>
+    </div>
+</body>
+</html>
