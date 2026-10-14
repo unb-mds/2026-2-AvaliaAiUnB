@@ -90,7 +90,7 @@ Professores que desejam receber feedback estruturado e construtivo sobre sua atu
 
 ## 🧩 Principais funcionalidades
 
-| Funcionalidade | Realese prevista |
+| Funcionalidade | Release prevista |
 |---|:---:|
 | Cadastro de usuário | 🚀 R1 |
 | Login / autenticação | 🚀 R1 |
