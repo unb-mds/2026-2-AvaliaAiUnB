@@ -90,7 +90,7 @@ Professores que desejam receber feedback estruturado e construtivo sobre sua atu
 
 ## 🧩 Principais funcionalidades
 
-| Funcionalidade | Status no documento |
+| Funcionalidade | Release prevista |
 |---|:---:|
 | Cadastro de usuário | 🚀 R1 |
 | Login / autenticação | 🚀 R1 |
@@ -109,29 +109,45 @@ Professores que desejam receber feedback estruturado e construtivo sobre sua atu
 
 ## 🏗️ Arquitetura
 
-O sistema foi planejado com uma **arquitetura modular em camadas**:
+O AvaliaAi UnB utiliza uma arquitetura web modular, desenvolvida em Python com Flask, organizada em camadas responsáveis pela interface, pelo processamento das requisições, pelas regras da aplicação e pela persistência de dados.
 
 ```text
-┌─────────────────────────────────────────┐
-│          Interface / Frontend           │
-│       HTML5 · CSS3 · JavaScript         │
-└────────────────────┬────────────────────┘
-                     │
-┌────────────────────▼────────────────────┐
-│             Controllers                 │
-│ Autenticação · Avaliação · Professor    │
-│              / Turma                    │
-└────────────────────┬────────────────────┘
-                     │
-┌────────────────────▼────────────────────┐
-│        Serviços e Repositórios          │
-│ Auth · Avaliações · Sincronização/Parser│
-└────────────────────┬────────────────────┘
-                     │
-┌────────────────────▼────────────────────┐
-│               Dados                     │
-│SQLite(MVP) PostGree · Sessões · SIGAA   │
-└─────────────────────────────────────────┘
+┌─────────────────────────────────────────────┐
+│                FRONTEND                     │
+│       HTML5 · CSS3 · JavaScript · Jinja2    │
+└─────────────────────┬───────────────────────┘
+                      │
+                      ▼
+┌─────────────────────────────────────────────┐
+│                 BACKEND                     │
+│              Python · Flask                 │
+│                                             │
+│  auth_routes.py       professor_routes.py   │
+└─────────────────────┬───────────────────────┘
+                      │
+                      ▼
+┌─────────────────────────────────────────────┐
+│             LÓGICA DA APLICAÇÃO             │
+│                                             │
+│  session_controller.py · validacoes.py      │
+│  Autenticação · Sessões · Avaliações         │
+└─────────────────────┬───────────────────────┘
+                      │
+                      ▼
+┌─────────────────────────────────────────────┐
+│           MODELOS E REPOSITÓRIOS            │
+│                                             │
+│  models.py · repositorio.py · database.py   │
+└─────────────────────┬───────────────────────┘
+                      │
+                      ▼
+┌─────────────────────────────────────────────┐
+│              BANCO DE DADOS                 │
+│                                             │
+│                  SQLite                     │
+│  Usuários · Professores · Disciplinas       │
+│  Avaliações · Sessões                       │
+└─────────────────────────────────────────────┘
 ```
 
 ---
@@ -142,8 +158,8 @@ O sistema foi planejado com uma **arquitetura modular em camadas**:
 |---|---|
 | **Frontend** | HTML5, CSS3, JavaScript |
 | **Templates** | Jinja2 |
-| **Backend** | Python + Flask |
-| **Banco de dados** | SQLite |
+| **Backend** | Python, Flask e Blueprints |
+| **Banco de dados** | SQLite, Postgre |
 | **Design / Prototipagem** | Figma |
 | **Versionamento** | Git + GitHub |
 | **Deploy / Hospedagem** | Render / Heroku |
@@ -254,7 +270,7 @@ De acordo com o documento de visão, o desenvolvimento deve:
 
 | Recurso | Acesso |
 |---|---|
-| 🎨 **Protótipo / Board Figma** | [Abrir no Figma](https://www.figma.com/board/PgqkPopVXOiSqm9gD5RRNv/Template-MDS--c%C3%B3pia-limpa---c%C3%B3pia-?node-id=0-1&t=JgPcJPdPogrAMhcN-0) |
+| 🎨 **Protótipo / Board Figma** | [Abrir no Figma](https://www.figma.com/board/PgqkPopVXOiSqm9gD5RRNv/AvaliaAi---Template-MDS?node-id=0-1&p=f&t=Rxu6jVCgeVZHCyg2-0) |
 | 📖 **Documento de Visão** | [docs/DOCUMENTO_DE_VISAO.md](docs/DOCUMENTO_DE_VISAO.md) |
 
 ---
