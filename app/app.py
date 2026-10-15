@@ -9,7 +9,7 @@ Rodar:
 
 from flask import Flask
 
-from database import init_db
+from database import inicializar_banco
 from routes.auth_routes import auth_bp
 from routes.professor_routes import professor_bp
 
@@ -20,7 +20,7 @@ def create_app() -> Flask:
     app.register_blueprint(professor_bp)
 
     with app.app_context():
-        init_db()
+        inicializar_banco()
 
     return app
 
