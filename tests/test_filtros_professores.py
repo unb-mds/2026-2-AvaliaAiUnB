@@ -2,7 +2,7 @@
 import unittest
 
 from app.repositorio import ProfessorRepository
-from app.test_implementacao import BancoIsolado
+from tests.test_implementacao import BancoIsolado
 
 
 class TestFiltrarProfessores(BancoIsolado):

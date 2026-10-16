@@ -47,7 +47,6 @@ def inicializar_banco():
         CREATE TABLE IF NOT EXISTS avaliacoes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nota INTEGER NOT NULL,
-            comentario TEXT,
             usuario_id INTEGER,
             professor_id INTEGER,
             FOREIGN KEY (usuario_id) REFERENCES usuarios (id)
