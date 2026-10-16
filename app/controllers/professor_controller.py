@@ -1,12 +1,21 @@
-"""Lógica de professor/disciplina extraída das rotas: resolve qual disciplina exibir ou avaliar."""
+"""Lógica de professores e avaliações: resolve o que as rotas exibem e registra avaliações."""
 from flask import abort, request
 
-from app.repositorio import ProfessorRepository
+from app.repositorio import repositorios
+from app.validacoes import CRITERIOS, validar_avaliacao
 
-professores = ProfessorRepository()
+
+def criterios():
+    return CRITERIOS
+
+
+def catalogo(nome='', disciplina=''):
+    """Lista [(professor, disciplinas)] ordenada pela quantidade de avaliações."""
+    return repositorios().professores.catalogo(nome, disciplina)
 
 
 def carregar_perfil(professor_id):
+    professores = repositorios().professores
     professor = professores.buscar_por_id(professor_id)
     if professor is None:
         abort(404)
@@ -26,3 +35,20 @@ def carregar_perfil(professor_id):
         if disciplina is None:
             abort(404, description='Disciplina não vinculada ao professor.')
     return professor, disciplinas, disciplina
+
+
+def indicadores(professor_id, disciplina_id):
+    return repositorios().avaliacoes.calcular_medias(professor_id, disciplina_id)
+
+
+def validar_notas(dados):
+    return validar_avaliacao(dados, CRITERIOS)
+
+
+def registrar_avaliacao(usuario, professor_id, disciplina_id, notas):
+    """Grava a avaliação do usuário logado. False se ele já avaliou este par."""
+    repos = repositorios()
+    salvou = repos.avaliacoes.salvar(usuario['id'], professor_id, disciplina_id, notas)
+    if salvou:
+        repos.professores.invalidar_cache()   # a listagem ordena por total de avaliações
+    return salvou

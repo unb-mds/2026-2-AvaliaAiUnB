@@ -99,13 +99,28 @@
             required
         >
 
-        <label for="email">E-mail</label>
+        <label for="username">Nome de usuário</label>
+        <input
+            type="text"
+            id="username"
+            name="username"
+            value="{{ dados.get('username', '') }}"
+            pattern="[A-Za-z0-9._]{3,30}"
+            autocomplete="username"
+            aria-describedby="username-ajuda"
+            required
+        >
+        <p id="username-ajuda">De 3 a 30 caracteres: letras, números, ponto ou sublinhado. Você entra com ele.</p>
+
+        <label for="email">E-mail (@gmail.com)</label>
         <input
             type="email"
             id="email"
             name="email"
             value="{{ dados.get('email', '') }}"
             autocomplete="email"
+            pattern=".+@[Gg][Mm][Aa][Ii][Ll]\.[Cc][Oo][Mm]"
+            title="Use um e-mail @gmail.com"
             required
         >
 
