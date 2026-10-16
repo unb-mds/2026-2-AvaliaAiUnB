@@ -41,30 +41,30 @@ class Disciplina:
         }
 
 class Avaliacao:
-    def __init__(self, criterio_1=None, criterio_2=None, criterio_3=None, usuario_id=None, professor_id=None, id=None):
+    """Espelha a tabela avaliacoes. `nota` guarda a avaliação geral (campo legado)."""
+
+    def __init__(self, usuario_id=None, professor_id=None, disciplina_id=None, nota=None,
+                 didatica=None, organizacao=None, disponibilidade=None, dificuldade=None,
+                 id=None):
         self.id = id
-        self.criterio_1 = criterio_1  # Representa a nota em estrelas da 1ª valência
-        self.criterio_2 = criterio_2  # Representa a nota em estrelas da 2ª valência
-        self.criterio_3 = criterio_3  # Representa a nota em estrelas da 3ª valência
-        #PODEMOS CRIAR MAIS MEIOS DE AVALIÇÃO COM O DECORRER DO TRABALHO!
         self.usuario_id = usuario_id
         self.professor_id = professor_id
+        self.disciplina_id = disciplina_id
+        self.nota = nota
+        self.didatica = didatica
+        self.organizacao = organizacao
+        self.disponibilidade = disponibilidade
+        self.dificuldade = dificuldade
 
     def to_dict(self):
         return {
             "id": self.id,
-            "criterio_1": self.criterio_1,
-            "criterio_2": self.criterio_2,
-            "criterio_3": self.criterio_3,
             "usuario_id": self.usuario_id,
-            "professor_id": self.professor_id
-        }
-
-    def to_dict(self):
-        return {
-            "id": self.id,
+            "professor_id": self.professor_id,
+            "disciplina_id": self.disciplina_id,
             "nota": self.nota,
-            "comentario": self.comentario,
-            "usuario_id": self.usuario_id,
-            "professor_id": self.professor_id
+            "didatica": self.didatica,
+            "organizacao": self.organizacao,
+            "disponibilidade": self.disponibilidade,
+            "dificuldade": self.dificuldade,
         }

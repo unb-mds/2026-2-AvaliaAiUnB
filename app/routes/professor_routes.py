@@ -1,6 +1,7 @@
 """Integra as telas do PR #50 ao catálogo e às médias por disciplina."""
 from flask import Blueprint, abort, jsonify, redirect, render_template, request, url_for
 
+from app.controllers.professor_controller import carregar_perfil
 from app.controllers.session_controller import login_required, obter_usuario_atual
 from app.repositorio import AvaliacaoRepository, ProfessorRepository
 from app.validacoes import CRITERIOS, validar_avaliacao
@@ -8,28 +9,6 @@ from app.validacoes import CRITERIOS, validar_avaliacao
 professor_bp = Blueprint('professores', __name__)
 professores = ProfessorRepository()
 avaliacoes = AvaliacaoRepository()
-
-
-def carregar_perfil(professor_id):
-    professor = professores.buscar_por_id(professor_id)
-    if professor is None:
-        abort(404)
-    disciplinas = professores.listar_disciplinas(professor_id)
-    origem = request.form if request.method == 'POST' else request.args
-    identificador = origem.get('disciplina_id')
-    if identificador is None:
-        if request.method == 'POST':
-            abort(400, description='Informe a disciplina avaliada.')
-        disciplina = disciplinas[0] if disciplinas else None
-    else:
-        try:
-            disciplina_id = int(identificador)
-        except (ValueError, TypeError):
-            abort(400, description='Disciplina inválida.')
-        disciplina = next((d for d in disciplinas if d['id'] == disciplina_id), None)
-        if disciplina is None:
-            abort(404, description='Disciplina não vinculada ao professor.')
-    return professor, disciplinas, disciplina
 
 
 @professor_bp.get('/professores')

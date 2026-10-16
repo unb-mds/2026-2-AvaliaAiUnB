@@ -96,7 +96,7 @@ alterada nesta entrega de testes.
 Executar somente os testes de médias:
 
 ```powershell
-python -B -m unittest app.test_implementacao.TestMedias -v
+python -B -m unittest tests.test_implementacao.TestMedias -v
 ```
 
 Resultado da execução local: **17 testes de médias passando; 43 testes no total,
@@ -110,7 +110,7 @@ cópia. Nenhum push ou merge foi realizado. Revisar as dependências acima no PR
 
 ```powershell
 git status
-git add .gitignore requirements.txt demo.py app/__init__.py app/database.py app/repositorio.py app/validacoes.py app/routes/auth_routes.py app/routes/professor_routes.py app/static/indicadores.css app/templates/cadastro.html app/templates/perfil_professor.html app/templates/avaliacao.html app/test_implementacao.py docs/IMPLEMENTACAO_26_36_37.md
+git add .gitignore requirements.txt demo.py app/__init__.py app/database.py app/repositorio.py app/validacoes.py app/routes/auth_routes.py app/routes/professor_routes.py app/static/indicadores.css app/templates/cadastro.html app/templates/perfil_professor.html app/templates/avaliacao.html tests/test_implementacao.py docs/IMPLEMENTACAO_26_36_37.md
 git commit -m "feat: valida cadastro e integra medias por disciplina ao perfil"
 git push -u origin feat/cadastro-medias-indicadores
 ```
