@@ -13,9 +13,11 @@
 <body>
     <h1>Perfil</h1>
     <p><strong>Nome:</strong> {{ usuario.nome }}</p>
+    <p><strong>Usuário:</strong> {{ usuario.username }}</p>
     <p><strong>E-mail:</strong> {{ usuario.email }}</p>
 
     <form action="/logout" method="POST">
+        <input type="hidden" name="formato" value="html">
         <button type="submit">Sair</button>
     </form>
 </body>

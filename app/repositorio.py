@@ -1,217 +1,229 @@
-from app.models import Usuario
-from app.database import get_db_connection, normalizar_busca
+"""Repositórios sobre o Supabase: usuários (Auth + perfis), professores e avaliações.
+
+Tabelas usadas: auth.users (via Supabase Auth), perfis, professores, disciplinas,
+turmas, avaliacoes e a view vw_professor_disciplina. `repositorios()` entrega as
+instâncias configuradas em create_app.
+"""
+import time
+from collections import Counter
+
+from flask import current_app
+from supabase_auth.errors import AuthError
+
+from app.supabase_db import get_supabase, novo_cliente
+from app.utils import normalizar_busca
 from app.validacoes import CRITERIOS
-from contextlib import closing
-import sqlite3
+
+TAMANHO_PAGINA = 1000          # limite padrão de linhas por requisição do PostgREST
+VALIDADE_CATALOGO = 300        # segundos de cache da listagem completa
+
+
+def _paginar(montar_consulta):
+    linhas, inicio = [], 0
+    while True:
+        lote = montar_consulta().range(inicio, inicio + TAMANHO_PAGINA - 1).execute().data
+        linhas.extend(lote)
+        if len(lote) < TAMANHO_PAGINA:
+            return linhas
+        inicio += TAMANHO_PAGINA
+
+
+def _sessao_para_dict(resposta):
+    sessao = getattr(resposta, 'session', None)
+    if sessao is None:
+        return None
+    return {'access_token': sessao.access_token, 'refresh_token': sessao.refresh_token}
 
 
 class UsuarioRepository:
+    """Contas no Supabase Auth; nome e username ficam no user_metadata e na tabela perfis."""
 
-    # Requisito 1 e 3: Criação no SQLite e Tratamento de usuário existente
-    def criar_usuario(self, usuario):
-        conexao = get_db_connection()
+    def __init__(self, cliente, fabrica_cliente=novo_cliente):
+        self.cliente = cliente
+        self.fabrica_cliente = fabrica_cliente
 
+    def criar(self, nome, username, email, senha):
+        """Retorna (True, id) ou (False, campo_com_erro, mensagem)."""
+        if self.cliente.table('perfis').select('id').eq('username', username).limit(1).execute().data:
+            return False, 'username', 'Este nome de usuário já está em uso.'
         try:
-            # Serializa a verificação e a inserção, inclusive para e-mails legados
-            # com letras maiúsculas. A restrição UNIQUE existente é preservada.
-            conexao.execute('BEGIN IMMEDIATE')
-            if conexao.execute('SELECT 1 FROM usuarios WHERE email = ? COLLATE NOCASE',
-                               (usuario.email,)).fetchone():
-                return False, 'Erro: Este e-mail já está cadastrado.'
-            cursor = conexao.execute('''
-                INSERT INTO usuarios (nome, email, senha)
-                VALUES (?, ?, ?)
-            ''', (usuario.nome, usuario.email, usuario.senha))
-            conexao.commit()
+            resposta = self.cliente.auth.admin.create_user({
+                'email': email, 'password': senha, 'email_confirm': True,
+                'user_metadata': {'nome': nome, 'username': username}})
+        except AuthError as erro:
+            if getattr(erro, 'code', '') in ('email_exists', 'user_already_exists') \
+                    or 'already' in str(erro).lower():
+                return False, 'email', 'Este e-mail já está cadastrado.'
+            raise
+        usuario_id = str(resposta.user.id)
+        try:
+            self.cliente.table('perfis').insert(
+                {'id': usuario_id, 'username': username, 'nome_completo': nome}).execute()
+        except Exception:
+            self.cliente.auth.admin.delete_user(usuario_id)   # não deixa conta sem perfil
+            if self.cliente.table('perfis').select('id').eq('username', username).execute().data:
+                return False, 'username', 'Este nome de usuário já está em uso.'
+            raise
+        return True, usuario_id
 
-            # Atualiza o ID do objeto com o ID gerado pelo banco
-            usuario.id = cursor.lastrowid
-            return True, "Usuário criado com sucesso!"
+    def autenticar(self, username, senha):
+        """Valida username + senha. Retorna {'access_token', 'refresh_token'} ou None."""
+        perfil = (self.cliente.table('perfis').select('id').eq('username', username.strip().lower())
+                  .limit(1).execute().data)
+        if not perfil:
+            return None
+        try:
+            email = self.cliente.auth.admin.get_user_by_id(perfil[0]['id']).user.email
+            # Cliente descartável: o login não pode alterar a sessão do cliente principal.
+            resposta = self.fabrica_cliente().auth.sign_in_with_password(
+                {'email': email, 'password': senha})
+        except AuthError:
+            return None
+        return _sessao_para_dict(resposta)
 
-        finally:
-            conexao.close()
+    def usuario_do_token(self, access_token):
+        """Dados do usuário dono do token, ou None se inválido/expirado/revogado."""
+        try:
+            resposta = self.cliente.auth.get_user(access_token)
+        except AuthError:
+            return None
+        usuario = getattr(resposta, 'user', None)
+        if usuario is None:
+            return None
+        meta = usuario.user_metadata or {}
+        return {'id': str(usuario.id), 'email': usuario.email,
+                'nome': meta.get('nome', ''), 'username': meta.get('username', '')}
 
-    # Requisito 2: Consulta por identificador
-    def buscar_usuario_por_id(self, id_usuario):
-        conexao = get_db_connection()
-        linha = conexao.execute(
-            'SELECT id, nome, email, senha FROM usuarios WHERE id = ?',
-            (id_usuario,)
-        ).fetchone()
-        conexao.close()
+    def renovar(self, refresh_token):
+        try:
+            return _sessao_para_dict(self.fabrica_cliente().auth.refresh_session(refresh_token))
+        except AuthError:
+            return None
 
-        if linha:
-            return Usuario(id=linha["id"], nome=linha["nome"], email=linha["email"], senha=linha["senha"])
-        return None
-
-    # Necessário para o login: encontrar o usuário a partir do e-mail
-    # digitado no formulário, para então validar a senha.
-    def buscar_usuario_por_email(self, email):
-        conexao = get_db_connection()
-        linha = conexao.execute(
-            'SELECT id, nome, email, senha FROM usuarios WHERE email = ? COLLATE NOCASE',
-            (email,)
-        ).fetchone()
-        conexao.close()
-
-        if linha:
-            return Usuario(id=linha["id"], nome=linha["nome"], email=linha["email"], senha=linha["senha"])
-        return None
+    def encerrar(self, access_token):
+        """Revoga a sessão no servidor do Supabase (logout real)."""
+        try:
+            self.cliente.auth.admin.sign_out(access_token)
+        except AuthError:
+            pass
 
 
 class ProfessorRepository:
-    def criar(self, professor):
-        with closing(get_db_connection()) as conexao:
-            with conexao:
-                cursor = conexao.execute(
-                    'INSERT INTO professores (nome, departamento) VALUES (?, ?)',
-                    (professor.nome, professor.departamento))
-        professor.id = cursor.lastrowid
-        return True, 'Professor criado com sucesso!'
-
-    def vincular(self, professor_id, disciplina_id):
-        with closing(get_db_connection()) as conexao:
-            try:
-                with conexao:
-                    conexao.execute('''INSERT OR IGNORE INTO professor_disciplinas
-                        (professor_id, disciplina_id) VALUES (?, ?)''',
-                        (professor_id, disciplina_id))
-            except sqlite3.IntegrityError as erro:
-                if erro.sqlite_errorcode == sqlite3.SQLITE_CONSTRAINT_FOREIGNKEY:
-                    return False, 'Erro: Professor ou disciplina não encontrado.'
-                raise
-        return True, 'Professor vinculado à disciplina com sucesso!'
+    def __init__(self, cliente):
+        self.cliente = cliente
+        self._catalogo = None
+        self._catalogo_em = 0.0
 
     def buscar_por_id(self, professor_id):
-        with closing(get_db_connection()) as conexao:
-            return conexao.execute('SELECT id, nome, departamento FROM professores WHERE id = ?',
-                                  (professor_id,)).fetchone()
-
-    def listar(self):
-        with closing(get_db_connection()) as conexao:
-            return conexao.execute('''SELECT id, nome, departamento FROM professores
-                ORDER BY nome, id''').fetchall()
-
-    def buscar_por_nome(self, trecho):
-        with closing(get_db_connection()) as conexao:
-            return conexao.execute('''SELECT id, nome, departamento FROM professores
-                WHERE nome LIKE ? COLLATE NOCASE ORDER BY nome, id''',
-                (f'%{trecho}%',)).fetchall()
-
-    
-    def filtrar(self, nome='', disciplina=''):
-        def trecho(texto):
-            # Trata caracteres especiais do LIKE como texto literal.
-            escapado = (
-                texto.strip()
-                .replace('\\', '\\\\')
-                .replace('%', '\\%')
-                .replace('_', '\\_')
-            )
-            return f'%{normalizar_busca(escapado)}%'
-
-        condicoes = [
-            "NORMALIZAR_BUSCA(p.nome) LIKE ? ESCAPE '\\'"
-        ]
-        parametros = [trecho(nome)]
-
-        if disciplina.strip():
-            condicoes.append('''
-                EXISTS (
-                    SELECT 1
-                    FROM professor_disciplinas pd
-                    JOIN disciplinas d ON d.id = pd.disciplina_id
-                    WHERE pd.professor_id = p.id
-                    AND (
-                        NORMALIZAR_BUSCA(d.nome) LIKE ? ESCAPE '\\'
-                        OR NORMALIZAR_BUSCA(d.codigo) LIKE ? ESCAPE '\\'
-                    )
-                )
-            ''')
-            parametros += [trecho(disciplina)] * 2
-
-        with closing(get_db_connection()) as conexao:
-            return conexao.execute(f'''
-                SELECT p.id, p.nome, p.departamento
-                FROM professores p
-                WHERE {' AND '.join(condicoes)}
-                ORDER BY p.nome, p.id
-            ''', parametros).fetchall()
+        dados = (self.cliente.table('professores').select('id,nome,departamento')
+                 .eq('id', professor_id).limit(1).execute().data)
+        return dados[0] if dados else None
 
     def listar_disciplinas(self, professor_id):
-        with closing(get_db_connection()) as conexao:
-            return conexao.execute('''SELECT d.id, d.nome, d.codigo FROM disciplinas d
-                JOIN professor_disciplinas pd ON pd.disciplina_id = d.id
-                WHERE pd.professor_id = ? ORDER BY d.nome, d.id''', (professor_id,)).fetchall()
+        linhas = (self.cliente.table('vw_professor_disciplina')
+                  .select('disciplina_id,codigo_disciplina,disciplina')
+                  .eq('professor_id', professor_id).execute().data)
+        return self._disciplinas_unicas(linhas)
 
+    @staticmethod
+    def _disciplinas_unicas(linhas):
+        # A view traz uma linha por turma (ano/período); o perfil usa uma por disciplina.
+        unicas = {l['disciplina_id']: {'id': l['disciplina_id'], 'nome': l['disciplina'],
+                                       'codigo': l['codigo_disciplina']} for l in linhas}
+        return sorted(unicas.values(), key=lambda d: (d['nome'] or '', d['id']))
 
-class DisciplinaRepository:
-    def criar(self, disciplina):
-        with closing(get_db_connection()) as conexao:
-            try:
-                with conexao:
-                    cursor = conexao.execute(
-                        'INSERT INTO disciplinas (nome, codigo) VALUES (?, ?)',
-                        (disciplina.nome, disciplina.codigo))
-            except sqlite3.IntegrityError:
-                return False, 'Erro: Este código de disciplina já está cadastrado.'
-        disciplina.id = cursor.lastrowid
-        return True, 'Disciplina criada com sucesso!'
+    def invalidar_cache(self):
+        self._catalogo = None
 
-    def buscar_por_id(self, disciplina_id):
-        with closing(get_db_connection()) as conexao:
-            return conexao.execute('SELECT id, nome, codigo FROM disciplinas WHERE id = ?',
-                                  (disciplina_id,)).fetchone()
+    def _carregar_catalogo(self):
+        if self._catalogo is not None and time.monotonic() - self._catalogo_em < VALIDADE_CATALOGO:
+            return self._catalogo
+        professores = _paginar(lambda: self.cliente.table('professores')
+                               .select('id,nome,departamento').order('id'))
+        vinculos = _paginar(lambda: self.cliente.table('vw_professor_disciplina')
+                            .select('professor_id,disciplina_id,codigo_disciplina,disciplina')
+                            .order('professor_id').order('disciplina_id'))
+        avaliados = _paginar(lambda: self.cliente.table('avaliacoes')
+                             .select('professor_id').order('id'))
+        total = Counter(l['professor_id'] for l in avaliados)
+        por_professor = {}
+        for linha in vinculos:
+            por_professor.setdefault(linha['professor_id'], []).append(linha)
+        self._catalogo = [({**p, 'total_avaliacoes': total.get(p['id'], 0)},
+                           self._disciplinas_unicas(por_professor.get(p['id'], [])))
+                          for p in professores]
+        self._catalogo_em = time.monotonic()
+        return self._catalogo
 
-    def buscar_por_codigo(self, codigo):
-        with closing(get_db_connection()) as conexao:
-            return conexao.execute('SELECT id, nome, codigo FROM disciplinas WHERE codigo = ?',
-                                  (codigo,)).fetchone()
-
-    def listar_professores(self, disciplina_id):
-        with closing(get_db_connection()) as conexao:
-            return conexao.execute('''SELECT p.id, p.nome, p.departamento FROM professores p
-                JOIN professor_disciplinas pd ON pd.professor_id = p.id
-                WHERE pd.disciplina_id = ? ORDER BY p.nome, p.id''', (disciplina_id,)).fetchall()
+    def catalogo(self, nome='', disciplina=''):
+        """[(professor, disciplinas)] filtrado sem distinguir acento/caixa/espaços,
+        ordenado do mais avaliado para o menos avaliado (desempate: nome)."""
+        nome_n, disciplina_n = normalizar_busca(nome), normalizar_busca(disciplina)
+        resultado = []
+        for professor, disciplinas in self._carregar_catalogo():
+            if nome_n not in normalizar_busca(professor['nome']):
+                continue
+            if disciplina_n and not any(
+                    disciplina_n in normalizar_busca(d['nome'])
+                    or disciplina_n in normalizar_busca(d['codigo']) for d in disciplinas):
+                continue
+            resultado.append((professor, disciplinas))
+        return sorted(resultado, key=lambda i: (-i[0]['total_avaliacoes'], i[0]['nome'] or '', i[0]['id']))
 
 
 class AvaliacaoRepository:
-    # O campo legado nota contém a avaliação geral, sem misturar dificuldade
-    # (em que uma nota maior significa mais difícil) com qualidade.
-    COLUNAS = {c: ('nota' if c == 'avaliacao_geral' else c) for c in CRITERIOS}
+    def __init__(self, cliente):
+        self.cliente = cliente
 
     def calcular_medias(self, professor_id, disciplina_id):
-        agregacoes = ', '.join(f'AVG({coluna}) AS {criterio}'
-                              for criterio, coluna in self.COLUNAS.items())
-        validas = ' AND '.join(f"typeof({coluna}) = 'integer' AND {coluna} BETWEEN 1 AND 5"
-                              for coluna in self.COLUNAS.values())
-        with closing(get_db_connection()) as conexao:
-            linha = conexao.execute(f'''SELECT COUNT(*) AS quantidade, {agregacoes}
-                FROM avaliacoes WHERE professor_id = ? AND disciplina_id = ? AND {validas}''',
-                (professor_id, disciplina_id)).fetchone()
-        return {'quantidade': linha['quantidade'],
-                'medias': {criterio: linha[criterio] for criterio in CRITERIOS}}
+        colunas = ','.join(CRITERIOS)
+        linhas = _paginar(lambda: self.cliente.table('avaliacoes').select(colunas)
+                          .eq('professor_id', professor_id).eq('disciplina_id', disciplina_id)
+                          .order('id'))
+        validas = [l for l in linhas
+                   if all(type(l.get(c)) is int and 1 <= l[c] <= 5 for c in CRITERIOS)]
+        medias = {c: (sum(l[c] for l in validas) / len(validas) if validas else None)
+                  for c in CRITERIOS}
+        return {'quantidade': len(validas), 'medias': medias}
 
     def salvar(self, usuario_id, professor_id, disciplina_id, notas):
+        """Grava a avaliação. Retorna False se o usuário já avaliou o par professor/disciplina."""
         if any(type(notas.get(c)) is not int or not 1 <= notas[c] <= 5 for c in CRITERIOS):
             raise ValueError('Todos os critérios devem ter notas inteiras de 1 a 5.')
-        with closing(get_db_connection()) as conexao:
-            with conexao:
-                vinculo = conexao.execute('''SELECT 1 FROM professor_disciplinas
-                    WHERE professor_id = ? AND disciplina_id = ?''',
-                    (professor_id, disciplina_id)).fetchone()
-                if vinculo is None:
-                    raise ValueError('Disciplina não vinculada ao professor.')
-                try:
-                    conexao.execute('''INSERT INTO avaliacoes
-                        (usuario_id, professor_id, disciplina_id, nota, didatica,
-                         organizacao, dificuldade, disponibilidade)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)''',
-                        (usuario_id, professor_id, disciplina_id, notas['avaliacao_geral'],
-                         notas['didatica'], notas['organizacao'], notas['dificuldade'],
-                         notas['disponibilidade']))
-                except sqlite3.IntegrityError as erro:
-                    if erro.sqlite_errorcode == sqlite3.SQLITE_CONSTRAINT_UNIQUE:
-                        return False
-                    raise
+        turmas = (self.cliente.table('vw_professor_disciplina').select('ano,periodo')
+                  .eq('professor_id', professor_id).eq('disciplina_id', disciplina_id)
+                  .execute().data)
+        if not turmas:
+            raise ValueError('Disciplina não vinculada ao professor.')
+        existente = (self.cliente.table('avaliacoes').select('id').eq('usuario_id', usuario_id)
+                     .eq('professor_id', professor_id).eq('disciplina_id', disciplina_id)
+                     .limit(1).execute().data)
+        if existente:
+            return False
+        recente = max(turmas, key=lambda t: (t['ano'] or 0, t['periodo'] or 0))
+        self.cliente.table('avaliacoes').insert({
+            'usuario_id': usuario_id, 'professor_id': professor_id,
+            'disciplina_id': disciplina_id, 'ano': recente['ano'],
+            'periodo': recente['periodo'], **{c: notas[c] for c in CRITERIOS},
+        }).execute()
         return True
+
+
+class Repositorios:
+    def __init__(self, usuarios, professores, avaliacoes):
+        self.usuarios = usuarios
+        self.professores = professores
+        self.avaliacoes = avaliacoes
+
+
+def configurar_repositorios(app):
+    """Monta os repositórios do app. SUPABASE_CLIENT na config permite injetar um cliente (testes)."""
+    injetado = app.config.get('SUPABASE_CLIENT')
+    cliente = injetado or get_supabase()
+    fabrica = (lambda: injetado) if injetado else novo_cliente
+    app.extensions['repositorios'] = Repositorios(
+        UsuarioRepository(cliente, fabrica), ProfessorRepository(cliente), AvaliacaoRepository(cliente))
+
+
+def repositorios() -> Repositorios:
+    return current_app.extensions['repositorios']
