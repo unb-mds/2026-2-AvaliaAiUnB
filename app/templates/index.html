@@ -42,8 +42,16 @@
     <div class="botoes">
         <!-- Links para as páginas existentes -->
         <a href="/professores" class="btn">Consulta de Professores</a>
+        {% if usuario %}
+        <a href="/perfil" class="btn">Olá, {{ usuario.nome }}</a>
+        <form action="/logout" method="POST" style="display:contents">
+            <input type="hidden" name="formato" value="html">
+            <button type="submit" class="btn">Sair</button>
+        </form>
+        {% else %}
         <a href="/login" class="btn">Login</a>
         <a href="/cadastro" class="btn">Cadastro</a>
+        {% endif %}
     </div>
 </body>
 </html>
