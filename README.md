@@ -144,7 +144,7 @@ O AvaliaAi UnB utiliza uma arquitetura web modular, desenvolvida em Python com F
 ┌─────────────────────────────────────────────┐
 │              BANCO DE DADOS                 │
 │                                             │
-│                  SQLite                     │
+│                 Supabase                    │
 │  Usuários · Professores · Disciplinas       │
 │  Avaliações · Sessões                       │
 └─────────────────────────────────────────────┘
@@ -159,7 +159,7 @@ O AvaliaAi UnB utiliza uma arquitetura web modular, desenvolvida em Python com F
 | **Frontend** | HTML5, CSS3, JavaScript |
 | **Templates** | Jinja2 |
 | **Backend** | Python, Flask e Blueprints |
-| **Banco de dados** | SQLite, Postgre |
+| **Banco de dados** | Supabase |
 | **Design / Prototipagem** | Figma |
 | **Versionamento** | Git + GitHub |
 | **Deploy / Hospedagem** | Render / Heroku |
@@ -235,7 +235,7 @@ De acordo com o documento de visão, o desenvolvimento deve:
 
 - ser realizado dentro do período letivo da disciplina de **MDS na UnB**;
 - utilizar **Python + Flask** no backend;
-- utilizar **SQLite** como banco de dados;
+- utilizar **Supabase** como banco de dados;
 - utilizar hospedagem em nuvem;
 - observar a **LGPD**;
 - aplicar diretrizes de moderação para conteúdos ofensivos, difamatórios ou de discurso de ódio.
@@ -253,15 +253,15 @@ De acordo com o documento de visão, o desenvolvimento deve:
         ↓
 [✓] Entrega de Release 1
         ↓
-[ ] Autenticação e cadastro
+[✓] Autenticação e cadastro
         ↓
-[ ] Catálogo de professores e disciplinas
+[✓] Catálogo de professores e disciplinas
         ↓
-[ ] Sistema de avaliações
+[✓] Sistema de avaliações
         ↓
-[ ] Médias e estatísticas
+[✓] Médias e estatísticas
         ↓
-[ ] Funcionalidades da Release 2
+[✓] Funcionalidades da Release 2
 ```
 
 ---
