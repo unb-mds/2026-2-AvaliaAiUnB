@@ -10,7 +10,7 @@
 Este documento visa o entendimento geral do projeto ao definir as necessidades para o desenvolvimento do sistema AvaliaAi, uma plataforma voltada para consulta, indicação e avaliação pedagógica de professores e disciplinas na Universidade de Brasília (UnB). As informações são apresentadas em alto nível de abstração, servindo como guia de alinhamento comum entre estudantes e docentes.
 
 ### 1.2 Escopo
-São tratados neste documento os aspectos estratégicos, funcionais, arquiteturais e estruturais do projeto AvaliaAi, abrangendo desde a fase de imersão e análise das causas-raiz do problema e arquitetura do sistema. O sistema engloba busca e filtragem de docentes/disciplinas, avaliação por critérios pedagógicos objetivos, visualização de médias consolidadas, rankings, arquitetura baseada em Python/Flask com banco SQLite e mecanismos de moderação.
+São tratados neste documento os aspectos estratégicos, funcionais, arquiteturais e estruturais do projeto AvaliaAi, abrangendo desde a fase de imersão e análise das causas-raiz do problema e arquitetura do sistema. O sistema engloba busca e filtragem de docentes/disciplinas, avaliação por critérios pedagógicos objetivos, visualização de médias consolidadas, rankings, arquitetura baseada em Python/Flask com banco Supabase e mecanismos de moderação.
 
 ### 1.3 Visão Geral
 Este documento detalha o posicionamento do produto, analisa as causas-raiz da desinformação na matrícula, mapeia os perfis de usuários e personas, estabelece a arquitetura e stack tecnológica, e especifica os Requisitos Funcionais, Não Funcionais e Restrições.
@@ -95,15 +95,15 @@ O AvaliaAi atua como um sistema autônomo complementar aos sistemas acadêmicos 
 | --- | --- |
 | **Frontend** | HTML5, CSS3, JavaScript e Figma (Design e Prototipagem da Interface). |
 | **Backend** | Python, Flask (Microframework Web), Jinja2 (Engine de Templates) e Render / Heroku (Deploy e Hospedagem). |
-| **Banco de Dados & Ferramentas** | SQLite (Banco de dados relacional), Git e GitHub (Versionamento e Integração Contínua). |
+| **Banco de Dados & Ferramentas** | Supabase (Banco de dados relacional), Git e GitHub (Versionamento e Integração Contínua). |
 
 ### 4.3 Arquitetura do Sistema e Componentes
 O sistema é estruturado em uma arquitetura modular em camadas:
 
 - **Camada de Apresentação (Frontend / Client UI):** Interface web construída com HTML5/CSS3/JS e templates renderizados dinamicamente via Jinja2.
 - **Camada de Controle (Controllers):** Contém o *Autenticação Controller* (gestão de sessões e segurança), *Avaliação Controller* (cálculo de notas e validação) e *Professor/Turma Controller* (consultas, buscas e filtros).
-- **Camada de Serviços e Repositórios:** Inclui o *Serviço de Autenticação*, *Avaliação Repository* (persistência SQL das avaliações e comentários) e *Serviço de Sincronização / Parser* (processamento de dados de turmas).
-- **Camada de Dados:** Persistência principal via SQLite, dados temporários de sessão em cache e integração com fontes públicas do SIGAA.
+- **Camada de Serviços e Repositórios:** Inclui o *Serviço de Autenticação*, *Avaliação Repository* (persistência Supabase das avaliações e comentários) e *Serviço de Sincronização / Parser* (processamento de dados de turmas).
+- **Camada de Dados:** Persistência principal via Supabase, dados temporários de sessão em cache e integração com fontes públicas do SIGAA.
 
 ---
 
@@ -129,7 +129,7 @@ O sistema é estruturado em uma arquitetura modular em camadas:
 ## 6. Restrições
 
 - **Restrição de Prazo e Recursos:** O desenvolvimento do projeto deve ser concluído no período letivo da disciplina de MDS na UnB.
-- **Tecnologias:** O backend deve ser desenvolvido em Python utilizando o microframework Flask com banco de dados SQLite e hospedagem em nuvem (Render/Heroku).
+- **Tecnologias:** O backend deve ser desenvolvido em Python utilizando o microframework Flask com banco de dados Supabase e hospedagem em nuvem (Render/Heroku).
 - **Conformidade com a LGPD:** O tratamento de dados de estudantes e professores deve atender à Lei Geral de Proteção de Dados (LGPD).
 - **Diretrizes de Moderação:** O sistema deve barrar conteúdos ofensivos, difamatórios ou discursos de ódio, garantindo a ética nas avaliações docentes.
 
