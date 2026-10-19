@@ -11,7 +11,7 @@
       
       
       
-        <link rel="prev" href="..">
+        <link rel="prev" href="../COMO_USAR_SCRAPER/">
       
       
       
@@ -204,6 +204,33 @@
     
   
     AvaliaAi UnB
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../COMO_USAR_SCRAPER/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🚀 Como Usar o Projeto
   
 
     
@@ -862,7 +889,7 @@
 <h3 id="11-finalidade">1.1 Finalidade</h3>
 <p>Este documento visa o entendimento geral do projeto ao definir as necessidades para o desenvolvimento do sistema AvaliaAi, uma plataforma voltada para consulta, indicação e avaliação pedagógica de professores e disciplinas na Universidade de Brasília (UnB). As informações são apresentadas em alto nível de abstração, servindo como guia de alinhamento comum entre estudantes e docentes.</p>
 <h3 id="12-escopo">1.2 Escopo</h3>
-<p>São tratados neste documento os aspectos estratégicos, funcionais, arquiteturais e estruturais do projeto AvaliaAi, abrangendo desde a fase de imersão e análise das causas-raiz do problema e arquitetura do sistema. O sistema engloba busca e filtragem de docentes/disciplinas, avaliação por critérios pedagógicos objetivos, visualização de médias consolidadas, rankings, arquitetura baseada em Python/Flask com banco SQLite e mecanismos de moderação.</p>
+<p>São tratados neste documento os aspectos estratégicos, funcionais, arquiteturais e estruturais do projeto AvaliaAi, abrangendo desde a fase de imersão e análise das causas-raiz do problema e arquitetura do sistema. O sistema engloba busca e filtragem de docentes/disciplinas, avaliação por critérios pedagógicos objetivos, visualização de médias consolidadas, rankings, arquitetura baseada em Python/Flask com banco Supabase e mecanismos de moderação.</p>
 <h3 id="13-visao-geral">1.3 Visão Geral</h3>
 <p>Este documento detalha o posicionamento do produto, analisa as causas-raiz da desinformação na matrícula, mapeia os perfis de usuários e personas, estabelece a arquitetura e stack tecnológica, e especifica os Requisitos Funcionais, Não Funcionais e Restrições.</p>
 <hr />
@@ -993,7 +1020,7 @@
 </tr>
 <tr>
 <td><strong>Banco de Dados &amp; Ferramentas</strong></td>
-<td>SQLite (Banco de dados relacional), Git e GitHub (Versionamento e Integração Contínua).</td>
+<td>Supabase (Banco de dados relacional), Git e GitHub (Versionamento e Integração Contínua).</td>
 </tr>
 </tbody>
 </table>
@@ -1002,8 +1029,8 @@
 <ul>
 <li><strong>Camada de Apresentação (Frontend / Client UI):</strong> Interface web construída com HTML5/CSS3/JS e templates renderizados dinamicamente via Jinja2.</li>
 <li><strong>Camada de Controle (Controllers):</strong> Contém o <em>Autenticação Controller</em> (gestão de sessões e segurança), <em>Avaliação Controller</em> (cálculo de notas e validação) e <em>Professor/Turma Controller</em> (consultas, buscas e filtros).</li>
-<li><strong>Camada de Serviços e Repositórios:</strong> Inclui o <em>Serviço de Autenticação</em>, <em>Avaliação Repository</em> (persistência SQL das avaliações e comentários) e <em>Serviço de Sincronização / Parser</em> (processamento de dados de turmas).</li>
-<li><strong>Camada de Dados:</strong> Persistência principal via SQLite, dados temporários de sessão em cache e integração com fontes públicas do SIGAA.</li>
+<li><strong>Camada de Serviços e Repositórios:</strong> Inclui o <em>Serviço de Autenticação</em>, <em>Avaliação Repository</em> (persistência Supabase das avaliações e comentários) e <em>Serviço de Sincronização / Parser</em> (processamento de dados de turmas).</li>
+<li><strong>Camada de Dados:</strong> Persistência principal via Supabase, dados temporários de sessão em cache e integração com fontes públicas do SIGAA.</li>
 </ul>
 <hr />
 <h2 id="5-requisitos-funcionais">5. Requisitos Funcionais</h2>
@@ -1021,73 +1048,73 @@
 <td><strong>RF01</strong></td>
 <td>Cadastro de Usuário</td>
 <td>Permitir que estudantes criem uma conta no AvaliaAi.</td>
-<td>Alta (MVP)</td>
+<td>Alta (R1)</td>
 </tr>
 <tr>
 <td><strong>RF02</strong></td>
 <td>Login / Autenticação</td>
 <td>Permitir que usuários cadastrados façam login com credenciais seguras.</td>
-<td>Alta (MVP)</td>
+<td>Alta (R1)</td>
 </tr>
 <tr>
 <td><strong>RF03</strong></td>
 <td>Busca de Professores e Disciplinas</td>
 <td>Pesquisar professores por nome, código, departamento ou disciplina.</td>
-<td>Alta (MVP)</td>
+<td>Alta (R1)</td>
 </tr>
 <tr>
 <td><strong>RF04</strong></td>
 <td>Perfil do Professor</td>
 <td>Exibir informações do professor, disciplinas ministradas e histórico de notas.</td>
-<td>Alta (MVP)</td>
+<td>Alta (R1)</td>
 </tr>
 <tr>
 <td><strong>RF05</strong></td>
 <td>Avaliação por Critérios</td>
 <td>Permitir avaliar o professor em critérios: didática, organização, clareza, disponibilidade e dificuldade.</td>
-<td>Alta (MVP)</td>
+<td>Alta (R1)</td>
 </tr>
 <tr>
 <td><strong>RF06</strong></td>
 <td>Visualização de Médias</td>
 <td>Exibir o cálculo de médias agregadas e estatísticas dos professores.</td>
-<td>Alta (MVP)</td>
+<td>Alta (R1)</td>
 </tr>
 <tr>
 <td><strong>RF07</strong></td>
 <td>Ranking de Professores</td>
 <td>Exibir a classificação dos professores mais bem avaliados por departamento ou geral.</td>
-<td>Média (Pós-MVP)</td>
+<td>Média (R2)</td>
 </tr>
 <tr>
 <td><strong>RF08</strong></td>
 <td>Comparação entre Professores</td>
 <td>Selecionar e comparar lado a lado dois ou mais professores da mesma disciplina.</td>
-<td>Média (Pós-MVP)</td>
+<td>Média (R2)</td>
 </tr>
 <tr>
 <td><strong>RF09</strong></td>
 <td>Filtros Avançados</td>
 <td>Filtrar professores por faixa de nota, departamento e volume de avaliações.</td>
-<td>Média (Pós-MVP)</td>
+<td>Média (R2)</td>
 </tr>
 <tr>
 <td><strong>RF10</strong></td>
 <td>Moderação de Avaliações</td>
 <td>Permitir a denúncia e remoção de comentários com linguagem ofensiva.</td>
-<td>Média (Pós-MVP)</td>
+<td>Média (R2)</td>
 </tr>
 <tr>
 <td><strong>RF11</strong></td>
 <td>Favoritar Professores</td>
 <td>Salvar professores na lista pessoal do usuário para acompanhamento rápido.</td>
-<td>Baixa (Pós-MVP)</td>
+<td>Baixa (R2)</td>
 </tr>
 <tr>
 <td><strong>RF12</strong></td>
 <td>Gráficos de Desempenho</td>
 <td>Apresentar gráficos visuais da evolução das notas do professor ao longo dos semestres.</td>
-<td>Baixa (Pós-MVP)</td>
+<td>Baixa (R2)</td>
 </tr>
 </tbody>
 </table>
@@ -1095,7 +1122,7 @@
 <h2 id="6-restricoes">6. Restrições</h2>
 <ul>
 <li><strong>Restrição de Prazo e Recursos:</strong> O desenvolvimento do projeto deve ser concluído no período letivo da disciplina de MDS na UnB.</li>
-<li><strong>Tecnologias:</strong> O backend deve ser desenvolvido em Python utilizando o microframework Flask com banco de dados SQLite e hospedagem em nuvem (Render/Heroku).</li>
+<li><strong>Tecnologias:</strong> O backend deve ser desenvolvido em Python utilizando o microframework Flask com banco de dados Supabase e hospedagem em nuvem (Render/Heroku).</li>
 <li><strong>Conformidade com a LGPD:</strong> O tratamento de dados de estudantes e professores deve atender à Lei Geral de Proteção de Dados (LGPD).</li>
 <li><strong>Diretrizes de Moderação:</strong> O sistema deve barrar conteúdos ofensivos, difamatórios ou discursos de ódio, garantindo a ética nas avaliações docentes.</li>
 </ul>
