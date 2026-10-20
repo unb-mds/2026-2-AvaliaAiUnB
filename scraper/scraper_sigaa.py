@@ -16,6 +16,7 @@ from selenium.common.exceptions import (
 )
 
 from supabase_client import supabase
+from texto_sigaa import extrair_docentes, normalizar_texto
 
 
 class SigaaScraper:
@@ -107,12 +108,6 @@ class SigaaScraper:
                 pass
         except Exception as e:
             print(f"[!] Erro ao salvar debug: {e}")
-
-    @staticmethod
-    def _limpar_nome_professor(texto: str) -> str:
-        texto = (texto or "").strip()
-        texto = re.sub(r"\s*\(\d+h\)\s*$", "", texto)
-        return texto.strip()
 
     @staticmethod
     def _extrair_departamento(texto: str) -> str | None:
@@ -401,33 +396,32 @@ class SigaaScraper:
                 if len(tds) < 8:
                     continue
 
-                nome_cru = tds[2].text.strip()
-                if not nome_cru:
-                    continue
-
-                nome_prof = self._limpar_nome_professor(nome_cru)
-                if not nome_prof:
+                # Uma célula pode ter vários docentes; "A DEFINIR DOCENTE"
+                # não gera professor nem turma (a disciplina já foi registrada).
+                docentes = extrair_docentes(tds[2].text)
+                if not docentes:
                     continue
 
                 departamento = self._extrair_departamento(tds[7].text)
 
-                chave_prof = (nome_prof, departamento)
-                if chave_prof not in professores_dict:
-                    professores_dict[chave_prof] = {
-                        "nome": nome_prof,
-                        "departamento": departamento,
-                    }
-
-                if disciplina_atual:
-                    turmas_list.append(
-                        {
-                            "disciplina_codigo": disciplina_atual["codigo"],
-                            "professor_nome": nome_prof,
-                            "professor_departamento": departamento,
-                            "ano": int(ano),
-                            "periodo": int(periodo),
+                for nome_prof in docentes:
+                    chave_prof = (nome_prof, departamento)
+                    if chave_prof not in professores_dict:
+                        professores_dict[chave_prof] = {
+                            "nome": nome_prof,
+                            "departamento": departamento,
                         }
-                    )
+
+                    if disciplina_atual:
+                        turmas_list.append(
+                            {
+                                "disciplina_codigo": disciplina_atual["codigo"],
+                                "professor_nome": nome_prof,
+                                "professor_departamento": departamento,
+                                "ano": int(ano),
+                                "periodo": int(periodo),
+                            }
+                        )
             except StaleElementReferenceException:
                 continue
             except Exception as e:
