@@ -17,6 +17,7 @@
     <p><strong>E-mail:</strong> {{ usuario.email }}</p>
 
     <form action="/logout" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <input type="hidden" name="formato" value="html">
         <button type="submit">Sair</button>
     </form>
