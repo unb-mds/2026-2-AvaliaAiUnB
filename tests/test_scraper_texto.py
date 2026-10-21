@@ -4,7 +4,13 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scraper"))
 
-from texto_sigaa import eh_a_definir, extrair_docentes, normalizar_texto
+from texto_sigaa import (
+    UnidadeInvalidaError,
+    eh_a_definir,
+    extrair_docentes,
+    normalizar_texto,
+    validar_unidade,
+)
 
 
 class TestNormalizarTexto(unittest.TestCase):
@@ -49,6 +55,26 @@ class TestExtrairDocentes(unittest.TestCase):
         self.assertEqual(
             extrair_docentes("MARIA SILVA (30h)\nMARIA SILVA (30h)"), ["MARIA SILVA"]
         )
+
+
+class TestValidarUnidade(unittest.TestCase):
+    def test_devolve_texto_completo_normalizado(self):
+        self.assertEqual(
+            validar_unidade("  FCTE - FACULDADE  DO GAMA "),
+            "FCTE - FACULDADE DO GAMA",
+        )
+
+    def test_vazio_ou_none(self):
+        for texto in ("", "   ", " ", None):
+            with self.assertRaises(UnidadeInvalidaError):
+                validar_unidade(texto)
+
+    def test_placeholder_do_select(self):
+        with self.assertRaises(UnidadeInvalidaError):
+            validar_unidade("-- SELECIONE UM DEPARTAMENTO --")
+
+    def test_erro_e_value_error(self):
+        self.assertTrue(issubclass(UnidadeInvalidaError, ValueError))
 
 
 class TestEhADefinir(unittest.TestCase):

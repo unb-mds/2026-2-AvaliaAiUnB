@@ -1,4 +1,3 @@
-import re
 import time
 from pathlib import Path
 
@@ -16,7 +15,11 @@ from selenium.common.exceptions import (
 )
 
 from supabase_client import supabase
-from texto_sigaa import extrair_docentes, normalizar_texto
+from texto_sigaa import (
+    UnidadeInvalidaError,
+    extrair_docentes,
+    validar_unidade,
+)
 
 
 class SigaaScraper:
@@ -109,16 +112,6 @@ class SigaaScraper:
         except Exception as e:
             print(f"[!] Erro ao salvar debug: {e}")
 
-    @staticmethod
-    def _extrair_departamento(texto: str) -> str | None:
-        if not texto:
-            return None
-        texto = texto.strip()
-        match = re.match(r"([A-Za-z]+)\s*-", texto)
-        if match:
-            return match.group(1).upper()
-        return texto or None
-
     # ---------- busca (wrapper com retry completo) ----------
 
     def buscar_professores_graduacao(self, ano, periodo, unidade_value, tentativas=3):
@@ -168,9 +161,14 @@ class SigaaScraper:
         """
         Wrapper: captura qualquer exceção, fecha alerta primeiro,
         e retorna listas vazias pra o retry acontecer no nível de cima.
+        Unidade inválida não é transitória: propaga sem retry.
         """
         try:
             return self._buscar_interno(ano, periodo, unidade_value)
+
+        except UnidadeInvalidaError:
+            self._fechar_alertas()
+            raise
 
         except UnexpectedAlertPresentException as e:
             # 🔥 PRIMEIRA coisa: fechar o alerta
@@ -236,43 +234,58 @@ class SigaaScraper:
         self._aguardar_estabilidade(self.delay * 2)
         self._fechar_alertas()
 
-        # 2. Unidade
-        if unidade_value:
+        # 2. Unidade (obrigatória: o departamento gravado vem dela)
+        if not unidade_value:
+            raise UnidadeInvalidaError("Nenhuma unidade informada para a busca.")
+
+        try:
+            self.wait.until(
+                lambda d: len(
+                    Select(d.find_element(By.ID, "formTurma:inputDepto")).options
+                ) > 1
+            )
+            self._aguardar_estabilidade(self.delay)
+
+            depto_select = Select(
+                self.driver.find_element(By.ID, "formTurma:inputDepto")
+            )
+
+            # Tenta pelo value; se falhar, tenta pelo texto
             try:
-                self.wait.until(
-                    lambda d: len(
-                        Select(d.find_element(By.ID, "formTurma:inputDepto")).options
-                    ) > 1
-                )
-                self._aguardar_estabilidade(self.delay)
+                depto_select.select_by_value(unidade_value)
+                print(f"[*] Unidade selecionada por value: {unidade_value}")
+            except Exception:
+                print(f"[!] Value '{unidade_value}' não existe. Tentando pelo texto...")
+                encontrou = False
+                for opt in depto_select.options:
+                    txt = opt.text.upper()
+                    if "FCTE" in txt or "GAMA" in txt:
+                        depto_select.select_by_visible_text(opt.text)
+                        print(f"[*] Unidade por texto: {opt.text} (value={opt.get_attribute('value')})")
+                        encontrou = True
+                        break
+                if not encontrou:
+                    self._salvar_debug("unidade_nao_encontrada")
+                    raise UnidadeInvalidaError(
+                        f"Value '{unidade_value}' não existe e nenhuma unidade "
+                        "com FCTE/GAMA foi encontrada."
+                    )
 
-                depto_select = Select(
-                    self.driver.find_element(By.ID, "formTurma:inputDepto")
-                )
+            self._aguardar_estabilidade(self.delay)
+            self._fechar_alertas()
+        except TimeoutException:
+            # Falha passageira: o retry de buscar_professores_graduacao tenta de novo
+            print("[!] Timeout ao carregar a lista de unidades.")
+            self._salvar_debug("unidade_timeout")
+            return [], [], []
 
-                # Tenta pelo value; se falhar, tenta pelo texto
-                try:
-                    depto_select.select_by_value(unidade_value)
-                    print(f"[*] Unidade selecionada por value: {unidade_value}")
-                except Exception:
-                    print(f"[!] Value '{unidade_value}' não existe. Tentando pelo texto...")
-                    encontrou = False
-                    for opt in depto_select.options:
-                        txt = opt.text.upper()
-                        if "FCTE" in txt or "GAMA" in txt:
-                            depto_select.select_by_visible_text(opt.text)
-                            print(f"[*] Unidade por texto: {opt.text} (value={opt.get_attribute('value')})")
-                            encontrou = True
-                            break
-                    if not encontrou:
-                        print("[!] Nenhuma unidade com FCTE/GAMA. Abortando.")
-                        self._salvar_debug("unidade_nao_encontrada")
-                        return [], [], []
-
-                self._aguardar_estabilidade(self.delay)
-                self._fechar_alertas()
-            except TimeoutException:
-                print("[!] Timeout ao carregar unidades. Continuando...")
+        # Departamento = texto completo da opção realmente selecionada
+        departamento = validar_unidade(
+            Select(
+                self.driver.find_element(By.ID, "formTurma:inputDepto")
+            ).first_selected_option.text
+        )
+        print(f"[*] Departamento (unidade selecionada): {departamento}")
 
         # 3. Ano e período
         try:
@@ -344,7 +357,9 @@ class SigaaScraper:
         self._aguardar_estabilidade(self.delay)
 
         # 6. Extrair
-        professores, disciplinas, turmas = self._extrair_tudo(ano, periodo)
+        professores, disciplinas, turmas = self._extrair_tudo(
+            ano, periodo, departamento
+        )
         print(
             f"[*] Encontrados: {len(professores)} professores, "
             f"{len(disciplinas)} disciplinas, {len(turmas)} turmas."
@@ -353,7 +368,7 @@ class SigaaScraper:
 
     # ---------- extração ----------
 
-    def _extrair_tudo(self, ano: str, periodo: str):
+    def _extrair_tudo(self, ano: str, periodo: str, departamento: str):
         professores_dict = {}
         disciplinas_dict = {}
         turmas_list = []
@@ -401,8 +416,6 @@ class SigaaScraper:
                 docentes = extrair_docentes(tds[2].text)
                 if not docentes:
                     continue
-
-                departamento = self._extrair_departamento(tds[7].text)
 
                 for nome_prof in docentes:
                     chave_prof = (nome_prof, departamento)

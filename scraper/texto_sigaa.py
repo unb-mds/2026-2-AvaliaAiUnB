@@ -11,6 +11,23 @@ def normalizar_texto(texto) -> str:
     return re.sub(r"\s+", " ", str(texto).replace("\xa0", " ")).strip()
 
 
+class UnidadeInvalidaError(ValueError):
+    """Unidade não selecionada ou com texto inválido no formulário."""
+
+
+def validar_unidade(texto) -> str:
+    """Devolve o texto completo da unidade normalizado ou levanta erro.
+
+    Rejeita texto vazio e a opção-placeholder do select (ex.: '-- SELECIONE --').
+    """
+    unidade = normalizar_texto(texto)
+    if not unidade or "SELECIONE" in unidade.upper():
+        raise UnidadeInvalidaError(
+            f"Unidade inválida ou não selecionada (texto lido: {unidade!r})."
+        )
+    return unidade
+
+
 def eh_a_definir(nome: str) -> bool:
     return normalizar_texto(nome).upper() == A_DEFINIR
 
