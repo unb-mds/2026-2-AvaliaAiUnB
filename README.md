@@ -166,6 +166,37 @@ O AvaliaAi UnB utiliza uma arquitetura web modular, desenvolvida em Python com F
 
 ---
 
+## Configuração e execução
+
+Instale as dependências com `pip install -r requirements.txt`, copie `.env.example`
+para `.env` na raiz e preencha as variáveis abaixo. O `.env` é ignorado pelo Git;
+em produção, configure as variáveis diretamente no ambiente da hospedagem.
+Variáveis já definidas no ambiente têm prioridade sobre o `.env`.
+
+| Variável | Obrigatória | Uso |
+|---|---|---|
+| `SECRET_KEY` | Sim | Assina a sessão Flask e os tokens CSRF. Use uma chave aleatória, privada e estável entre processos e reinícios. A aplicação não inicia se estiver ausente ou vazia. |
+| `SUPABASE_URL` | Sim | URL do projeto Supabase, usada pela aplicação e pelo scraper. |
+| `SUPABASE_SERVICE_KEY` | Sim | Chave de serviço do Supabase, restrita ao servidor. |
+| `FLASK_DEBUG` | Não | Desligado por padrão. Somente em desenvolvimento, habilite com `1`, `true`, `yes` ou `on` (sem distinção de maiúsculas). Outros valores mantêm o debug desligado. |
+
+Gere uma `SECRET_KEY` com `python -c "import secrets; print(secrets.token_hex(32))"`
+e salve o resultado no ambiente ou no `.env`, sem incluí-lo no controle de versão.
+Execute localmente com `python run.py`. Para publicar, use um servidor WSGI e
+mantenha `FLASK_DEBUG` ausente ou definido como `0`.
+
+Todos os formulários POST (cadastro, login, avaliação e logout) enviam um campo
+oculto `csrf_token`. Requisições sem token, com token inválido ou expirado recebem
+HTTP 400 antes de executar a operação. Recarregue a página para obter um novo token.
+Clientes que enviam POSTs diretamente também precisam carregar o formulário por GET,
+preservar o cookie de sessão Flask e enviar o token no campo `csrf_token` ou no
+cabeçalho `X-CSRFToken`, conforme a [documentação do Flask-WTF](https://flask-wtf.readthedocs.io/en/stable/csrf/).
+
+Execute os testes com `python -m unittest discover -s tests -t .`. Eles usam um
+cliente Supabase falso e uma chave exclusiva de teste, sem credenciais reais.
+
+---
+
 ## 🔐 Segurança e moderação
 
 O projeto prevê mecanismos para garantir uma utilização responsável da plataforma, incluindo:

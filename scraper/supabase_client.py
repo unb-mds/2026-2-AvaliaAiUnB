@@ -42,7 +42,6 @@ SUPABASE_SERVICE_KEY = (os.getenv("SUPABASE_SERVICE_KEY") or "").strip()
 
 
 print(f"[supabase_client] URL normalizada: {SUPABASE_URL}")
-print(f"[supabase_client] Key: {SUPABASE_SERVICE_KEY[:20]}...")
 
 
 if not SUPABASE_URL or not SUPABASE_SERVICE_KEY:

@@ -10,12 +10,12 @@ AvaliaAi UnB — a Flask + SQLite web app for students to search, rate and compa
 
 ```bash
 pip install -r requirements.txt
-python run.py                                    # dev server at http://127.0.0.1:5000 (debug=True)
+python run.py                                    # dev server at http://127.0.0.1:5000 (debug off by default)
 python -m unittest discover -s tests -t .        # run all tests (no network: they use tests/fake_supabase.py)
 python -m unittest tests.test_supabase.TestFluxoWeb.test_cadastro   # single test
 ```
 
-The app needs `SUPABASE_URL` and `SUPABASE_SERVICE_KEY` in the root `.env` (git-ignored). `create_app()` fails at startup without them unless a client is injected via `create_app({'SUPABASE_CLIENT': fake})`. Run everything from the repo root.
+The app needs `SECRET_KEY`, `SUPABASE_URL` and `SUPABASE_SERVICE_KEY` in the environment or root `.env` (git-ignored; see `.env.example`). `SECRET_KEY` is mandatory for signed Flask sessions and CSRF. Tests inject a test-only `SECRET_KEY` and `SUPABASE_CLIENT` via `create_app(config)` without real credentials. `FLASK_DEBUG` defaults to off; enable it only for local development. All POST forms require a CSRF token and the matching Flask session cookie, including tests. Run everything from the repo root.
 
 ## Architecture
 

@@ -1,5 +1,8 @@
 """Repositórios e fluxo web sobre o Supabase, com cliente falso em memória."""
+import re
+import time
 import unittest
+from unittest.mock import patch
 
 from app import create_app
 from app.repositorio import AvaliacaoRepository, ProfessorRepository, UsuarioRepository
@@ -103,16 +106,29 @@ class TestUsuarios(unittest.TestCase):
 class TestFluxoWeb(unittest.TestCase):
     def setUp(self):
         self.cliente = ClienteFalso()
-        self.web = create_app({'TESTING': True, 'SUPABASE_CLIENT': self.cliente}).test_client()
+        self.web = create_app({'TESTING': True, 'SECRET_KEY': 'chave-exclusiva-dos-testes',
+                               'SUPABASE_CLIENT': self.cliente}).test_client()
+
+    def token_csrf(self, caminho='/login'):
+        resposta = self.web.get(caminho, headers={'Accept': 'text/html'})
+        self.assertEqual(resposta.status_code, 200)
+        campo = re.search(r'name="csrf_token" value="([^"]+)"',
+                          resposta.get_data(as_text=True))
+        self.assertIsNotNone(campo, caminho)
+        return campo.group(1)
+
+    def postar(self, caminho, data=None, **opcoes):
+        return self.web.post(caminho, data={**(data or {}), 'csrf_token': self.token_csrf()},
+                             **opcoes)
 
     def cadastrar(self, **campos):
         dados = dict(nome='Ana', username='ana', email='ana@gmail.com',
                      senha='senha123', confirmar_senha='senha123')
         dados.update(campos)
-        return self.web.post('/cadastro', data=dados)
+        return self.postar('/cadastro', data=dados)
 
     def entrar(self, senha='senha123'):
-        return self.web.post('/login', data={'username': 'ana', 'senha': senha, 'formato': 'html'})
+        return self.postar('/login', data={'username': 'ana', 'senha': senha, 'formato': 'html'})
 
     def test_cadastro(self):
         self.assertEqual(self.cadastrar().status_code, 201)
@@ -124,7 +140,7 @@ class TestFluxoWeb(unittest.TestCase):
         self.assertNotIn('senha123', resposta.get_data(as_text=True))
 
     def test_cadastro_html_mostra_erro_de_gmail(self):
-        resposta = self.web.post('/cadastro', data=dict(
+        resposta = self.postar('/cadastro', data=dict(
             nome='Ana', username='ana', email='ana@unb.br', senha='senha123',
             confirmar_senha='senha123', formato='html'))
         self.assertEqual(resposta.status_code, 400)
@@ -144,8 +160,8 @@ class TestFluxoWeb(unittest.TestCase):
         resposta = self.entrar('errada123')
         self.assertEqual(resposta.status_code, 401)
         self.assertIn('Usuário ou senha inválidos', resposta.get_data(as_text=True))
-        self.assertEqual(self.web.post('/login', data={'username': 'ana', 'senha': 'errada123'}).status_code, 401)
-        self.assertEqual(self.web.post('/login', data={'username': 'ana', 'senha': 'senha123'}).status_code, 200)
+        self.assertEqual(self.postar('/login', data={'username': 'ana', 'senha': 'errada123'}).status_code, 401)
+        self.assertEqual(self.postar('/login', data={'username': 'ana', 'senha': 'senha123'}).status_code, 200)
 
     def test_perfil_exige_login_e_logout_revoga(self):
         json = {'Accept': 'application/json'}
@@ -154,7 +170,7 @@ class TestFluxoWeb(unittest.TestCase):
         self.cadastrar()
         self.entrar()
         self.assertEqual(self.web.get('/perfil', headers=json).get_json()['username'], 'ana')
-        self.assertEqual(self.web.post('/logout', data={'formato': 'html'}).status_code, 303)
+        self.assertEqual(self.postar('/logout', data={'formato': 'html'}).status_code, 303)
         self.assertEqual(self.web.get('/perfil', headers=json).status_code, 401)
         self.assertEqual(self.cliente.auth.tokens, {})
 
@@ -177,7 +193,7 @@ class TestFluxoWeb(unittest.TestCase):
 
     def test_avaliar_exige_login(self):
         self.assertEqual(self.web.get('/avaliar/1').status_code, 302)
-        self.assertEqual(self.web.post('/avaliar/1', headers={'Accept': 'application/json'}).status_code, 401)
+        self.assertEqual(self.postar('/avaliar/1', headers={'Accept': 'application/json'}).status_code, 401)
 
     def test_fluxo_avaliacao_e_ordem_da_listagem(self):
         self.cadastrar()
@@ -185,16 +201,67 @@ class TestFluxoWeb(unittest.TestCase):
         formulario = self.web.get('/avaliar/2?disciplina_id=20').get_data(as_text=True)
         self.assertIn('name="clareza"', formulario)
         dados = {**{c: '5' for c in CRITERIOS}, 'disciplina_id': '20'}
-        self.assertEqual(self.web.post('/avaliar/2', data={**dados, 'clareza': '9'}).status_code, 400)
-        html = self.web.post('/avaliar/2', data=dados, follow_redirects=True).get_data(as_text=True)
+        self.assertEqual(self.postar('/avaliar/2', data={**dados, 'clareza': '9'}).status_code, 400)
+        html = self.postar('/avaliar/2', data=dados, follow_redirects=True).get_data(as_text=True)
         self.assertIn('1 avaliações', html)
         gravada, = self.cliente.tabelas['avaliacoes']
         self.assertEqual(gravada['usuario_id'], next(iter(self.cliente.auth.usuarios)))
-        self.assertEqual(self.web.post('/avaliar/2', data=dados).status_code, 409)
+        self.assertEqual(self.postar('/avaliar/2', data=dados).status_code, 409)
         self.assertEqual(len(self.cliente.tabelas['avaliacoes']), 1)
         lista = self.web.get('/professores').get_data(as_text=True)
         self.assertLess(lista.index('MARIA LIMA'), lista.index('JOSÉ ÁVILA'))   # mais avaliada primeiro
         self.assertIn('1 avaliação<', lista)
+
+    def test_csrf_rejeita_posts_sem_token_ou_com_token_invalido(self):
+        self.cadastrar()
+        self.entrar()
+        for caminho in ('/cadastro', '/login', '/avaliar/1', '/logout'):
+            for dados in ({}, {'csrf_token': 'token-invalido'}):
+                with self.subTest(caminho=caminho, dados=dados):
+                    resposta = self.web.post(caminho, data=dados)
+                    self.assertEqual(resposta.status_code, 400)
+                    self.assertIn('CSRF', resposta.get_data(as_text=True))
+        self.assertEqual(len(self.cliente.auth.usuarios), 1)
+        self.assertEqual(self.cliente.tabelas['avaliacoes'], [])
+        self.assertEqual(self.web.get('/perfil', headers={'Accept': 'application/json'}).status_code, 200)
+
+    def test_csrf_rejeita_token_de_outro_cliente(self):
+        token = self.token_csrf()
+        outro = self.web.application.test_client()
+        outro.get('/login')
+        resposta = outro.post('/cadastro', data={'csrf_token': token})
+        self.assertEqual(resposta.status_code, 400)
+        self.assertIn('CSRF', resposta.get_data(as_text=True))
+        self.assertEqual(self.cliente.auth.usuarios, {})
+
+    def test_csrf_rejeita_token_expirado(self):
+        token = self.token_csrf()
+        with patch('time.time', return_value=time.time() + 7200):
+            resposta = self.web.post('/cadastro', data={'csrf_token': token})
+        self.assertEqual(resposta.status_code, 400)
+        self.assertIn('CSRF', resposta.get_data(as_text=True))
+        self.assertEqual(self.cliente.auth.usuarios, {})
+
+    def test_csrf_aceita_token_no_cabecalho(self):
+        token = self.token_csrf()
+        resposta = self.web.post('/cadastro', data=dict(
+            nome='Ana', username='ana', email='ana@gmail.com', senha='senha123',
+            confirmar_senha='senha123'), headers={'X-CSRFToken': token})
+        self.assertEqual(resposta.status_code, 201)
+
+    def test_formularios_post_incluem_token_valido(self):
+        self.token_csrf('/cadastro')
+        self.token_csrf('/login')
+        self.cadastrar()
+        self.entrar()
+        token = self.token_csrf('/avaliar/1?disciplina_id=10')
+        resposta = self.web.post('/avaliar/1', data={
+            **NOTAS, 'disciplina_id': '10', 'csrf_token': token})
+        self.assertEqual(resposta.status_code, 303)
+        for caminho in ('/', '/perfil'):
+            token = self.token_csrf(caminho)
+            self.assertTrue(token)
+        self.assertEqual(self.web.post('/logout', data={'csrf_token': token}).status_code, 200)
 
 
 if __name__ == '__main__':

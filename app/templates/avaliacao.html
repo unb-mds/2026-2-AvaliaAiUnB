@@ -118,6 +118,7 @@
             action="{{ url_for('professores.avaliar', professor_id=professor.id) }}"
             method="POST"
         >
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input
                 type="hidden"
                 name="disciplina_id"

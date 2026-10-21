@@ -45,6 +45,7 @@
         {% if usuario %}
         <a href="/perfil" class="btn">Olá, {{ usuario.nome }}</a>
         <form action="/logout" method="POST" style="display:contents">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input type="hidden" name="formato" value="html">
             <button type="submit" class="btn">Sair</button>
         </form>
