@@ -1,3 +1,5 @@
+import argparse
+import sys
 import time
 from pathlib import Path
 
@@ -14,12 +16,13 @@ from selenium.common.exceptions import (
     WebDriverException,
 )
 
-from supabase_client import supabase
 from texto_sigaa import (
     UnidadeInvalidaError,
+    contar_a_definir,
     extrair_docentes,
     validar_unidade,
 )
+from turmas_sigaa import montar_payload_turmas
 
 
 class SigaaScraper:
@@ -42,6 +45,7 @@ class SigaaScraper:
         self.wait = WebDriverWait(self.driver, 30)
         self.url = "https://sigaa.unb.br/sigaa/public/turmas/listar.jsf"
         self.delay = delay
+        self.a_definir_ignorados = 0
 
     # ---------- utilidades ----------
 
@@ -373,6 +377,7 @@ class SigaaScraper:
         disciplinas_dict = {}
         turmas_list = []
         disciplina_atual = None
+        self.a_definir_ignorados = 0
 
         try:
             linhas = self.driver.find_elements(
@@ -413,7 +418,9 @@ class SigaaScraper:
 
                 # Uma célula pode ter vários docentes; "A DEFINIR DOCENTE"
                 # não gera professor nem turma (a disciplina já foi registrada).
-                docentes = extrair_docentes(tds[2].text)
+                docentes_brutos = tds[2].text
+                self.a_definir_ignorados += contar_a_definir(docentes_brutos)
+                docentes = extrair_docentes(docentes_brutos)
                 if not docentes:
                     continue
 
@@ -433,6 +440,7 @@ class SigaaScraper:
                                 "professor_departamento": departamento,
                                 "ano": int(ano),
                                 "periodo": int(periodo),
+                                "docentes_brutos": docentes_brutos,
                             }
                         )
             except StaleElementReferenceException:
@@ -458,13 +466,20 @@ class SigaaScraper:
 
 # ---------- integração com Supabase ----------
 
+def _supabase():
+    """Import tardio: o --dry-run nunca importa supabase_client (nem lê o .env)."""
+    from supabase_client import supabase
+
+    return supabase
+
+
 def salvar_professores(professores: list) -> dict:
     if not professores:
         print("[!] Nenhum professor para salvar.")
         return {}
     try:
         response = (
-            supabase.table("professores")
+            _supabase().table("professores")
             .upsert(professores, on_conflict="nome,departamento")
             .execute()
         )
@@ -480,7 +495,7 @@ def salvar_disciplinas(disciplinas: list) -> dict:
         return {}
     try:
         response = (
-            supabase.table("disciplinas")
+            _supabase().table("disciplinas")
             .upsert(disciplinas, on_conflict="codigo")
             .execute()
         )
@@ -496,29 +511,7 @@ def salvar_turmas(turmas: list, mapa_prof: dict, mapa_disc: dict):
         return
 
     # 🔥 Deduplica turmas pela chave única (professor, disciplina, ano, periodo)
-    vistos = set()
-    payload = []
-
-    for t in turmas:
-        prof_id = mapa_prof.get((t["professor_nome"], t["professor_departamento"]))
-        disc_id = mapa_disc.get(t["disciplina_codigo"])
-
-        if not prof_id or not disc_id:
-            continue
-
-        chave = (prof_id, disc_id, t["ano"], t["periodo"])
-
-        if chave in vistos:
-            # Já adicionamos essa combinação; pula
-            continue
-
-        vistos.add(chave)
-        payload.append({
-            "professor_id": prof_id,
-            "disciplina_id": disc_id,
-            "ano": t["ano"],
-            "periodo": t["periodo"],
-        })
+    payload = montar_payload_turmas(turmas, mapa_prof, mapa_disc)
 
     if not payload:
         print("[!] Nenhuma turma única para salvar.")
@@ -528,7 +521,7 @@ def salvar_turmas(turmas: list, mapa_prof: dict, mapa_disc: dict):
 
     try:
         response = (
-            supabase.table("turmas")
+            _supabase().table("turmas")
             .upsert(payload, on_conflict="professor_id,disciplina_id,ano,periodo")
             .execute()
         )
@@ -539,7 +532,53 @@ def salvar_turmas(turmas: list, mapa_prof: dict, mapa_disc: dict):
 
 # ---------- execução ----------
 
-if __name__ == "__main__":
+def imprimir_dry_run(professores, disciplinas, turmas, a_definir_ignorados):
+    """Mostra o que seria gravado, sem tocar no banco (ids simulados)."""
+    mapa_prof = {
+        (p["nome"], p["departamento"]): i for i, p in enumerate(professores, 1)
+    }
+    mapa_disc = {d["codigo"]: i for i, d in enumerate(disciplinas, 1)}
+    payload = montar_payload_turmas(turmas, mapa_prof, mapa_disc)
+
+    nome_por_id = {i: chave for chave, i in mapa_prof.items()}
+    codigo_por_id = {i: codigo for codigo, i in mapa_disc.items()}
+    bruto_por_turma = {}
+    for t in turmas:
+        bruto_por_turma.setdefault(
+            (t["professor_nome"], t["disciplina_codigo"]), t["docentes_brutos"]
+        )
+
+    departamentos = sorted({p["departamento"] for p in professores})
+
+    print("\n" + "=" * 55)
+    print("[DRY-RUN] Nada será gravado no banco.")
+    print("=" * 55)
+    print(f"Unidade/departamento: {', '.join(departamentos) or '(nenhum)'}")
+    print(f"Professores: {len(professores)}")
+    print(f"Disciplinas: {len(disciplinas)}")
+    print(f"Turmas únicas: {len(payload)} (de {len(turmas)} extraídas)")
+    print(f"'A DEFINIR DOCENTE' ignorados: {a_definir_ignorados}")
+
+    print("\n--- PROFESSORES (nome | departamento) ---")
+    for p in professores:
+        print(f"{p['nome']} | {p['departamento']}")
+
+    print("\n--- DISCIPLINAS (codigo | nome) ---")
+    for d in disciplinas:
+        print(f"{d['codigo']} | {d['nome']}")
+
+    print("\n--- TURMAS (disciplina | ano/periodo | professor | célula bruta) ---")
+    for t in payload:
+        nome, _ = nome_por_id[t["professor_id"]]
+        codigo = codigo_por_id[t["disciplina_id"]]
+        bruto = bruto_por_turma.get((nome, codigo), "")
+        print(
+            f"{codigo} | {t['ano']}/{t['periodo']} | {nome} | "
+            f"bruto={bruto!r}"
+        )
+
+
+def main(dry_run: bool = False) -> int:
     ANO = "2026"
     PERIODO = "2"
     UNIDADE_VALUE = "673"  # FCTE - Gama (ajuste se necessário)
@@ -549,6 +588,12 @@ if __name__ == "__main__":
         professores, disciplinas, turmas = scraper.buscar_professores_graduacao(
             ANO, PERIODO, UNIDADE_VALUE, tentativas=3
         )
+
+        if dry_run:
+            imprimir_dry_run(
+                professores, disciplinas, turmas, scraper.a_definir_ignorados
+            )
+            return 0
 
         print("\n--- AMOSTRA DE PROFESSORES ---")
         for p in professores[:10]:
@@ -564,5 +609,23 @@ if __name__ == "__main__":
             salvar_turmas(turmas, mapa_prof, mapa_disc)
         else:
             print("[!] Nada para subir (lista vazia).")
+        return 0
+    except UnidadeInvalidaError as e:
+        print(f"[!] Erro: {e}")
+        return 1
     finally:
         scraper.fechar()
+
+
+if __name__ == "__main__":
+    sys.stdout.reconfigure(encoding="utf-8")
+
+    parser = argparse.ArgumentParser(description="Scraper de turmas do SIGAA.")
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="imprime o que seria gravado, sem tocar no banco",
+    )
+    args = parser.parse_args()
+
+    sys.exit(main(dry_run=args.dry_run))

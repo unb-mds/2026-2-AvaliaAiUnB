@@ -6,6 +6,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scraper"))
 
 from texto_sigaa import (
     UnidadeInvalidaError,
+    contar_a_definir,
     eh_a_definir,
     extrair_docentes,
     normalizar_texto,
@@ -55,6 +56,44 @@ class TestExtrairDocentes(unittest.TestCase):
         self.assertEqual(
             extrair_docentes("MARIA SILVA (30h)\nMARIA SILVA (30h)"), ["MARIA SILVA"]
         )
+
+
+class TestDocentesSeparadosPorSufixo(unittest.TestCase):
+    def test_casos_reais(self):
+        casos = {
+            "LUIZ EDUARDO DE LACERDA ABREU (60h) EDNEIDE ELISBÃO (60h)":
+                ["LUIZ EDUARDO DE LACERDA ABREU", "EDNEIDE ELISBÃO"],
+            "MANOEL PEREIRA DE ANDRADE (20h) JOÃO LUIZ HOMEM DE CARVALHO (20h)":
+                ["MANOEL PEREIRA DE ANDRADE", "JOÃO LUIZ HOMEM DE CARVALHO"],
+            "JOÃO LUIZ HOMEM DE CARVALHO (60h)": ["JOÃO LUIZ HOMEM DE CARVALHO"],
+            "ANA SOUZA (60h), JOAO LIMA (30h)": ["ANA SOUZA", "JOAO LIMA"],
+            "A DEFINIR DOCENTE (60h)": [],
+        }
+        for texto, esperado in casos.items():
+            with self.subTest(texto=texto):
+                self.assertEqual(extrair_docentes(texto), esperado)
+
+    def test_ultimo_nome_sem_sufixo_e_mantido(self):
+        self.assertEqual(
+            extrair_docentes("LUIZ ABREU (60h) EDNEIDE ELISBÃO"),
+            ["LUIZ ABREU", "EDNEIDE ELISBÃO"],
+        )
+
+    def test_a_definir_junto_de_docente_sem_separador(self):
+        self.assertEqual(
+            extrair_docentes("A DEFINIR DOCENTE (30h) ANA SOUZA (30h)"),
+            ["ANA SOUZA"],
+        )
+
+    def test_repetidos(self):
+        self.assertEqual(extrair_docentes("ANA SOUZA (30h) ANA SOUZA (30h)"), ["ANA SOUZA"])
+
+
+class TestContarADefinir(unittest.TestCase):
+    def test_contagem(self):
+        self.assertEqual(contar_a_definir("A DEFINIR DOCENTE (60h)"), 1)
+        self.assertEqual(contar_a_definir("ANA SOUZA (60h)"), 0)
+        self.assertEqual(contar_a_definir(None), 0)
 
 
 class TestValidarUnidade(unittest.TestCase):

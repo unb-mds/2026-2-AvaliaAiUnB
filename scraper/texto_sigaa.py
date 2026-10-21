@@ -32,15 +32,34 @@ def eh_a_definir(nome: str) -> bool:
     return normalizar_texto(nome).upper() == A_DEFINIR
 
 
+def _nomes_da_celula(texto) -> list[str]:
+    """Todos os nomes da célula (inclusive 'A DEFINIR DOCENTE'), sem '(NNh)'.
+
+    Delimitadores: quebra de linha, ',', ';' e o próprio sufixo '(NNh)'
+    (docentes podem vir separados só por espaço depois dele). O último nome
+    pode vir sem sufixo.
+    """
+    nomes = []
+    for parte in re.split(r"[\r\n,;]+", str(texto or "").replace("\xa0", " ")):
+        for pedaco in re.split(r"\(\s*\d+\s*h\s*\)", parte):
+            nome = normalizar_texto(pedaco)
+            if nome:
+                nomes.append(nome)
+    return nomes
+
+
 def extrair_docentes(texto) -> list[str]:
     """Separa os docentes de uma célula, sem o sufixo '(NNh)'.
 
-    'A DEFINIR DOCENTE' não é docente e fica de fora.
+    'A DEFINIR DOCENTE', vazios e repetidos ficam de fora.
     """
     docentes = []
-    for parte in re.split(r"[\r\n,;]+", str(texto or "").replace("\xa0", " ")):
-        nome = normalizar_texto(re.sub(r"\(\s*\d+\s*h\s*\)", "", parte))
-        if not nome or eh_a_definir(nome) or nome in docentes:
-            continue
-        docentes.append(nome)
+    for nome in _nomes_da_celula(texto):
+        if not eh_a_definir(nome) and nome not in docentes:
+            docentes.append(nome)
     return docentes
+
+
+def contar_a_definir(texto) -> int:
+    """Quantas vezes 'A DEFINIR DOCENTE' aparece na célula."""
+    return sum(1 for nome in _nomes_da_celula(texto) if eh_a_definir(nome))
