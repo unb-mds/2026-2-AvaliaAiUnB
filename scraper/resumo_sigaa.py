@@ -15,6 +15,7 @@ class Resumo:
         self.unidades_ok = []
         self.unidades_sem_turmas = []
         self.unidades_puladas = []  # (unidade, motivo)
+        self.unidades_ignoradas_pos = []
         self.linhas_puladas = {}
         self.a_definir_ignorados = 0
 
@@ -28,6 +29,10 @@ class Resumo:
     def registrar_unidade_pulada(self, unidade: str, motivo: str):
         """Falha técnica: a unidade não pôde ser lida."""
         self.unidades_puladas.append((unidade, motivo))
+
+    def registrar_ignorada_pos(self, unidade: str):
+        """Unidade de pós-graduação: ignorada de propósito, não é erro."""
+        self.unidades_ignoradas_pos.append(unidade)
 
     def registrar_linha_pulada(self, motivo: str):
         if motivo not in MOTIVOS_LINHA:
@@ -52,6 +57,10 @@ class Resumo:
 
         print(f"Unidades sem turmas (aviso): {len(self.unidades_sem_turmas)}")
         for unidade in self.unidades_sem_turmas:
+            print(f"  - {unidade}")
+
+        print(f"Unidades ignoradas (pós-graduação): {len(self.unidades_ignoradas_pos)}")
+        for unidade in self.unidades_ignoradas_pos:
             print(f"  - {unidade}")
 
         print(f"Unidades puladas por erro: {len(self.unidades_puladas)}")

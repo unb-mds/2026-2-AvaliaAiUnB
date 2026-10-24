@@ -16,6 +16,16 @@ class TestResumo(unittest.TestCase):
         r.registrar_sem_turmas("FACE")  # aviso, não é falha
         self.assertEqual(r.codigo_saida(), 0)
 
+    def test_ignorada_pos_nao_e_erro(self):
+        r = Resumo()
+        r.registrar_ignorada_pos("PROGRAMA DE PÓS-GRADUAÇÃO EM ADMINISTRAÇÃO - BRASÍLIA")
+        self.assertEqual(r.codigo_saida(), 0)
+        saida = io.StringIO()
+        with redirect_stdout(saida):
+            r.imprimir()
+        self.assertIn("Unidades ignoradas (pós-graduação): 1", saida.getvalue())
+        self.assertIn("EM ADMINISTRAÇÃO", saida.getvalue())
+
     def test_unidade_pulada_sai_com_um(self):
         r = Resumo()
         r.registrar_unidade_pulada("FCTE", "timeout")

@@ -62,6 +62,11 @@ Ao final, o scraper imprime um resumo: unidades lidas, unidades sem turmas (avis
 unidades puladas por erro (com o motivo), linhas puladas por motivo e quantos
 "A DEFINIR DOCENTE" foram ignorados.
 
+Unidades cujo nome começa com `PROGRAMA DE PÓS-GRADUAÇÃO` são ignoradas (o scraper é só
+de graduação) e listadas no resumo como "ignoradas (pós-graduação)". Isso vale também
+quando o `value` é passado em `--unidade`, e não conta como erro nem muda o código de
+saída. `DECANATO DE PÓS-GRADUAÇÃO / DPG` **não** é ignorado, porque a regra é só de prefixo.
+
 - Saída `0`: nenhuma unidade falhou (unidade sem turmas é só aviso).
 - Saída `1`: alguma unidade foi pulada por erro técnico, ou a lista de unidades não carregou.
 

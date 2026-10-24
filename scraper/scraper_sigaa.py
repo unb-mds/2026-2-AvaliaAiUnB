@@ -32,6 +32,7 @@ from texto_sigaa import (
     validar_unidade,
 )
 from turmas_sigaa import montar_payload_turmas
+from unidades_sigaa import escolher_unidades
 
 # Status de uma busca por unidade
 OK = "ok"
@@ -519,24 +520,6 @@ def imprimir_dry_run(professores, disciplinas, turmas, a_definir_ignorados):
         )
 
 
-def _escolher_unidades(disponiveis, pedidas, resumo):
-    """Cruza as unidades pedidas (values) com as do formulário.
-
-    Sem pedidas, devolve todas. Value inexistente vira unidade pulada.
-    """
-    if not pedidas:
-        return disponiveis
-
-    por_value = dict(disponiveis)
-    escolhidas = []
-    for valor in dict.fromkeys(pedidas):  # sem repetidos, mantendo a ordem
-        if valor in por_value:
-            escolhidas.append((valor, por_value[valor]))
-        else:
-            resumo.registrar_unidade_pulada(valor, "não existe no formulário")
-    return escolhidas
-
-
 def main(
     ano: str = "2026",
     periodo: str = "2",
@@ -553,7 +536,7 @@ def main(
             print("[!] Não consegui obter a lista de unidades.")
             return 1
 
-        escolhidas = _escolher_unidades(disponiveis, unidades, resumo)
+        escolhidas = escolher_unidades(disponiveis, unidades, resumo)
         print(f"[*] Unidades a processar: {len(escolhidas)} ({ano}/{periodo})")
 
         professores_dict = {}
