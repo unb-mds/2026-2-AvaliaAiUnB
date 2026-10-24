@@ -264,5 +264,68 @@ class TestFluxoWeb(unittest.TestCase):
         self.assertEqual(self.web.post('/logout', data={'csrf_token': token}).status_code, 200)
 
 
+class TestEsquemaBanco(unittest.TestCase):
+    def test_migration_sql_contem_tabelas_view_e_constraints_atuais(self):
+        from pathlib import Path
+        from scraper.persistencia_sigaa import (
+            CONFLITO_DISCIPLINAS,
+            CONFLITO_PROFESSORES,
+            CONFLITO_TURMAS,
+        )
+
+        sql = Path('docs/migrations/001_initial_schema.sql').read_text(encoding='utf-8').lower()
+
+        # 1. Tabelas atuais devem existir (e tabelas legadas não devem existir)
+        for tabela in ('professores', 'disciplinas', 'turmas', 'perfis', 'avaliacoes'):
+            self.assertIn(f'create table if not exists {tabela}', sql)
+        self.assertNotIn('create table if not exists usuarios', sql)
+        self.assertNotIn('create table if not exists departamentos', sql)
+
+        # 2. Constraints únicas exigidas pelo upsert do scraper
+        self.assertRegex(sql, r'unique\s*\(\s*nome\s*,\s*departamento\s*\)')
+        self.assertEqual(CONFLITO_PROFESSORES, 'nome,departamento')
+        self.assertEqual(CONFLITO_DISCIPLINAS, 'codigo')
+        self.assertRegex(
+            sql,
+            r'unique\s*\(\s*professor_id\s*,\s*disciplina_id\s*,\s*ano\s*,\s*periodo\s*\)',
+        )
+        self.assertEqual(CONFLITO_TURMAS, 'professor_id,disciplina_id,ano,periodo')
+
+        # 3. Critérios atuais na tabela avaliacoes
+        for criterio in CRITERIOS:
+            self.assertIn(criterio, sql)
+
+        # 4. View vw_professor_disciplina e suas colunas
+        self.assertIn('vw_professor_disciplina', sql)
+        for coluna in ('professor_id', 'disciplina_id', 'codigo_disciplina', 'disciplina', 'ano', 'periodo'):
+            self.assertIn(coluna, sql)
+
+    def test_models_reflete_esquema_atual(self):
+        from app import models
+
+        u = models.Usuario(nome='Ana', email='ana@gmail.com', username='ana', id='uuid-1')
+        self.assertEqual(u.to_dict(), {'id': 'uuid-1', 'nome': 'Ana', 'email': 'ana@gmail.com', 'username': 'ana'})
+
+        p = models.Professor(nome='MARIA LIMA', departamento='CIC', id=1)
+        self.assertEqual(p.to_dict(), {'id': 1, 'nome': 'MARIA LIMA', 'departamento': 'CIC'})
+
+        d = models.Disciplina(nome='CÁLCULO 1', codigo='MAT0025', id=10)
+        self.assertEqual(d.to_dict(), {'id': 10, 'nome': 'CÁLCULO 1', 'codigo': 'MAT0025'})
+
+        t = models.Turma(professor_id=1, disciplina_id=10, ano=2026, periodo=2, id=100)
+        self.assertEqual(
+            t.to_dict(),
+            {'id': 100, 'professor_id': 1, 'disciplina_id': 10, 'ano': 2026, 'periodo': 2},
+        )
+
+        a = models.Avaliacao(
+            usuario_id='uuid-1', professor_id=1, disciplina_id=10,
+            didatica=5, clareza=4, organizacao=5, disponibilidade=4, dificuldade=3,
+            ano=2026, periodo=2, id=1,
+        )
+        self.assertEqual(a.to_dict()['didatica'], 5)
+        self.assertEqual(a.to_dict()['disciplina_id'], 10)
+
+        
 if __name__ == '__main__':
     unittest.main()

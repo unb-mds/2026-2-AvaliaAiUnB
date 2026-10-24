@@ -192,6 +192,12 @@ Clientes que enviam POSTs diretamente também precisam carregar o formulário po
 preservar o cookie de sessão Flask e enviar o token no campo `csrf_token` ou no
 cabeçalho `X-CSRFToken`, conforme a [documentação do Flask-WTF](https://flask-wtf.readthedocs.io/en/stable/csrf/).
 
+Para criar ou recriar a estrutura do banco de dados em um projeto Supabase vazio,
+abra o **SQL Editor** no painel do Supabase, cole o conteúdo de
+`docs/migrations/001_initial_schema.sql` e clique em **Run**. O script cria as
+tabelas (`professores`, `disciplinas`, `turmas`, `perfis` e `avaliacoes`), as
+constraints únicas e a view `vw_professor_disciplina`.
+
 Execute os testes com `python -m unittest discover -s tests -t .`. Eles usam um
 cliente Supabase falso e uma chave exclusiva de teste, sem credenciais reais.
 
