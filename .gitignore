@@ -5,3 +5,6 @@ __pycache__/
 .env
 
 site/
+
+# gerado pelo scraper (screenshots e HTML de falhas)
+debug/

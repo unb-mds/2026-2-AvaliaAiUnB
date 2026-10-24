@@ -10,6 +10,9 @@ from texto_sigaa import (
     eh_a_definir,
     extrair_docentes,
     normalizar_texto,
+    professores_em_varias_unidades,
+    validar_ano,
+    validar_periodo,
     validar_unidade,
 )
 
@@ -120,6 +123,36 @@ class TestEhADefinir(unittest.TestCase):
     def test_variacoes(self):
         self.assertTrue(eh_a_definir(" a definir  docente "))
         self.assertFalse(eh_a_definir("MARIA SILVA"))
+
+
+class TestValidarAnoPeriodo(unittest.TestCase):
+    def test_validos(self):
+        self.assertEqual(validar_ano(" 2026 "), "2026")
+        self.assertEqual(validar_periodo("2"), "2")
+
+    def test_invalidos(self):
+        for ano in ("", "26", "20266", "abcd", None):
+            with self.assertRaises(ValueError):
+                validar_ano(ano)
+        for periodo in ("", "0", "5", "x"):
+            with self.assertRaises(ValueError):
+                validar_periodo(periodo)
+
+
+class TestProfessoresEmVariasUnidades(unittest.TestCase):
+    def test_lista_so_quem_esta_em_mais_de_uma(self):
+        professores = [
+            {"nome": "ANA", "departamento": "FGA"},
+            {"nome": "ana ", "departamento": "FCTE"},
+            {"nome": "BRUNO", "departamento": "FGA"},
+            {"nome": "ANA", "departamento": "FGA"},  # repetida na mesma unidade
+        ]
+        self.assertEqual(
+            professores_em_varias_unidades(professores), {"ANA": ["FCTE", "FGA"]}
+        )
+
+    def test_vazio(self):
+        self.assertEqual(professores_em_varias_unidades([]), {})
 
 
 if __name__ == "__main__":
