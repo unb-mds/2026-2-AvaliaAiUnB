@@ -52,3 +52,32 @@ def registrar_avaliacao(usuario, professor_id, disciplina_id, notas):
     if salvou:
         repos.professores.invalidar_cache()   # a listagem ordena por total de avaliações
     return salvou
+
+
+def listar_avaliacoes_usuario(usuario):
+    return repositorios().avaliacoes.listar_por_usuario(usuario['id'])
+
+
+def carregar_avaliacao_do_usuario(avaliacao_id, usuario):
+    avaliacao = repositorios().avaliacoes.buscar_por_id_e_usuario(avaliacao_id, usuario['id'])
+    if avaliacao is None:
+        abort(404, description='Avaliação não encontrada.')
+    return avaliacao
+
+
+def editar_avaliacao(avaliacao_id, usuario, notas):
+    repos = repositorios()
+    atualizou = repos.avaliacoes.atualizar(avaliacao_id, usuario['id'], notas)
+    if not atualizou:
+        abort(404, description='Avaliação não encontrada.')
+    repos.professores.invalidar_cache()
+    return True
+
+
+def excluir_avaliacao(avaliacao_id, usuario):
+    repos = repositorios()
+    excluiu = repos.avaliacoes.excluir(avaliacao_id, usuario['id'])
+    if not excluiu:
+        abort(404, description='Avaliação não encontrada.')
+    repos.professores.invalidar_cache()
+    return True

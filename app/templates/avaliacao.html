@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -94,7 +93,7 @@
 </head>
 <body>
     <main class="avaliacao-container">
-        <h1>Avaliar {{ professor.nome }}</h1>
+        <h1>{{ 'Editar Avaliação de' if modo_edicao else 'Avaliar' }} {{ professor.nome }}</h1>
 
         <p>
             {{ disciplina.nome }}
@@ -115,7 +114,7 @@
 
         <form
             id="formAvaliacao"
-            action="{{ url_for('professores.avaliar', professor_id=professor.id) }}"
+            action="{{ acao_form or url_for('professores.avaliar', professor_id=professor.id) }}"
             method="POST"
         >
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -152,11 +151,11 @@
             {% endfor %}
 
             <div class="acoes">
-                <button type="submit">Enviar Avaliação</button>
+                <button type="submit">{{ 'Salvar Alterações' if modo_edicao else 'Enviar Avaliação' }}</button>
 
                 <a
                     class="cancelar"
-                    href="{{ url_for('professores.perfil', professor_id=professor.id, disciplina_id=disciplina.id) }}"
+                    href="{{ url_for('auth.perfil') if modo_edicao else url_for('professores.perfil', professor_id=professor.id, disciplina_id=disciplina.id) }}"
                 >
                     Cancelar
                 </a>

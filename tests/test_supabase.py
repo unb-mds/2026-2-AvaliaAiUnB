@@ -64,6 +64,36 @@ class TestProfessores(unittest.TestCase):
         self.assertEqual(resultado['medias']['didatica'], 3)
         self.assertEqual(resultado['medias']['clareza'], 4)
 
+    def test_listar_atualizar_e_excluir_avaliacao_do_usuario(self):
+        self.avaliacoes.salvar('u1', 1, 10, NOTAS)
+        self.avaliacoes.salvar('u2', 2, 20, {**NOTAS, 'didatica': 2})
+
+        # 1. Usuário vê apenas as próprias avaliações com nome do professor e disciplina
+        minhas = self.avaliacoes.listar_por_usuario('u1')
+        self.assertEqual(len(minhas), 1)
+        self.assertEqual(minhas[0]['professor_nome'], 'JOSÉ ÁVILA')
+        self.assertEqual(minhas[0]['disciplina_nome'], 'CÁLCULO 1')
+        self.assertEqual(minhas[0]['codigo_disciplina'], 'FGA0001')
+        self.assertEqual(minhas[0]['didatica'], 4)
+        avaliacao_id = minhas[0]['id']
+
+        # 2. Outro usuário não consegue editar nem apagar a avaliação de u1
+        novas_notas = {**NOTAS, 'didatica': 2, 'clareza': 5}
+        self.assertFalse(self.avaliacoes.atualizar(avaliacao_id, 'u2', novas_notas))
+        self.assertFalse(self.avaliacoes.excluir(avaliacao_id, 'u2'))
+        self.assertEqual(self.avaliacoes.calcular_medias(1, 10)['medias']['didatica'], 4)
+
+        # 3. O próprio autor consegue editar e as médias do professor são atualizadas
+        self.assertTrue(self.avaliacoes.atualizar(avaliacao_id, 'u1', novas_notas))
+        medias_apos_edicao = self.avaliacoes.calcular_medias(1, 10)
+        self.assertEqual(medias_apos_edicao['medias']['didatica'], 2)
+        self.assertEqual(medias_apos_edicao['medias']['clareza'], 5)
+
+        # 4. O próprio autor consegue excluir e as médias/contagem são atualizadas
+        self.assertTrue(self.avaliacoes.excluir(avaliacao_id, 'u1'))
+        self.assertEqual(self.avaliacoes.listar_por_usuario('u1'), [])
+        self.assertEqual(self.avaliacoes.calcular_medias(1, 10)['quantidade'], 0)
+
 
 class TestUsuarios(unittest.TestCase):
     def setUp(self):
@@ -263,6 +293,68 @@ class TestFluxoWeb(unittest.TestCase):
             self.assertTrue(token)
         self.assertEqual(self.web.post('/logout', data={'csrf_token': token}).status_code, 200)
 
+    def test_perfil_lista_edita_apaga_e_protege_avaliacoes_de_outro_usuario(self):
+        # Cadastra e loga com Ana (avalia prof 1 / disc 10 com nota 5)
+        self.cadastrar(nome='Ana', username='ana', email='ana@gmail.com')
+        self.entrar()
+        notas_5 = {**{c: '5' for c in CRITERIOS}, 'disciplina_id': '10'}
+        self.assertEqual(self.postar('/avaliar/1', data=notas_5).status_code, 303)
+        id_aval_ana = self.cliente.tabelas['avaliacoes'][0]['id']
+
+        # Sai da Ana, cadastra e loga com Bruno (avalia prof 2 / disc 20 com nota 3)
+        self.postar('/logout')
+        self.cadastrar(nome='Bruno', username='bruno', email='bruno@gmail.com')
+        self.postar('/login', data={'username': 'bruno', 'senha': 'senha123', 'formato': 'html'})
+        notas_3 = {**{c: '3' for c in CRITERIOS}, 'disciplina_id': '20'}
+        self.assertEqual(self.postar('/avaliar/2', data=notas_3).status_code, 303)
+
+        # No /perfil, Bruno vê apenas a própria avaliação (MARIA LIMA / FÍSICA 1), não a de Ana
+        html_perfil_bruno = self.web.get('/perfil', headers={'Accept': 'text/html'}).get_data(as_text=True)
+        self.assertIn('MARIA LIMA', html_perfil_bruno)
+        self.assertIn('FÍSICA 1', html_perfil_bruno)
+        self.assertNotIn('JOSÉ ÁVILA', html_perfil_bruno)
+
+        # Bruno tenta editar ou excluir a avaliação da Ana -> recebe 404/proibido e não altera nada
+        self.assertEqual(
+            self.web.get(f'/avaliacoes/{id_aval_ana}/editar', headers={'Accept': 'text/html'}).status_code,
+            404,
+        )
+        self.assertEqual(
+            self.postar(f'/avaliacoes/{id_aval_ana}/editar', data={c: '1' for c in CRITERIOS}).status_code,
+            404,
+        )
+        self.assertEqual(self.postar(f'/avaliacoes/{id_aval_ana}/excluir').status_code, 404)
+        self.assertEqual(self.cliente.tabelas['avaliacoes'][0]['didatica'], 5)
+
+        # Volta para Ana: ela edita sua avaliação para nota 2 e verifica atualização da média
+        self.postar('/logout')
+        self.entrar()
+        form_edicao = self.web.get(
+            f'/avaliacoes/{id_aval_ana}/editar', headers={'Accept': 'text/html'}
+        ).get_data(as_text=True)
+        self.assertIn('JOSÉ ÁVILA', form_edicao)
+        self.assertEqual(
+            self.postar(
+                f'/avaliacoes/{id_aval_ana}/editar',
+                data={**{c: '10' for c in CRITERIOS}},
+            ).status_code,
+            400,
+        )
+        resp_edicao = self.postar(
+            f'/avaliacoes/{id_aval_ana}/editar',
+            data={c: '2' for c in CRITERIOS},
+            follow_redirects=True,
+        )
+        self.assertEqual(resp_edicao.status_code, 200)
+        self.assertEqual(self.cliente.tabelas['avaliacoes'][0]['didatica'], 2)
+
+        # Ana exclui sua avaliação -> some do /perfil e zera a média do professor 1
+        resp_exclusao = self.postar(f'/avaliacoes/{id_aval_ana}/excluir', follow_redirects=True)
+        self.assertEqual(resp_exclusao.status_code, 200)
+        html_perfil_ana = self.web.get('/perfil', headers={'Accept': 'text/html'}).get_data(as_text=True)
+        self.assertNotIn('JOSÉ ÁVILA', html_perfil_ana)
+        html_prof_1 = self.web.get('/professores/1').get_data(as_text=True)
+        self.assertIn('0 avaliações', html_prof_1)
 
 class TestEsquemaBanco(unittest.TestCase):
     def test_migration_sql_contem_tabelas_view_e_constraints_atuais(self):

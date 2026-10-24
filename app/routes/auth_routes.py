@@ -2,7 +2,7 @@
 """Rotas de autenticação: cadastro -> login -> rota protegida -> logout."""
 from flask import Blueprint, jsonify, make_response, redirect, render_template, request, url_for
 
-from app.controllers import auth_controller
+from app.controllers import auth_controller, professor_controller
 from app.controllers.session_controller import (
     criar_sessao,
     encerrar_sessao,
@@ -64,6 +64,15 @@ def logout():
 @login_required
 def perfil():
     usuario_logado = obter_usuario_atual()
+    avaliacoes = professor_controller.listar_avaliacoes_usuario(usuario_logado)
     if request.accept_mimetypes.accept_html:
-        return render_template("perfil.html", usuario=usuario_logado)
-    return jsonify({k: usuario_logado[k] for k in ("id", "nome", "email", "username")})
+        return render_template(
+            "perfil.html",
+            usuario=usuario_logado,
+            avaliacoes=avaliacoes,
+            criterios=professor_controller.criterios(),
+        )
+    return jsonify({
+        **{k: usuario_logado[k] for k in ("id", "nome", "email", "username")},
+        "avaliacoes": avaliacoes,
+    })

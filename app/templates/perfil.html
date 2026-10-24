@@ -2,12 +2,21 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfil - AvaliaAi UnB</title>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 400px; margin: 60px auto; }
-        h1 { font-size: 1.4rem; }
-        p { font-size: 0.95rem; }
-        button { margin-top: 20px; padding: 10px 16px; cursor: pointer; }
+        body { font-family: Arial, sans-serif; max-width: 720px; margin: 40px auto; padding: 0 16px; color: #222; }
+        h1 { font-size: 1.5rem; margin-bottom: 8px; }
+        h2 { font-size: 1.2rem; margin-top: 32px; border-bottom: 1px solid #ddd; padding-bottom: 8px; }
+        p { font-size: 0.95rem; margin: 6px 0; }
+        button, .btn { padding: 8px 14px; cursor: pointer; border-radius: 6px; border: 1px solid #ccc; background: #f5f5f5; text-decoration: none; color: #222; font-size: 0.9rem; display: inline-block; }
+        .btn-perigo { background: #fee2e2; border-color: #fca5a5; color: #991b1b; }
+        .avaliacao-card { border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-bottom: 14px; background: #fafafa; }
+        .avaliacao-cabecalho { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px; }
+        .notas-lista { display: flex; flex-wrap: wrap; gap: 12px; list-style: none; padding: 0; margin: 12px 0; font-size: 0.9rem; }
+        .notas-lista li { background: #fff; border: 1px solid #e5e7eb; padding: 4px 10px; border-radius: 4px; }
+        .acoes { display: flex; gap: 10px; align-items: center; margin-top: 10px; }
+        .acoes form { margin: 0; }
     </style>
 </head>
 <body>
@@ -16,10 +25,38 @@
     <p><strong>Usuário:</strong> {{ usuario.username }}</p>
     <p><strong>E-mail:</strong> {{ usuario.email }}</p>
 
-    <form action="/logout" method="POST">
+    <form action="/logout" method="POST" style="margin-top: 16px;">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <input type="hidden" name="formato" value="html">
         <button type="submit">Sair</button>
     </form>
+
+    <h2>Minhas Avaliações</h2>
+    {% if avaliacoes %}
+        {% for av in avaliacoes %}
+            <div class="avaliacao-card">
+                <div class="avaliacao-cabecalho">
+                    <strong>{{ av.professor_nome }}</strong>
+                    <span>{{ av.codigo_disciplina }} — {{ av.disciplina_nome }} ({{ av.ano }}/{{ av.periodo }})</span>
+                </div>
+                <ul class="notas-lista">
+                    <li>Didática: <strong>{{ av.didatica }}</strong>/5</li>
+                    <li>Clareza: <strong>{{ av.clareza }}</strong>/5</li>
+                    <li>Organização: <strong>{{ av.organizacao }}</strong>/5</li>
+                    <li>Disponibilidade: <strong>{{ av.disponibilidade }}</strong>/5</li>
+                    <li>Dificuldade: <strong>{{ av.dificuldade }}</strong>/5</li>
+                </ul>
+                <div class="acoes">
+                    <a class="btn" href="{{ url_for('professores.editar_avaliacao', avaliacao_id=av.id) }}">Editar</a>
+                    <form action="{{ url_for('professores.excluir_avaliacao', avaliacao_id=av.id) }}" method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn-perigo">Apagar</button>
+                    </form>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>Você ainda não realizou nenhuma avaliação.</p>
+    {% endif %}
 </body>
 </html>
