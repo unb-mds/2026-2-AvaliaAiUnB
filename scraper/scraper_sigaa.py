@@ -28,6 +28,7 @@ from texto_sigaa import (
     UnidadeInvalidaError,
     contar_a_definir,
     extrair_docentes,
+    professores_em_varias_unidades,
     validar_unidade,
 )
 from turmas_sigaa import montar_payload_turmas
@@ -45,6 +46,10 @@ Resultado = namedtuple(
 
 SELETOR_LINHAS = "tr.linhaPar, tr.linhaImpar"
 # Trechos (em minúsculas) das mensagens de "nenhum resultado" do SIGAA
+# Possíveis controles de paginação (a listagem hoje vem inteira em uma página)
+SELETOR_PAGINACAO = (
+    ".rich-datascr, .paginacao, a[title*='róxima' i], a[title*='next' i]"
+)
 MENSAGENS_SEM_RESULTADO = (
     "nenhum resultado",
     "nenhuma turma",
@@ -319,6 +324,8 @@ class SigaaScraper:
             print("[*] O SIGAA respondeu sem turmas para esta unidade.")
             return Resultado(VAZIO, "sem turmas")
 
+        self._avisar_se_paginada()
+
         # 6. Extrair
         parcial = Resumo()
         professores, disciplinas, turmas = self._extrair_tudo(
@@ -344,6 +351,19 @@ class SigaaScraper:
         if any(msg in corpo for msg in MENSAGENS_SEM_RESULTADO):
             return "vazio"
         return False
+
+    def _avisar_se_paginada(self):
+        """Só registra no log se achar algum controle de paginação."""
+        try:
+            controles = self.driver.find_elements(By.CSS_SELECTOR, SELETOR_PAGINACAO)
+        except WebDriverException:
+            return
+        if controles:
+            print(
+                f"[!] Possível paginação ({len(controles)} controle(s) encontrado(s)): "
+                "a extração lê só a página atual. Confira o HTML em debug/."
+            )
+            self._salvar_debug("paginacao")
 
     # ---------- extração ----------
 
@@ -471,9 +491,18 @@ def imprimir_dry_run(professores, disciplinas, turmas, a_definir_ignorados):
     print(f"Turmas únicas: {len(payload)} (de {len(turmas)} extraídas)")
     print(f"'A DEFINIR DOCENTE' ignorados: {a_definir_ignorados}")
 
+    em_varias = professores_em_varias_unidades(professores)
+    print(f"Professores em mais de uma unidade: {len(em_varias)}")
+
     print("\n--- PROFESSORES (nome | departamento) ---")
     for p in professores:
         print(f"{p['nome']} | {p['departamento']}")
+
+    print("\n--- PROFESSORES EM MAIS DE UMA UNIDADE (nome | unidades) ---")
+    for nome, unidades in em_varias.items():
+        print(f"{nome} | {' ; '.join(unidades)}")
+    if not em_varias:
+        print("(nenhum)")
 
     print("\n--- DISCIPLINAS (codigo | nome) ---")
     for d in disciplinas:
