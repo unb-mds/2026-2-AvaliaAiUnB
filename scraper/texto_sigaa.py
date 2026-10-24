@@ -28,6 +28,40 @@ def validar_unidade(texto) -> str:
     return unidade
 
 
+def validar_ano(texto) -> str:
+    """Ano com 4 dígitos (ex.: '2026'); levanta ValueError caso contrário."""
+    ano = normalizar_texto(texto)
+    if not re.fullmatch(r"\d{4}", ano):
+        raise ValueError(f"Ano inválido: {ano!r} (esperado 4 dígitos, ex.: 2026).")
+    return ano
+
+
+def validar_periodo(texto) -> str:
+    """Período de 1 a 4 (valores do select do SIGAA); levanta ValueError caso contrário."""
+    periodo = normalizar_texto(texto)
+    if periodo not in ("1", "2", "3", "4"):
+        raise ValueError(f"Período inválido: {periodo!r} (esperado 1, 2, 3 ou 4).")
+    return periodo
+
+
+def professores_em_varias_unidades(professores) -> dict[str, list[str]]:
+    """Docentes que aparecem em mais de uma unidade.
+
+    Recebe dicts com 'nome' e 'departamento'. Os nomes são comparados sem
+    diferença de caixa ou espaços; a chave do resultado é o nome normalizado
+    em maiúsculas e o valor, as unidades em ordem alfabética.
+    """
+    unidades_por_nome = {}
+    for p in professores:
+        nome = normalizar_texto(p["nome"]).upper()
+        unidades_por_nome.setdefault(nome, set()).add(p["departamento"])
+    return {
+        nome: sorted(unidades)
+        for nome, unidades in sorted(unidades_por_nome.items())
+        if len(unidades) > 1
+    }
+
+
 def eh_a_definir(nome: str) -> bool:
     return normalizar_texto(nome).upper() == A_DEFINIR
 

@@ -12,8 +12,10 @@ class Resposta:
 
 
 class Consulta:
-    def __init__(self, tabelas, nome):
+    def __init__(self, tabelas, nome, registro_upserts=None):
         self.tabelas, self.nome = tabelas, nome
+        self.registro_upserts = registro_upserts
+        self.linhas_upsert, self.conflito = None, None
         self.filtros, self.ordem, self.faixa, self.limite = [], [], None, None
         self.novo, self.apagar = None, False
 
@@ -40,12 +42,30 @@ class Consulta:
         self.novo = linha
         return self
 
+    def upsert(self, linhas, on_conflict):
+        self.linhas_upsert, self.conflito = linhas, on_conflict
+        return self
+
     def delete(self):
         self.apagar = True
         return self
 
     def execute(self):
         tabela = self.tabelas[self.nome]
+        if self.linhas_upsert is not None:
+            colunas = self.conflito.split(',')
+            if self.registro_upserts is not None:
+                self.registro_upserts.append((self.nome, self.conflito))
+            gravadas = []
+            for linha in self.linhas_upsert:
+                existente = next((l for l in tabela
+                                  if all(l.get(c) == linha.get(c) for c in colunas)), None)
+                if existente is None:
+                    existente = {'id': max((l['id'] for l in tabela), default=0) + 1}
+                    tabela.append(existente)
+                existente.update(linha)
+                gravadas.append(dict(existente))
+            return Resposta(gravadas)
         if self.novo is not None:
             if self.nome == 'perfis' and any(l['username'] == self.novo['username'] for l in tabela):
                 raise RuntimeError('duplicate key value violates unique constraint "perfis_username_key"')
@@ -131,6 +151,7 @@ class AuthFalso:
 class ClienteFalso:
     def __init__(self):
         self.auth = AuthFalso()
+        self.upserts = []  # (tabela, on_conflict) de cada upsert executado
         self.tabelas = {
             'professores': [
                 {'id': 1, 'nome': 'JOSÉ ÁVILA', 'departamento': 'FCTE'},
@@ -145,9 +166,11 @@ class ClienteFalso:
                 {'professor_id': 2, 'disciplina_id': 20, 'codigo_disciplina': 'FGA0002',
                  'disciplina': 'FÍSICA 1', 'ano': 2026, 'periodo': 2},
             ],
+            'disciplinas': [],
+            'turmas': [],
             'avaliacoes': [],
             'perfis': [],
         }
 
     def table(self, nome):
-        return Consulta(self.tabelas, nome)
+        return Consulta(self.tabelas, nome, self.upserts)
