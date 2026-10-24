@@ -24,6 +24,17 @@ Crie um arquivo .env na pasta raiz do projeto, e coloque as credenciais dessa fo
 SUPABASE_URL=credencial1
 SUPABASE_SERVICE_KEY=credencial2
 ```
+## 2.1. Criando ou Recriando o Esquema do Banco no Supabase
+
+Para configurar um projeto Supabase do zero (ou recriar o ambiente), execute a migração versionada no repositório:
+
+1. Acesse o painel do seu projeto no [Supabase](https://supabase.com/dashboard).
+2. No menu lateral esquerdo, clique em **SQL Editor** e depois em **New query**.
+3. Copie todo o conteúdo do arquivo [`docs/migrations/001_initial_schema.sql`](migrations/001_initial_schema.sql) e cole no editor.
+4. Clique em **Run** (ou pressione `Ctrl + Enter`). O script criará as tabelas (`professores`, `disciplinas`, `turmas`, `perfis`, `avaliacoes`), as constraints únicas usadas pelo scraper e a view `vw_professor_disciplina`.
+5. Para validar se todas as tabelas foram criadas corretamente, execute localmente:
+   ```bash
+   python scraper/checar_tabelas.py
 
 ## 3. Executando o scraper
 

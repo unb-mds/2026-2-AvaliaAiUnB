@@ -35,6 +35,20 @@ class Disciplina:
         return {"id": self.id, "nome": self.nome, "codigo": self.codigo}
 
 
+class Turma:
+    """Espelha a tabela turmas (vínculo professor, disciplina, ano e período)."""
+
+    def __init__(self, professor_id=None, disciplina_id=None, ano=None, periodo=None, id=None):
+        self.id = id
+        self.professor_id = professor_id
+        self.disciplina_id = disciplina_id
+        self.ano = ano
+        self.periodo = periodo
+
+    def to_dict(self):
+        return dict(vars(self))
+
+
 class Avaliacao:
     """Espelha a tabela avaliacoes (notas inteiras de 1 a 5)."""
 
