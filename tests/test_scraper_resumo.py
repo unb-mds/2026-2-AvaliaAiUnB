@@ -32,6 +32,17 @@ class TestResumo(unittest.TestCase):
         with self.assertRaises(ValueError):
             Resumo().registrar_linha_pulada("xyz")
 
+    def test_incorporar_soma_contadores(self):
+        total, parcial = Resumo(), Resumo()
+        total.registrar_linha_pulada("erro")
+        total.a_definir_ignorados = 1
+        parcial.registrar_linha_pulada("erro")
+        parcial.registrar_linha_pulada("stale")
+        parcial.a_definir_ignorados = 2
+        total.incorporar(parcial)
+        self.assertEqual(total.linhas_puladas, {"erro": 2, "stale": 1})
+        self.assertEqual(total.a_definir_ignorados, 3)
+
     def test_imprimir_mostra_o_essencial(self):
         r = Resumo()
         r.registrar_ok("FCTE")

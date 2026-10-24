@@ -34,6 +34,12 @@ class Resumo:
             raise ValueError(f"Motivo de linha desconhecido: {motivo!r}")
         self.linhas_puladas[motivo] = self.linhas_puladas.get(motivo, 0) + 1
 
+    def incorporar(self, outro: "Resumo"):
+        """Soma ao resumo os contadores de linhas e de 'A DEFINIR' de outro."""
+        for motivo, quantidade in outro.linhas_puladas.items():
+            self.linhas_puladas[motivo] = self.linhas_puladas.get(motivo, 0) + quantidade
+        self.a_definir_ignorados += outro.a_definir_ignorados
+
     def codigo_saida(self) -> int:
         """0 se nenhuma unidade falhou (unidade sem turmas é só aviso); 1 caso contrário."""
         return 1 if self.unidades_puladas else 0
