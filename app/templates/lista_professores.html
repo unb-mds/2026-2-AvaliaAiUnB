@@ -19,6 +19,15 @@
                 <label for="disciplina">Disciplina (nome ou código)</label>
                 <input type="search" id="disciplina" name="disciplina" value="{{ filtros.disciplina }}">
             </div>
+            <div>
+                <label for="departamento">Departamento</label>
+                <select id="departamento" name="departamento">
+                    <option value="">Todos</option>
+                    {% for dep in departamentos %}
+                    <option value="{{ dep }}" {% if dep == filtros.departamento %}selected{% endif %}>{{ dep }}</option>
+                    {% endfor %}
+                </select>
+            </div>
             <button type="submit">Buscar</button>
         </form>
         {% if catalogo %}
@@ -40,7 +49,7 @@
             </li>
             {% endfor %}
         </ul>
-        {% elif filtros.nome or filtros.disciplina %}
+        {% elif filtros.nome or filtros.disciplina or filtros.departamento %}
         <p role="status">Nenhum professor encontrado para os filtros informados.
             <a href="{{ url_for('professores.listar') }}">Limpar filtros</a></p>
         {% else %}

@@ -6,12 +6,14 @@ from app.controllers.session_controller import login_required, obter_usuario_atu
 
 professor_bp = Blueprint('professores', __name__)
 
+CAMPOS_FILTRO = ('nome', 'disciplina', 'departamento')
+
 
 @professor_bp.get('/professores')
 def listar():
-    filtros = {campo: request.args.get(campo, '').strip() for campo in ('nome', 'disciplina')}
+    filtros = {campo: request.args.get(campo, '').strip() for campo in CAMPOS_FILTRO}
     return render_template('lista_professores.html', catalogo=controller.catalogo(**filtros),
-                           filtros=filtros)
+                           filtros=filtros, departamentos=controller.departamentos())
 
 
 @professor_bp.get('/professores/<int:professor_id>')

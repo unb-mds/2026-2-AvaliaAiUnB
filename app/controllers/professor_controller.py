@@ -9,9 +9,14 @@ def criterios():
     return CRITERIOS
 
 
-def catalogo(nome='', disciplina=''):
+def catalogo(nome='', disciplina='', departamento=''):
     """Lista [(professor, disciplinas)] ordenada pela quantidade de avaliações."""
-    return repositorios().professores.catalogo(nome, disciplina)
+    return repositorios().professores.catalogo(nome, disciplina, departamento)
+
+
+def departamentos():
+    """Opções do filtro de departamento, vindas dos dados."""
+    return repositorios().professores.listar_departamentos()
 
 
 def carregar_perfil(professor_id):
