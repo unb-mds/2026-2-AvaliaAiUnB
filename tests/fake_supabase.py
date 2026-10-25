@@ -17,7 +17,7 @@ class Consulta:
         self.registro_upserts = registro_upserts
         self.linhas_upsert, self.conflito = None, None
         self.filtros, self.ordem, self.faixa, self.limite = [], [], None, None
-        self.novo, self.apagar = None, False
+        self.novo, self.atualizacao, self.apagar = None, None, False
 
     def select(self, _colunas):
         return self
@@ -40,6 +40,10 @@ class Consulta:
 
     def insert(self, linha):
         self.novo = linha
+        return self
+
+    def update(self, dados):
+        self.atualizacao = dados
         return self
 
     def upsert(self, linhas, on_conflict):
@@ -69,11 +73,21 @@ class Consulta:
         if self.novo is not None:
             if self.nome == 'perfis' and any(l['username'] == self.novo['username'] for l in tabela):
                 raise RuntimeError('duplicate key value violates unique constraint "perfis_username_key"')
-            tabela.append({'id': len(tabela) + 1, **self.novo} if self.nome != 'perfis' else dict(self.novo))
-            return Resposta([self.novo])
+            novo_id = max((l.get('id', 0) for l in tabela if isinstance(l.get('id'), int)), default=0) + 1
+            registro = {'id': novo_id, **self.novo} if self.nome != 'perfis' else dict(self.novo)
+            tabela.append(registro)
+            return Resposta([dict(registro)])
+        if self.atualizacao is not None:
+            atualizadas = []
+            for l in tabela:
+                if all(l.get(c) == v for c, v in self.filtros):
+                    l.update(self.atualizacao)
+                    atualizadas.append(dict(l))
+            return Resposta(atualizadas)
         if self.apagar:
+            apagadas = [dict(l) for l in tabela if all(l.get(c) == v for c, v in self.filtros)]
             tabela[:] = [l for l in tabela if not all(l.get(c) == v for c, v in self.filtros)]
-            return Resposta([])
+            return Resposta(apagadas)
         linhas = [dict(l) for l in tabela if all(l.get(c) == v for c, v in self.filtros)]
         for coluna in reversed(self.ordem):
             linhas.sort(key=lambda l: l[coluna])

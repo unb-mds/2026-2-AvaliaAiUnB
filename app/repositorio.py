@@ -220,6 +220,87 @@ class AvaliacaoRepository:
         }).execute()
         return True
 
+    def _enriquecer_avaliacoes(self, avaliacoes):
+        if not avaliacoes:
+            return []
+        professores = {
+            p['id']: p['nome']
+            for p in _paginar(lambda: self.cliente.table('professores').select('id,nome').order('id'))
+        }
+        vinculos = _paginar(
+            lambda: self.cliente.table('vw_professor_disciplina')
+            .select('professor_id,disciplina_id,codigo_disciplina,disciplina')
+            .order('disciplina_id')
+        )
+        disciplinas = {}
+        for v in vinculos:
+            disciplinas[v['disciplina_id']] = (v.get('disciplina', ''), v.get('codigo_disciplina', ''))
+        resultado = []
+        for av in avaliacoes:
+            disc_nome, disc_codigo = disciplinas.get(av['disciplina_id'], ('', ''))
+            resultado.append({
+                **av,
+                'professor_nome': professores.get(av['professor_id'], ''),
+                'disciplina_nome': disc_nome,
+                'codigo_disciplina': disc_codigo,
+            })
+        return resultado
+
+    def listar_por_usuario(self, usuario_id):
+        """Lista as avaliações feitas pelo usuário com nomes de professor e disciplina."""
+        linhas = _paginar(
+            lambda: self.cliente.table('avaliacoes')
+            .select('*')
+            .eq('usuario_id', usuario_id)
+            .order('id')
+        )
+        return self._enriquecer_avaliacoes(linhas)
+
+    def buscar_por_id_e_usuario(self, avaliacao_id, usuario_id):
+        """Retorna a avaliação enriquecida se pertencer ao usuário, ou None."""
+        dados = (
+            self.cliente.table('avaliacoes')
+            .select('*')
+            .eq('id', avaliacao_id)
+            .eq('usuario_id', usuario_id)
+            .limit(1)
+            .execute()
+            .data
+        )
+        if not dados:
+            return None
+        return self._enriquecer_avaliacoes(dados)[0]
+
+    def atualizar(self, avaliacao_id, usuario_id, notas):
+        """Atualiza as notas de uma avaliação se o usuario_id for o autor."""
+        if any(type(notas.get(c)) is not int or not 1 <= notas[c] <= 5 for c in CRITERIOS):
+            raise ValueError('Todos os critérios devem ter notas inteiras de 1 a 5.')
+        existente = self.buscar_por_id_e_usuario(avaliacao_id, usuario_id)
+        if not existente:
+            return False
+        payloads = {c: notas[c] for c in CRITERIOS}
+        (
+            self.cliente.table('avaliacoes')
+            .update(payloads)
+            .eq('id', avaliacao_id)
+            .eq('usuario_id', usuario_id)
+            .execute()
+        )
+        return True
+
+    def excluir(self, avaliacao_id, usuario_id):
+        """Remove a avaliação se o usuario_id for o autor."""
+        existente = self.buscar_por_id_e_usuario(avaliacao_id, usuario_id)
+        if not existente:
+            return False
+        (
+            self.cliente.table('avaliacoes')
+            .delete()
+            .eq('id', avaliacao_id)
+            .eq('usuario_id', usuario_id)
+            .execute()
+        )
+        return True
 
 class Repositorios:
     def __init__(self, usuarios, professores, avaliacoes):
