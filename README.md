@@ -318,6 +318,20 @@ O **AvaliaAi** é um projeto acadêmico desenvolvido no contexto de **MDS — M�
 
 A proposta é criar uma ferramenta que aproxime estudantes e informações relevantes sobre sua experiência acadêmica, transformando avaliações dispersas em dados estruturados e úteis para consulta.
 
+## Como rodar o projeto
+
+### Opção A: Execução Local
+1. Crie o ambiente virtual: `python -m venv venv`
+2. Ative o ambiente: `venv\Scripts\activate` (Windows) ou `source venv/bin/activate` (Linux/Mac)
+3. Instale as dependências: `pip install -r requirements.txt`
+4. Crie um ficheiro `.env` na raiz com as variáveis de ambiente necessárias.
+5. Inicie o servidor: `python run.py`
+
+### Opção B: Execução com Docker
+1. Certifique-se de que tem o Docker instalado e o ficheiro `.env` criado na raiz.
+2. No terminal, execute: `docker compose up --build`
+3. Aceda à aplicação no navegador em `http://localhost:8000`
+
 ---
 
 <p align="center">

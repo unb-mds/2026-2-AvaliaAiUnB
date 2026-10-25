@@ -1,3 +1,4 @@
+> **Nota Histórica:** Este documento refere-se à Release 1. Atualmente, o sistema já não utiliza SQLite, tendo migrado para PostgreSQL (Supabase).
 # Implementação de #26, #36 e #37
 
 Base revisada: `main` em `85f6281`, issues abertas e fechadas, seus comentários,
