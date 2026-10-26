@@ -324,7 +324,7 @@ A proposta é criar uma ferramenta que aproxime estudantes e informações relev
 1. Crie o ambiente virtual: `python -m venv venv`
 2. Ative o ambiente: `venv\Scripts\activate` (Windows) ou `source venv/bin/activate` (Linux/Mac)
 3. Instale as dependências: `pip install -r requirements.txt`
-4. Crie um ficheiro `.env` na raiz com as variáveis de ambiente necessárias.
+4. Copie o ficheiro .env.example e mude o nome da cópia para .env. Preencha as seguintes variáveis: SECRET_KEY (chave de segurança da aplicação Flask), SUPABASE_URL (URL de conexão ao banco) e SUPABASE_SERVICE_KEY (chave de serviço para acesso aos dados). Aviso: O ficheiro .env contém dados sensíveis e nunca deve ser enviado para o GitHub!
 5. Inicie o servidor: `python run.py`
 
 ### Opção B: Execução com Docker

@@ -4,7 +4,8 @@ Este documento centraliza as instruções para configurar o ambiente, subir o ba
 
 ## 1. Instalação de Dependências
 
-Com o ambiente virtual (venv) ativado, instale as bibliotecas necessárias:
+Com o ambiente virtual (venv) ativado, instale as bibliotecas necessárias: 
+pip install -r requirements-scraper.txt
 
 ```bash
 pip install -r requirements.txt

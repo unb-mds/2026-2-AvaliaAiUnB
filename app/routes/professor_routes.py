@@ -45,5 +45,49 @@ def avaliar(professor_id):
                                     disciplina_id=disciplina['id']), code=303)
         if request.accept_mimetypes.best == 'application/json':
             return jsonify({'erros': erros}), status
-    return render_template('avaliacao.html', professor=professor, disciplina=disciplina,
-                           criterios=controller.criterios(), erros=erros, dados=request.form), status
+    return render_template('avaliacao.html', professor=professor, disciplina=disciplina, criterios=controller.criterios(), erros=erros, dados=request.form), status                       
+
+
+@professor_bp.route('/avaliacoes/<int:avaliacao_id>/editar', methods=['GET', 'POST'])
+@login_required
+def editar_avaliacao(avaliacao_id):
+    usuario = obter_usuario_atual()
+    avaliacao = controller.carregar_avaliacao_do_usuario(avaliacao_id, usuario)
+    professor = {'id': avaliacao['professor_id'], 'nome': avaliacao['professor_nome']}
+    disciplina = {
+        'id': avaliacao['disciplina_id'],
+        'nome': avaliacao['disciplina_nome'],
+        'codigo': avaliacao['codigo_disciplina'],
+    }
+    erros, status = {}, 200
+    dados = {c: str(avaliacao[c]) for c in controller.criterios()}
+    if request.method == 'POST':
+        dados = request.form
+        notas, erros = controller.validar_notas(request.form)
+        if erros:
+            status = 400
+        else:
+            controller.editar_avaliacao(avaliacao_id, usuario, notas)
+            return redirect(url_for('auth.perfil'), code=303)
+        if request.accept_mimetypes.best == 'application/json':
+            return jsonify({'erros': erros}), status
+    return render_template(
+        'avaliacao.html',
+        professor=professor,
+        disciplina=disciplina,
+        criterios=controller.criterios(),
+        erros=erros,
+        dados=dados,
+        modo_edicao=True,
+        acao_form=url_for('professores.editar_avaliacao', avaliacao_id=avaliacao_id),
+    ), status
+
+
+@professor_bp.post('/avaliacoes/<int:avaliacao_id>/excluir')
+@login_required
+def excluir_avaliacao(avaliacao_id):
+    controller.excluir_avaliacao(avaliacao_id, obter_usuario_atual())
+    if request.accept_mimetypes.best == 'application/json':
+        return jsonify({'mensagem': 'Avaliação excluída com sucesso.'}), 200
+    return redirect(url_for('auth.perfil'), code=303)
+
