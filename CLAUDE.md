@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-AvaliaAi UnB — a Flask + SQLite web app for students to search, rate and compare UnB professors and courses (academic project for MDS/UnB). Code, identifiers, comments and user-facing strings are in **Portuguese**; keep new code consistent with that. `docs/DOCUMENTO_DE_VISAO.md` is the source of truth for requirements (MVP vs. post-MVP features, rating criteria: didática, clareza, organização, disponibilidade, dificuldade). Project constraints: Python + Flask backend, SQLite for the MVP (PostgreSQL planned later), LGPD compliance.
+AvaliaAi UnB — a Flask + Supabase (PostgreSQL) web app for students to search, rate and compare UnB professors and courses (academic project for MDS/UnB). Code, identifiers, comments and user-facing strings are in **Portuguese**; keep new code consistent with that. `docs/DOCUMENTO_DE_VISAO.md` is the source of truth for requirements (MVP vs. post-MVP features, rating criteria: didática, clareza, organização, disponibilidade, dificuldade). Project constraints: Python + Flask backend, Supabase (PostgreSQL) for the MVP, LGPD compliance.
 
 ## Commands
 
@@ -19,7 +19,7 @@ The app needs `SECRET_KEY`, `SUPABASE_URL` and `SUPABASE_SERVICE_KEY` in the env
 
 ## Architecture
 
-Layered: routes → controllers → repositories → Supabase. There is no local database (SQLite/`banco.db` was removed).
+Layered: routes → controllers → repositories → Supabase. (SQLite/banco.db was removed)
 
 - `run.py` — entry point; calls `app.create_app()`. Named `run.py` (not `app.py`) on purpose to avoid clashing with the `app/` package.
 - `app/__init__.py` — app factory: builds repositories (`configurar_repositorios`), registers the session after-request hook and blueprints.
