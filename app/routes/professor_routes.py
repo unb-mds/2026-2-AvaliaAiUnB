@@ -7,6 +7,13 @@ from app.controllers.session_controller import login_required, obter_usuario_atu
 professor_bp = Blueprint('professores', __name__)
 
 
+@professor_bp.get('/ranking')
+def ranking():
+    professores, minimo_avaliacoes = controller.carregar_ranking()
+    return render_template('ranking.html', ranking=professores,
+                           minimo_avaliacoes=minimo_avaliacoes)
+
+
 @professor_bp.get('/professores')
 def listar():
     filtros = {campo: request.args.get(campo, '').strip() for campo in ('nome', 'disciplina')}

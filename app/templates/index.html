@@ -42,6 +42,7 @@
     <div class="botoes">
         <!-- Links para as páginas existentes -->
         <a href="/professores" class="btn">Consulta de Professores</a>
+        <a href="{{ url_for('professores.ranking') }}" class="btn">Ranking de Professores</a>
         {% if usuario %}
         <a href="/perfil" class="btn">Olá, {{ usuario.nome }}</a>
         <form action="/logout" method="POST" style="display:contents">

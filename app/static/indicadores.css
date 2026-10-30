@@ -19,3 +19,12 @@ input[type="search"] { box-sizing: border-box; width: 100%; padding: 10px; font:
 .lista-professores h2 { margin: 0 0 4px; overflow-wrap: anywhere; }
 .lista-professores p { margin: 4px 0; }
 .lista-professores ul { margin: 8px 0 0; padding-left: 20px; line-height: 1.5; }
+.navegacao-ranking { display: flex; flex-wrap: wrap; gap: 12px 24px; }
+.tabela-ranking-container { overflow-x: auto; }
+.tabela-ranking { width: 100%; border-collapse: collapse; text-align: left; }
+.tabela-ranking caption { text-align: left; font-weight: bold; padding: 16px 0; }
+.tabela-ranking th, .tabela-ranking td { border-bottom: 1px solid #ddd; padding: 16px 8px; }
+.tabela-ranking thead { background-color: #f2f4f7; }
+.tabela-ranking th[scope="row"] { min-width: 120px; overflow-wrap: anywhere; }
+.departamento-ranking { display: block; font-size: 0.9rem; font-weight: normal; margin-top: 4px; }
+.nota-ranking { white-space: nowrap; font-weight: bold; }
