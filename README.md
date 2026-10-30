@@ -105,6 +105,18 @@ Professores que desejam receber feedback estruturado e construtivo sobre sua atu
 | Favoritar professores | 🔮 R2 |
 | Gráficos de desempenho | 🔮 R2 |
 
+### Comparação de professores (RF08)
+
+A página `/comparar` permite selecionar dois professores diferentes e consultar, lado a lado,
+as médias de didática, clareza, organização, disponibilidade e dificuldade, além da quantidade
+de avaliações válidas. O acesso está disponível na lista e no perfil de cada professor;
+os links individuais já preenchem a primeira seleção.
+
+As médias consideram todas as disciplinas e períodos, com o mesmo peso por avaliação.
+Uma avaliação só entra no cálculo quando todos os cinco critérios têm notas inteiras de 1 a 5.
+Dificuldade indica exigência (1 = muito fácil; 5 = muito difícil), enquanto nos demais critérios
+5 representa excelente. Professores sem avaliações aparecem com um aviso, sem nota artificial.
+As médias são consultadas a cada comparação e exibidas com duas casas decimais.
 ### Ranking de professores (RF07)
 
 A página `/ranking` está disponível pelos links na página inicial e na lista de professores.

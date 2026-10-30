@@ -9,6 +9,7 @@
 <body>
     <main>
         <h1>Professores</h1>
+        <p><a href="{{ url_for('professores.comparar') }}">Comparar professores</a></p>
         <p><a href="{{ url_for('professores.ranking') }}">Ver ranking de professores</a></p>
         <p class="ajuda">Ordenados pela quantidade de avaliações.</p>
         <form method="get" action="{{ url_for('professores.listar') }}" class="filtros">
@@ -37,6 +38,7 @@
             <li>
                 <h2><a href="{{ url_for('professores.perfil', professor_id=professor.id) }}">{{ professor.nome }}</a></h2>
                 <p>{{ professor.departamento }}</p>
+                <p><a href="{{ url_for('professores.comparar', professor_1=professor.id) }}">Comparar este professor</a></p>
                 <p class="ajuda">{{ professor.total_avaliacoes }} {{ 'avaliação' if professor.total_avaliacoes == 1 else 'avaliações' }}</p>
                 {% if disciplinas %}
                 <ul>
