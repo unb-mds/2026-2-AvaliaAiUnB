@@ -19,6 +19,37 @@ def departamentos():
     return repositorios().professores.listar_departamentos()
 
 
+def carregar_comparacao(dados):
+    repos = repositorios()
+    professores = sorted((p for p, _ in repos.professores.catalogo()),
+                         key=lambda p: (p['nome'] or '', p['id']))
+    por_id = {p['id']: p for p in professores}
+    selecionados, erros = {}, {}
+    for campo in ('professor_1', 'professor_2'):
+        valor = dados.get(campo, '').strip()
+        if not valor:
+            if 'professor_2' in dados:
+                erros[campo] = 'Selecione um professor.'
+            continue
+        try:
+            professor_id = int(valor)
+        except ValueError:
+            erros[campo] = 'Professor inválido.'
+            continue
+        if professor_id not in por_id:
+            erros[campo] = 'Professor não encontrado.'
+        else:
+            selecionados[campo] = professor_id
+    if len(selecionados) == 2 and selecionados['professor_1'] == selecionados['professor_2']:
+        erros['professor_2'] = 'Selecione dois professores diferentes.'
+    comparacao = []
+    if len(selecionados) == 2 and not erros:
+        comparacao = [{**por_id[p], 'indicadores': repos.avaliacoes.calcular_medias(p)}
+                      for p in selecionados.values()]
+    return dict(professores=professores, selecionados=selecionados,
+                erros=erros, comparacao=comparacao, criterios=CRITERIOS)
+
+
 def carregar_perfil(professor_id):
     professores = repositorios().professores
     professor = professores.buscar_por_id(professor_id)

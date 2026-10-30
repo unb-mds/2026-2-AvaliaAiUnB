@@ -187,11 +187,14 @@ class AvaliacaoRepository:
     def __init__(self, cliente):
         self.cliente = cliente
 
-    def calcular_medias(self, professor_id, disciplina_id):
+    def calcular_medias(self, professor_id, disciplina_id=None):
         colunas = ','.join(CRITERIOS)
-        linhas = _paginar(lambda: self.cliente.table('avaliacoes').select(colunas)
-                          .eq('professor_id', professor_id).eq('disciplina_id', disciplina_id)
-                          .order('id'))
+        def consulta():
+            consulta = self.cliente.table('avaliacoes').select(colunas).eq('professor_id', professor_id)
+            if disciplina_id is not None:
+                consulta = consulta.eq('disciplina_id', disciplina_id)
+            return consulta.order('id')
+        linhas = _paginar(consulta)
         validas = [l for l in linhas
                    if all(type(l.get(c)) is int and 1 <= l[c] <= 5 for c in CRITERIOS)]
         medias = {c: (sum(l[c] for l in validas) / len(validas) if validas else None)
