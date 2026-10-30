@@ -9,6 +9,12 @@ professor_bp = Blueprint('professores', __name__)
 CAMPOS_FILTRO = ('nome', 'disciplina', 'departamento')
 
 
+@professor_bp.get('/comparar')
+def comparar():
+    contexto = controller.carregar_comparacao(request.args)
+    return render_template('comparacao.html', **contexto), 400 if contexto['erros'] else 200
+
+
 @professor_bp.get('/professores')
 def listar():
     filtros = {campo: request.args.get(campo, '').strip() for campo in CAMPOS_FILTRO}

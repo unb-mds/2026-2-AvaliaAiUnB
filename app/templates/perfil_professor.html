@@ -116,6 +116,7 @@
 <body>
     <main class="perfil-card">
         <h1>{{ professor.nome }}</h1>
+        <p><a href="{{ url_for('professores.comparar', professor_1=professor.id) }}">Comparar este professor</a></p>
 
         <p>
             <strong>Departamento:</strong>

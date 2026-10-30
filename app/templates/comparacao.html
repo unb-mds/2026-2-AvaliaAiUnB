@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Comparar professores - AvaliaAi</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='indicadores.css') }}">
+</head>
+<body>
+    <main>
+        <p><a href="{{ url_for('professores.listar') }}">Consultar professores</a></p>
+        <h1>Comparar professores</h1>
+        <p class="ajuda">Selecione dois professores para consultar suas médias em todas as disciplinas e períodos.</p>
+        {% if professores|length >= 2 %}
+        <form method="get" action="{{ url_for('professores.comparar') }}" class="filtros selecao-comparacao">
+            {% for campo in ('professor_1', 'professor_2') %}
+            <div>
+                <label for="{{ campo }}">Professor {{ loop.index }}</label>
+                <select id="{{ campo }}" name="{{ campo }}" required {% if campo in erros %}aria-invalid="true" aria-describedby="erro-{{ campo }}"{% endif %}>
+                    <option value="">Selecione um professor</option>
+                    {% for professor in professores %}
+                    <option value="{{ professor.id }}" {% if selecionados.get(campo) == professor.id %}selected{% endif %}>{{ professor.nome }}{% if professor.departamento %} — {{ professor.departamento }}{% endif %}</option>
+                    {% endfor %}
+                </select>
+                {% if campo in erros %}<p class="erros" id="erro-{{ campo }}" role="alert">{{ erros[campo] }}</p>{% endif %}
+            </div>
+            {% endfor %}
+            <button type="submit">Comparar</button>
+        </form>
+        {% else %}
+        <p role="status">É necessário ter pelo menos dois professores cadastrados para comparar.</p>
+        {% endif %}
+        {% if comparacao %}
+        {% for professor in comparacao if not professor.indicadores.quantidade %}
+        <p role="status">{{ professor.nome }}: ainda não há avaliações válidas.</p>
+        {% endfor %}
+        <div class="comparacao-container" role="region" aria-label="Médias dos professores" tabindex="0">
+            <table class="tabela-comparacao">
+                <caption>Médias por critério de avaliação</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Critério</th>
+                        {% for professor in comparacao %}
+                        <th scope="col"><a href="{{ url_for('professores.perfil', professor_id=professor.id) }}">{{ professor.nome }}</a></th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row">Avaliações válidas</th>
+                        {% for professor in comparacao %}<td>{{ professor.indicadores.quantidade }}</td>{% endfor %}
+                    </tr>
+                    {% for criterio, titulo in criterios.items() %}
+                    <tr>
+                        <th scope="row">{{ titulo }}</th>
+                        {% for professor in comparacao %}
+                        <td>{% if professor.indicadores.quantidade %}{{ ('%.2f'|format(professor.indicadores.medias[criterio]))|replace('.', ',') }} / 5{% else %}Sem avaliações{% endif %}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <p class="ajuda">Cada avaliação válida tem o mesmo peso. Dificuldade: 1 = muito fácil; 5 = muito difícil. Nos demais critérios, 5 = excelente.</p>
+        {% endif %}
+    </main>
+</body>
+</html>
