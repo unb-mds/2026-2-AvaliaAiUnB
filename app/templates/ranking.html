@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ranking de Professores - AvaliaAi</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='indicadores.css') }}">
+</head>
+<body>
+    <main>
+        <nav aria-label="Navegação principal" class="navegacao-ranking">
+            <a href="{{ url_for('main.index') }}">Início</a>
+            <a href="{{ url_for('professores.listar') }}">Consultar professores</a>
+        </nav>
+        <h1>Ranking de Professores</h1>
+        <p class="ajuda">
+            Professores com pelo menos {{ minimo_avaliacoes }} avaliações válidas, ordenados pela média geral.
+            Cada avaliação tem o mesmo peso, considerando todas as disciplinas e períodos.
+        </p>
+        <p class="ajuda">
+            A média vai de 1 a 5 e considera didática, clareza, organização e disponibilidade.
+            Dificuldade não entra na média, pois indica o grau de exigência da disciplina.
+            Empates são resolvidos pela maior quantidade de avaliações e depois pelo nome.
+        </p>
+        {% if ranking %}
+        <div class="tabela-ranking-container" role="region" aria-label="Classificação dos professores" tabindex="0">
+            <table class="tabela-ranking">
+                <caption>Classificação geral dos professores</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Posição</th>
+                        <th scope="col">Professor</th>
+                        <th scope="col">Média geral</th>
+                        <th scope="col">Avaliações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for professor in ranking %}
+                    <tr>
+                        <td>{{ professor.posicao }}º</td>
+                        <th scope="row">
+                            <a href="{{ url_for('professores.perfil', professor_id=professor.id) }}">{{ professor.nome }}</a>
+                            {% if professor.departamento %}<span class="ajuda departamento-ranking">{{ professor.departamento }}</span>{% endif %}
+                        </th>
+                        <td class="nota-ranking">{{ ('%.2f'|format(professor.media))|replace('.', ',') }} / 5</td>
+                        <td>{{ professor.quantidade }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p role="status">Ainda não há professores com pelo menos {{ minimo_avaliacoes }} avaliações válidas para o ranking.</p>
+        <p><a href="{{ url_for('professores.listar') }}">Consulte os professores e contribua com sua avaliação.</a></p>
+        {% endif %}
+    </main>
+</body>
+</html>

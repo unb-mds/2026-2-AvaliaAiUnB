@@ -105,6 +105,17 @@ Professores que desejam receber feedback estruturado e construtivo sobre sua atu
 | Favoritar professores | 🔮 R2 |
 | Gráficos de desempenho | 🔮 R2 |
 
+### Ranking de professores (RF07)
+
+A página `/ranking` está disponível pelos links na página inicial e na lista de professores.
+Ela mostra posição, média geral, quantidade de avaliações e acesso ao perfil de cada professor.
+
+- Participam professores com **pelo menos 5 avaliações válidas** (todos os cinco critérios com notas inteiras de 1 a 5).
+- A média geral é a soma das notas de **didática, clareza, organização e disponibilidade**, dividida pelo número de avaliações válidas vezes quatro. Todas as disciplinas e períodos têm o mesmo peso por avaliação.
+- Dificuldade fica fora da média por medir exigência, sem representar qualidade de ensino.
+- A ordem usa a média sem arredondar, depois a quantidade de avaliações (maior primeiro), o nome (sem distinguir acentos e caixa) e o identificador. As posições são sequenciais; a média exibida usa duas casas decimais.
+- O ranking consulta as avaliações a cada acesso, sem depender do cache do catálogo. Se ninguém atingir o mínimo, a página informa esse estado.
+
 ---
 
 ## 🏗️ Arquitetura
