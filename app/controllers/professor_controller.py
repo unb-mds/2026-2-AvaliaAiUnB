@@ -1,7 +1,7 @@
 """Lógica de professores e avaliações: resolve o que as rotas exibem e registra avaliações."""
 from flask import abort, request
 
-from app.repositorio import repositorios
+from app.repositorio import MINIMO_AVALIACOES_RANKING, repositorios
 from app.validacoes import CRITERIOS, validar_avaliacao
 
 
@@ -12,6 +12,10 @@ def criterios():
 def catalogo(nome='', disciplina=''):
     """Lista [(professor, disciplinas)] ordenada pela quantidade de avaliações."""
     return repositorios().professores.catalogo(nome, disciplina)
+
+
+def carregar_ranking():
+    return repositorios().professores.ranking(), MINIMO_AVALIACOES_RANKING
 
 
 def carregar_perfil(professor_id):
