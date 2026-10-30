@@ -16,6 +16,8 @@ from app.validacoes import CRITERIOS
 
 TAMANHO_PAGINA = 1000          # limite padrão de linhas por requisição do PostgREST
 VALIDADE_CATALOGO = 300        # segundos de cache da listagem completa
+MINIMO_AVALIACOES_RANKING = 5
+CRITERIOS_RANKING = tuple(c for c in CRITERIOS if c != 'dificuldade')
 
 
 def _paginar(montar_consulta):
@@ -181,6 +183,35 @@ class ProfessorRepository:
                 continue
             resultado.append((professor, disciplinas))
         return sorted(resultado, key=lambda i: (-i[0]['total_avaliacoes'], i[0]['nome'] or '', i[0]['id']))
+
+    def ranking(self):
+        colunas = ','.join(('professor_id', *CRITERIOS))
+        avaliacoes = _paginar(lambda: self.cliente.table('avaliacoes')
+                             .select(colunas).order('id'))
+        totais = {}
+        for avaliacao in avaliacoes:
+            if not all(type(avaliacao.get(c)) is int and 1 <= avaliacao[c] <= 5
+                       for c in CRITERIOS):
+                continue
+            total = totais.setdefault(avaliacao['professor_id'], {'soma': 0, 'quantidade': 0})
+            total['soma'] += sum(avaliacao[c] for c in CRITERIOS_RANKING)
+            total['quantidade'] += 1
+        elegiveis = {p: t for p, t in totais.items()
+                     if t['quantidade'] >= MINIMO_AVALIACOES_RANKING}
+        if not elegiveis:
+            return []
+        professores = _paginar(lambda: self.cliente.table('professores')
+                               .select('id,nome,departamento').order('id'))
+        resultado = []
+        for professor in professores:
+            total = elegiveis.get(professor['id'])
+            if total:
+                resultado.append({**professor, 'quantidade': total['quantidade'],
+                                  'media': total['soma'] / (total['quantidade'] * len(CRITERIOS_RANKING))})
+        resultado.sort(key=lambda p: (-p['media'], -p['quantidade'],
+                                     normalizar_busca(p['nome']), p['id']))
+        return [{**professor, 'posicao': posicao}
+                for posicao, professor in enumerate(resultado, start=1)]
 
 
 class AvaliacaoRepository:

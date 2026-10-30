@@ -13,6 +13,11 @@ CAMPOS_FILTRO = ('nome', 'disciplina', 'departamento')
 def comparar():
     contexto = controller.carregar_comparacao(request.args)
     return render_template('comparacao.html', **contexto), 400 if contexto['erros'] else 200
+@professor_bp.get('/ranking')
+def ranking():
+    professores, minimo_avaliacoes = controller.carregar_ranking()
+    return render_template('ranking.html', ranking=professores,
+                           minimo_avaliacoes=minimo_avaliacoes)
 
 
 @professor_bp.get('/professores')

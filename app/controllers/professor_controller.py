@@ -1,7 +1,7 @@
 """Lógica de professores e avaliações: resolve o que as rotas exibem e registra avaliações."""
 from flask import abort, request
 
-from app.repositorio import repositorios
+from app.repositorio import MINIMO_AVALIACOES_RANKING, repositorios
 from app.validacoes import CRITERIOS, validar_avaliacao
 
 
@@ -48,6 +48,8 @@ def carregar_comparacao(dados):
                       for p in selecionados.values()]
     return dict(professores=professores, selecionados=selecionados,
                 erros=erros, comparacao=comparacao, criterios=CRITERIOS)
+def carregar_ranking():
+    return repositorios().professores.ranking(), MINIMO_AVALIACOES_RANKING
 
 
 def carregar_perfil(professor_id):
