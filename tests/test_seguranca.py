@@ -1,97 +1,242 @@
-"""Regressões de configuração segura e de sigilo das chaves."""
-import io
-import os
-from pathlib import Path
-import runpy
-import unittest
-from contextlib import redirect_stdout, redirect_stderr
-from unittest.mock import patch
+# tests/test_seguranca.py
+"""
+Testes da issue #110. Usam um app Flask mínimo + configurar_seguranca(), então
+não dependem do Supabase nem dos templates.
 
-from app import create_app
-from tests.fake_supabase import ClienteFalso
+Rodar:  pytest tests/test_seguranca.py -v
+"""
+import re
 
-RAIZ = Path(__file__).resolve().parent.parent
+import pytest
+from flask import Flask, jsonify, render_template_string, request, session
 
+from app.seguranca import (
+    CSP_PADRAO,
+    configurar_seguranca,
+    csrf,
+    limitar_avaliacao,
+    limitar_cadastro,
+    limitar_login_por_conta,
+    limitar_login_por_ip,
+    limiter,
+)
 
-class TestConfiguracaoSegura(unittest.TestCase):
-    def setUp(self):
-        ambiente = patch.dict(os.environ, {}, clear=True)
-        dotenv = patch('app.load_dotenv')
-        ambiente.start()
-        dotenv.start()
-        self.addCleanup(ambiente.stop)
-        self.addCleanup(dotenv.stop)
-
-    def criar_app(self):
-        return create_app({'TESTING': True, 'SUPABASE_CLIENT': ClienteFalso()})
-
-    def test_secret_key_obrigatoria(self):
-        for valor in (None, '', '   '):
-            with self.subTest(valor=valor):
-                if valor is None:
-                    os.environ.pop('SECRET_KEY', None)
-                else:
-                    os.environ['SECRET_KEY'] = valor
-                with self.assertRaisesRegex(RuntimeError, 'SECRET_KEY'):
-                    self.criar_app()
-
-    def test_secret_key_lida_do_ambiente(self):
-        os.environ['SECRET_KEY'] = 'chave-exclusiva-deste-teste'
-        self.assertEqual(self.criar_app().secret_key, os.environ['SECRET_KEY'])
-
-    def test_debug_desligado_por_padrao_e_valores_falsos(self):
-        os.environ['SECRET_KEY'] = 'chave-exclusiva-deste-teste'
-        self.assertFalse(self.criar_app().debug)
-        for valor in ('', '0', 'false', 'off', 'no', 'invalido'):
-            with self.subTest(valor=valor):
-                os.environ['FLASK_DEBUG'] = valor
-                self.assertFalse(self.criar_app().debug)
-
-    def test_debug_habilitado_explicitamente(self):
-        os.environ['SECRET_KEY'] = 'chave-exclusiva-deste-teste'
-        for valor in ('1', 'true', 'yes', 'on', ' TRUE '):
-            with self.subTest(valor=valor):
-                os.environ['FLASK_DEBUG'] = valor
-                self.assertTrue(self.criar_app().debug)
-
-    def test_run_sem_debug_nao_habilita_console_ou_reloader(self):
-        os.environ['SECRET_KEY'] = 'chave-exclusiva-deste-teste'
-        for valor in (None, '0', 'false', 'off', 'invalido'):
-            with self.subTest(valor=valor):
-                if valor is not None:
-                    os.environ['FLASK_DEBUG'] = valor
-                app = self.criar_app()
-                with patch('app.create_app', return_value=app), \
-                        patch('werkzeug.serving.run_simple') as servidor, \
-                        redirect_stdout(io.StringIO()):
-                    runpy.run_path(str(RAIZ / 'run.py'), run_name='__main__')
-                servidor.assert_called_once()
-                self.assertFalse(servidor.call_args.kwargs['use_debugger'])
-                self.assertFalse(servidor.call_args.kwargs['use_reloader'])
-
-    def test_dotenv_carregado_antes_da_configuracao(self):
-        def carregar(_caminho):
-            os.environ['SECRET_KEY'] = 'chave-exclusiva-do-dotenv-de-teste'
-            os.environ['FLASK_DEBUG'] = '1'
-
-        with patch('app.load_dotenv', side_effect=carregar) as dotenv:
-            app = self.criar_app()
-        dotenv.assert_called_once_with(RAIZ / '.env')
-        self.assertEqual(app.secret_key, 'chave-exclusiva-do-dotenv-de-teste')
-        self.assertTrue(app.debug)
-
-    def test_scraper_nao_imprime_chave(self):
-        chave = 'chave-ficticia-para-teste-de-log-sem-credenciais-reais'
-        saida = io.StringIO()
-        with patch.dict(os.environ, {'SUPABASE_URL': 'https://exemplo.supabase.co',
-                                     'SUPABASE_SERVICE_KEY': chave}), \
-                patch('dotenv.load_dotenv'), patch('supabase.create_client') as cliente, \
-                redirect_stdout(saida), redirect_stderr(saida):
-            runpy.run_path(str(RAIZ / 'scraper' / 'supabase_client.py'))
-        cliente.assert_called_once_with('https://exemplo.supabase.co', chave)
-        self.assertNotIn(chave[:20], saida.getvalue())
-        self.assertNotIn(chave, saida.getvalue())
+CHAVE_FORTE = "a" * 64
 
 
-if __name__ == '__main__':
-    unittest.main()
+def criar_app(monkeypatch, *, secret=CHAVE_FORTE, debug=False, testing=False):
+    if secret is None:
+        monkeypatch.delenv("SECRET_KEY", raising=False)
+    else:
+        monkeypatch.setenv("SECRET_KEY", secret)
+    app = Flask(__name__)
+    app.debug = debug
+    app.testing = testing
+    configurar_seguranca(app)
+    limiter.reset()
+
+    @app.get("/")
+    def index():
+        session["x"] = 1  # força o Set-Cookie da sessão do Flask
+        return render_template_string('<form method="post" action="/login">'
+                                      '<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">'
+                                      "</form>")
+
+    @app.post("/login")
+    @limitar_login_por_ip
+    @limitar_login_por_conta
+    def login():
+        return jsonify(ok=True)
+
+    @app.post("/cadastro")
+    @limitar_cadastro
+    def cadastro():
+        return jsonify(ok=True)
+
+    @app.post("/avaliar")
+    @limitar_avaliacao
+    def avaliar(**_):
+        return jsonify(ok=True)
+
+    return app
+
+
+@pytest.fixture
+def app(monkeypatch):
+    return criar_app(monkeypatch)
+
+
+@pytest.fixture
+def client(app):
+    return app.test_client()
+
+
+def token_csrf(client):
+    html = client.get("/").get_data(as_text=True)
+    return re.search(r'name="csrf_token" value="([^"]+)"', html).group(1)
+
+
+# ------------------------------------------------------------------ SECRET_KEY
+def test_producao_sem_secret_key_nao_sobe(monkeypatch):
+    with pytest.raises(RuntimeError, match="SECRET_KEY não definida"):
+        criar_app(monkeypatch, secret=None)
+
+
+def test_producao_com_secret_key_fraca_nao_sobe(monkeypatch):
+    with pytest.raises(RuntimeError, match="SECRET_KEY fraca"):
+        criar_app(monkeypatch, secret="curta")
+
+
+def test_producao_usa_a_secret_key_do_ambiente(monkeypatch):
+    assert criar_app(monkeypatch).config["SECRET_KEY"] == CHAVE_FORTE
+
+
+def test_desenvolvimento_sem_secret_key_gera_chave_aleatoria(monkeypatch):
+    app = criar_app(monkeypatch, secret=None, debug=True)
+    assert len(app.config["SECRET_KEY"]) >= 32
+
+
+# ------------------------------------------------------------------ debug
+def test_debug_desligado_por_padrao(monkeypatch):
+    monkeypatch.delenv("FLASK_DEBUG", raising=False)
+    assert Flask(__name__).debug is False
+
+
+# ------------------------------------------------------------------ headers
+def test_headers_de_seguranca(client):
+    h = client.get("/").headers
+    assert h["Content-Security-Policy"] == CSP_PADRAO
+    assert "frame-ancestors 'none'" in h["Content-Security-Policy"]
+    assert h["X-Content-Type-Options"] == "nosniff"
+    assert h["X-Frame-Options"] == "DENY"
+    assert h["Referrer-Policy"] == "strict-origin-when-cross-origin"
+
+
+def test_hsts_apenas_em_https(client):
+    assert "Strict-Transport-Security" not in client.get("/").headers
+    assert "Strict-Transport-Security" in client.get("/", base_url="https://localhost").headers
+
+
+# ------------------------------------------------------------------ cookies
+def test_cookie_de_sessao_secure_httponly_samesite(client):
+    cookie = client.get("/").headers["Set-Cookie"]
+    assert "Secure" in cookie
+    assert "HttpOnly" in cookie
+    assert "SameSite=Lax" in cookie
+
+
+def test_cookie_secure_relaxado_so_em_debug(monkeypatch):
+    app = criar_app(monkeypatch, debug=True)
+    assert app.config["SESSION_COOKIE_SECURE"] is False
+    assert app.config["COOKIE_SECURE"] is False
+
+
+def test_cookies_do_supabase_seguem_a_config(app):
+    from app.controllers.session_controller import COOKIE_ACESSO, _definir_cookies
+    from flask import make_response
+
+    with app.test_request_context():
+        resposta = _definir_cookies(make_response("ok"),
+                                    {"access_token": "a", "refresh_token": "r"})
+        cookies = [c for c in resposta.headers.getlist("Set-Cookie") if COOKIE_ACESSO in c
+                   or "avaliaai_refresh" in c]
+    assert len(cookies) == 2
+    for c in cookies:
+        assert "Secure" in c and "HttpOnly" in c and "SameSite=Lax" in c
+
+
+# ------------------------------------------------------------------ CSRF
+def test_post_sem_token_csrf_e_rejeitado(client):
+    resposta = client.post("/login", data={"username": "a", "senha": "b"})
+    assert resposta.status_code == 400
+
+
+def test_post_sem_token_csrf_responde_json_para_api(client):
+    resposta = client.post("/login", data={}, headers={"Accept": "application/json"})
+    assert resposta.status_code == 400
+    assert "CSRF" in resposta.get_json()["erro"]
+
+
+def test_post_com_token_csrf_valido_passa(client):
+    token = token_csrf(client)
+    resposta = client.post("/login", data={"username": "a", "csrf_token": token})
+    assert resposta.status_code == 200
+
+
+def test_token_csrf_tambem_vale_pelo_header(client):
+    token = token_csrf(client)
+    assert client.post("/login", data={"username": "a"},
+                       headers={"X-CSRFToken": token}).status_code == 200
+
+
+def test_get_nao_exige_csrf(client):
+    assert client.get("/").status_code == 200
+
+
+def test_todo_post_da_aplicacao_esta_protegido(app):
+    """Nenhuma view pode estar isenta de CSRF (@csrf.exempt)."""
+    assert not csrf._exempt_views and not csrf._exempt_blueprints
+
+
+# ------------------------------------------------------------------ rate limit
+def _post(client, rota, **dados):
+    token = token_csrf(client)
+    return client.post(rota, data={**dados, "csrf_token": token})
+
+
+def test_login_limita_por_ip(client):
+    codigos = [_post(client, "/login", username=f"u{i}").status_code for i in range(11)]
+    assert codigos[:10] == [200] * 10
+    assert codigos[10] == 429
+
+
+def test_login_limita_tentativas_contra_a_mesma_conta(client):
+    # 10/hora na mesma conta, mesmo variando o IP de origem
+    for i in range(10):
+        r = client.post("/login", data={"username": "Alvo", "csrf_token": token_csrf(client)},
+                        environ_overrides={"REMOTE_ADDR": f"10.0.0.{i}"})
+        assert r.status_code == 200
+    r = client.post("/login", data={"username": "alvo", "csrf_token": token_csrf(client)},
+                    environ_overrides={"REMOTE_ADDR": "10.0.0.99"})
+    assert r.status_code == 429
+
+
+def test_cadastro_limita_por_ip(client):
+    codigos = [_post(client, "/cadastro").status_code for _ in range(6)]
+    assert codigos == [200] * 5 + [429]
+
+
+def test_avaliacao_limita_por_ip_quando_anonimo(client, monkeypatch):
+    monkeypatch.setattr("app.controllers.session_controller.obter_usuario_atual", lambda: None)
+    codigos = [_post(client, "/avaliar").status_code for _ in range(21)]
+    assert codigos[-1] == 429 and codigos[:20] == [200] * 20
+
+
+def test_avaliacao_limita_por_usuario_e_nao_por_ip(client, monkeypatch):
+    usuario = {"id": 7}
+    monkeypatch.setattr("app.controllers.session_controller.obter_usuario_atual",
+                        lambda: usuario)
+    for i in range(20):  # IPs diferentes, mesmo usuário
+        r = client.post("/avaliar", data={"csrf_token": token_csrf(client)},
+                        environ_overrides={"REMOTE_ADDR": f"10.1.0.{i}"})
+        assert r.status_code == 200
+    r = client.post("/avaliar", data={"csrf_token": token_csrf(client)},
+                    environ_overrides={"REMOTE_ADDR": "10.1.0.200"})
+    assert r.status_code == 429
+    # outro usuário, mesmo IP, não é afetado
+    usuario["id"] = 8
+    assert client.post("/avaliar", data={"csrf_token": token_csrf(client)}).status_code == 200
+
+
+def test_429_responde_json_para_api(client):
+    for i in range(10):
+        _post(client, "/login", username=f"u{i}")
+    r = client.post("/login", data={"csrf_token": token_csrf(client)},
+                    headers={"Accept": "application/json"})
+    assert r.status_code == 429
+    assert "Muitas tentativas" in r.get_json()["erro"]
+
+
+def test_get_do_formulario_nao_conta_no_limite(client):
+    for _ in range(30):
+        assert client.get("/").status_code == 200

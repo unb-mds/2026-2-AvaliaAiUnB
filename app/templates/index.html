@@ -6,34 +6,7 @@
     <title>AvaliaAi - Início</title>
     <!-- Referência ao CSS existente -->
     <link rel="stylesheet" href="{{ url_for('static', filename='indicadores.css') }}">
-    <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            text-align: center;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-        }
-        .botoes {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        .btn {
-            padding: 10px 20px;
-            text-decoration: none;
-            background-color: #007BFF;
-            color: white;
-            border-radius: 5px;
-            font-weight: bold;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
 </head>
 <body>
     <h1>Bem-vindo ao AvaliaAi</h1>
@@ -45,7 +18,7 @@
         <a href="{{ url_for('professores.ranking') }}" class="btn">Ranking de Professores</a>
         {% if usuario %}
         <a href="/perfil" class="btn">Olá, {{ usuario.nome }}</a>
-        <form action="/logout" method="POST" style="display:contents">
+        <form action="/logout" method="POST" class="form-contents">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input type="hidden" name="formato" value="html">
             <button type="submit" class="btn">Sair</button>

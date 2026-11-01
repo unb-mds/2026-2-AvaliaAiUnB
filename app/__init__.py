@@ -11,6 +11,7 @@ from app.repositorio import configurar_repositorios
 from app.routes.auth_routes import auth_bp
 from app.routes.main_routes import main_bp
 from app.routes.professor_routes import professor_bp
+from app.seguranca import configurar_seguranca
 
 
 def create_app(config=None) -> Flask:
@@ -29,6 +30,7 @@ def create_app(config=None) -> Flask:
     CSRFProtect(app)
     configurar_repositorios(app)
     registrar_renovacao(app)
+    configurar_seguranca(app)
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(professor_bp)

@@ -9,6 +9,11 @@ from app.controllers.session_controller import (
     login_required,
     obter_usuario_atual,
 )
+from app.seguranca import (
+    limitar_cadastro,
+    limitar_login_por_conta,
+    limitar_login_por_ip,
+)
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -20,6 +25,7 @@ def _quer_html():
 
 
 @auth_bp.route("/cadastro", methods=["GET", "POST"])
+@limitar_cadastro
 def cadastro():
     if request.method == "GET":
         return render_template("cadastro.html")
@@ -35,6 +41,8 @@ def cadastro():
 
 
 @auth_bp.route("/login", methods=["GET", "POST"])
+@limitar_login_por_ip
+@limitar_login_por_conta
 def login():
     if request.method == "GET":
         return render_template("login.html")

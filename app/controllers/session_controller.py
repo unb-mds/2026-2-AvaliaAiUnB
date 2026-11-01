@@ -13,7 +13,7 @@ expirou, o refresh token renova a sessão e os cookies novos seguem na resposta.
 from datetime import timedelta
 from functools import wraps
 
-from flask import g, jsonify, redirect, request, url_for
+from flask import current_app, g, jsonify, redirect, request, url_for
 
 from app.repositorio import repositorios
 
@@ -28,7 +28,7 @@ def _definir_cookies(response, sessao):
         response.set_cookie(
             nome, valor,
             httponly=True,       # inacessível via JavaScript (mitiga XSS)
-            secure=True,         # só enviado em HTTPS (exigido pelo projeto)
+            secure=current_app.config.get("COOKIE_SECURE", True),  # HTTPS; só relaxa em debug local
             samesite="Lax",      # mitiga CSRF em navegação normal
             max_age=int(DURACAO_COOKIE.total_seconds()),
         )
