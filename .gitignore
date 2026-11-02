@@ -8,3 +8,8 @@ site/
 
 # gerado pelo scraper (screenshots e HTML de falhas)
 debug/
+
+# Banco de dados local (legado/testes)
+*.db
+*.sqlite
+*.sqlite3
