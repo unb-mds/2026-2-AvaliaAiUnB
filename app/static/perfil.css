@@ -1,0 +1,16 @@
+body { font-family: Arial, sans-serif; max-width: 720px; margin: 40px auto; padding: 0 16px; color: #222; }
+h1 { font-size: 1.5rem; margin-bottom: 8px; }
+h2 { font-size: 1.2rem; margin-top: 32px; border-bottom: 1px solid #ddd; padding-bottom: 8px; }
+p { font-size: 0.95rem; margin: 6px 0; }
+button, .btn { padding: 8px 14px; cursor: pointer; border-radius: 6px; border: 1px solid #ccc; background: #f5f5f5; text-decoration: none; color: #222; font-size: 0.9rem; display: inline-block; }
+.btn-perigo { background: #fee2e2; border-color: #fca5a5; color: #991b1b; }
+.avaliacao-card { border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-bottom: 14px; background: #fafafa; }
+.avaliacao-cabecalho { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px; }
+.notas-lista { display: flex; flex-wrap: wrap; gap: 12px; list-style: none; padding: 0; margin: 12px 0; font-size: 0.9rem; }
+.notas-lista li { background: #fff; border: 1px solid #e5e7eb; padding: 4px 10px; border-radius: 4px; }
+.acoes { display: flex; gap: 10px; align-items: center; margin-top: 10px; }
+.acoes form { margin: 0; }
+
+.form-sair {
+    margin-top: 16px;
+}

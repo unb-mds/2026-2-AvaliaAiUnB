@@ -3,6 +3,7 @@ from flask import Blueprint, abort, jsonify, redirect, render_template, request,
 
 from app.controllers import professor_controller as controller
 from app.controllers.session_controller import login_required, obter_usuario_atual
+from app.seguranca import limitar_avaliacao
 
 professor_bp = Blueprint('professores', __name__)
 
@@ -37,6 +38,7 @@ def perfil(professor_id):
 
 
 @professor_bp.route('/avaliar/<int:professor_id>', methods=['GET', 'POST'])
+@limitar_avaliacao
 @login_required
 def avaliar(professor_id):
     professor, _, disciplina = controller.carregar_perfil(professor_id)
@@ -60,6 +62,7 @@ def avaliar(professor_id):
 
 
 @professor_bp.route('/avaliacoes/<int:avaliacao_id>/editar', methods=['GET', 'POST'])
+@limitar_avaliacao
 @login_required
 def editar_avaliacao(avaliacao_id):
     usuario = obter_usuario_atual()
@@ -95,10 +98,10 @@ def editar_avaliacao(avaliacao_id):
 
 
 @professor_bp.post('/avaliacoes/<int:avaliacao_id>/excluir')
+@limitar_avaliacao
 @login_required
 def excluir_avaliacao(avaliacao_id):
     controller.excluir_avaliacao(avaliacao_id, obter_usuario_atual())
     if request.accept_mimetypes.best == 'application/json':
         return jsonify({'mensagem': 'Avaliação excluída com sucesso.'}), 200
     return redirect(url_for('auth.perfil'), code=303)
-
