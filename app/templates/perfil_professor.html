@@ -37,7 +37,7 @@
 
         <h2>Médias Consolidadas</h2>
 
-       <p>{{ disciplina.nome }} · {{ indicadores.quantidade }} avaliações</p>
+        <p>{{ disciplina.nome }} · {{ indicadores.quantidade }} avaliações</p>
 
         {% if indicadores.quantidade %}
         <ul class="indicadores">
@@ -60,12 +60,18 @@
         </p>
         {% endif %}
 
-        <a
-            href="{{ url_for('professores.avaliar', professor_id=professor.id, disciplina_id=disciplina.id) }}"
-            class="btn-avaliar"
-        >
-            Avaliar este Professor
-        </a>
+        <div style="display: flex; gap: 10px; align-items: center; margin-top: 20px;">
+            <a href="{{ next_url }}" class="btn-voltar" style="padding: 10px 15px; border: 1px solid #ccc; text-decoration: none; border-radius: 4px; color: #333;">
+                Voltar
+            </a>
+
+            <a
+                href="{{ url_for('professores.avaliar', professor_id=professor.id, disciplina_id=disciplina.id, next=next_url) }}"
+                class="btn-avaliar"
+            >
+                Avaliar este Professor
+            </a>
+        </div>
 
         {% else %}
         <p>
