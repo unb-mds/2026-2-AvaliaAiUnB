@@ -18,7 +18,6 @@ import logging
 import os
 import secrets
 
-from urllib.parse import urlparse, urljoin
 from flask import jsonify, request
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -175,15 +174,3 @@ def configurar_seguranca(app):
     _configurar_csrf(app)
     _configurar_limites(app)
     return app
-
-
-def is_safe_url(target):
-    """
-    Garante que a URL de redirecionamento é segura (mesmo domínio ou caminho relativo),
-    prevenindo ataques de Open Redirect.
-    """
-    if not target:
-        return False
-    ref_url = urlparse(request.host_url)
-    test_url = urlparse(urljoin(request.host_url, target))
-    return test_url.scheme in ('http', 'https') and ref_url.netloc == test_url.netloc

@@ -32,7 +32,7 @@
 
         <form
             id="formAvaliacao"
-            action="{{ acao_form or url_for('professores.avaliar', professor_id=professor.id, next=next_url) }}"
+            action="{{ acao_form or url_for('professores.avaliar', professor_id=professor.id) }}"
             method="POST"
         >
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -71,9 +71,9 @@
             <div class="acoes">
                 <button type="submit">{{ 'Salvar Alterações' if modo_edicao else 'Enviar Avaliação' }}</button>
 
-                <a 
-                    class="cancelar" 
-                    href="{{ url_for('professores.perfil', professor_id=professor.id, disciplina_id=disciplina.id, next=next_url) }}"
+                <a
+                    class="cancelar"
+                    href="{{ url_for('auth.perfil') if modo_edicao else url_for('professores.perfil', professor_id=professor.id, disciplina_id=disciplina.id) }}"
                 >
                     Cancelar
                 </a>

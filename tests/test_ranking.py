@@ -11,7 +11,7 @@ class TestRanking(unittest.TestCase):
     def setUp(self):
         self.cliente = ClienteFalso()
         self.professores = ProfessorRepository(self.cliente)
-        self.web = create_app({'TESTING': True, 'SECRET_KEY': 'chave-de-teste', 'SUPABASE_CLIENT': self.cliente}).test_client()
+        self.web = create_app({'TESTING': True, 'SUPABASE_CLIENT': self.cliente}).test_client()
 
     def avaliar(self, professor_id, quantidade=MINIMO_AVALIACOES_RANKING, nota=4, **notas):
         for _ in range(quantidade):

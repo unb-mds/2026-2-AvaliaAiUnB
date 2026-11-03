@@ -74,7 +74,7 @@
 
             <li>
 
-                <h2><a href="{{ url_for('professores.perfil', professor_id=professor.id, next=request.full_path) }}">{{ professor.nome }}</a></h2>
+                <h2><a href="{{ url_for('professores.perfil', professor_id=professor.id) }}">{{ professor.nome }}</a></h2>
 
                 <p>{{ professor.departamento }}</p>
 

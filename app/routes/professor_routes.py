@@ -3,7 +3,7 @@ from flask import Blueprint, abort, jsonify, redirect, render_template, request,
 
 from app.controllers import professor_controller as controller
 from app.controllers.session_controller import login_required, obter_usuario_atual
-from app.seguranca import limitar_avaliacao, is_safe_url
+from app.seguranca import limitar_avaliacao
 
 professor_bp = Blueprint('professores', __name__)
 
@@ -32,15 +32,10 @@ def listar():
 def perfil(professor_id):
     professor, disciplinas, disciplina = controller.carregar_perfil(professor_id)
     indicadores = controller.indicadores(professor_id, disciplina['id']) if disciplina else None
-    
-    # Validação do parâmetro de retorno
-    next_url = request.args.get('next')
-    if not is_safe_url(next_url):
-        next_url = url_for('professores.listar')
-
     return render_template('perfil_professor.html', professor=professor, disciplinas=disciplinas,
                            disciplina=disciplina, indicadores=indicadores,
-                           criterios=controller.criterios(), next_url=next_url)
+                           criterios=controller.criterios())
+
 
 @professor_bp.route('/avaliar/<int:professor_id>', methods=['GET', 'POST'])
 @limitar_avaliacao
@@ -49,11 +44,6 @@ def avaliar(professor_id):
     professor, _, disciplina = controller.carregar_perfil(professor_id)
     if disciplina is None:
         abort(404, description='Professor sem disciplinas disponíveis.')
-
-    next_url = request.args.get('next')
-    if not is_safe_url(next_url):
-        next_url = url_for('professores.perfil', professor_id=professor_id)
-
     erros, status = {}, 200
     if request.method == 'POST':
         notas, erros = controller.validar_notas(request.form)
@@ -65,13 +55,10 @@ def avaliar(professor_id):
             status = 409
         else:
             return redirect(url_for('professores.perfil', professor_id=professor_id,
-                                    disciplina_id=disciplina['id'], next=next_url), code=303)
+                                    disciplina_id=disciplina['id']), code=303)
         if request.accept_mimetypes.best == 'application/json':
             return jsonify({'erros': erros}), status
-            
-    return render_template('avaliacao.html', professor=professor, disciplina=disciplina, 
-                           criterios=controller.criterios(), erros=erros, dados=request.form, 
-                           next_url=next_url), status                      
+    return render_template('avaliacao.html', professor=professor, disciplina=disciplina, criterios=controller.criterios(), erros=erros, dados=request.form), status                       
 
 
 @professor_bp.route('/avaliacoes/<int:avaliacao_id>/editar', methods=['GET', 'POST'])

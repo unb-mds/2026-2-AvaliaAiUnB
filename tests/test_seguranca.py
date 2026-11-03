@@ -6,11 +6,10 @@ não dependem do Supabase nem dos templates.
 Rodar:  pytest tests/test_seguranca.py -v
 """
 import re
-import unittest
-import pytest
 
+import pytest
 from flask import Flask, jsonify, render_template_string, request, session
-from app.seguranca import is_safe_url
+
 from app.seguranca import (
     CSP_PADRAO,
     configurar_seguranca,
@@ -241,35 +240,3 @@ def test_429_responde_json_para_api(client):
 def test_get_do_formulario_nao_conta_no_limite(client):
     for _ in range(30):
         assert client.get("/").status_code == 200
-
-
-
-class TestSegurancaRedirecionamento(unittest.TestCase):
-    def setUp(self):
-        self.app = Flask(__name__)
-        # Simula o contexto de uma requisição local para a validação da URL base
-        self.ctx = self.app.test_request_context('/', base_url='http://localhost:5000')
-        self.ctx.push()
-
-    def tearDown(self):
-        self.ctx.pop()
-
-    def test_is_safe_url_rejeita_redirecionamento_externo(self):
-        # URLs seguras (mesmo domínio ou caminhos relativos mantendo parâmetros)
-        self.assertTrue(is_safe_url('/professores?nome=joao&departamento=CIC'))
-        self.assertTrue(is_safe_url('http://localhost:5000/avaliar/1'))
-        
-        # URLs perigosas (sites externos / Open Redirect)
-        self.assertFalse(is_safe_url('http://hacker.com/phishing'))
-        self.assertFalse(is_safe_url('https://google.com'))
-        self.assertFalse(is_safe_url(None))
-
-    def test_rota_perfil_valida_parametro_next(self):
-        # Usamos o cliente de teste nativo do Flask
-        cliente = self.app.test_client()
-        
-        # Teste 1: URL limpa ou ausente deve redirecionar/assumir padrão seguro
-        resp_segura = cliente.get('/professores/1?next=/professores?nome=joao')
-        # Como o banco não está mockado neste teste isolado, esperamos um erro 404 (professor não existe), 
-        # mas a aplicação NÃO deve quebrar por erro de sintaxe na URL.
-        self.assertNotEqual(resp_segura.status_code, 500)
