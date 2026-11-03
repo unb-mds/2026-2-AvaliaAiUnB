@@ -1,0 +1,16 @@
+[project]
+name = "avaliaai-unb"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "flask",
+    "python-dotenv",
+    "supabase",
+    "Flask-WTF",
+    "setuptools",
+    "gunicorn",
+    "Flask-Limiter",
+]
+
+[tool.vercel]
+entrypoint = "run:app"
