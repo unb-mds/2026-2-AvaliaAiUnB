@@ -255,13 +255,15 @@ class TestSegurancaRedirecionamento(unittest.TestCase):
         self.ctx.pop()
 
     def test_is_safe_url_rejeita_redirecionamento_externo(self):
-        # URLs seguras (mesmo domínio ou caminhos relativos mantendo parâmetros)
+        # URLs seguras (mesmo domínio ou relativas com parâmetros)
         self.assertTrue(is_safe_url('/professores?nome=joao&departamento=CIC'))
         self.assertTrue(is_safe_url('http://localhost:5000/avaliar/1'))
-        
-        # URLs perigosas (sites externos / Open Redirect)
+
+        # URLs perigosas (Open Redirect e bypass com barra invertida)
         self.assertFalse(is_safe_url('http://hacker.com/phishing'))
         self.assertFalse(is_safe_url('https://google.com'))
+        self.assertFalse(is_safe_url('/\\hacker.com'))
+        self.assertFalse(is_safe_url('\\\\hacker.com'))
         self.assertFalse(is_safe_url(None))
 
     def test_rota_perfil_valida_parametro_next(self):
