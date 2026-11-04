@@ -85,10 +85,10 @@ confirmação do endereço está prevista na
 As requisições passam por rotas, controllers e validações até os repositórios,
 que acessam o Supabase. O scraper é executado separadamente e alimenta o catálogo.
 
-Os [diagramas de arquitetura](docs/ARQUITETURA.md) apresentam as camadas do sistema.
-O detalhamento de rotas, sessões e repositórios será publicado na #116.
+O [guia do backend](docs/BACKEND.md) detalha a estrutura, as rotas, as sessões,
+os repositórios e a integração com o [scraper](docs/COMO_USAR_SCRAPER.md).
 
-### Dados e frontend
+### Dados
 
 O banco contém `professores`, `disciplinas`, `turmas`, `perfis` e
 `avaliacoes`, além da view `vw_professor_disciplina`. A chave de professor
@@ -96,11 +96,17 @@ O banco contém `professores`, `disciplinas`, `turmas`, `perfis` e
 disciplina no SIGAA. Consulte o
 [modelo de dados e a proposta de comentários](docs/Modelo%20de%20Dados.md).
 
+### Frontend
+
 As páginas são renderizadas no servidor a partir de `app/templates/`, com
 recursos em `app/static/`. O design system e a aplicação do visual final estão
 acompanhados nas issues
 [#112](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/112) e
 [#114](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/114).
+
+O [guia do frontend](docs/FRONTEND.md) inventaria as telas, os estilos e os
+estados existentes e explica como contribuir. As definições finais de cores,
+tipografia e componentes serão incorporadas quando a #112 for consolidada.
 
 ## Como executar
 
@@ -182,10 +188,14 @@ As correções continuam nas issues
 [#129](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/129) e
 [#130](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/130).
 A conclusão da auditoria não significa que essas correções já foram aplicadas.
+O [resumo de cibersegurança](docs/CIBERSEGURANCA.md) relaciona os mecanismos do
+código, a situação do RLS e os resultados da auditoria com cada correção.
 
-Comentários e moderação ainda dependem da especificação e revisão do grupo na
-[#116](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/116). A proposta de
-banco já está documentada na #109.
+Comentários e moderação têm uma [especificação proposta](docs/COMENTARIOS.md),
+baseada na #109, para revisão do grupo na
+[#116](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/116).
+Ela propõe quem pode participar, limites, relação com avaliações, denúncia e
+privacidade. A revisão das regras permanece pendente; o recurso não está implementado.
 
 ## Documentação
 
@@ -194,11 +204,13 @@ banco já está documentada na #109.
 | Início e instruções de execução | [Documentação do projeto](docs/index.md) |
 | Produto e requisitos | [Documento de visão](docs/DOCUMENTO_DE_VISAO.md) |
 | Funcionalidades | [Busca, notas, comparação e ranking](docs/FUNCIONALIDADES.md) |
-| Backend | [Detalhamento acompanhado na issue #116](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/116) |
+| Backend | [Estrutura, rotas, sessões e repositórios](docs/BACKEND.md) |
+| Frontend | [Templates, estilos, estados e contribuição](docs/FRONTEND.md) |
 | Dados | [Modelo de dados](docs/Modelo%20de%20Dados.md) |
 | Arquitetura | [Diagramas do sistema](docs/ARQUITETURA.md) |
 | Coleta | [Guia do scraper](docs/COMO_USAR_SCRAPER.md) |
-| Cibersegurança | [Relatório da auditoria](docs/AUDITORIA_SEGURANCA.md) |
+| Cibersegurança | [Mecanismos e correções](docs/CIBERSEGURANCA.md) · [Relatório da auditoria](docs/AUDITORIA_SEGURANCA.md) |
+| Comentários | [Especificação para revisão do grupo](docs/COMENTARIOS.md) |
 | Automação e checks | [Pipeline do GitHub Actions](docs/pipeline.md) |
 | Design | [Board do Figma](https://www.figma.com/board/PgqkPopVXOiSqm9gD5RRNv/AvaliaAi---Template-MDS?node-id=0-1&p=f&t=Rxu6jVCgeVZHCyg2-0) |
 | Histórico | [Notas da Release 1](RELEASE-v1.0.0.md) |
@@ -222,7 +234,8 @@ Na `main`, o workflow de documentação publica as mudanças em `docs/` ou
 6. Abra um pull request para a `main`, referenciando a issue, descrevendo a
    mudança e informando a validação realizada. Confira os checks antes do merge.
 
-Consulte os [diagramas de arquitetura](docs/ARQUITETURA.md) e as
+Consulte o [guia do backend](docs/BACKEND.md), os
+[diagramas de arquitetura](docs/ARQUITETURA.md) e as
 [regras de funcionalidades](docs/FUNCIONALIDADES.md) ao alterar o sistema.
 
 ## Equipe
