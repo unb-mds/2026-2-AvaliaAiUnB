@@ -169,6 +169,9 @@ O link de staging e a data de produção precisam ser registrados para completar
 as instruções de acesso e deploy. A configuração está no
 [`pyproject.toml` da main](pyproject.toml).
 
+As [instruções de hospedagem](docs/HOSPEDAGEM.md) detalham variáveis,
+Preview, produção e a validação dos fluxos no ambiente publicado.
+
 ## Segurança e correções em andamento
 
 A versão da `main` inclui autenticação com Supabase Auth, proteção CSRF,
@@ -212,6 +215,7 @@ privacidade. A revisão das regras permanece pendente; o recurso não está impl
 | Cibersegurança | [Mecanismos e correções](docs/CIBERSEGURANCA.md) · [Relatório da auditoria](docs/AUDITORIA_SEGURANCA.md) |
 | Comentários | [Especificação para revisão do grupo](docs/COMENTARIOS.md) |
 | Automação e checks | [Pipeline do GitHub Actions](docs/pipeline.md) |
+| Hospedagem | [Configuração de Preview, produção e lançamento](docs/HOSPEDAGEM.md) |
 | Design | [Board do Figma](https://www.figma.com/board/PgqkPopVXOiSqm9gD5RRNv/AvaliaAi---Template-MDS?node-id=0-1&p=f&t=Rxu6jVCgeVZHCyg2-0) |
 | Histórico | [Notas da Release 1](RELEASE-v1.0.0.md) |
 
