@@ -14,6 +14,7 @@ da Universidade de Brasília.
 | Coleta | [Guia do scraper](COMO_USAR_SCRAPER.md) |
 | Segurança | [Auditoria de 02/11/2026](AUDITORIA_SEGURANCA.md) |
 | Qualidade e publicação | [Pipeline do GitHub Actions](pipeline.md) |
+| Hospedagem | [Ambientes, variáveis e lançamento](HOSPEDAGEM.md) |
 | Design | [Board do Figma](https://www.figma.com/board/PgqkPopVXOiSqm9gD5RRNv/AvaliaAi---Template-MDS?node-id=0-1&p=f&t=Rxu6jVCgeVZHCyg2-0) |
 
 ## Funcionalidades disponíveis
@@ -63,6 +64,9 @@ Com Docker, Docker Compose e o `.env` configurados, execute
 A [issue #106](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/106) está
 concluída e a `main` contém configuração para Vercel. Falta registrar o link
 do staging, a data de produção e as instruções do ambiente.
+
+As [instruções de hospedagem](HOSPEDAGEM.md) já descrevem a configuração e a
+validação. O endereço real e a data escolhida serão incorporados ao registro de lançamento.
 
 ## Testes e documentação
 
