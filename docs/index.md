@@ -9,10 +9,13 @@ da Universidade de Brasília.
 |---|---|
 | Produto e requisitos | [Documento de visão](DOCUMENTO_DE_VISAO.md) |
 | Funcionalidades | [Busca, avaliações, comparação e ranking](FUNCIONALIDADES.md) |
+| Backend | [Estrutura, rotas, sessões e repositórios](BACKEND.md) |
+| Frontend | [Templates, estilos, estados e contribuição](FRONTEND.md) |
 | Dados | [Modelo de dados e proposta de comentários](Modelo%20de%20Dados.md) |
 | Arquitetura | [Diagramas do sistema](ARQUITETURA.md) |
 | Coleta | [Guia do scraper](COMO_USAR_SCRAPER.md) |
-| Segurança | [Auditoria de 02/11/2026](AUDITORIA_SEGURANCA.md) |
+| Segurança | [Mecanismos e correções](CIBERSEGURANCA.md) · [Auditoria de 02/11/2026](AUDITORIA_SEGURANCA.md) |
+| Comentários | [Especificação proposta para revisão](COMENTARIOS.md) |
 | Qualidade e publicação | [Pipeline do GitHub Actions](pipeline.md) |
 | Hospedagem | [Ambientes, variáveis e lançamento](HOSPEDAGEM.md) |
 | Design | [Board do Figma](https://www.figma.com/board/PgqkPopVXOiSqm9gD5RRNv/AvaliaAi---Template-MDS?node-id=0-1&p=f&t=Rxu6jVCgeVZHCyg2-0) |
@@ -77,3 +80,25 @@ Instale `mkdocs-material` no ambiente virtual para editar este site. Execute
 `mkdocs serve` para visualizar e `mkdocs build --strict` para validar a geração.
 Na `main`, mudanças em `docs/` ou `mkdocs.yml` disparam a publicação no GitHub Pages.
 O [guia do pipeline](pipeline.md) explica os checks e a publicação.
+
+## Comentários e revisão do grupo
+
+A [especificação de comentários](COMENTARIOS.md) propõe participação, limites,
+relação com as avaliações, denúncia, moderação e privacidade, a partir do
+[modelo de dados](Modelo%20de%20Dados.md). O documento ainda aguarda revisão do
+grupo; esta entrega não implementa comentários nem aplica o SQL proposto.
+
+## Alinhamentos para concluir as issues #115 e #116
+
+Situação consultada em **03/11/2026**:
+
+| Parte | Disponível | Complemento necessário |
+|---|---|---|
+| Hospedagem — #106, caiionog | Issue concluída e configuração para Vercel no PR #131 | Registrar link de staging, data de produção e instruções do ambiente |
+| Modelo — #109, caiionog | Documento do esquema e SQL proposto de comentários | Alinhar com o grupo as escolhas da proposta e atualizar o modelo após aprovação |
+| Segurança — #111, gsm22 | Relatório e plano de correção publicados | Atualizar a documentação conforme as correções forem entregues; a auditoria já pode ser documentada |
+| Design system — #112, giiicostaa | Inventário do frontend atual documentado | Incorporar os valores e componentes aprovados na #112 |
+| Comentários — #116, Geovanaduartee e grupo | Especificação proposta e pontos de decisão C01 a C08 | Revisar as regras, definir responsáveis de moderação, canal de revisão e retenção |
+
+A #112 depende da especificação da #116 para desenhar comentários. A revisão
+das regras pode avançar agora, sem aguardar as telas futuras.

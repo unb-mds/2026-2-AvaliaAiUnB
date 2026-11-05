@@ -9,6 +9,10 @@ nav:
   - Início: index.md
   - Funcionalidades: FUNCIONALIDADES.md
   - Modelo de Dados: Modelo de Dados.md
+  - Backend: BACKEND.md
+  - Frontend: FRONTEND.md
+  - Cibersegurança: CIBERSEGURANCA.md
+  - Comentários (proposta): COMENTARIOS.md
   - Como Usar o Scraper: COMO_USAR_SCRAPER.md
   - Documento de Visão (Story Map e User Stories): DOCUMENTO_DE_VISAO.md
   - Diagramas de Arquitetura: ARQUITETURA.md
