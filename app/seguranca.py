@@ -180,9 +180,9 @@ def configurar_seguranca(app):
 def is_safe_url(target):
     """
     Garante que a URL de redirecionamento é segura (mesmo domínio ou caminho relativo),
-    prevenindo ataques de Open Redirect.
+    prevenindo ataques de Open Redirect e bypass com barra invertida.
     """
-    if not target:
+    if not target or '\\' in target:
         return False
     ref_url = urlparse(request.host_url)
     test_url = urlparse(urljoin(request.host_url, target))
