@@ -27,12 +27,3 @@ No terminal, na raiz do projeto, execute:
 3. Acesse no navegador:
 Aceda ao endereço local (geralmente `http://localhost:8000/`).
 
-## Issues entregues
-
-**Sprints Recentes:**
-- #85 (Dockerização da API e Gunicorn)
-- #86 (Orquestração com Docker Compose)
-- #108 (Auditoria e remoção de resíduos do SQLite)
-- #111 (Auditoria de Segurança)
-- #123 (Habilitar RLS e políticas nos scripts de migração)
-- Etapas A e B de Documentação (Issues relacionadas: #5, #6, #7)
