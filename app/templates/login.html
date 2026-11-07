@@ -10,7 +10,7 @@
     <h1>Entrar</h1>
 
     {% if erro %}
-    <p class="erro-login">{{ erro }}</p>
+    <p role="alert" class="erro-login">{{ erro }}</p>
     {% endif %}
 
     <form action="/login" method="POST">
