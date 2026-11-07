@@ -438,6 +438,34 @@ class TestEsquemaBanco(unittest.TestCase):
                 sql,
                 rf'create policy "leitura publica de {tabela}" on {tabela} for select using \(true\);',
             )
+
+    def test_supabase_db_cria_cliente_publico_ao_lado_do_service_key(self):
+        import os
+        from app import supabase_db
+
+        with patch.dict(
+            os.environ,
+            {
+                'SUPABASE_URL': 'https://exemplo.supabase.co/rest/v1/',
+                'SUPABASE_SERVICE_KEY': 'chave-servico-secreta',
+                'SUPABASE_ANON_KEY': 'chave-publica-anon',
+            },
+            clear=False,
+        ), patch('supabase.create_client') as mock_create:
+            mock_create.side_effect = lambda url, key: {'url': url, 'key': key}
+            supabase_db._cliente = None
+            supabase_db._cliente_publico = None
+
+            self.assertTrue(supabase_db.credenciais_configuradas())
+            self.assertTrue(supabase_db.credenciais_publicas_configuradas())
+
+            c_servico = supabase_db.get_supabase()
+            c_publico = supabase_db.get_supabase_publico()
+
+            self.assertEqual(c_servico, {'url': 'https://exemplo.supabase.co', 'key': 'chave-servico-secreta'})
+            self.assertEqual(c_publico, {'url': 'https://exemplo.supabase.co', 'key': 'chave-publica-anon'})
+            supabase_db._cliente = None
+            supabase_db._cliente_publico = None
         
 if __name__ == '__main__':
     unittest.main()
