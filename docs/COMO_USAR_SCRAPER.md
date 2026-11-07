@@ -4,11 +4,11 @@ Este documento centraliza as instruções para configurar o ambiente, subir o ba
 
 ## 1. Instalação de Dependências
 
-Com o ambiente virtual (venv) ativado, instale as bibliotecas necessárias: 
-pip install -r requirements-scraper.txt
+Com o ambiente virtual (venv) ativado, instale as bibliotecas do scraper.
+O arquivo inclui também as dependências da aplicação:
 
 ```bash
-pip install -r requirements.txt
+pip install -r requirements-scraper.txt
 ```
 
 ## 2. Credenciais do Supabase
@@ -36,6 +36,7 @@ Para configurar um projeto Supabase do zero (ou recriar o ambiente), execute a m
 5. Para validar se todas as tabelas foram criadas corretamente, execute localmente:
    ```bash
    python scraper/checar_tabelas.py
+   ```
 
 ## 3. Executando o scraper
 
