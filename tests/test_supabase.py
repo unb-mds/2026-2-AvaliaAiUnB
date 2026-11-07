@@ -466,6 +466,22 @@ class TestEsquemaBanco(unittest.TestCase):
             self.assertEqual(c_publico, {'url': 'https://exemplo.supabase.co', 'key': 'chave-publica-anon'})
             supabase_db._cliente = None
             supabase_db._cliente_publico = None
+
+    def test_cliente_falso_publico_permite_leitura_publica_e_bloqueia_escrita_e_admin(self):
+        cliente = ClienteFalso()
+        publico = cliente.como_publico()
+
+        # Leitura pública permitida pelas políticas de RLS
+        self.assertEqual(len(publico.table('professores').select('*').execute().data), 3)
+        self.assertEqual(len(publico.table('vw_professor_disciplina').select('*').execute().data), 3)
+
+        # Escrita sem autenticação ou uso de auth.admin deve ser bloqueado na chave pública
+        with self.assertRaises(PermissionError):
+            publico.table('professores').insert({'nome': 'INVASOR', 'departamento': 'CIC'}).execute()
+        with self.assertRaises(PermissionError):
+            publico.table('avaliacoes').delete().eq('id', 1).execute()
+        with self.assertRaises(PermissionError):
+            publico.auth.admin.create_user({'email': 'x@unb.br', 'password': '123'})
         
 if __name__ == '__main__':
     unittest.main()

@@ -12,9 +12,10 @@ class Resposta:
 
 
 class Consulta:
-    def __init__(self, tabelas, nome, registro_upserts=None):
+    def __init__(self, tabelas, nome, registro_upserts=None, somente_leitura=False):
         self.tabelas, self.nome = tabelas, nome
         self.registro_upserts = registro_upserts
+        self.somente_leitura = somente_leitura
         self.linhas_upsert, self.conflito = None, None
         self.filtros, self.ordem, self.faixa, self.limite = [], [], None, None
         self.novo, self.atualizacao, self.apagar = None, None, False
@@ -55,6 +56,13 @@ class Consulta:
         return self
 
     def execute(self):
+        if self.somente_leitura and (
+            self.linhas_upsert is not None
+            or self.novo is not None
+            or self.atualizacao is not None
+            or self.apagar
+        ):
+            raise PermissionError(f'RLS bloqueou escrita anônima na tabela {self.nome}')
         tabela = self.tabelas[self.nome]
         if self.linhas_upsert is not None:
             colunas = self.conflito.split(',')
@@ -188,3 +196,34 @@ class ClienteFalso:
 
     def table(self, nome):
         return Consulta(self.tabelas, nome, self.upserts)
+
+    def como_publico(self):
+        return ClientePublicoFalso(self)
+
+
+class AdminBloqueado:
+    def __getattr__(self, _nome):
+        def _bloquear(*_args, **_kwargs):
+            raise PermissionError('Chave pública (anon) não possui acesso a auth.admin')
+        return _bloquear
+
+
+class AuthPublicoFalso:
+    def __init__(self, auth_base):
+        self._base = auth_base
+        self.admin = AdminBloqueado()
+
+    def __getattr__(self, nome):
+        return getattr(self._base, nome)
+
+
+class ClientePublicoFalso:
+    """Visão do ClienteFalso operando apenas com a chave pública (anon) e RLS ativo."""
+
+    def __init__(self, cliente_base):
+        self._base = cliente_base
+        self.tabelas = cliente_base.tabelas
+        self.auth = AuthPublicoFalso(cliente_base.auth)
+
+    def table(self, nome):
+        return Consulta(self.tabelas, nome, self._base.upserts, somente_leitura=True)
