@@ -15,8 +15,9 @@ NOTAS = {c: 4 for c in CRITERIOS}
 class TestProfessores(unittest.TestCase):
     def setUp(self):
         self.cliente = ClienteFalso()
-        self.professores = ProfessorRepository(self.cliente)
-        self.avaliacoes = AvaliacaoRepository(self.cliente)
+        self.cliente_publico = self.cliente.como_publico()
+        self.professores = ProfessorRepository(self.cliente_publico)
+        self.avaliacoes = AvaliacaoRepository(self.cliente, cliente_leitura=self.cliente_publico)
 
     def test_catalogo_filtra_ignorando_acento_e_caixa(self):
         (professor, disciplinas), = self.professores.catalogo(nome='jose avila')
@@ -404,7 +405,7 @@ class TestFluxoWeb(unittest.TestCase):
         self.assertIn('JOSÉ ÁVILA', html_comp)
         self.assertIn('MARIA LIMA', html_comp)
 
-        
+
 class TestEsquemaBanco(unittest.TestCase):
     def test_migration_sql_contem_tabelas_view_e_constraints_atuais(self):
         from pathlib import Path
