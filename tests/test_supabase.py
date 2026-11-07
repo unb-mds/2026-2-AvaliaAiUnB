@@ -132,6 +132,26 @@ class TestUsuarios(unittest.TestCase):
         self.assertIsNotNone(self.usuarios.renovar(sessao['refresh_token']))
         self.assertIsNone(self.usuarios.renovar('invalido'))
 
+    def test_auth_falso_bloqueia_login_ate_confirmar_email(self):
+        from supabase_auth.errors import AuthApiError
+
+        resp = self.cliente.auth.admin.create_user({
+            'email': 'novo@gmail.com',
+            'password': 'senha123',
+            'email_confirm': False,
+            'user_metadata': {'nome': 'Novo', 'username': 'novo'},
+        })
+        uid = resp.user.id
+        self.assertFalse(self.cliente.auth.usuarios[uid]['email_confirmado'])
+
+        with self.assertRaises(AuthApiError) as ctx:
+            self.cliente.auth.sign_in_with_password({'email': 'novo@gmail.com', 'password': 'senha123'})
+        self.assertEqual(ctx.exception.code, 'email_not_confirmed')
+
+        self.cliente.auth.confirmar_email('novo@gmail.com')
+        sessao = self.cliente.auth.sign_in_with_password({'email': 'novo@gmail.com', 'password': 'senha123'})
+        self.assertIsNotNone(sessao.session.access_token)
+        
 
 class TestFluxoWeb(unittest.TestCase):
     def setUp(self):

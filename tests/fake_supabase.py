@@ -107,9 +107,14 @@ class AdminFalso:
             raise AuthApiError('A user with this email address has already been registered',
                                422, 'email_exists')
         uid = str(uuid.uuid4())
-        self.auth.usuarios[uid] = {'id': uid, 'email': atributos['email'],
-                                   'senha': atributos['password'],
-                                   'user_metadata': atributos.get('user_metadata', {})}
+        confirmado = bool(atributos.get('email_confirm', False))
+        self.auth.usuarios[uid] = {
+            'id': uid,
+            'email': atributos['email'],
+            'senha': atributos['password'],
+            'email_confirmado': confirmado,
+            'user_metadata': atributos.get('user_metadata', {}),
+        }
         return SimpleNamespace(user=self.auth._usuario(uid))
 
     def get_user_by_id(self, uid):
@@ -132,7 +137,34 @@ class AuthFalso:
 
     def _usuario(self, uid):
         u = self.usuarios[uid]
-        return SimpleNamespace(id=uid, email=u['email'], user_metadata=u['user_metadata'])
+        confirmado_em = '2026-01-01T00:00:00Z' if u.get('email_confirmado') else None
+        return SimpleNamespace(
+            id=uid,
+            email=u['email'],
+            email_confirmed_at=confirmado_em,
+            user_metadata=u['user_metadata'],
+        )
+
+    def sign_up(self, atributos):
+        opcoes = atributos.get('options') or {}
+        meta = opcoes.get('data') or atributos.get('user_metadata') or {}
+        if any(u['email'] == atributos['email'] for u in self.usuarios.values()):
+            raise AuthApiError('User already registered', 422, 'user_already_exists')
+        uid = str(uuid.uuid4())
+        self.usuarios[uid] = {
+            'id': uid,
+            'email': atributos['email'],
+            'senha': atributos['password'],
+            'email_confirmado': False,
+            'user_metadata': meta,
+        }
+        return SimpleNamespace(user=self._usuario(uid), session=None)
+
+    def confirmar_email(self, identificador=None):
+        """Simula o clique no link de confirmação enviado por e-mail (para testes)."""
+        for uid, u in self.usuarios.items():
+            if identificador in (None, uid, u['email'], u['user_metadata'].get('username')):
+                u['email_confirmado'] = True
 
     def _nova_sessao(self, uid):
         n = next(self.contador)
@@ -143,10 +175,12 @@ class AuthFalso:
                                user=self._usuario(uid))
 
     def sign_in_with_password(self, credenciais):
-        for uid, u in self.usuarios.items():
-            if u['email'] == credenciais['email'] and u['senha'] == credenciais['password']:
-                return self._nova_sessao(uid)
-        raise AuthApiError('Invalid login credentials', 400, 'invalid_credentials')
+           for uid, u in self.usuarios.items():
+               if u['email'] == credenciais['email'] and u['senha'] == credenciais['password']:
+                   if not u.get('email_confirmado', True):
+                       raise AuthApiError('Email not confirmed', 400, 'email_not_confirmed')
+                   return self._nova_sessao(uid)
+           raise AuthApiError('Invalid login credentials', 400, 'invalid_credentials')
 
     def get_user(self, token):
         if token not in self.tokens:
