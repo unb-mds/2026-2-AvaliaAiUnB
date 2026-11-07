@@ -89,12 +89,12 @@ CREATE POLICY "Leitura publica de turmas" ON turmas FOR SELECT USING (true);
 
 -- Perfis (Leitura pública, edição apenas pelo dono do perfil)
 CREATE POLICY "Leitura publica de perfis" ON perfis FOR SELECT USING (true);
-CREATE POLICY "Usuario pode gerir o proprio perfil" ON perfis
-    USING (auth.uid() = id);
+CREATE POLICY "Usuario pode gerir o proprio perfil" ON perfis 
+  USING (auth.uid() = id);
 
 -- Avaliações (Leitura pública, edição e criação apenas pelo autor)
 CREATE POLICY "Leitura publica de avaliacoes" ON avaliacoes FOR SELECT USING (true);
-CREATE POLICY "Usuario pode inserir propria avaliacao" ON avaliacoes
-    FOR INSERT WITH CHECK (auth.uid() = usuario_id);
-CREATE POLICY "Usuario pode atualizar/deletar propria avaliacao" ON avaliacoes
-    USING (auth.uid() = usuario_id);
+CREATE POLICY "Usuario pode inserir propria avaliacao" ON avaliacoes 
+  FOR INSERT WITH CHECK (auth.uid() = usuario_id);
+CREATE POLICY "Usuario pode atualizar/deletar propria avaliacao" ON avaliacoes 
+  USING (auth.uid() = usuario_id);
