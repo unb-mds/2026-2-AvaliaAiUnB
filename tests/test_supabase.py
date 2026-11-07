@@ -425,6 +425,19 @@ class TestEsquemaBanco(unittest.TestCase):
         self.assertEqual(a.to_dict()['didatica'], 5)
         self.assertEqual(a.to_dict()['disciplina_id'], 10)
 
+    def test_migration_sql_habilita_rls_e_politicas_de_leitura_publica(self):
+        from pathlib import Path
+
+        sql = Path('docs/migrations/001_initial_schema.sql').read_text(encoding='utf-8').lower()
+
+        for tabela in ('professores', 'disciplinas', 'turmas', 'perfis', 'avaliacoes'):
+            self.assertIn(f'alter table {tabela} enable row level security;', sql)
+
+        for tabela in ('professores', 'disciplinas', 'turmas', 'avaliacoes'):
+            self.assertRegex(
+                sql,
+                rf'create policy "leitura publica de {tabela}" on {tabela} for select using \(true\);',
+            )
         
 if __name__ == '__main__':
     unittest.main()
