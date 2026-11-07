@@ -363,6 +363,48 @@ class TestFluxoWeb(unittest.TestCase):
         html_prof_1 = self.web.get('/professores/1').get_data(as_text=True)
         self.assertIn('0 avaliações', html_prof_1)
 
+    def test_telas_publicas_funcionam_usando_so_a_chave_publica(self):
+        # Prepara avaliações no banco para exercitar catálogo, perfil, ranking e comparação
+        for i in range(1, 6):
+            self.cliente.tabelas['avaliacoes'].append({
+                'id': i, 'usuario_id': f'u{i}', 'professor_id': 1, 'disciplina_id': 10,
+                'ano': 2026, 'periodo': 2, **NOTAS,
+            })
+
+        class ServiceKeyProibida:
+            def __getattr__(self, nome):
+                raise AssertionError(f'Service key não deveria ser usada em telas públicas (acessou {nome})')
+
+        app_publico = create_app({
+            'TESTING': True,
+            'SECRET_KEY': 'chave-teste-publico',
+            'SUPABASE_CLIENT': ServiceKeyProibida(),
+            'SUPABASE_PUBLIC_CLIENT': self.cliente.como_publico(),
+        }).test_client()
+
+        # 1. Lista e busca pública
+        r_lista = app_publico.get('/professores?nome=jose&disciplina=calculo')
+        self.assertEqual(r_lista.status_code, 200)
+        self.assertIn('JOSÉ ÁVILA', r_lista.get_data(as_text=True))
+
+        # 2. Perfil público do professor e médias por disciplina
+        r_perfil = app_publico.get('/professores/1')
+        self.assertEqual(r_perfil.status_code, 200)
+        self.assertIn('CÁLCULO 1', r_perfil.get_data(as_text=True))
+
+        # 3. Ranking público
+        r_ranking = app_publico.get('/ranking')
+        self.assertEqual(r_ranking.status_code, 200)
+        self.assertIn('JOSÉ ÁVILA', r_ranking.get_data(as_text=True))
+
+        # 4. Comparação pública
+        r_comp = app_publico.get('/comparar?professor_1=1&professor_2=2')
+        self.assertEqual(r_comp.status_code, 200)
+        html_comp = r_comp.get_data(as_text=True)
+        self.assertIn('JOSÉ ÁVILA', html_comp)
+        self.assertIn('MARIA LIMA', html_comp)
+
+        
 class TestEsquemaBanco(unittest.TestCase):
     def test_migration_sql_contem_tabelas_view_e_constraints_atuais(self):
         from pathlib import Path
