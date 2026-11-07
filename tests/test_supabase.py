@@ -100,8 +100,11 @@ class TestUsuarios(unittest.TestCase):
         self.cliente = ClienteFalso()
         self.usuarios = UsuarioRepository(self.cliente, lambda: self.cliente)
 
-    def criar(self, username='ana', email='ana@gmail.com'):
-        return self.usuarios.criar('Ana Souza', username, email, 'senha123')
+    def criar(self, username='ana', email='ana@gmail.com', confirmar=True):
+            resultado = self.usuarios.criar('Ana Souza', username, email, 'senha123')
+            if confirmar and resultado[0]:
+                self.cliente.auth.confirmar_email(email)
+            return resultado    
 
     def test_criar_grava_auth_e_perfil(self):
         ok, usuario_id = self.criar()
@@ -151,7 +154,21 @@ class TestUsuarios(unittest.TestCase):
         self.cliente.auth.confirmar_email('novo@gmail.com')
         sessao = self.cliente.auth.sign_in_with_password({'email': 'novo@gmail.com', 'password': 'senha123'})
         self.assertIsNotNone(sessao.session.access_token)
-        
+
+    def test_criar_exige_confirmacao_de_email_antes_de_ativar_conta(self):
+        ok, usuario_id = self.criar(username='clara', email='clara@gmail.com', confirmar=False)
+        self.assertTrue(ok)
+        self.assertFalse(self.cliente.auth.usuarios[usuario_id]['email_confirmado'])
+
+        # Conta ainda não confirmada não pode autenticar
+        self.assertIsNone(self.usuarios.autenticar('clara', 'senha123'))
+
+        # Depois de confirmar o e-mail, a conta fica ativa e retorna a sessão
+        self.cliente.auth.confirmar_email('clara@gmail.com')
+        sessao = self.usuarios.autenticar('clara', 'senha123')
+        self.assertIsInstance(sessao, dict)
+        self.assertIn('access_token', sessao)
+
 
 class TestFluxoWeb(unittest.TestCase):
     def setUp(self):
@@ -171,11 +188,14 @@ class TestFluxoWeb(unittest.TestCase):
         return self.web.post(caminho, data={**(data or {}), 'csrf_token': self.token_csrf()},
                              **opcoes)
 
-    def cadastrar(self, **campos):
+    def cadastrar(self, confirmar=True, **campos):
         dados = dict(nome='Ana', username='ana', email='ana@gmail.com',
                      senha='senha123', confirmar_senha='senha123')
         dados.update(campos)
-        return self.postar('/cadastro', data=dados)
+        resposta = self.postar('/cadastro', data=dados)
+        if confirmar and resposta.status_code in (200, 201):
+            self.cliente.auth.confirmar_email(dados['email'])
+        return resposta
 
     def entrar(self, senha='senha123'):
         return self.postar('/login', data={'username': 'ana', 'senha': senha, 'formato': 'html'})

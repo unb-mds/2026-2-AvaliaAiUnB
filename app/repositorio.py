@@ -49,15 +49,23 @@ class UsuarioRepository:
         if self.cliente.table('perfis').select('id').eq('username', username).limit(1).execute().data:
             return False, 'username', 'Este nome de usuário já está em uso.'
         try:
-            resposta = self.cliente.auth.admin.create_user({
-                'email': email, 'password': senha, 'email_confirm': True,
-                'user_metadata': {'nome': nome, 'username': username}})
+            resposta = self.fabrica_cliente().auth.sign_up({
+                'email': email,
+                'password': senha,
+                'options': {'data': {'nome': nome, 'username': username}},
+            })
         except AuthError as erro:
             if getattr(erro, 'code', '') in ('email_exists', 'user_already_exists') \
                     or 'already' in str(erro).lower():
                 return False, 'email', 'Este e-mail já está cadastrado.'
             raise
-        usuario_id = str(resposta.user.id)
+        usuario = getattr(resposta, 'user', None)
+        # Quando o e-mail já existe no Supabase Auth com confirmação ligada,
+        # sign_up pode retornar user sem identities ou levantar erro de conflito.
+        identidades = getattr(usuario, 'identities', None)
+        if usuario is None or identidades == []:
+            return False, 'email', 'Este e-mail já está cadastrado.'
+        usuario_id = str(usuario.id)
         try:
             self.cliente.table('perfis').insert(
                 {'id': usuario_id, 'username': username, 'nome_completo': nome}).execute()
