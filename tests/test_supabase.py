@@ -429,6 +429,29 @@ class TestFluxoWeb(unittest.TestCase):
         resp_ativo = self.entrar()
         self.assertEqual(resp_ativo.status_code, 303)
 
+    def test_cadastro_json_informa_confirmacao_e_bloqueia_acesso_ate_confirmar(self):
+        json_headers = {'Accept': 'application/json'}
+        resp = self.cadastrar(
+            confirmar=False,
+            nome='Bia',
+            username='bia',
+            email='bia@gmail.com',
+        )
+        self.assertEqual(resp.status_code, 201)
+        self.assertIn('e-mail', resp.get_json()['mensagem'].lower())
+
+        # Tentativa de login falha com 403 e não gera cookie de sessão
+        login_bloqueado = self.postar('/login', data={'username': 'bia', 'senha': 'senha123'})
+        self.assertEqual(login_bloqueado.status_code, 403)
+        self.assertEqual(self.web.get('/perfil').status_code, 302)
+        self.assertEqual(self.web.get('/perfil', headers=json_headers).status_code, 401)
+
+        # Após confirmar o e-mail, o login JSON retorna 200 e libera /perfil
+        self.cliente.auth.confirmar_email('bia@gmail.com')
+        login_ok = self.postar('/login', data={'username': 'bia', 'senha': 'senha123'})
+        self.assertEqual(login_ok.status_code, 200)
+        self.assertEqual(self.web.get('/perfil', headers=json_headers).status_code, 200)
+
 
 class TestEsquemaBanco(unittest.TestCase):
     def test_migration_sql_contem_tabelas_view_e_constraints_atuais(self):
