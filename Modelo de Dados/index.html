@@ -1,0 +1,1408 @@
+
+<!doctype html>
+<html lang="pt" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentação do AvaliaAi UnB">
+      
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
+    
+    
+      
+        <title>Modelo de dados do AvaliaAí UnB (Supabase / PostgreSQL) - AvaliaAi UnB</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.57a0d79d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#modelo-de-dados-do-avaliaai-unb-supabase-postgresql" class="md-skip">
+          Pular para conteúdo
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabeçalho">
+    <a href=".." title="AvaliaAi UnB" class="md-header__button md-logo" aria-label="AvaliaAi UnB" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AvaliaAi UnB
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Modelo de dados do AvaliaAí UnB (Supabase / PostgreSQL)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Buscar" placeholder="Buscar" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Pesquisar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpar" aria-label="Limpar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando busca
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navegação" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="AvaliaAi UnB" class="md-nav__button md-logo" aria-label="AvaliaAi UnB" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    AvaliaAi UnB
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Início
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../COMO_USAR_SCRAPER/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Como Usar o Scraper
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DOCUMENTO_DE_VISAO/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documento de Visão (Story Map e User Stories)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ARQUITETURA/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagramas de Arquitetura
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pipeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AUDITORIA_SEGURANCA/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Auditoria de Segurança
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://www.figma.com/board/PgqkPopVXOiSqm9gD5RRNv/AvaliaAi---Template-MDS?node-id=0-1&p=f&t=Rxu6jVCgeVZHCyg2-0" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Link do Figma
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-visao-geral" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Visão geral
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-tabelas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Tabelas
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Tabelas">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-professores" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 professores
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-disciplinas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 disciplinas
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-turmas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 turmas
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-perfis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 perfis
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-avaliacoes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 avaliacoes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#26-view-vw_professor_disciplina" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.6 View vw_professor_disciplina
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-cascatas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Cascatas
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-chave-de-unicidade-do-professor-e-efeito-nas-buscas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Chave de unicidade do professor e efeito nas buscas
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-politicas-de-rls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Políticas de RLS
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Políticas de RLS">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#resultado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resultado
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#o-que-isso-significa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        O que isso significa
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#privilegios-e-a-view-vw_professor_disciplina" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Privilégios e a view vw_professor_disciplina
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#como-a-aplicacao-acessa-o-banco" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Como a aplicação acessa o banco
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#divergencia-entre-o-script-do-repositorio-e-o-banco" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Divergência entre o script do repositório e o banco
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-proposta-tabela-comentarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Proposta: tabela comentarios
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Proposta: tabela comentarios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-decisoes-de-projeto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Decisões de projeto
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-sql-proposto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 SQL proposto
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-pontos-para-o-grupo-decidir" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Pontos para o grupo decidir
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-onde-cada-regra-e-aplicada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 Onde cada regra é aplicada
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-como-recriar-o-banco" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Como recriar o banco
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="modelo-de-dados-do-avaliaai-unb-supabase-postgresql">Modelo de dados do AvaliaAí UnB (Supabase / PostgreSQL)</h1>
+<blockquote>
+<p>Issue #109. Depende da #90 (esquema versionado em <code>docs/migrations/</code>).
+Este documento descreve o esquema <strong>atual</strong> e <strong>propõe</strong> a tabela de comentários. Nada aqui foi aplicado no banco.</p>
+</blockquote>
+<h2 id="1-visao-geral">1. Visão geral</h2>
+<p>O banco tem cinco tabelas e uma view. Três são alimentadas pelo scraper do SIGAA (<code>professores</code>, <code>disciplinas</code>, <code>turmas</code>) e duas pelos usuários autenticados (<code>perfis</code>, <code>avaliacoes</code>).</p>
+<pre><code class="language-mermaid">erDiagram
+    auth_users ||--o| perfis : &quot;id&quot;
+    perfis ||--o{ avaliacoes : &quot;usuario_id&quot;
+    professores ||--o{ turmas : &quot;professor_id&quot;
+    disciplinas ||--o{ turmas : &quot;disciplina_id&quot;
+    professores ||--o{ avaliacoes : &quot;professor_id&quot;
+    disciplinas ||--o{ avaliacoes : &quot;disciplina_id&quot;
+
+    professores {
+        bigint id PK
+        varchar nome
+        varchar departamento
+        timestamptz criado_em
+    }
+    disciplinas {
+        bigint id PK
+        varchar codigo UK
+        varchar nome
+        timestamptz criado_em
+    }
+    turmas {
+        bigint id PK
+        bigint professor_id FK
+        bigint disciplina_id FK
+        int ano
+        int periodo
+        timestamptz criado_em
+    }
+    perfis {
+        uuid id PK, FK
+        varchar username UK
+        varchar nome_completo
+        timestamptz criado_em
+    }
+    avaliacoes {
+        bigint id PK
+        uuid usuario_id FK
+        bigint professor_id FK
+        bigint disciplina_id FK
+        int ano
+        int periodo
+        int didatica
+        int clareza
+        int organizacao
+        int disponibilidade
+        int dificuldade
+        timestamptz criado_em
+    }
+</code></pre>
+<h2 id="2-tabelas">2. Tabelas</h2>
+<h3 id="21-professores">2.1 <code>professores</code></h3>
+<p>Alimentada pelo scraper do SIGAA.</p>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Tipo</th>
+<th>Restrições</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td><code>BIGINT</code></td>
+<td>PK, <code>GENERATED BY DEFAULT AS IDENTITY</code></td>
+</tr>
+<tr>
+<td><code>nome</code></td>
+<td><code>VARCHAR(255)</code></td>
+<td><code>NOT NULL</code></td>
+</tr>
+<tr>
+<td><code>departamento</code></td>
+<td><code>VARCHAR(255)</code></td>
+<td><code>NOT NULL</code>, default <code>''</code></td>
+</tr>
+<tr>
+<td><code>criado_em</code></td>
+<td><code>TIMESTAMPTZ</code></td>
+<td>default <code>NOW()</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Unicidade:</strong> <code>uq_professores_nome_departamento</code> em <code>(nome, departamento)</code>.</li>
+</ul>
+<h3 id="22-disciplinas">2.2 <code>disciplinas</code></h3>
+<p>Alimentada pelo scraper do SIGAA.</p>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Tipo</th>
+<th>Restrições</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td><code>BIGINT</code></td>
+<td>PK, identity</td>
+</tr>
+<tr>
+<td><code>codigo</code></td>
+<td><code>VARCHAR(50)</code></td>
+<td><code>NOT NULL</code></td>
+</tr>
+<tr>
+<td><code>nome</code></td>
+<td><code>VARCHAR(255)</code></td>
+<td><code>NOT NULL</code></td>
+</tr>
+<tr>
+<td><code>criado_em</code></td>
+<td><code>TIMESTAMPTZ</code></td>
+<td>default <code>NOW()</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Unicidade:</strong> <code>uq_disciplinas_codigo</code> em <code>(codigo)</code>.</li>
+</ul>
+<h3 id="23-turmas">2.3 <code>turmas</code></h3>
+<p>Vínculo entre professor e disciplina em um semestre. Alimentada pelo scraper.</p>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Tipo</th>
+<th>Restrições</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td><code>BIGINT</code></td>
+<td>PK, identity</td>
+</tr>
+<tr>
+<td><code>professor_id</code></td>
+<td><code>BIGINT</code></td>
+<td><code>NOT NULL</code>, FK → <code>professores(id)</code> <code>ON DELETE CASCADE</code></td>
+</tr>
+<tr>
+<td><code>disciplina_id</code></td>
+<td><code>BIGINT</code></td>
+<td><code>NOT NULL</code>, FK → <code>disciplinas(id)</code> <code>ON DELETE CASCADE</code></td>
+</tr>
+<tr>
+<td><code>ano</code></td>
+<td><code>INTEGER</code></td>
+<td><code>NOT NULL</code></td>
+</tr>
+<tr>
+<td><code>periodo</code></td>
+<td><code>INTEGER</code></td>
+<td><code>NOT NULL</code>, <code>CHECK (periodo BETWEEN 1 AND 4)</code></td>
+</tr>
+<tr>
+<td><code>criado_em</code></td>
+<td><code>TIMESTAMPTZ</code></td>
+<td>default <code>NOW()</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Unicidade:</strong> <code>uq_turmas_prof_disc_ano_periodo</code> em <code>(professor_id, disciplina_id, ano, periodo)</code>. É a chave usada pelo scraper para não duplicar turmas.</li>
+</ul>
+<h3 id="24-perfis">2.4 <code>perfis</code></h3>
+<p>Dados públicos do usuário, ligados ao Supabase Auth.</p>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Tipo</th>
+<th>Restrições</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td><code>UUID</code></td>
+<td>PK, FK → <code>auth.users(id)</code> <code>ON DELETE CASCADE</code></td>
+</tr>
+<tr>
+<td><code>username</code></td>
+<td><code>VARCHAR(30)</code></td>
+<td><code>NOT NULL</code></td>
+</tr>
+<tr>
+<td><code>nome_completo</code></td>
+<td><code>VARCHAR(100)</code></td>
+<td><code>NOT NULL</code></td>
+</tr>
+<tr>
+<td><code>criado_em</code></td>
+<td><code>TIMESTAMPTZ</code></td>
+<td>default <code>NOW()</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Unicidade:</strong> <code>uq_perfis_username</code> em <code>(username)</code>.</li>
+</ul>
+<h3 id="25-avaliacoes">2.5 <code>avaliacoes</code></h3>
+<p>Avaliação por critérios objetivos, com notas inteiras de 1 a 5.</p>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Tipo</th>
+<th>Restrições</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td><code>BIGINT</code></td>
+<td>PK, identity</td>
+</tr>
+<tr>
+<td><code>usuario_id</code></td>
+<td><code>UUID</code></td>
+<td><code>NOT NULL</code>, FK → <code>perfis(id)</code> <code>ON DELETE CASCADE</code></td>
+</tr>
+<tr>
+<td><code>professor_id</code></td>
+<td><code>BIGINT</code></td>
+<td><code>NOT NULL</code>, FK → <code>professores(id)</code> <code>ON DELETE CASCADE</code></td>
+</tr>
+<tr>
+<td><code>disciplina_id</code></td>
+<td><code>BIGINT</code></td>
+<td><code>NOT NULL</code>, FK → <code>disciplinas(id)</code> <code>ON DELETE CASCADE</code></td>
+</tr>
+<tr>
+<td><code>ano</code></td>
+<td><code>INTEGER</code></td>
+<td><code>NOT NULL</code></td>
+</tr>
+<tr>
+<td><code>periodo</code></td>
+<td><code>INTEGER</code></td>
+<td><code>NOT NULL</code>, <code>CHECK (periodo BETWEEN 1 AND 4)</code></td>
+</tr>
+<tr>
+<td><code>didatica</code></td>
+<td><code>INTEGER</code></td>
+<td><code>NOT NULL</code>, <code>CHECK (1..5)</code></td>
+</tr>
+<tr>
+<td><code>clareza</code></td>
+<td><code>INTEGER</code></td>
+<td><code>NOT NULL</code>, <code>CHECK (1..5)</code></td>
+</tr>
+<tr>
+<td><code>organizacao</code></td>
+<td><code>INTEGER</code></td>
+<td><code>NOT NULL</code>, <code>CHECK (1..5)</code></td>
+</tr>
+<tr>
+<td><code>disponibilidade</code></td>
+<td><code>INTEGER</code></td>
+<td><code>NOT NULL</code>, <code>CHECK (1..5)</code></td>
+</tr>
+<tr>
+<td><code>dificuldade</code></td>
+<td><code>INTEGER</code></td>
+<td><code>NOT NULL</code>, <code>CHECK (1..5)</code></td>
+</tr>
+<tr>
+<td><code>criado_em</code></td>
+<td><code>TIMESTAMPTZ</code></td>
+<td>default <code>NOW()</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Unicidade:</strong> <code>uq_avaliacoes_usuario_prof_disc</code> em <code>(usuario_id, professor_id, disciplina_id)</code>. Cada usuário avalia uma vez cada combinação professor + disciplina. Como <code>ano</code> e <code>periodo</code> não entram na chave, não é possível reavaliar a mesma combinação em outro semestre.</li>
+</ul>
+<h3 id="26-view-vw_professor_disciplina">2.6 View <code>vw_professor_disciplina</code></h3>
+<p>Junta <code>turmas</code>, <code>professores</code> e <code>disciplinas</code> para consulta direta.</p>
+<table>
+<thead>
+<tr>
+<th>Coluna</th>
+<th>Origem</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>turma_id</code></td>
+<td><code>turmas.id</code></td>
+</tr>
+<tr>
+<td><code>professor_id</code></td>
+<td><code>turmas.professor_id</code></td>
+</tr>
+<tr>
+<td><code>professor</code></td>
+<td><code>professores.nome</code></td>
+</tr>
+<tr>
+<td><code>departamento</code></td>
+<td><code>professores.departamento</code></td>
+</tr>
+<tr>
+<td><code>disciplina_id</code></td>
+<td><code>turmas.disciplina_id</code></td>
+</tr>
+<tr>
+<td><code>codigo_disciplina</code></td>
+<td><code>disciplinas.codigo</code></td>
+</tr>
+<tr>
+<td><code>disciplina</code></td>
+<td><code>disciplinas.nome</code></td>
+</tr>
+<tr>
+<td><code>ano</code></td>
+<td><code>turmas.ano</code></td>
+</tr>
+<tr>
+<td><code>periodo</code></td>
+<td><code>turmas.periodo</code></td>
+</tr>
+</tbody>
+</table>
+<p>Definição (conferida no banco com <code>pg_get_viewdef</code>):</p>
+<pre><code class="language-sql">SELECT t.id AS turma_id,
+       t.professor_id,
+       p.nome AS professor,
+       p.departamento,
+       t.disciplina_id,
+       d.codigo AS codigo_disciplina,
+       d.nome AS disciplina,
+       t.ano,
+       t.periodo
+  FROM turmas t
+  JOIN professores p ON p.id = t.professor_id
+  JOIN disciplinas d ON d.id = t.disciplina_id;
+</code></pre>
+<blockquote>
+<p>Atenção: por padrão, uma view no PostgreSQL executa com as permissões do dono, não de quem consulta, e por isso pode contornar o RLS das tabelas de base. Hoje isso é aceitável porque as três tabelas são dados públicos do SIGAA. Se a view passar a expor dados sensíveis, usar <code>WITH (security_invoker = true)</code> (PostgreSQL 15+).</p>
+</blockquote>
+<h2 id="3-cascatas">3. Cascatas</h2>
+<table>
+<thead>
+<tr>
+<th>Ao apagar...</th>
+<th>Também é apagado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>auth.users</code></td>
+<td><code>perfis</code> → <code>avaliacoes</code> do usuário</td>
+</tr>
+<tr>
+<td><code>perfis</code></td>
+<td><code>avaliacoes</code> do usuário</td>
+</tr>
+<tr>
+<td><code>professores</code></td>
+<td><code>turmas</code> e <code>avaliacoes</code> do professor</td>
+</tr>
+<tr>
+<td><code>disciplinas</code></td>
+<td><code>turmas</code> e <code>avaliacoes</code> da disciplina</td>
+</tr>
+</tbody>
+</table>
+<p>Consequência prática: o scraper não deve apagar professores ou disciplinas para "refazer" a carga, pois isso destrói as avaliações associadas. Deve usar upsert pelas chaves únicas acima.</p>
+<h2 id="4-chave-de-unicidade-do-professor-e-efeito-nas-buscas">4. Chave de unicidade do professor e efeito nas buscas</h2>
+<p>O professor é identificado por <strong>(nome, departamento)</strong>, não só pelo nome.</p>
+<p>O <strong>departamento</strong> guardado em <code>professores</code> é a <strong>unidade que oferece a disciplina</strong> no SIGAA, e não necessariamente o departamento de lotação do docente. Por isso:</p>
+<ul>
+<li>Um mesmo docente que leciona disciplinas ofertadas por departamentos diferentes pode aparecer como <strong>mais de um registro</strong> em <code>professores</code>, cada um com seu <code>id</code> e suas próprias avaliações.</li>
+<li>Dois docentes homônimos em departamentos diferentes são tratados como pessoas distintas, o que pode estar certo ou errado.</li>
+<li>Uma busca apenas por <code>nome</code> pode retornar vários registros para a mesma pessoa. A interface deve exibir o departamento ao lado do nome, e a busca não deve assumir que o nome é único.</li>
+<li>Médias de avaliação são calculadas <strong>por registro</strong>, então um docente dividido em dois registros terá notas separadas.</li>
+</ul>
+<p>Limitação conhecida: não existe hoje uma identificação única do docente (como matrícula). Unificar registros duplicados seria uma decisão futura.</p>
+<h2 id="5-politicas-de-rls">5. Políticas de RLS</h2>
+<p>Consultas executadas no SQL Editor do Supabase:</p>
+<pre><code class="language-sql">-- Tabelas com RLS ativo
+SELECT c.relname, c.relrowsecurity, c.relforcerowsecurity
+FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
+WHERE n.nspname = 'public' AND c.relkind = 'r';
+
+-- Políticas
+SELECT tablename, policyname, permissive, roles, cmd, qual, with_check
+FROM pg_policies
+WHERE schemaname = 'public'
+ORDER BY tablename, policyname;
+</code></pre>
+<h3 id="resultado">Resultado</h3>
+<table>
+<thead>
+<tr>
+<th>Tabela</th>
+<th>RLS ativo</th>
+<th><code>FORCE</code> RLS</th>
+<th>Políticas</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>professores</code></td>
+<td>sim</td>
+<td>não</td>
+<td>nenhuma</td>
+</tr>
+<tr>
+<td><code>disciplinas</code></td>
+<td>sim</td>
+<td>não</td>
+<td>nenhuma</td>
+</tr>
+<tr>
+<td><code>turmas</code></td>
+<td>sim</td>
+<td>não</td>
+<td>nenhuma</td>
+</tr>
+<tr>
+<td><code>perfis</code></td>
+<td>sim</td>
+<td>não</td>
+<td>nenhuma</td>
+</tr>
+<tr>
+<td><code>avaliacoes</code></td>
+<td>sim</td>
+<td>não</td>
+<td>nenhuma</td>
+</tr>
+</tbody>
+</table>
+<h3 id="o-que-isso-significa">O que isso significa</h3>
+<ul>
+<li>Com RLS ativo e <strong>nenhuma política</strong>, o PostgreSQL nega todo acesso aos papéis <code>anon</code> e <code>authenticated</code>. Um cliente que use a chave pública (anon key) ou o token de um usuário logado <strong>não consegue ler nem escrever</strong> em nenhuma tabela.</li>
+<li>A <code>service_role</code> (chave secreta) ignora o RLS, e é por ela que a aplicação Flask lê e grava (ver "Como a aplicação acessa o banco" abaixo).</li>
+<li><code>FORCE</code> RLS está desligado, então o dono das tabelas (papel <code>postgres</code>) também ignora as políticas.</li>
+<li>Consequência: <strong>hoje toda a segurança depende de o acesso passar pelo backend com a <code>service_role</code></strong>. A chave <code>service_role</code> nunca pode ir para o frontend nem para o repositório.</li>
+</ul>
+<h3 id="privilegios-e-a-view-vw_professor_disciplina">Privilégios e a view <code>vw_professor_disciplina</code></h3>
+<p>Consulta usada:</p>
+<pre><code class="language-sql">SELECT grantee, privilege_type
+FROM information_schema.role_table_grants
+WHERE table_schema = 'public' AND table_name = 'vw_professor_disciplina';
+</code></pre>
+<p>Resultado: <code>postgres</code>, <code>anon</code>, <code>authenticated</code> e <code>service_role</code> têm todos os privilégios (<code>SELECT</code>, <code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code>, <code>TRUNCATE</code>, <code>REFERENCES</code>, <code>TRIGGER</code>) sobre a view. Esse é o padrão do Supabase para objetos criados no schema <code>public</code>; ninguém concedeu isso explicitamente.</p>
+<p>Efeitos:</p>
+<ul>
+<li><strong>Leitura aberta.</strong> Uma view executa com as permissões do dono (<code>postgres</code>), que ignora o RLS. Como <code>anon</code> tem <code>SELECT</code>, qualquer pessoa com a chave pública (anon key) consegue consultar a view e ler <strong>professores, departamentos, disciplinas e turmas</strong>, apesar de as tabelas de base estarem bloqueadas pelo RLS. As tabelas <code>perfis</code> e <code>avaliacoes</code> <strong>não</strong> são expostas, pois não entram na view.</li>
+<li><strong>Escrita.</strong> Os privilégios de <code>INSERT</code>/<code>UPDATE</code>/<code>DELETE</code> constam, mas a view faz <code>JOIN</code> de três tabelas e, por isso, o PostgreSQL não a trata como atualizável. Na prática, as escritas falham.</li>
+<li><strong>Dados envolvidos.</strong> São dados públicos do SIGAA, então a leitura aberta pode ser aceitável ou até desejada (por exemplo, para a busca funcionar sem login). O ponto é que isso deve ser uma <strong>decisão consciente</strong>, e hoje parece ser consequência do padrão do Supabase.</li>
+<li><strong>Não é usada pela aplicação.</strong> O backend só usa a <code>service_role</code> (ver abaixo), então a leitura anônima da view não é necessária para o funcionamento atual. Ela existe apenas porque o Supabase concede os privilégios por padrão.</li>
+</ul>
+<p>Opções para o grupo avaliar (<strong>não aplicadas</strong>):</p>
+<pre><code class="language-sql">-- Opção A: manter a leitura pública, mas só leitura (remove privilégios de escrita)
+REVOKE INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER
+    ON vw_professor_disciplina FROM anon, authenticated;
+
+-- Opção B: restringir a leitura a usuários logados
+REVOKE ALL ON vw_professor_disciplina FROM anon;
+
+-- Opção C: fazer a view respeitar o RLS de quem consulta (PostgreSQL 15+).
+-- Exige criar políticas de SELECT nas três tabelas de base, senão a view passa a retornar vazio.
+ALTER VIEW vw_professor_disciplina SET (security_invoker = true);
+</code></pre>
+<p><strong>Recomendação:</strong> a opção B (ou uma variação que revogue de <code>anon</code> e <code>authenticated</code>), pois o backend usa a <code>service_role</code>, que não é afetada por <code>REVOKE</code>. Antes de aplicar, buscar no repositório por <code>vw_professor_disciplina</code> e conferir que nenhum código a consulta com outra chave.</p>
+<h3 id="como-a-aplicacao-acessa-o-banco">Como a aplicação acessa o banco</h3>
+<p>Pelo <code>.env_example</code> e pelo módulo <code>supabase_db.py</code>:</p>
+<ul>
+<li>A aplicação é um backend Flask. As variáveis são <code>SECRET_KEY</code>, <code>SUPABASE_URL</code>, <code>SUPABASE_SERVICE_KEY</code> e <code>FLASK_DEBUG</code>.</li>
+<li>O cliente Supabase é criado <strong>somente com a <code>SUPABASE_SERVICE_KEY</code></strong>. Não há <code>anon key</code> na configuração.</li>
+<li>O próprio código documenta que a service key fica só no servidor, nunca em templates.</li>
+<li>Existe um segundo cliente (<code>novo_cliente</code>) usado para validar a senha de um usuário sem alterar o cliente principal.</li>
+</ul>
+<p>Consequências:</p>
+<ol>
+<li><strong>O RLS não protege o caminho da aplicação</strong>, pois a <code>service_role</code> o ignora. Toda regra de autorização (quem pode editar ou apagar o quê) é responsabilidade do código Flask.</li>
+<li>O RLS sem políticas funciona como <strong>trava de segurança</strong>: se alguém usar a anon key ou um token de usuário diretamente contra a API do Supabase, não consegue ler nem escrever nas tabelas. A única exceção é a view, tratada acima.</li>
+<li>Políticas que usam <code>auth.uid()</code> só teriam efeito se um cliente acessasse o Supabase com o token do usuário, o que a aplicação atual não faz.</li>
+</ol>
+<h3 id="divergencia-entre-o-script-do-repositorio-e-o-banco">Divergência entre o script do repositório e o banco</h3>
+<p>O banco real tem RLS ativo nas cinco tabelas, mas o script de <code>docs/migrations/</code> <strong>não contém</strong> nenhum <code>ENABLE ROW LEVEL SECURITY</code>. Quem recriar o banco só com o script obtém tabelas com RLS desligado e, pelos privilégios padrão do Supabase, legíveis e graváveis por <code>anon</code> com a chave pública. Isso contradiz o critério da #90 de que o script recria o esquema, e abre o banco.</p>
+<p>Proposta de acréscimo ao final do script (idempotente; o banco atual já está assim, então não muda nada nele):</p>
+<pre><code class="language-sql">-- PROPOSTA: não aplicar sem aprovação do grupo.
+ALTER TABLE professores ENABLE ROW LEVEL SECURITY;
+ALTER TABLE disciplinas ENABLE ROW LEVEL SECURITY;
+ALTER TABLE turmas      ENABLE ROW LEVEL SECURITY;
+ALTER TABLE perfis      ENABLE ROW LEVEL SECURITY;
+ALTER TABLE avaliacoes  ENABLE ROW LEVEL SECURITY;
+
+-- Sem políticas: acesso apenas pela service_role (backend e scraper).
+-- Opcional, mas recomendado: tirar os privilégios padrão dos papéis públicos.
+REVOKE ALL ON professores, disciplinas, turmas, perfis, avaliacoes
+    FROM anon, authenticated;
+REVOKE ALL ON vw_professor_disciplina FROM anon, authenticated;
+</code></pre>
+<h2 id="6-proposta-tabela-comentarios">6. Proposta: tabela <code>comentarios</code></h2>
+<blockquote>
+<p><strong>Status: proposta para revisão do grupo. SQL não aplicado.</strong></p>
+</blockquote>
+<h3 id="61-decisoes-de-projeto">6.1 Decisões de projeto</h3>
+<table>
+<thead>
+<tr>
+<th>Tema</th>
+<th>Proposta</th>
+<th>Motivo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ligação com usuário</td>
+<td><code>usuario_id</code> → <code>perfis(id)</code></td>
+<td>Mesmo padrão de <code>avaliacoes</code>.</td>
+</tr>
+<tr>
+<td>Ligação com professor</td>
+<td><code>professor_id</code> → <code>professores(id)</code>, <code>NOT NULL</code></td>
+<td>O comentário é sempre sobre um professor.</td>
+</tr>
+<tr>
+<td>Ligação com disciplina</td>
+<td><code>disciplina_id</code> → <code>disciplinas(id)</code>, <strong>opcional</strong></td>
+<td>Permite comentar o professor em geral ou numa disciplina específica.</td>
+</tr>
+<tr>
+<td>Quantidade por usuário</td>
+<td><strong>1 comentário por usuário por professor</strong></td>
+<td>Evita spam e mantém o comentário como complemento da avaliação.</td>
+</tr>
+<tr>
+<td>Exclusão</td>
+<td><code>ON DELETE CASCADE</code> em usuário e professor; <code>SET NULL</code> em disciplina</td>
+<td>Segue o padrão do esquema, sem perder o comentário se a disciplina sumir.</td>
+</tr>
+<tr>
+<td>Tamanho do texto</td>
+<td>de 10 a 1000 caracteres</td>
+<td>Evita comentários vazios e textos gigantes.</td>
+</tr>
+<tr>
+<td>Edição</td>
+<td><code>atualizado_em</code> mantido por trigger</td>
+<td>Mostra se o comentário foi editado.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="62-sql-proposto">6.2 SQL proposto</h3>
+<pre><code class="language-sql">-- PROPOSTA: não aplicar sem aprovação do grupo.
+
+CREATE TABLE IF NOT EXISTS comentarios (
+    id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+    usuario_id UUID NOT NULL REFERENCES perfis(id) ON DELETE CASCADE,
+    professor_id BIGINT NOT NULL REFERENCES professores(id) ON DELETE CASCADE,
+    disciplina_id BIGINT REFERENCES disciplinas(id) ON DELETE SET NULL,
+    texto TEXT NOT NULL,
+    criado_em TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    atualizado_em TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    CONSTRAINT ck_comentarios_texto_tamanho
+        CHECK (char_length(btrim(texto)) BETWEEN 10 AND 1000),
+    CONSTRAINT uq_comentarios_usuario_professor UNIQUE (usuario_id, professor_id)
+);
+
+-- Listagem dos comentários de um professor, do mais recente ao mais antigo
+CREATE INDEX IF NOT EXISTS idx_comentarios_professor_criado
+    ON comentarios (professor_id, criado_em DESC);
+
+-- Mantém atualizado_em
+CREATE OR REPLACE FUNCTION set_atualizado_em()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.atualizado_em = NOW();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_comentarios_atualizado_em
+    BEFORE UPDATE ON comentarios
+    FOR EACH ROW EXECUTE FUNCTION set_atualizado_em();
+
+-- RLS
+ALTER TABLE comentarios ENABLE ROW LEVEL SECURITY;
+
+-- Leitura pública (ajustar para &quot;to authenticated&quot; se o grupo preferir).
+-- Atenção: as demais tabelas não têm política; os comentários seriam os primeiros.
+CREATE POLICY comentarios_select_publico
+    ON comentarios FOR SELECT
+    TO anon, authenticated
+    USING (true);
+
+-- Só o próprio usuário cria comentário em seu nome
+CREATE POLICY comentarios_insert_proprio
+    ON comentarios FOR INSERT
+    TO authenticated
+    WITH CHECK (auth.uid() = usuario_id);
+
+-- Só o autor edita
+CREATE POLICY comentarios_update_proprio
+    ON comentarios FOR UPDATE
+    TO authenticated
+    USING (auth.uid() = usuario_id)
+    WITH CHECK (auth.uid() = usuario_id);
+
+-- Só o autor apaga
+CREATE POLICY comentarios_delete_proprio
+    ON comentarios FOR DELETE
+    TO authenticated
+    USING (auth.uid() = usuario_id);
+</code></pre>
+<h3 id="63-pontos-para-o-grupo-decidir">6.3 Pontos para o grupo decidir</h3>
+<ol>
+<li><strong>Um por professor ou um por professor + disciplina?</strong> A proposta usa um por professor. Para um por disciplina, trocar a unicidade por <code>(usuario_id, professor_id, disciplina_id)</code> e tornar <code>disciplina_id</code> <code>NOT NULL</code>.</li>
+<li><strong>Exigir avaliação antes de comentar?</strong> Seria possível acrescentar ao <code>WITH CHECK</code> do insert um <code>EXISTS (SELECT 1 FROM avaliacoes ...)</code>. A proposta não exige.</li>
+<li><strong>Políticas de RLS em <code>comentarios</code>?</strong> A aplicação acessa o banco só pela <code>service_role</code> (seção 5), então as políticas abaixo não afetam o caminho atual. Opções: (a) manter o padrão das outras tabelas, com RLS ativo e <strong>sem políticas</strong>; (b) incluir as políticas como defesa extra caso um dia o frontend use o token do usuário. A proposta traz as políticas da opção (b), que podem ser removidas.</li>
+<li><strong>Moderação:</strong> não há denúncia nem remoção por administrador. Se necessário, criar uma coluna <code>oculto BOOLEAN</code> e um papel de moderação em uma issue futura.</li>
+<li><strong>Exibição do autor:</strong> o comentário exibe <code>perfis.username</code>? Como o backend lê com a <code>service_role</code>, basta fazer o <code>JOIN</code> no código. Se um dia o acesso for direto, a leitura de <code>perfis</code> precisará de política.</li>
+</ol>
+<h3 id="64-onde-cada-regra-e-aplicada">6.4 Onde cada regra é aplicada</h3>
+<table>
+<thead>
+<tr>
+<th>Regra</th>
+<th>Onde é garantida</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Um comentário por usuário e professor</td>
+<td>Banco: <code>UNIQUE (usuario_id, professor_id)</code>. O backend deve tratar o erro de duplicidade.</td>
+</tr>
+<tr>
+<td>Tamanho do texto (10 a 1000)</td>
+<td>Banco: <code>CHECK</code>. O backend deve validar antes para devolver mensagem amigável.</td>
+</tr>
+<tr>
+<td>Só o autor edita ou apaga</td>
+<td><strong>Backend (Flask)</strong>, pois a <code>service_role</code> ignora o RLS. As políticas só reforçam.</td>
+</tr>
+<tr>
+<td><code>usuario_id</code> do comentário</td>
+<td>Sempre tirado da sessão autenticada no servidor, <strong>nunca</strong> de campo de formulário.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="7-como-recriar-o-banco">7. Como recriar o banco</h2>
+<ol>
+<li>Criar um projeto Supabase vazio.</li>
+<li>No <strong>SQL Editor</strong>, executar o script de <code>docs/migrations/</code> (e, se aprovado, o bloco de RLS da seção 5).</li>
+<li>Copiar <code>.env_example</code> para <code>.env</code> e preencher:</li>
+<li><code>SECRET_KEY</code>: gerar com <code>python -c "import secrets; print(secrets.token_hex(32))"</code>.</li>
+<li><code>SUPABASE_URL</code>: URL do projeto (o código remove sufixos como <code>/rest/v1</code>).</li>
+<li><code>SUPABASE_SERVICE_KEY</code>: chave <code>service_role</code> em <em>Project Settings → API</em>. É secreta: não commitar e não expor em templates.</li>
+<li><code>FLASK_DEBUG</code>: <code>0</code>, ou <code>1</code> somente em desenvolvimento local.</li>
+<li>Executar o scraper do SIGAA para popular <code>professores</code>, <code>disciplinas</code> e <code>turmas</code>.</li>
+<li>A tabela <code>comentarios</code> só entra depois da aprovação da proposta da seção 6.</li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado para \u00e1rea de transfer\u00eancia", "clipboard.copy": "Copiar para \u00e1rea de transfer\u00eancia", "search.result.more.one": "mais 1 nesta p\u00e1gina", "search.result.more.other": "# mais nesta p\u00e1gina", "search.result.none": "Nenhum documento encontrado", "search.result.one": "1 documento encontrado", "search.result.other": "# documentos encontrados", "search.result.placeholder": "Digite para iniciar a busca", "search.result.term.missing": "Ausente", "select.version": "Selecione a vers\u00e3o"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.c21346df.min.js"></script>
+      
+    
+  </body>
+</html>
