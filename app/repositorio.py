@@ -77,7 +77,8 @@ class UsuarioRepository:
         return True, usuario_id
 
     def autenticar(self, username, senha):
-        """Valida username + senha. Retorna {'access_token', 'refresh_token'} ou None."""
+        """Valida username + senha. Retorna {'access_token', 'refresh_token'},
+        'email_nao_confirmado' se aguarda verificação, ou None."""
         perfil = (self.cliente.table('perfis').select('id').eq('username', username.strip().lower())
                   .limit(1).execute().data)
         if not perfil:
@@ -87,7 +88,10 @@ class UsuarioRepository:
             # Cliente descartável: o login não pode alterar a sessão do cliente principal.
             resposta = self.fabrica_cliente().auth.sign_in_with_password(
                 {'email': email, 'password': senha})
-        except AuthError:
+        except AuthError as erro:
+            if getattr(erro, 'code', '') == 'email_not_confirmed' \
+                    or 'not confirmed' in str(erro).lower():
+                return 'email_nao_confirmado'
             return None
         return _sessao_para_dict(resposta)
 

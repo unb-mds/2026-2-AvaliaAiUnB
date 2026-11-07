@@ -24,6 +24,14 @@ def _quer_html():
     return request.form.get('formato') == 'html' or request.accept_mimetypes.best == 'text/html'
 
 
+MENSAGEM_CADASTRO_CONFIRMACAO = (
+    'Usuário criado com sucesso! Verifique seu e-mail para confirmar e ativar sua conta.'
+)
+MENSAGEM_EMAIL_NAO_CONFIRMADO = (
+    'Confirme seu e-mail antes de entrar. Verifique sua caixa de entrada.'
+)
+
+
 @auth_bp.route("/cadastro", methods=["GET", "POST"])
 @limitar_cadastro
 def cadastro():
@@ -34,10 +42,10 @@ def cadastro():
     if _quer_html():
         if erros:
             return render_template('cadastro.html', erros=erros, dados=dados), status
-        return render_template('cadastro.html', sucesso='Usuário criado com sucesso!'), 200
+        return render_template('cadastro.html', sucesso=MENSAGEM_CADASTRO_CONFIRMACAO), 200
     if erros:
         return jsonify({'erro': 'Revise os dados de cadastro.', 'erros': erros}), status
-    return jsonify({"mensagem": "Usuário criado com sucesso!"}), 201
+    return jsonify({"mensagem": MENSAGEM_CADASTRO_CONFIRMACAO}), 201
 
 
 @auth_bp.route("/login", methods=["GET", "POST"])
@@ -48,6 +56,11 @@ def login():
         return render_template("login.html")
 
     sessao = auth_controller.autenticar(request.form)
+
+    if sessao == "email_nao_confirmado":
+        if _quer_html():
+            return render_template("login.html", erro=MENSAGEM_EMAIL_NAO_CONFIRMADO), 403
+        return jsonify({"erro": MENSAGEM_EMAIL_NAO_CONFIRMADO}), 403
 
     # Mensagem genérica de propósito: não revelar se o usuário existe ou não.
     if sessao is None:

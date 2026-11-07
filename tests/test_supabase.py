@@ -160,10 +160,12 @@ class TestUsuarios(unittest.TestCase):
         self.assertTrue(ok)
         self.assertFalse(self.cliente.auth.usuarios[usuario_id]['email_confirmado'])
 
-        # Conta ainda não confirmada não pode autenticar
-        self.assertIsNone(self.usuarios.autenticar('clara', 'senha123'))
+        # ANTES de confirmar o e-mail:
+        # Senha errada retorna None; senha certa retorna 'email_nao_confirmado'
+        self.assertIsNone(self.usuarios.autenticar('clara', 'errada123'))
+        self.assertEqual(self.usuarios.autenticar('clara', 'senha123'), 'email_nao_confirmado')
 
-        # Depois de confirmar o e-mail, a conta fica ativa e retorna a sessão
+        # DEPOIS de confirmar o e-mail, a conta fica ativa e retorna a sessão
         self.cliente.auth.confirmar_email('clara@gmail.com')
         sessao = self.usuarios.autenticar('clara', 'senha123')
         self.assertIsInstance(sessao, dict)
@@ -402,6 +404,31 @@ class TestFluxoWeb(unittest.TestCase):
         self.assertNotIn('JOSÉ ÁVILA', html_perfil_ana)
         html_prof_1 = self.web.get('/professores/1').get_data(as_text=True)
         self.assertIn('0 avaliações', html_prof_1)
+
+    def test_conta_so_fica_ativa_depois_de_confirmar_email(self):
+        #Faz o cadastro via HTML e verifica a mensagem pedindo confirmação de e-mail
+        resp_cad = self.postar('/cadastro', data=dict(
+            nome='Ana', username='ana', email='ana@gmail.com',
+            senha='senha123', confirmar_senha='senha123', formato='html'))
+        self.assertEqual(resp_cad.status_code, 200)
+        html_cad = resp_cad.get_data(as_text=True)
+        self.assertIn('confirma', html_cad.lower())
+        self.assertIn('e-mail', html_cad.lower())
+
+        #Tenta entrar antes de confirmar o e-mail -> bloqueado (403) com aviso de confirmação
+        resp_login_html = self.entrar()
+        self.assertEqual(resp_login_html.status_code, 403)
+        self.assertIn('Confirme seu e-mail', resp_login_html.get_data(as_text=True))
+
+        resp_login_json = self.postar('/login', data={'username': 'ana', 'senha': 'senha123'})
+        self.assertEqual(resp_login_json.status_code, 403)
+        self.assertIn('Confirme seu e-mail', resp_login_json.get_json()['erro'])
+
+        #Confirma o e-mail -> conta fica ativa e login funciona
+        self.cliente.auth.confirmar_email('ana@gmail.com')
+        resp_ativo = self.entrar()
+        self.assertEqual(resp_ativo.status_code, 303)
+
 
 class TestEsquemaBanco(unittest.TestCase):
     def test_migration_sql_contem_tabelas_view_e_constraints_atuais(self):
