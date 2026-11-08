@@ -507,6 +507,21 @@ class TestEsquemaBanco(unittest.TestCase):
 
             self.assertEqual(c_servico, {'url': 'https://exemplo.supabase.co', 'key': 'chave-servico-secreta'})
             self.assertEqual(c_publico, {'url': 'https://exemplo.supabase.co', 'key': 'chave-publica-anon'})
+
+        # Sem SUPABASE_ANON_KEY deve falhará.
+        with patch.dict(
+            os.environ,
+            {
+                'SUPABASE_URL': 'https://exemplo.supabase.co',
+                'SUPABASE_SERVICE_KEY': 'chave-servico-secreta',
+                'SUPABASE_ANON_KEY': '',
+            },
+            clear=False,
+        ), patch('app.supabase_db._carregar_env'):
+            supabase_db._cliente_publico = None
+            self.assertFalse(supabase_db.credenciais_publicas_configuradas())
+            with self.assertRaises(RuntimeError):
+                supabase_db.novo_cliente_publico()
             supabase_db._cliente = None
             supabase_db._cliente_publico = None
 

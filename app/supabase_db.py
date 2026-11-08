@@ -32,12 +32,7 @@ def _chave_servico():
 
 
 def _chave_publica():
-    return (
-        os.getenv('SUPABASE_ANON_KEY')
-        or os.getenv('SUPABASE_PUBLIC_KEY')
-        or os.getenv('SUPABASE_KEY')
-        or ''
-    ).strip()
+    return (os.getenv('SUPABASE_ANON_KEY') or '').strip()
 
 
 def credenciais_configuradas() -> bool:
@@ -47,7 +42,7 @@ def credenciais_configuradas() -> bool:
 
 def credenciais_publicas_configuradas() -> bool:
     _carregar_env()
-    return bool(_url() and (_chave_publica() or _chave_servico()))
+    return bool(_url() and _chave_publica())
 
 
 def novo_cliente():
@@ -63,8 +58,7 @@ def novo_cliente_publico():
     if not credenciais_publicas_configuradas():
         raise RuntimeError('SUPABASE_URL e SUPABASE_ANON_KEY precisam estar no .env')
     from supabase import create_client
-    chave = _chave_publica() or _chave_servico()
-    return create_client(_url(), chave)
+    return create_client(_url(), _chave_publica())
 
 
 def get_supabase():
