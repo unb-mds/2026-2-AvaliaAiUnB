@@ -18,6 +18,11 @@
   --md-code-bg-color: #e8edf6;
 }
 
+/* Modo escuro: azul mais claro nos links e no título, para dar contraste */
+[data-md-color-scheme="slate"] {
+  --md-typeset-a-color: #8ab4ff;
+}
+
 /* Cabeçalho da página inicial */
 .hero {
   text-align: center;
@@ -25,7 +30,7 @@
 }
 
 .hero h1 {
-  color: var(--md-primary-fg-color);
+  color: var(--md-typeset-a-color);
   font-weight: 700;
   margin-bottom: 0.4rem;
 }
