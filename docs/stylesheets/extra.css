@@ -1,0 +1,41 @@
+/* Azul e branco, o mesmo padrão visual do site AvaliaAi */
+:root > * {
+  --md-primary-fg-color: #1d4ed8;
+  --md-primary-fg-color--light: #3b82f6;
+  --md-primary-fg-color--dark: #1e3a8a;
+  --md-primary-bg-color: #ffffff;
+  --md-primary-bg-color--light: #dbeafe;
+}
+
+/* Cabeçalho da página inicial */
+.hero {
+  text-align: center;
+  padding: 1.5rem 0 0.5rem;
+}
+
+.hero h1 {
+  color: var(--md-primary-fg-color);
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+}
+
+.hero p {
+  font-size: 1.05rem;
+  max-width: 38rem;
+  margin: 0.4rem auto 1rem;
+}
+
+/* Cards um pouco mais arredondados e com destaque ao passar o mouse */
+.md-typeset .grid.cards > ul > li,
+.md-typeset .grid > .card {
+  border-radius: 0.6rem;
+}
+
+.md-typeset .grid.cards > ul > li:hover {
+  border-color: var(--md-primary-fg-color);
+}
+
+/* Imagens e diagramas */
+.md-typeset img {
+  border-radius: 0.5rem;
+}
