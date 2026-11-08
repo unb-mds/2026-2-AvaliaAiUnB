@@ -7,6 +7,17 @@
   --md-primary-bg-color--light: #dbeafe;
 }
 
+/* Modo claro mais suave: fundo levemente azulado e texto que não é preto puro */
+[data-md-color-scheme="default"] {
+  --md-default-bg-color: #f3f6fb;
+  --md-default-fg-color: #1f2a3d;
+  --md-default-fg-color--light: #4a5a73;
+  --md-default-fg-color--lighter: #8a97ab;
+  --md-default-fg-color--lightest: #dde4ef;
+  --md-typeset-color: #1f2a3d;
+  --md-code-bg-color: #e8edf6;
+}
+
 /* Cabeçalho da página inicial */
 .hero {
   text-align: center;
@@ -25,13 +36,67 @@
   margin: 0.4rem auto 1rem;
 }
 
+/* Os três botões: mesma cor, mesmo tamanho, alinhados */
+.hero .hero-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+  max-width: 42rem;
+  margin: 1.25rem auto 0.5rem;
+}
+
+.hero .hero-actions p {
+  display: flex;
+  margin: 0;
+  max-width: none;
+  font-size: 0.85rem;
+}
+
+.hero .hero-actions .md-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  flex: 1;
+  margin: 0;
+  box-sizing: border-box;
+  padding: 0.625em 1em;
+  white-space: nowrap;
+}
+
+@media screen and (min-width: 48em) {
+  .hero .hero-actions {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
 /* Cards um pouco mais arredondados e com destaque ao passar o mouse */
 .md-typeset .grid.cards > ul > li,
 .md-typeset .grid > .card {
+  position: relative;
   border-radius: 0.6rem;
 }
 
 .md-typeset .grid.cards > ul > li:hover {
+  border-color: var(--md-primary-fg-color);
+}
+
+/* Card inteiro clicável: o link cobre o card todo */
+.md-typeset .grid.cards > ul > li a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 0.6rem;
+}
+
+/* No modo claro, cards brancos sobre o fundo suave */
+[data-md-color-scheme="default"] .md-typeset .grid.cards > ul > li {
+  background: #ffffff;
+  border-color: #d9e2ef;
+  box-shadow: 0 1px 2px rgba(31, 42, 61, 0.06);
+}
+
+[data-md-color-scheme="default"] .md-typeset .grid.cards > ul > li:hover {
   border-color: var(--md-primary-fg-color);
 }
 
