@@ -21,6 +21,8 @@ theme:
         icon: material/weather-sunny
         name: Ativar modo claro
   features:
+    - navigation.tabs
+    - navigation.sections
     - navigation.top
     - navigation.footer
     - content.code.copy
@@ -46,9 +48,14 @@ exclude_docs: |
   IMPLEMENTACAO_26_36_37.md
 nav:
   - Início: index.md
-  - Como Usar o Scraper: COMO_USAR_SCRAPER.md
-  - Documento de Visão (Story Map e User Stories): DOCUMENTO_DE_VISAO.md
-  - Diagramas de Arquitetura: ARQUITETURA.md
-  - Pipeline: pipeline.md
-  - Auditoria de Segurança: AUDITORIA_SEGURANCA.md
-  - Link do Figma: "https://www.figma.com/board/PgqkPopVXOiSqm9gD5RRNv/AvaliaAi---Template-MDS?node-id=0-1&p=f&t=Rxu6jVCgeVZHCyg2-0"
+  - Projeto:
+    - Documento de Visão: DOCUMENTO_DE_VISAO.md
+    - Protótipo no Figma: "https://www.figma.com/board/PgqkPopVXOiSqm9gD5RRNv/AvaliaAi---Template-MDS?node-id=0-1&p=f&t=Rxu6jVCgeVZHCyg2-0"
+  - Arquitetura:
+    - Diagramas de Arquitetura: ARQUITETURA.md
+    - Modelo de Dados: "Modelo de Dados.md"
+  - Desenvolvimento:
+    - Como Usar o Scraper: COMO_USAR_SCRAPER.md
+    - Pipeline: pipeline.md
+  - Segurança:
+    - Auditoria de Segurança: AUDITORIA_SEGURANCA.md
