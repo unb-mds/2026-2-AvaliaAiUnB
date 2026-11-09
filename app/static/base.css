@@ -351,3 +351,79 @@ textarea:focus-visible,
 .preenche-96 { width: 96%; }
 .preenche-98 { width: 98%; }
 .preenche-100 { width: 100%; }
+
+/* Texto só para leitores de tela */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Menu de acesso rápido (três tracinhos) no topo */
+.topo-esquerda {
+    display: flex;
+    align-items: center;
+    gap: var(--espaco-3);
+    min-width: 0;
+}
+
+.menu {
+    position: relative;
+}
+
+.menu > summary {
+    width: var(--altura-controle);
+    padding: 0;
+    list-style: none;
+}
+
+.menu > summary::-webkit-details-marker {
+    display: none;
+}
+
+.menu-icone {
+    width: 24px;
+    height: 24px;
+}
+
+.menu-painel {
+    position: absolute;
+    top: calc(100% + var(--espaco-2));
+    left: 0;
+    z-index: 10;
+    box-sizing: border-box;
+    width: 260px;
+    max-width: calc(100vw - 2 * var(--margem-lateral));
+    padding: var(--espaco-2);
+    border: 1px solid var(--cor-divisor);
+    border-radius: var(--raio-card);
+    background-color: var(--cor-superficie);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
+.menu-painel a {
+    display: flex;
+    align-items: center;
+    min-height: var(--altura-controle);
+    padding: 0 var(--espaco-3);
+    border-radius: var(--raio);
+    color: var(--cor-texto);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.menu-painel a:hover {
+    background-color: var(--cor-fundo-suave);
+    color: var(--cor-principal);
+}
+
+/* Dentro do painel branco o foco volta a ser azul */
+.menu-painel :focus-visible {
+    outline-color: var(--cor-principal);
+}

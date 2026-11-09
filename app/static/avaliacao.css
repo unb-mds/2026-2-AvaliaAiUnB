@@ -35,17 +35,70 @@ h1 {
     padding-left: var(--espaco-6);
 }
 
-.form-group {
-    margin-bottom: var(--espaco-4);
+/* Notas de 1 a 5 como botões de rádio */
+.nota-grupo {
+    margin: 0 0 var(--espaco-5);
+    padding: 0;
+    border: 0;
+    min-width: 0;
 }
 
-.form-group label {
-    margin: 0 0 var(--espaco-2);
+.nota-grupo legend {
+    padding: 0;
+    margin-bottom: var(--espaco-2);
+    font-weight: 700;
 }
 
-.form-group select {
-    max-width: 100%;
-    padding: var(--espaco-2) var(--espaco-3);
+.notas-opcoes {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: var(--espaco-2);
+}
+
+.notas-opcoes input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+
+.notas-opcoes label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--altura-controle);
+    margin: 0;
+    border: 1px solid var(--cor-borda-campo);
+    border-radius: var(--raio);
+    background-color: var(--cor-superficie);
+    color: var(--cor-texto);
+    font-size: var(--texto-titulo-card);
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.notas-opcoes label:hover {
+    background-color: var(--cor-fundo-suave);
+}
+
+.notas-opcoes input:checked + label {
+    border-color: var(--cor-principal);
+    background-color: var(--cor-principal);
+    color: var(--cor-superficie);
+}
+
+.notas-opcoes input:focus-visible + label {
+    outline: var(--foco-largura) solid var(--cor-principal);
+    outline-offset: var(--foco-distancia);
+}
+
+.notas-escala {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--espaco-3);
+    margin: var(--espaco-2) 0 0;
+    color: var(--cor-texto-secundario);
+    font-size: var(--texto-pequeno);
 }
 
 .acoes {

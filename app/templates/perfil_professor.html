@@ -60,10 +60,10 @@
         {% if disciplinas %}
         <form method="get" class="card filtro-disciplina">
             <input type="hidden" name="next" value="{{ next_url }}">
-            <div class="campo">
+            <div class="campo campo-busca">
                 <label for="disciplina_id">Disciplina</label>
 
-                <select name="disciplina_id" id="disciplina_id">
+                <select name="disciplina_id" id="disciplina_id" data-placeholder="Digite o nome ou o código da disciplina">
                     {% for item in disciplinas %}
                     <option value="{{ item.id }}" {% if item.id == disciplina.id %}selected{% endif %}>
                         {{ item.nome }}{% if item.codigo %} — {{ item.codigo }}{% endif %}
@@ -74,6 +74,7 @@
 
             <button type="submit" class="botao botao-primario">Consultar</button>
         </form>
+        <script src="{{ url_for('static', filename='campo-busca.js') }}" defer></script>
 
         <section class="card medias" aria-labelledby="titulo-medias">
             <h2 id="titulo-medias">Médias Consolidadas</h2>

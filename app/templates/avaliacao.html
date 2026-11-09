@@ -43,29 +43,28 @@
             >
 
             {% for criterio, titulo in criterios.items() %}
-            <div class="form-group campo">
-                <label for="{{ criterio }}">
-                    {{ titulo }} (1 a 5)
-                </label>
+            <fieldset class="nota-grupo">
+                <legend>{{ titulo }} (1 a 5)</legend>
 
-                <select name="{{ criterio }}" id="{{ criterio }}" required>
-                    <option value="">Selecione...</option>
-
+                <div class="notas-opcoes">
                     {% for nota in range(1, 6) %}
-                    <option
+                    <input
+                        type="radio"
+                        name="{{ criterio }}"
+                        id="{{ criterio }}-{{ nota }}"
                         value="{{ nota }}"
-                        {% if dados.get(criterio) == nota|string %}selected{% endif %}
+                        {% if dados.get(criterio) == nota|string %}checked{% endif %}
+                        required
                     >
-                        {{ nota }}
-                        {% if nota == 1 %}
-                            — {{ 'Muito fácil' if criterio == 'dificuldade' else 'Muito ruim' }}
-                        {% elif nota == 5 %}
-                            — {{ 'Muito difícil' if criterio == 'dificuldade' else 'Excelente' }}
-                        {% endif %}
-                    </option>
+                    <label for="{{ criterio }}-{{ nota }}">{{ nota }}</label>
                     {% endfor %}
-                </select>
-            </div>
+                </div>
+
+                <p class="notas-escala">
+                    <span>1 = {{ 'Muito fácil' if criterio == 'dificuldade' else 'Muito ruim' }}</span>
+                    <span>5 = {{ 'Muito difícil' if criterio == 'dificuldade' else 'Excelente' }}</span>
+                </p>
+            </fieldset>
             {% endfor %}
 
             <div class="acoes">

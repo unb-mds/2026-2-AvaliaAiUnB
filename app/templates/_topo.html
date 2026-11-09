@@ -1,15 +1,35 @@
-{# Faixa do topo compartilhada (home e busca). Espera `usuario` no contexto. Estilos em base.css. #}
+{# Faixa do topo compartilhada. Espera `usuario` no contexto. Estilos em base.css, script em topo.js. #}
 <header class="topo">
     <div class="topo-conteudo">
-        {# Ícone temporário (capelo), até a identidade visual definitiva #}
-        <a class="marca" href="{{ url_for('main.index') }}" title="Voltar ao início">
-            <svg class="marca-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-                <path d="m2 9 10-5 10 5-10 5L2 9Z"></path>
-                <path d="M6 11.5V16c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"></path>
-                <path d="M22 9v6"></path>
-            </svg>
-            <span>AvaliaUnB</span>
-        </a>
+        <div class="topo-esquerda">
+            <details class="menu">
+                <summary class="botao botao-secundario">
+                    <svg class="menu-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true" focusable="false">
+                        <path d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                    <span class="sr-only">Menu de acesso rápido</span>
+                </summary>
+                <nav class="menu-painel" aria-label="Menu principal">
+                    <a href="{{ url_for('main.index') }}">Início</a>
+                    <a href="{{ url_for('professores.listar') }}">Consultar professores</a>
+                    <a href="{{ url_for('professores.comparar') }}">Comparar professores</a>
+                    <a href="{{ url_for('professores.ranking') }}">Ranking de professores</a>
+                    {% if usuario %}
+                    <a href="/perfil">Meu perfil</a>
+                    {% endif %}
+                </nav>
+            </details>
+
+            {# Ícone temporário (capelo), até a identidade visual definitiva #}
+            <a class="marca" href="{{ url_for('main.index') }}" title="Voltar ao início">
+                <svg class="marca-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                    <path d="m2 9 10-5 10 5-10 5L2 9Z"></path>
+                    <path d="M6 11.5V16c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"></path>
+                    <path d="M22 9v6"></path>
+                </svg>
+                <span>AvaliaUnB</span>
+            </a>
+        </div>
         <nav class="topo-conta" aria-label="Conta">
             {% if usuario %}
             <a href="/perfil" class="botao botao-secundario">Olá, {{ usuario.nome }}</a>
@@ -25,3 +45,4 @@
         </nav>
     </div>
 </header>
+<script src="{{ url_for('static', filename='topo.js') }}" defer></script>

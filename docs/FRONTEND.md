@@ -13,15 +13,15 @@ separado para executar essas telas.
 | `cadastro.html` | Cadastro, validações e mensagem de sucesso | `base.css`, `auth.css` |
 | `login.html` | Login e mensagem de erro | `base.css`, `auth.css` |
 | `lista_professores.html` | Filtros, catálogo paginado, média geral em estrelas e estados sem resultado | `indicadores.css` (que importa `base.css`), `lista_professores.css` |
-| `perfil_professor.html` | Disciplinas, indicadores, média geral, comparação e avaliação | `indicadores.css`, `perfil_professor.css` |
-| `avaliacao.html` | Criação e edição de notas | `indicadores.css`, `avaliacao.css` |
+| `perfil_professor.html` | Disciplinas (campo digitável), indicadores, média geral, comparação e avaliação | `indicadores.css`, `perfil_professor.css` |
+| `avaliacao.html` | Criação e edição de notas (botões de 1 a 5) | `indicadores.css`, `avaliacao.css` |
 | `perfil.html` | Avaliações do usuário e ações de editar e excluir | `base.css`, `perfil.css` |
-| `comparacao.html` | Seleção e comparação de professores | `indicadores.css`, `comparacao.css` |
-| `ranking.html` | Classificação e estado sem professores elegíveis | `indicadores.css` |
+| `comparacao.html` | Escolha por nome e comparação de professores | `indicadores.css`, `comparacao.css` |
+| `ranking.html` | Classificação e estado sem professores elegíveis | `indicadores.css`, `ranking.css` |
 
-Fragmentos reutilizados: `_topo.html` (faixa azul com marca, conta e Sair, usada
-na home, na busca, no perfil do professor e no perfil do usuário; espera `usuario`
-no contexto) e `_macros.html` (macro `nota`, que formata notas com vírgula e sem
+Fragmentos reutilizados: `_topo.html` (faixa azul com o menu de acesso rápido de três
+traços, a marca, a conta e o Sair, usada na home, na busca, na comparação, no ranking
+e nos dois perfis; espera `usuario` no contexto) e `_macros.html` (macro `nota`, que formata notas com vírgula e sem
 decimal quando inteiras, como 5 em vez de 5,0).
 
 As rotas preparam os dados e chamam `render_template`. Os nomes dos endpoints,
@@ -62,6 +62,12 @@ precisam virar classes de CSS.
 Cores, Arial, espaçamentos, raios e alturas seguem o design system e vêm das
 variáveis de `base.css`. O ranking ainda não usa o novo visual e será removido em
 outra issue.
+
+Scripts em `app/static/` (a política de segurança só aceita scripts do próprio
+domínio): `topo.js` fecha o menu do topo ao clicar fora ou apertar Esc, e
+`campo-busca.js` transforma os `<select>` dentro de `.campo-busca` (professores na
+comparação e disciplina no perfil do professor) em campos digitáveis com sugestões.
+O `<select>` continua no formulário, então a tela funciona sem JavaScript.
 
 ## Design system e visual final
 
