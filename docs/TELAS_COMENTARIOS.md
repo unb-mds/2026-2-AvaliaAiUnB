@@ -3,8 +3,10 @@
 Protótipos da #112 para revisar a experiência em uma tela estreita. Os fluxos
 seguem a [especificação da #116](COMENTARIOS.md) e os componentes do
 [design system](DESIGN_SYSTEM.md). Os nomes e textos das telas são exemplos.
-O perfil de professor organiza os relatos em uma seção própria, ao lado das
-notas.
+O perfil do professor oferece as seções **Notas** e **Comentários**. Dar
+estrelas e escrever um relato são ações separadas. Quem pode usar as duas
+escolhe uma delas ou faz ambas em qualquer ordem. Depois de enviar uma, a
+pessoa pode voltar ao perfil e encerrar ou escolher a outra.
 
 ## Listar
 

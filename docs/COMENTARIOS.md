@@ -9,8 +9,8 @@ O SQL dessa proposta permanece como referência e não é aplicado por este trab
 
 ## Objetivo
 
-Permitir relatos sobre a experiência pedagógica com um professor, complementando
-as notas objetivas. O conteúdo deve tratar de aspectos como didática, organização,
+Permitir relatos sobre a experiência pedagógica com um professor. O conteúdo
+deve tratar de aspectos como didática, organização,
 avaliação e disponibilidade, com contexto útil para outros estudantes.
 
 ## Quem pode consultar e participar
@@ -65,20 +65,17 @@ confere a sessão, impede votos no próprio texto e grava a reação com unicida
 por conta e comentário. A lista mostra as contagens, sem revelar quem reagiu.
 Reações não alteram a ordem cronológica da lista, as notas ou o ranking.
 
-## Relação entre avaliação e comentário
+## Estrelas e comentários
 
-A proposta mantém comentário e avaliação como registros independentes,
-conforme o desenho inicial da #109:
+Dar estrelas e escrever um comentário são ações independentes. A pessoa pode
+usar só uma delas ou as duas na ordem que preferir. Para a mesma disciplina,
+pode comentar primeiro e dar estrelas mais tarde, ou dar estrelas primeiro
+e comentar depois. Cada ação tem seu próprio formulário e envio.
 
-- Não é obrigatório ter enviado notas antes de comentar.
 - Criar, editar ou excluir comentário não altera notas, médias ou ranking.
 - Editar ou excluir uma avaliação não remove o comentário.
 - Avaliação e comentário têm limites independentes de um registro por
   usuário, professor e disciplina.
-
-Exigir avaliação prévia é uma alternativa que o grupo pode aprovar. Nesse caso,
-será preciso definir qual avaliação habilita o comentário e o que acontece
-quando ela é excluída, além de ajustar a validação e a proposta de dados.
 
 ## Fluxos para as telas da #112
 
@@ -193,7 +190,7 @@ rotina de descarte fica para a implementação após revisão do grupo.
 | C01 | Leitura pública e participação com conta comum e e-mail verificado de qualquer domínio. Sem espaço ou perfil exclusivo para professores | Aguardando revisão |
 | C02 | Disciplina obrigatória. Uma pessoa pode escrever um comentário por disciplina ministrada pelo professor | Aguardando revisão |
 | C03 | Texto simples de 10 a 1.000 caracteres | Aguardando revisão |
-| C04 | Comentário independente de avaliação prévia | Aguardando revisão |
+| C04 | Estrelas e comentários são opcionais e independentes. A pessoa pode usar só uma opção ou ambas em qualquer ordem | Aguardando revisão |
 | C05 | Comentários anônimos em público, com autoria privada vinculada à conta | Aguardando revisão |
 | C06 | Denúncia privada e moderação por responsáveis autorizados | Aguardando revisão e projeto de dados |
 | C07 | Ocultação motivada, sem republicação automática por edição | Aguardando revisão |
@@ -223,6 +220,8 @@ acompanham estas regras.
   passar uma crítica respeitosa e encaminha um caso ambíguo sem publicar.
 - O filtro também cobre edições. Falhas deixam o texto disponível para tentar
   de novo, e edições bloqueadas preservam a última versão aprovada.
+- Uma conta autorizada a usar as duas ações consegue enviar só estrelas,
+  publicar só um comentário ou fazer os dois em qualquer ordem.
 - As notas e os resultados de ranking e comparação não mudam por um comentário.
 - A identidade do denunciante e os dados privados não aparecem na listagem pública.
 - As telas cobrem vazio, envio, erro, edição, confirmação de exclusão e ocultação.

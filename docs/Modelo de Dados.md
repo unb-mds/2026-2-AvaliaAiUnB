@@ -375,7 +375,9 @@ REVOKE ALL ON comentarios_reacoes FROM PUBLIC, anon, authenticated;
    unicidade inclusive para comentários ocultados. O backend valida se a
    disciplina foi ministrada pelo professor ao criar, trocar a disciplina ou
    aprovar textos em revisão.
-2. **Exigir avaliação antes de comentar?** Seria possível acrescentar ao `WITH CHECK` do insert um `EXISTS (SELECT 1 FROM avaliacoes ...)`. A proposta não exige.
+2. **Registros independentes.** Comentários e avaliações por estrelas são
+   gravados em tabelas separadas. Cada operação verifica suas próprias
+   permissões e campos, independentemente de haver registro na outra tabela.
 3. **Leitura pública anônima.** O backend lista comentários visíveis e agrega
    reações. A resposta traz o ID do comentário, texto, disciplina, datas e
    contagens. Exclui IDs de contas, nomes, usernames e e-mails.
