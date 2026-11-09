@@ -1,0 +1,27 @@
+{# Faixa do topo compartilhada (home e busca). Espera `usuario` no contexto. Estilos em base.css. #}
+<header class="topo">
+    <div class="topo-conteudo">
+        {# Ícone temporário (capelo), até a identidade visual definitiva #}
+        <a class="marca" href="{{ url_for('main.index') }}" title="Voltar ao início">
+            <svg class="marca-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                <path d="m2 9 10-5 10 5-10 5L2 9Z"></path>
+                <path d="M6 11.5V16c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"></path>
+                <path d="M22 9v6"></path>
+            </svg>
+            <span>AvaliaUnB</span>
+        </a>
+        <nav class="topo-conta" aria-label="Conta">
+            {% if usuario %}
+            <a href="/perfil" class="botao botao-secundario">Olá, {{ usuario.nome }}</a>
+            <form action="/logout" method="POST" class="form-sair">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="formato" value="html">
+                <button type="submit" class="botao botao-secundario">Sair</button>
+            </form>
+            {% else %}
+            <a href="/login" class="botao botao-secundario">Login</a>
+            <a href="/cadastro" class="botao botao-secundario">Cadastro</a>
+            {% endif %}
+        </nav>
+    </div>
+</header>

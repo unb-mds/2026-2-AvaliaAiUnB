@@ -8,49 +8,7 @@ body {
     line-height: 1.5;
 }
 
-/* Faixa do topo em largura total: a conta fica no canto direito da tela */
-.topo {
-    background-color: var(--cor-principal);
-    color: var(--cor-superficie);
-}
-
-.topo-conteudo {
-    box-sizing: border-box;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--espaco-3);
-    padding: var(--espaco-4) var(--margem-lateral);
-}
-
-.marca {
-    font-size: var(--texto-titulo-card);
-    font-weight: 700;
-}
-
-.topo-conta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--espaco-2);
-    min-width: 0;
-    margin-left: auto;
-}
-
-.topo-conta .botao {
-    max-width: 100%;
-    overflow-wrap: anywhere;
-}
-
-.form-sair {
-    margin: 0;
-}
-
-/* O contorno azul padrão some sobre o fundo azul do topo */
-.topo :focus-visible {
-    outline-color: var(--cor-superficie);
-}
-
+/* O topo (.topo, .topo-conta) vem de base.css */
 .conteudo {
     box-sizing: border-box;
     max-width: var(--largura-conteudo);

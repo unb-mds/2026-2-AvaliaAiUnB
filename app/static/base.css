@@ -69,6 +69,7 @@ textarea:focus-visible,
     justify-content: center;
     box-sizing: border-box;
     min-height: var(--altura-controle);
+    margin: 0;
     padding: var(--espaco-2) var(--espaco-4);
     border: 1px solid transparent;
     border-radius: var(--raio);
@@ -197,3 +198,60 @@ textarea:focus-visible,
     color: var(--cor-erro);
     font-weight: 700;
 }
+
+/* Faixa do topo em largura total */
+.topo {
+    background-color: var(--cor-principal);
+    color: var(--cor-superficie);
+}
+
+.topo-conteudo {
+    box-sizing: border-box;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--espaco-3);
+    padding: var(--espaco-4) var(--margem-lateral);
+}
+
+.marca {
+    color: inherit;
+    font-size: var(--texto-titulo-card);
+    font-weight: 700;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--espaco-2);
+    min-height: var(--altura-controle);
+}
+
+.marca-icone {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+}
+
+/* O contorno azul padrão some sobre o fundo azul do topo */
+.topo :focus-visible {
+    outline-color: var(--cor-superficie);
+}
+
+/* Ações de conta no topo (login e cadastro, ou perfil e sair) */
+.topo-conta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espaco-2);
+    min-width: 0;
+    margin-left: auto;
+}
+
+.topo-conta .botao {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+}
+
+.form-sair {
+    margin: 0;
+}
+

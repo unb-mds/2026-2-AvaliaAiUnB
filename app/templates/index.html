@@ -8,24 +8,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
 </head>
 <body>
-    <header class="topo">
-        <div class="topo-conteudo">
-            <span class="marca">AvaliaUnB</span>
-            <nav class="topo-conta" aria-label="Conta">
-                {% if usuario %}
-                <a href="/perfil" class="botao botao-secundario">Olá, {{ usuario.nome }}</a>
-                <form action="/logout" method="POST" class="form-sair">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <input type="hidden" name="formato" value="html">
-                    <button type="submit" class="botao botao-secundario">Sair</button>
-                </form>
-                {% else %}
-                <a href="/login" class="botao botao-secundario">Login</a>
-                <a href="/cadastro" class="botao botao-secundario">Cadastro</a>
-                {% endif %}
-            </nav>
-        </div>
-    </header>
+    {% include '_topo.html' %}
 
     <main class="conteudo">
         <h1>Bem-vindo ao AvaliaAi</h1>
