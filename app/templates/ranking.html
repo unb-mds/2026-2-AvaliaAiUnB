@@ -12,19 +12,17 @@
 
     <link rel="stylesheet" href="{{ url_for('static', filename='indicadores.css') }}">
 
+    <link rel="stylesheet" href="{{ url_for('static', filename='ranking.css') }}">
+
 </head>
 
 <body>
 
+    {% include '_topo.html' %}
+
     <main>
 
-        <nav aria-label="Navegação principal" class="navegacao-ranking">
-
-            <a href="{{ url_for('main.index') }}">Início</a>
-
-            <a href="{{ url_for('professores.listar') }}">Consultar professores</a>
-
-        </nav>
+        <p class="voltar"><a href="{{ url_for('professores.listar') }}">&larr; Consultar professores</a></p>
 
         <h1>Ranking de Professores</h1>
 
@@ -102,7 +100,7 @@
 
         {% else %}
 
-        <p role="status">Ainda não há professores com pelo menos {{ minimo_avaliacoes }} avaliações válidas para o ranking.</p>
+        <p class="mensagem" role="status">Ainda não há professores com pelo menos {{ minimo_avaliacoes }} avaliações válidas para o ranking.</p>
 
         <p><a href="{{ url_for('professores.listar') }}">Consulte os professores e contribua com sua avaliação.</a></p>
 

@@ -148,12 +148,21 @@ class ProfessorRepository:
                             .select('professor_id,disciplina_id,codigo_disciplina,disciplina')
                             .order('professor_id').order('disciplina_id'))
         avaliados = _paginar(lambda: self.cliente.table('avaliacoes')
-                             .select('professor_id').order('id'))
+                             .select(','.join(('professor_id', *CRITERIOS))).order('id'))
         total = Counter(l['professor_id'] for l in avaliados)
+        # Média geral como no ranking: critérios sem a dificuldade, só avaliações válidas.
+        somas = {}
+        for l in avaliados:
+            if all(type(l.get(c)) is int and 1 <= l[c] <= 5 for c in CRITERIOS):
+                soma = somas.setdefault(l['professor_id'], [0, 0])
+                soma[0] += sum(l[c] for c in CRITERIOS_RANKING)
+                soma[1] += 1
+        medias = {pid: s / (n * len(CRITERIOS_RANKING)) for pid, (s, n) in somas.items()}
         por_professor = {}
         for linha in vinculos:
             por_professor.setdefault(linha['professor_id'], []).append(linha)
-        self._catalogo = [({**p, 'total_avaliacoes': total.get(p['id'], 0)},
+        self._catalogo = [({**p, 'total_avaliacoes': total.get(p['id'], 0),
+                            'media_geral': medias.get(p['id'])},
                            self._disciplinas_unicas(por_professor.get(p['id'], [])))
                           for p in professores]
         self._catalogo_em = time.monotonic()

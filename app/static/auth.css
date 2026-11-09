@@ -1,67 +1,95 @@
+/* Login e cadastro. Usa os tokens de base.css. */
 * {
     box-sizing: border-box;
 }
 
 body {
-    font-family: Arial, sans-serif;
-    max-width: 400px;
-    margin: 60px auto;
-    padding: 0 20px;
+    margin: 0;
+    padding: var(--espaco-5) var(--margem-lateral) var(--espaco-7);
+    background-color: var(--cor-fundo-suave);
+    color: var(--cor-texto);
+    font-family: var(--fonte);
+    font-size: var(--texto-base);
+    line-height: 1.5;
+}
+
+.auth {
+    max-width: var(--largura-auth);
+    margin: 0 auto;
+    padding: var(--espaco-5) var(--espaco-4);
+}
+
+a {
+    color: var(--cor-principal);
+}
+
+.voltar {
+    margin: 0 0 var(--espaco-3);
 }
 
 h1 {
-    font-size: 1.4rem;
+    margin: 0 0 var(--espaco-4);
+    font-size: var(--texto-titulo-pagina);
+    line-height: 1.2;
 }
 
 label {
     display: block;
-    margin-top: 12px;
-    font-size: 0.9rem;
+    margin-top: var(--espaco-4);
+    margin-bottom: var(--espaco-1);
+    font-weight: 700;
 }
 
 input {
+    display: block;
     width: 100%;
-    padding: 10px;
-    margin-top: 4px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    min-height: var(--altura-controle);
+    padding: var(--espaco-2) var(--espaco-3);
+    border: 1px solid var(--cor-borda-campo);
+    border-radius: var(--raio);
+    background-color: var(--cor-superficie);
+    color: var(--cor-texto);
+    font: inherit;
 }
 
-button {
-    margin-top: 20px;
-    padding: 10px 16px;
-    cursor: pointer;
+input[type="hidden"] {
+    display: none;
+}
+
+form button {
     width: 100%;
-    border: none;
-    border-radius: 4px;
+    margin-top: var(--espaco-5);
 }
 
 p.link {
-    margin-top: 16px;
-    font-size: 0.9rem;
+    margin: var(--espaco-4) 0 0;
     text-align: center;
 }
 
-@media (max-width: 480px) {
-    body {
-        margin: 30px auto;
-        padding: 0 16px;
-    }
-
-    h1 {
-        font-size: 1.3rem;
-    }
-
-    input,
-    button {
-        font-size: 1rem;
-    }
+.campo-ajuda {
+    margin-top: var(--espaco-1);
 }
 
-.erro-form {
-    color: #a01818;
+/* Mensagens de erro e sucesso */
+.mensagem {
+    margin: 0 0 var(--espaco-4);
 }
 
+ul.mensagem {
+    padding-left: var(--espaco-6);
+}
+
+.erro-form,
 .erro-login {
-    color: red;
+    color: var(--cor-erro);
+}
+
+@media (min-width: 481px) {
+    body {
+        padding-top: var(--espaco-6);
+    }
+
+    .auth {
+        padding: var(--espaco-5);
+    }
 }

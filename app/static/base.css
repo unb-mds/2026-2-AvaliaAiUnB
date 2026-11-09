@@ -1,0 +1,445 @@
+/*
+ * Base compartilhada do design system (docs/DESIGN_SYSTEM.md).
+ * Reúne os tokens e os componentes reutilizáveis. As telas carregam este
+ * arquivo diretamente ou por meio de indicadores.css (@import).
+ */
+
+:root {
+    /* Cores */
+    --cor-superficie: #ffffff;
+    --cor-fundo-suave: #f2f4f7;
+    --cor-texto: #202124;
+    --cor-texto-secundario: #4f5357;
+    --cor-principal: #174b83;
+    --cor-principal-hover: #123c69;
+    --cor-borda-campo: #767676;
+    --cor-divisor: #d4d9df;
+    --cor-erro: #a01818;
+    --cor-erro-hover: #801212;
+    --cor-estrela: #b45309;
+
+    /* Tipografia */
+    --fonte: Arial, sans-serif;
+    --texto-titulo-pagina: 2rem;
+    --texto-titulo-secao: 1.5rem;
+    --texto-titulo-card: 1.25rem;
+    --texto-base: 1rem;
+    --texto-pequeno: 0.875rem;
+
+    /* Espaçamento */
+    --espaco-1: 4px;
+    --espaco-2: 8px;
+    --espaco-3: 12px;
+    --espaco-4: 16px;
+    --espaco-5: 24px;
+    --espaco-6: 32px;
+    --espaco-7: 48px;
+
+    /* Forma e dimensões */
+    --raio: 8px;
+    --raio-card: 12px;
+    --altura-controle: 44px;
+    --largura-conteudo: 720px;
+    --largura-auth: 400px;
+    --margem-lateral: 16px;
+    --foco-largura: 2px;
+    --foco-distancia: 2px;
+}
+
+@media (min-width: 481px) {
+    :root {
+        --margem-lateral: 24px;
+    }
+}
+
+/* Foco visível por teclado */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+    outline: var(--foco-largura) solid var(--cor-principal);
+    outline-offset: var(--foco-distancia);
+}
+
+/* Botões */
+.botao {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-height: var(--altura-controle);
+    margin: 0;
+    padding: var(--espaco-2) var(--espaco-4);
+    border: 1px solid transparent;
+    border-radius: var(--raio);
+    font-family: inherit;
+    font-size: var(--texto-base);
+    font-weight: 700;
+    line-height: 1.5;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.botao-primario {
+    background-color: var(--cor-principal);
+    border-color: var(--cor-principal);
+    color: var(--cor-superficie);
+}
+
+.botao-primario:hover {
+    background-color: var(--cor-principal-hover);
+    border-color: var(--cor-principal-hover);
+}
+
+.botao-secundario {
+    background-color: var(--cor-superficie);
+    border-color: var(--cor-principal);
+    color: var(--cor-principal);
+}
+
+.botao-secundario:hover {
+    background-color: var(--cor-fundo-suave);
+}
+
+.botao-destrutivo {
+    background-color: var(--cor-erro);
+    border-color: var(--cor-erro);
+    color: var(--cor-superficie);
+}
+
+.botao-destrutivo:hover {
+    background-color: var(--cor-erro-hover);
+    border-color: var(--cor-erro-hover);
+}
+
+.botao:disabled,
+.botao[aria-disabled="true"] {
+    background-color: var(--cor-fundo-suave);
+    border-color: var(--cor-divisor);
+    color: var(--cor-texto-secundario);
+    cursor: not-allowed;
+}
+
+/* Campos: rótulo visível, ajuda e erro junto ao controle */
+.campo {
+    margin-bottom: var(--espaco-4);
+}
+
+.campo label {
+    display: block;
+    margin: 0 0 var(--espaco-2);
+    font-weight: 700;
+}
+
+.campo input,
+.campo select,
+.campo textarea {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: var(--altura-controle);
+    padding: var(--espaco-2) var(--espaco-3);
+    border: 1px solid var(--cor-borda-campo);
+    border-radius: var(--raio);
+    background-color: var(--cor-superficie);
+    color: var(--cor-texto);
+    font: inherit;
+}
+
+.campo input:disabled,
+.campo select:disabled,
+.campo textarea:disabled {
+    background-color: var(--cor-fundo-suave);
+    color: var(--cor-texto-secundario);
+}
+
+.campo [aria-invalid="true"] {
+    border-color: var(--cor-erro);
+}
+
+.campo-ajuda {
+    margin: var(--espaco-1) 0 0;
+    color: var(--cor-texto-secundario);
+    font-size: var(--texto-pequeno);
+    line-height: 1.5;
+}
+
+.campo-erro {
+    margin: var(--espaco-1) 0 0;
+    color: var(--cor-erro);
+    font-size: var(--texto-pequeno);
+    font-weight: 700;
+    line-height: 1.5;
+}
+
+/* Card */
+.card {
+    box-sizing: border-box;
+    padding: var(--espaco-4);
+    border: 1px solid var(--cor-divisor);
+    border-radius: var(--raio-card);
+    background-color: var(--cor-superficie);
+}
+
+/* Mensagens: informação, erro e estado vazio */
+.mensagem {
+    margin: var(--espaco-4) 0;
+    padding: var(--espaco-3) var(--espaco-4);
+    border-radius: var(--raio);
+    background-color: var(--cor-fundo-suave);
+    color: var(--cor-texto);
+    line-height: 1.5;
+}
+
+.mensagem-erro {
+    border-left: 4px solid var(--cor-erro);
+    color: var(--cor-erro);
+    font-weight: 700;
+}
+
+/* Faixa do topo em largura total */
+.topo {
+    background-color: var(--cor-principal);
+    color: var(--cor-superficie);
+}
+
+.topo-conteudo {
+    box-sizing: border-box;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--espaco-3);
+    padding: var(--espaco-4) var(--margem-lateral);
+}
+
+.marca {
+    color: inherit;
+    font-size: var(--texto-titulo-card);
+    font-weight: 700;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--espaco-2);
+    min-height: var(--altura-controle);
+}
+
+.marca-icone {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+}
+
+/* O contorno azul padrão some sobre o fundo azul do topo */
+.topo :focus-visible {
+    outline-color: var(--cor-superficie);
+}
+
+/* Ações de conta no topo (login e cadastro, ou perfil e sair) */
+.topo-conta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espaco-2);
+    min-width: 0;
+    margin-left: auto;
+}
+
+.topo-conta .botao {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+}
+
+.form-sair {
+    margin: 0;
+}
+
+
+/* Nota com estrela (média geral) */
+.estrela {
+    color: var(--cor-estrela);
+}
+
+.nota-geral {
+    margin: 0;
+    font-size: var(--texto-titulo-card);
+    line-height: 1.3;
+}
+
+.nota-geral .estrela {
+    font-size: 1.25em;
+}
+
+.nota-rotulo,
+.nota-escala {
+    color: var(--cor-texto-secundario);
+    font-size: var(--texto-pequeno);
+}
+
+/* Cinco estrelas preenchidas conforme a nota. A CSP bloqueia style inline,
+   então o preenchimento (nota / 5, em %) vem de classes .preenche-N. */
+.estrelas {
+    position: relative;
+    display: inline-block;
+    font-size: 1.5rem;
+    line-height: 1;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.estrelas-fundo {
+    color: #c4c9d0;
+}
+
+.estrelas-cheias {
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    color: var(--cor-estrela);
+}
+.preenche-0 { width: 0%; }
+.preenche-2 { width: 2%; }
+.preenche-4 { width: 4%; }
+.preenche-6 { width: 6%; }
+.preenche-8 { width: 8%; }
+.preenche-10 { width: 10%; }
+.preenche-12 { width: 12%; }
+.preenche-14 { width: 14%; }
+.preenche-16 { width: 16%; }
+.preenche-18 { width: 18%; }
+.preenche-20 { width: 20%; }
+.preenche-22 { width: 22%; }
+.preenche-24 { width: 24%; }
+.preenche-26 { width: 26%; }
+.preenche-28 { width: 28%; }
+.preenche-30 { width: 30%; }
+.preenche-32 { width: 32%; }
+.preenche-34 { width: 34%; }
+.preenche-36 { width: 36%; }
+.preenche-38 { width: 38%; }
+.preenche-40 { width: 40%; }
+.preenche-42 { width: 42%; }
+.preenche-44 { width: 44%; }
+.preenche-46 { width: 46%; }
+.preenche-48 { width: 48%; }
+.preenche-50 { width: 50%; }
+.preenche-52 { width: 52%; }
+.preenche-54 { width: 54%; }
+.preenche-56 { width: 56%; }
+.preenche-58 { width: 58%; }
+.preenche-60 { width: 60%; }
+.preenche-62 { width: 62%; }
+.preenche-64 { width: 64%; }
+.preenche-66 { width: 66%; }
+.preenche-68 { width: 68%; }
+.preenche-70 { width: 70%; }
+.preenche-72 { width: 72%; }
+.preenche-74 { width: 74%; }
+.preenche-76 { width: 76%; }
+.preenche-78 { width: 78%; }
+.preenche-80 { width: 80%; }
+.preenche-82 { width: 82%; }
+.preenche-84 { width: 84%; }
+.preenche-86 { width: 86%; }
+.preenche-88 { width: 88%; }
+.preenche-90 { width: 90%; }
+.preenche-92 { width: 92%; }
+.preenche-94 { width: 94%; }
+.preenche-96 { width: 96%; }
+.preenche-98 { width: 98%; }
+.preenche-100 { width: 100%; }
+
+/* Texto só para leitores de tela */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Menu de acesso rápido (três tracinhos) no topo */
+.topo-esquerda {
+    display: flex;
+    align-items: center;
+    gap: var(--espaco-3);
+    min-width: 0;
+}
+
+.menu {
+    position: relative;
+}
+
+.menu > summary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--altura-controle);
+    height: var(--altura-controle);
+    padding: 0;
+    border-radius: var(--raio);
+    color: var(--cor-superficie);
+    list-style: none;
+    cursor: pointer;
+}
+
+.menu > summary:hover {
+    background-color: rgba(255, 255, 255, 0.16);
+}
+
+.menu > summary::-webkit-details-marker {
+    display: none;
+}
+
+.menu-icone {
+    width: 24px;
+    height: 24px;
+}
+
+.menu-painel {
+    position: absolute;
+    top: calc(100% + var(--espaco-2));
+    left: 0;
+    z-index: 10;
+    box-sizing: border-box;
+    width: 260px;
+    max-width: calc(100vw - 2 * var(--margem-lateral));
+    padding: var(--espaco-2);
+    border: 1px solid var(--cor-divisor);
+    border-radius: var(--raio-card);
+    background-color: var(--cor-superficie);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
+.menu-painel a {
+    display: flex;
+    align-items: center;
+    min-height: var(--altura-controle);
+    padding: 0 var(--espaco-3);
+    border-radius: var(--raio);
+    color: var(--cor-texto);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.menu-painel a:hover {
+    background-color: var(--cor-fundo-suave);
+    color: var(--cor-principal);
+}
+
+/* Dentro do painel branco o foco volta a ser azul */
+.menu-painel :focus-visible {
+    outline-color: var(--cor-principal);
+}
+
+/* O atributo hidden perde para display definido em .campo select; este vale sempre */
+[hidden] {
+    display: none !important;
+}

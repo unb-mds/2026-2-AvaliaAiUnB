@@ -12,17 +12,21 @@
 
     <link rel="stylesheet" href="{{ url_for('static', filename='indicadores.css') }}">
 
+    <link rel="stylesheet" href="{{ url_for('static', filename='comparacao.css') }}">
+
 </head>
 
 <body>
 
+    {% include '_topo.html' %}
+
     <main>
 
-        <p><a href="{{ url_for('professores.listar') }}">Consultar professores</a></p>
+        <p class="voltar"><a href="{{ url_for('professores.listar') }}">&larr; Consultar professores</a></p>
 
         <h1>Comparar professores</h1>
 
-        <p class="ajuda">Selecione dois professores para consultar suas médias em todas as disciplinas e períodos.</p>
+        <p class="ajuda">Digite o nome de dois professores para consultar suas médias em todas as disciplinas e períodos.</p>
 
         {% if professores|length >= 2 %}
 
@@ -30,11 +34,11 @@
 
             {% for campo in ('professor_1', 'professor_2') %}
 
-            <div>
+            <div class="campo campo-busca">
 
                 <label for="{{ campo }}">Professor {{ loop.index }}</label>
 
-                <select id="{{ campo }}" name="{{ campo }}" required {% if campo in erros %}aria-invalid="true" aria-describedby="erro-{{ campo }}"{% endif %}>
+                <select id="{{ campo }}" name="{{ campo }}" data-placeholder="Digite o nome do professor" required {% if campo in erros %}aria-invalid="true" aria-describedby="erro-{{ campo }}"{% endif %}>
 
                     <option value="">Selecione um professor</option>
 
@@ -46,19 +50,21 @@
 
                 </select>
 
-                {% if campo in erros %}<p class="erros" id="erro-{{ campo }}" role="alert">{{ erros[campo] }}</p>{% endif %}
+                {% if campo in erros %}<p class="erros campo-erro" id="erro-{{ campo }}" role="alert">{{ erros[campo] }}</p>{% endif %}
 
             </div>
 
             {% endfor %}
 
-            <button type="submit">Comparar</button>
+            <button type="submit" class="botao botao-primario">Comparar</button>
 
         </form>
 
+        <script src="{{ url_for('static', filename='campo-busca.js') }}" defer></script>
+
         {% else %}
 
-        <p role="status">É necessário ter pelo menos dois professores cadastrados para comparar.</p>
+        <p class="mensagem" role="status">É necessário ter pelo menos dois professores cadastrados para comparar.</p>
 
         {% endif %}
 
@@ -66,7 +72,7 @@
 
         {% for professor in comparacao if not professor.indicadores.quantidade %}
 
-        <p role="status">{{ professor.nome }}: ainda não há avaliações válidas.</p>
+        <p class="mensagem" role="status">{{ professor.nome }}: ainda não há avaliações válidas.</p>
 
         {% endfor %}
 

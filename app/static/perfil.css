@@ -1,16 +1,181 @@
-body { font-family: Arial, sans-serif; max-width: 720px; margin: 40px auto; padding: 0 16px; color: #222; }
-h1 { font-size: 1.5rem; margin-bottom: 8px; }
-h2 { font-size: 1.2rem; margin-top: 32px; border-bottom: 1px solid #ddd; padding-bottom: 8px; }
-p { font-size: 0.95rem; margin: 6px 0; }
-button, .btn { padding: 8px 14px; cursor: pointer; border-radius: 6px; border: 1px solid #ccc; background: #f5f5f5; text-decoration: none; color: #222; font-size: 0.9rem; display: inline-block; }
-.btn-perigo { background: #fee2e2; border-color: #fca5a5; color: #991b1b; }
-.avaliacao-card { border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-bottom: 14px; background: #fafafa; }
-.avaliacao-cabecalho { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px; }
-.notas-lista { display: flex; flex-wrap: wrap; gap: 12px; list-style: none; padding: 0; margin: 12px 0; font-size: 0.9rem; }
-.notas-lista li { background: #fff; border: 1px solid #e5e7eb; padding: 4px 10px; border-radius: 4px; }
-.acoes { display: flex; gap: 10px; align-items: center; margin-top: 10px; }
-.acoes form { margin: 0; }
+/* Perfil do usuário. Usa os tokens de base.css. */
+body {
+    margin: 0;
+    background-color: var(--cor-fundo-suave);
+    color: var(--cor-texto);
+    font-family: var(--fonte);
+    font-size: var(--texto-base);
+    line-height: 1.5;
+}
 
-.form-sair {
-    margin-top: 16px;
+a {
+    color: var(--cor-principal);
+}
+
+.conteudo {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: var(--espaco-4);
+    max-width: var(--largura-conteudo);
+    margin: 0 auto;
+    padding: var(--espaco-5) var(--margem-lateral) var(--espaco-7);
+}
+
+h1 {
+    margin: 0;
+    font-size: var(--texto-titulo-pagina);
+    line-height: 1.2;
+}
+
+h2 {
+    margin: var(--espaco-3) 0 0;
+    font-size: var(--texto-titulo-secao);
+    line-height: 1.3;
+}
+
+h3 {
+    margin: 0;
+    font-size: var(--texto-titulo-card);
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+}
+
+.conteudo .card {
+    padding: var(--espaco-5) var(--espaco-4);
+}
+
+.ajuda {
+    margin: var(--espaco-1) 0 0;
+    color: var(--cor-texto-secundario);
+    font-size: var(--texto-pequeno);
+    overflow-wrap: anywhere;
+}
+
+/* Dados da conta */
+.dados-usuario dl {
+    display: grid;
+    gap: var(--espaco-3);
+    margin: 0;
+}
+
+.dados-usuario dt {
+    color: var(--cor-texto-secundario);
+    font-size: var(--texto-pequeno);
+}
+
+.dados-usuario dd {
+    margin: 0;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+/* Avaliações */
+.avaliacao-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espaco-3);
+}
+
+.notas-lista {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espaco-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.notas-lista li {
+    padding: var(--espaco-1) var(--espaco-3);
+    border-radius: var(--raio);
+    background-color: var(--cor-fundo-suave);
+    font-size: var(--texto-pequeno);
+}
+
+.acoes {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espaco-2);
+    padding-top: var(--espaco-4);
+    border-top: 1px solid var(--cor-divisor);
+}
+
+.acoes > .botao,
+.exclusao > summary {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Apagar: o resumo parece botão e abre a confirmação */
+.exclusao {
+    flex: 1;
+}
+
+.exclusao > summary {
+    list-style: none;
+    border-color: var(--cor-erro);
+    color: var(--cor-erro);
+}
+
+.exclusao > summary::-webkit-details-marker {
+    display: none;
+}
+
+.exclusao > summary:focus-visible {
+    outline: var(--foco-largura) solid var(--cor-principal);
+    outline-offset: var(--foco-distancia);
+}
+
+.confirmacao {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espaco-3);
+    margin-top: var(--espaco-3);
+    padding: var(--espaco-4);
+    border-left: 4px solid var(--cor-erro);
+    border-radius: var(--raio);
+    background-color: var(--cor-fundo-suave);
+}
+
+.confirmacao p {
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+.confirmacao .botao {
+    width: 100%;
+}
+
+.conteudo > .botao {
+    align-self: flex-start;
+}
+
+@media (min-width: 481px) {
+    .conteudo .card {
+        padding: var(--espaco-5);
+    }
+
+    .dados-usuario dl {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .acoes {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+
+    .acoes > .botao,
+    .exclusao > summary {
+        width: auto;
+    }
+
+    .exclusao {
+        flex: 0 1 auto;
+    }
+
+    .confirmacao .botao {
+        width: auto;
+        align-self: flex-start;
+    }
 }

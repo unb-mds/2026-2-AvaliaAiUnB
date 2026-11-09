@@ -1,3 +1,4 @@
+{% from '_macros.html' import nota %}
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -11,70 +12,99 @@
 </head>
 
 <body>
-    <main class="perfil-card">
-        <h1>{{ professor.nome }}</h1>
-        <p><a href="{{ url_for('professores.comparar', professor_1=professor.id) }}">Comparar este professor</a></p>
+    {% include '_topo.html' %}
 
-        <p>
-            <strong>Departamento:</strong>
-            {{ professor.departamento }}
-        </p>
+    <main class="conteudo perfil-card">
+        <p class="voltar"><a href="{{ next_url }}">&larr; Voltar</a></p>
+
+        <section class="card cabecalho-professor" aria-labelledby="titulo-professor">
+            <h1 id="titulo-professor">{{ professor.nome }}</h1>
+            <p class="departamento">
+                <strong>Departamento:</strong>
+                {{ professor.departamento }}
+            </p>
+
+            {# Média geral do professor em todas as disciplinas, sem a dificuldade (como no ranking) #}
+            {% set ns = namespace(soma=0, n=0) %}
+            {% for c in criterios if c != 'dificuldade' and geral.quantidade %}
+            {% set ns.soma = ns.soma + geral.medias[c] %}
+            {% set ns.n = ns.n + 1 %}
+            {% endfor %}
+            <div class="media-geral">
+                {% if ns.n %}
+                <p class="nota-geral"><span class="estrela" aria-hidden="true">★</span> <strong>{{ nota(ns.soma / ns.n) }}</strong> <span class="nota-escala">/ 5</span></p>
+                <p class="ajuda">Média geral · {{ geral.quantidade }} {{ 'avaliação' if geral.quantidade == 1 else 'avaliações' }} em todas as disciplinas. <strong>Não considera a dificuldade.</strong></p>
+                {% else %}
+                <p class="nota-geral"><span class="estrela" aria-hidden="true">★</span> <strong>N/A</strong> <span class="nota-escala">(Não avaliado)</span></p>
+                <p class="ajuda">Média geral: ainda não há avaliações para este professor.</p>
+                {% endif %}
+            </div>
+
+            {% if disciplinas %}
+            <div class="acoes-professor">
+                <a
+                    href="{{ url_for('professores.avaliar', professor_id=professor.id, disciplina_id=disciplina.id, next=next_url) }}"
+                    class="botao botao-primario"
+                >
+                    Avaliar este Professor
+                </a>
+                <a href="{{ url_for('professores.comparar', professor_1=professor.id) }}" class="botao botao-secundario">Comparar este professor</a>
+            </div>
+            {% else %}
+            <div class="acoes-professor">
+                <a href="{{ url_for('professores.comparar', professor_1=professor.id) }}" class="botao botao-secundario">Comparar este professor</a>
+            </div>
+            {% endif %}
+        </section>
 
         {% if disciplinas %}
-        <form method="get">
-            <label for="disciplina_id">Disciplina</label>
+        <form method="get" class="card filtro-disciplina">
+            <input type="hidden" name="next" value="{{ next_url }}">
+            <div class="campo campo-busca">
+                <label for="disciplina_id">Disciplina</label>
 
-            <select name="disciplina_id" id="disciplina_id">
-                {% for item in disciplinas %}
-                <option value="{{ item.id }}" {% if item.id == disciplina.id %}selected{% endif %}>
-                    {{ item.nome }}{% if item.codigo %} — {{ item.codigo }}{% endif %}
-                </option>
-                {% endfor %}
-            </select>
+                <select name="disciplina_id" id="disciplina_id" data-placeholder="Digite o nome ou o código da disciplina">
+                    {% for item in disciplinas %}
+                    <option value="{{ item.id }}" {% if item.id == disciplina.id %}selected{% endif %}>
+                        {{ item.nome }}{% if item.codigo %} — {{ item.codigo }}{% endif %}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
 
-            <button type="submit">Consultar</button>
+            <button type="submit" class="botao botao-primario">Consultar</button>
         </form>
+        <script src="{{ url_for('static', filename='campo-busca.js') }}" defer></script>
 
-        <h2>Médias Consolidadas</h2>
+        <section class="card medias" aria-labelledby="titulo-medias">
+            <h2 id="titulo-medias">Médias Consolidadas</h2>
 
-        <p>{{ disciplina.nome }} · {{ indicadores.quantidade }} avaliações</p>
+            <p class="ajuda resumo-disciplina">{{ disciplina.nome }} · {{ indicadores.quantidade }} avaliações</p>
 
-        {% if indicadores.quantidade %}
-        <ul class="indicadores">
-            {% for criterio, titulo in criterios.items() %}
-            <li>
-                <span>{{ titulo }}</span>
-                <strong>{{ ('%.1f'|format(indicadores.medias[criterio]))|replace('.', ',') }} / 5 <span aria-hidden="true">★</span></strong>
-            </li>
-            {% endfor %}
-        </ul>
+            {% if indicadores.quantidade %}
+            <ul class="indicadores">
+                {% for criterio, titulo in criterios.items() %}
+                <li>
+                    <span>{{ titulo }}</span>
+                    <strong>{{ nota(indicadores.medias[criterio]) }} / 5 <span aria-hidden="true">★</span></strong>
+                </li>
+                {% endfor %}
+            </ul>
 
-        <p class="ajuda">
-            Dificuldade: 1 = muito fácil; 5 = muito difícil.
-            Nos demais critérios, 5 = excelente.
-        </p>
+            <p class="ajuda">
+                Dificuldade: 1 = muito fácil; 5 = muito difícil.
+                Nos demais critérios, 5 = excelente.
+            </p>
 
-        {% else %}
-        <p role="status">
-            Ainda não há avaliações nesta disciplina.
-        </p>
-        {% endif %}
-
-        <div style="display: flex; gap: 10px; align-items: center; margin-top: 20px;">
-            <a href="{{ next_url }}" class="btn-voltar" style="padding: 10px 15px; border: 1px solid #ccc; text-decoration: none; border-radius: 4px; color: #333;">
-                Voltar
-            </a>
-
-            <a
-                href="{{ url_for('professores.avaliar', professor_id=professor.id, disciplina_id=disciplina.id, next=next_url) }}"
-                class="btn-avaliar"
-            >
-                Avaliar este Professor
-            </a>
-        </div>
+            {% else %}
+            <p class="mensagem" role="status">
+                Ainda não há avaliações nesta disciplina.
+            </p>
+            {% endif %}
+        </section>
 
         {% else %}
-        <p>
+        <p class="mensagem" role="status">
             Ainda não há disciplinas cadastradas para este professor.
         </p>
         {% endif %}

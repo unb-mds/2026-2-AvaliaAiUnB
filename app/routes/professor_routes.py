@@ -13,19 +13,22 @@ CAMPOS_FILTRO = ('nome', 'disciplina', 'departamento')
 @professor_bp.get('/comparar')
 def comparar():
     contexto = controller.carregar_comparacao(request.args)
-    return render_template('comparacao.html', **contexto), 400 if contexto['erros'] else 200
+    return render_template('comparacao.html', **contexto,
+                           usuario=obter_usuario_atual()), 400 if contexto['erros'] else 200
 @professor_bp.get('/ranking')
 def ranking():
     professores, minimo_avaliacoes = controller.carregar_ranking()
     return render_template('ranking.html', ranking=professores,
-                           minimo_avaliacoes=minimo_avaliacoes)
+                           minimo_avaliacoes=minimo_avaliacoes,
+                           usuario=obter_usuario_atual())
 
 
 @professor_bp.get('/professores')
 def listar():
     filtros = {campo: request.args.get(campo, '').strip() for campo in CAMPOS_FILTRO}
     return render_template('lista_professores.html', catalogo=controller.catalogo(**filtros),
-                           filtros=filtros, departamentos=controller.departamentos())
+                           filtros=filtros, departamentos=controller.departamentos(),
+                           usuario=obter_usuario_atual())
 
 
 @professor_bp.get('/professores/<int:professor_id>')
@@ -40,7 +43,9 @@ def perfil(professor_id):
 
     return render_template('perfil_professor.html', professor=professor, disciplinas=disciplinas,
                            disciplina=disciplina, indicadores=indicadores,
-                           criterios=controller.criterios(), next_url=next_url)
+                           criterios=controller.criterios(), next_url=next_url,
+                           geral=controller.indicadores(professor_id, None),
+                           usuario=obter_usuario_atual())
 
 @professor_bp.route('/avaliar/<int:professor_id>', methods=['GET', 'POST'])
 @limitar_avaliacao

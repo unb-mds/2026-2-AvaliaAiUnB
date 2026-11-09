@@ -1,81 +1,129 @@
+/* Avaliar e editar avaliação. Carregado depois de indicadores.css. */
 * {
     box-sizing: border-box;
 }
 
 body {
-    font-family: Arial, sans-serif;
-    max-width: 600px;
-    margin: 60px auto;
-    padding: 0 20px;
+    max-width: none;
+    margin: 0;
+    padding: var(--espaco-5) var(--margem-lateral) var(--espaco-7);
+    background-color: var(--cor-fundo-suave);
+    font-size: var(--texto-base);
+    line-height: 1.5;
 }
 
 .avaliacao-container {
-    width: 100%;
+    max-width: var(--largura-conteudo);
+    margin: 0 auto;
+    padding: var(--espaco-5) var(--espaco-4);
 }
 
 h1 {
-    font-size: 1.5rem;
-    margin-bottom: 24px;
+    margin: 0 0 var(--espaco-3);
+    font-size: var(--texto-titulo-pagina);
+    line-height: 1.2;
+    overflow-wrap: anywhere;
 }
 
-.form-group {
-    margin-bottom: 16px;
+.avaliacao-container > p {
+    margin: 0 0 var(--espaco-3);
+    overflow-wrap: anywhere;
 }
 
-label {
-    display: block;
-    margin-bottom: 6px;
-    font-size: 0.95rem;
+.avaliacao-container .mensagem {
+    margin: 0 0 var(--espaco-4);
+    padding-left: var(--espaco-6);
 }
 
-select {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background-color: white;
+/* Notas de 1 a 5 como botões de rádio */
+.nota-grupo {
+    margin: 0 0 var(--espaco-5);
+    padding: 0;
+    border: 0;
+    min-width: 0;
 }
 
-button {
-    width: 100%;
-    margin-top: 8px;
-    padding: 12px 16px;
+.nota-grupo legend {
+    padding: 0;
+    margin-bottom: var(--espaco-2);
+    font-weight: 700;
+}
+
+.notas-opcoes {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: var(--espaco-2);
+}
+
+.notas-opcoes input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+
+.notas-opcoes label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--altura-controle);
+    margin: 0;
+    border: 1px solid var(--cor-borda-campo);
+    border-radius: var(--raio);
+    background-color: var(--cor-superficie);
+    color: var(--cor-texto);
+    font-size: var(--texto-titulo-card);
+    font-weight: 700;
     cursor: pointer;
-    border: none;
-    border-radius: 4px;
-    font-size: 1rem;
+}
+
+.notas-opcoes label:hover {
+    background-color: var(--cor-fundo-suave);
+}
+
+.notas-opcoes input:checked + label {
+    border-color: var(--cor-principal);
+    background-color: var(--cor-principal);
+    color: var(--cor-superficie);
+}
+
+.notas-opcoes input:focus-visible + label {
+    outline: var(--foco-largura) solid var(--cor-principal);
+    outline-offset: var(--foco-distancia);
+}
+
+.notas-escala {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--espaco-3);
+    margin: var(--espaco-2) 0 0;
+    color: var(--cor-texto-secundario);
+    font-size: var(--texto-pequeno);
 }
 
 .acoes {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: var(--espaco-3);
+    margin-top: var(--espaco-5);
 }
 
-.cancelar {
-    display: block;
-    text-align: center;
-    padding: 10px;
+.acoes .botao {
+    width: 100%;
+    margin: 0;
 }
 
-@media (max-width: 480px) {
-    body {
-        margin: 30px auto;
-        padding: 0 16px;
+@media (min-width: 481px) {
+    .avaliacao-container {
+        padding: var(--espaco-5);
     }
 
-    h1 {
-        font-size: 1.3rem;
+    .acoes {
+        flex-direction: row;
+        justify-content: flex-start;
     }
 
-    label {
-        font-size: 1rem;
-    }
-
-    select,
-    button {
-        font-size: 1rem;
+    .acoes .botao {
+        width: auto;
     }
 }
