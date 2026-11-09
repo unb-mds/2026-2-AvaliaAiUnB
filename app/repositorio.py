@@ -8,6 +8,7 @@ import time
 from collections import Counter
 
 from flask import current_app
+from httpx import RequestError
 from supabase_auth.errors import AuthError
 
 from app.supabase_db import get_supabase, novo_cliente
@@ -106,8 +107,9 @@ class UsuarioRepository:
         """Revoga a sessão no servidor do Supabase (logout real)."""
         try:
             self.cliente.auth.admin.sign_out(access_token)
-        except AuthError:
-            pass
+        except (AuthError, RequestError) as erro:
+            current_app.logger.warning("Falha ao revogar a sessão no Supabase (%s).",
+                                       type(erro).__name__)
 
 
 class ProfessorRepository:

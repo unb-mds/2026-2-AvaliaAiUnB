@@ -121,7 +121,12 @@ class AdminFalso:
         self.auth.usuarios.pop(uid, None)
 
     def sign_out(self, token):
-        self.auth.tokens.pop(token, None)
+        usuario_id = self.auth.tokens.get(token)
+        if usuario_id is None:
+            raise AuthApiError('invalid JWT', 401, 'bad_jwt')
+        for tokens in (self.auth.tokens, self.auth.refresh):
+            for chave in [chave for chave, dono in tokens.items() if dono == usuario_id]:
+                del tokens[chave]
 
 
 class AuthFalso:
