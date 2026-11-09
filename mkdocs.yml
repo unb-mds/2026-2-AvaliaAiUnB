@@ -51,6 +51,8 @@ nav:
   - Projeto:
     - Funcionalidades: FUNCIONALIDADES.md
     - Comentários avaliativos: COMENTARIOS.md
+    - Design system: DESIGN_SYSTEM.md
+    - Telas de comentários: TELAS_COMENTARIOS.md
     - Documento de Visão: DOCUMENTO_DE_VISAO.md
     - Protótipo no Figma: "https://www.figma.com/board/PgqkPopVXOiSqm9gD5RRNv/AvaliaAi---Template-MDS?node-id=0-1&p=f&t=Rxu6jVCgeVZHCyg2-0"
   - Arquitetura:

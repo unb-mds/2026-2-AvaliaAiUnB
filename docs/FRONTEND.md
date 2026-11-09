@@ -45,8 +45,9 @@ A [issue #112](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/112) reúne 
 consolidação de cores, tipografia, espaçamentos, componentes e estados. A aplicação do visual nas telas principais está na
 [issue #114](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/114).
 
-O inventário acima registra a interface que existe hoje. O catálogo de padrões
-e os protótipos de comentários são entregues separadamente na #112.
+O inventário acima registra a interface que existe hoje. O
+[design system](DESIGN_SYSTEM.md) reúne o padrão proposto para os componentes.
+Os [protótipos de comentários](TELAS_COMENTARIOS.md) aplicam esse padrão.
 
 As telas futuras de comentários devem seguir a
 [especificação para revisão](COMENTARIOS.md). A #112 depende dessa especificação
