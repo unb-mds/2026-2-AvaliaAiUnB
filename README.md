@@ -201,7 +201,6 @@ Variáveis já definidas no ambiente têm prioridade sobre o `.env`.
 | `SECRET_KEY` | Sim | Assina a sessão Flask e os tokens CSRF. Use uma chave aleatória, privada e estável entre processos e reinícios. A aplicação não inicia se estiver ausente ou vazia. |
 | `SUPABASE_URL` | Sim | URL do projeto Supabase, usada pela aplicação e pelo scraper. |
 | `SUPABASE_SERVICE_KEY` | Sim | Chave de serviço do Supabase, restrita ao servidor. |
-| `SUPABASE_ANON_KEY` | Sim | Chave pública (`anon`) do Supabase, usada nas consultas de leitura pública com RLS ativo. |
 | `FLASK_DEBUG` | Não | Desligado por padrão. Somente em desenvolvimento, habilite com `1`, `true`, `yes` ou `on` (sem distinção de maiúsculas). Outros valores mantêm o debug desligado. |
 
 Gere uma `SECRET_KEY` com `python -c "import secrets; print(secrets.token_hex(32))"`
