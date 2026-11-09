@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 568" width="400" height="568" role="img" aria-labelledby="title description" font-family="Arial, sans-serif">
+  <title id="title">Editar comentário</title>
+  <desc id="description">Formulário de edição com o texto preservado, erro de tamanho e ações de salvar ou cancelar.</desc>
+  <rect x="0" y="0" width="400" height="568" rx="0" fill="#F2F4F7" stroke="none"/>
+  <rect x="0" y="0" width="400" height="58" rx="0" fill="#174B83" stroke="none"/>
+  <text x="16" y="37" font-size="20" font-weight="700" fill="#FFFFFF" text-anchor="start">AvaliaAi UnB</text>
+  <text x="16" y="100" font-size="27" font-weight="700" fill="#202124" text-anchor="start">Editar comentário</text>
+  <text x="16" y="127" font-size="16" font-weight="400" fill="#4F5357" text-anchor="start">Professor de exemplo</text>
+  <rect x="16" y="152" width="368" height="392" rx="12" fill="#FFFFFF" stroke="none"/>
+  <text x="32" y="185" font-size="16" font-weight="700" fill="#202124" text-anchor="start">Disciplina (opcional)</text>
+  <rect x="32" y="197" width="336" height="44" rx="8" fill="#FFFFFF" stroke="#767676"/>
+  <text x="44" y="225" font-size="16" font-weight="400" fill="#202124" text-anchor="start">Disciplina de exemplo</text>
+  <text x="350" y="225" font-size="16" font-weight="700" fill="#4F5357" text-anchor="middle">⌄</text>
+  <text x="32" y="270" font-size="16" font-weight="700" fill="#202124" text-anchor="start">Comentário</text>
+  <rect x="32" y="282" width="336" height="92" rx="8" fill="#FFFFFF" stroke="#A01818"/>
+  <text x="44" y="312" font-size="16" font-weight="400" fill="#202124" text-anchor="start">Aula boa</text>
+  <text x="32" y="400" font-size="14" font-weight="700" fill="#A01818" text-anchor="start">Erro. Escreva pelo menos 10 caracteres.</text>
+  <text x="368" y="428" font-size="14" font-weight="400" fill="#4F5357" text-anchor="end">8 / 1.000</text>
+  <rect x="32" y="463" width="168" height="44" rx="8" fill="#174B83" stroke="none"/>
+  <text x="116" y="490" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">Salvar alterações</text>
+  <rect x="212" y="463" width="156" height="44" rx="8" fill="#FFFFFF" stroke="#174B83"/>
+  <text x="290" y="490" font-size="15" font-weight="700" fill="#174B83" text-anchor="middle">Cancelar</text>
+</svg>
