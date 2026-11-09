@@ -34,8 +34,8 @@ Uma conta de comentários não concede acesso à moderação.
 | Regra | Proposta para revisão |
 |---|---|
 | Professor | Obrigatório e existente no catálogo |
-| Disciplina | Opcional para um comentário geral. Para publicar mais de um comentário, cada relato deve indicar uma disciplina diferente ministrada pelo professor |
-| Quantidade | Por conta e professor, um comentário geral ou um por disciplina. Um comentário geral não pode coexistir com comentários por disciplina da mesma conta naquele perfil |
+| Disciplina | Obrigatória. Deve ter sido ministrada pelo professor |
+| Quantidade | Um comentário por conta, professor e disciplina |
 | Tamanho | De 10 a 1.000 caracteres após remover espaços nas extremidades, conforme o `btrim` e o `char_length` da proposta de banco |
 | Formato | Texto simples; HTML e Markdown não são interpretados |
 | Identificação pública | Rótulo «Comentário anônimo», com vínculo privado à conta para autorizar edição e exclusão |
@@ -48,11 +48,9 @@ de conteúdo. A interpretação exata de texto composto só por espaços deve se
 alinhada com a constraint do banco durante a futura implementação.
 
 A autoria sempre vem da sessão autenticada. O servidor deve ignorar um
-`usuario_id` enviado pelo formulário. Se já houver um relato na disciplina
-selecionada, o servidor orienta o autor a editá-lo. Se houver um comentário
-geral, o autor pode associá-lo a uma disciplina válida antes de escrever
-sobre outra. Se já houver relatos por disciplina, um novo precisa indicar
-uma disciplina em que a conta ainda não comentou.
+`usuario_id` enviado pelo formulário. O servidor valida o vínculo entre a
+disciplina e o professor. Se a conta já tiver comentado nessa combinação,
+o servidor orienta a editar o relato existente.
 Na listagem pública, a API retorna só os campos de exibição e o ID do comentário.
 O servidor usa o vínculo privado para indicar ao autor quais ações estão
 disponíveis na sua sessão.
@@ -75,8 +73,8 @@ conforme o desenho inicial da #109:
 - Não é obrigatório ter enviado notas antes de comentar.
 - Criar, editar ou excluir comentário não altera notas, médias ou ranking.
 - Editar ou excluir uma avaliação não remove o comentário.
-- A avaliação permanece única por usuário, professor e disciplina. Para
-  comentários, a pessoa escolhe um relato geral ou relatos por disciplina.
+- Avaliação e comentário têm limites independentes de um registro por
+  usuário, professor e disciplina.
 
 Exigir avaliação prévia é uma alternativa que o grupo pode aprovar. Nesse caso,
 será preciso definir qual avaliação habilita o comentário e o que acontece
@@ -89,13 +87,12 @@ quando ela é excluída, além de ajustar a validação e a proposta de dados.
 O perfil do professor apresenta os comentários publicados em uma seção
 separada das notas. A lista vazia convida a escrever o primeiro comentário.
 Visitantes veem a opção de entrar ou criar conta para escrever ou reagir.
-Quem já comentou vê a ação de editar o próprio texto. Se o relato estiver
-vinculado a uma disciplina, a pessoa pode escrever sobre outra disciplina
-do mesmo professor.
+Cada relato exibe sua disciplina. Quem já comentou pode editar o próprio
+texto e escrever sobre outra disciplina do mesmo professor.
 
 O formulário informa que o texto será público e a autoria ficará privada.
-Mostra o limite, oferece seleção de disciplina conforme os comentários da
-conta e preserva o texto em erros de validação ou moderação. Durante a
+Mostra o limite, exige a escolha de uma disciplina ministrada pelo professor
+e preserva o texto em erros de validação ou moderação. Durante a
 verificação, a interface evita envios repetidos e só confirma publicação
 quando o texto fica público.
 
@@ -103,21 +100,20 @@ quando o texto fica público.
 
 A edição é exclusiva do autor, preserva a data original e atualiza `atualizado_em`.
 O identificador do professor e a autoria não podem ser alterados pela edição.
-A disciplina pode ser ajustada dentro dos vínculos do mesmo professor, desde
-que a mudança não gere duplicidade nem misture um comentário geral com os
-comentários por disciplina da mesma conta.
+A disciplina pode ser trocada por outra ministrada pelo mesmo professor
+em que a conta ainda não comentou.
 
-A exclusão deve pedir confirmação, identificando o professor e a consequência.
-Depois de excluir, o texto deixa de aparecer e libera a vaga daquele
-comentário geral ou por disciplina. As reações do comentário excluído são removidas.
+A exclusão deve pedir confirmação, identificando o professor, a disciplina
+e a consequência. Depois de excluir, o texto e as reações saem da lista
+e a conta pode voltar a comentar naquela disciplina.
 
 ### Conteúdo ocultado
 
 Um comentário ocultado pela moderação deixa de aparecer na listagem pública.
 O autor recebe o estado e a justificativa; editar o texto não o republica
-automaticamente. Um comentário ocultado continua contando no limite do seu
-escopo, geral ou por disciplina, para evitar que a pessoa o substitua por um
-novo registro e contorne a análise.
+automaticamente. Um comentário ocultado continua contando no limite da
+disciplina, para evitar que a pessoa o substitua por um novo registro e
+contorne a análise.
 O autor pode pedir revisão pelo formulário privado descrito abaixo.
 
 ## Filtro automático antes da publicação
@@ -195,7 +191,7 @@ rotina de descarte fica para a implementação após revisão do grupo.
 | ID | Decisão proposta | Situação |
 |---|---|---|
 | C01 | Leitura pública e participação com conta comum e e-mail verificado de qualquer domínio. Sem espaço ou perfil exclusivo para professores | Aguardando revisão |
-| C02 | Por usuário e professor, um comentário geral ou um comentário por disciplina distinta ministrada pelo professor | Aguardando revisão |
+| C02 | Disciplina obrigatória. Uma pessoa pode escrever um comentário por disciplina ministrada pelo professor | Aguardando revisão |
 | C03 | Texto simples de 10 a 1.000 caracteres | Aguardando revisão |
 | C04 | Comentário independente de avaliação prévia | Aguardando revisão |
 | C05 | Comentários anônimos em público, com autoria privada vinculada à conta | Aguardando revisão |
@@ -215,11 +211,10 @@ acompanham estas regras.
 - Visitantes consultam comentários anônimos e contagens de reações. Entrar com
   conta verificada é obrigatório para comentar, reagir ou denunciar. O fluxo
   aceita, por exemplo, um e-mail Outlook ou de domínio próprio.
-- Duplicidade, limites de texto e disciplina inválida recebem erro claro e
-  preservam o texto preenchido.
+- Duplicidade, limites de texto e disciplina ausente ou inválida recebem erro
+  claro e preservam o texto preenchido.
 - A mesma conta pode comentar Cálculo 1 e Cálculo 2 com o mesmo professor.
-  Um segundo relato em Cálculo 1 é rejeitado. Um comentário geral só pode
-  existir sozinho para aquela conta no perfil, inclusive em envios simultâneos.
+  Um segundo relato em Cálculo 1 é rejeitado, inclusive em envios simultâneos.
 - Só o autor edita ou exclui. O servidor nega tentativas de se passar por outro
   usuário e mantém o vínculo com a conta fora das respostas públicas.
 - Uma conta troca ou desfaz sua reação. Pedidos simultâneos respeitam a

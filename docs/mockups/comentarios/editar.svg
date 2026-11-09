@@ -7,9 +7,9 @@
   <text x="16" y="100" font-size="27" font-weight="700" fill="#202124" text-anchor="start">Editar comentário</text>
   <text x="16" y="127" font-size="16" font-weight="400" fill="#4F5357" text-anchor="start">Professor de exemplo</text>
   <rect x="16" y="152" width="368" height="392" rx="12" fill="#FFFFFF" stroke="none"/>
-  <text x="32" y="185" font-size="16" font-weight="700" fill="#202124" text-anchor="start">Disciplina (opcional)</text>
+  <text x="32" y="185" font-size="16" font-weight="700" fill="#202124" text-anchor="start">Disciplina (obrigatória)</text>
   <rect x="32" y="197" width="336" height="44" rx="8" fill="#FFFFFF" stroke="#767676"/>
-  <text x="44" y="225" font-size="16" font-weight="400" fill="#202124" text-anchor="start">Disciplina de exemplo</text>
+  <text x="44" y="225" font-size="16" font-weight="400" fill="#202124" text-anchor="start">Cálculo 1</text>
   <text x="350" y="225" font-size="16" font-weight="700" fill="#4F5357" text-anchor="middle">⌄</text>
   <text x="32" y="270" font-size="16" font-weight="700" fill="#202124" text-anchor="start">Comentário</text>
   <rect x="32" y="282" width="336" height="92" rx="8" fill="#FFFFFF" stroke="#A01818"/>

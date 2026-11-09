@@ -10,8 +10,9 @@ notas.
 
 ![Perfil com comentários anônimos, contagens de reações e ações de editar, apagar e denunciar](mockups/comentarios/listar.svg)
 
-Visitantes leem os comentários anônimos e suas contagens. A área convida a
-entrar ou criar conta com qualquer e-mail verificado para escrever ou reagir.
+Visitantes leem os comentários anônimos com suas disciplinas e contagens. A
+área convida a entrar ou criar conta com qualquer e-mail verificado para
+escrever ou reagir.
 A pessoa logada vê **Escrever comentário** se ainda puder publicar naquele
 perfil. O exemplo mostra uma conta que já comentou em Cálculo 1 e pode
 escrever sobre outra disciplina. Cada relato da própria conta tem as ações
@@ -27,10 +28,9 @@ ativa, tocar no botão leva ao login sem gravar voto.
 
 ![Formulário com Cálculo 2 selecionado para um novo relato, contador e aviso de verificação automática](mockups/comentarios/escrever.svg)
 
-No primeiro relato, a pessoa pode escolher uma disciplina ou deixar o
-comentário geral. Para escrever outro, precisa escolher uma disciplina
-ministrada pelo mesmo professor em que ainda não comentou. Se houver um
-comentário geral, a tela orienta a vinculá-lo a uma disciplina antes.
+Para publicar, a pessoa precisa escolher uma disciplina ministrada pelo
+professor. Se já tiver um comentário naquela disciplina, a tela oferece a
+opção de editá-lo.
 
 O formulário avisa que o texto será público, a autoria ficará privada e o
 conteúdo passará por verificação. Durante o envio, o botão mostra
@@ -44,18 +44,19 @@ privado até a decisão.
 ![Formulário de edição com texto preservado e alerta do filtro sobre um e-mail no texto](mockups/comentarios/editar.svg)
 
 O autor edita o texto e pode trocar a disciplina para outra ministrada pelo
-professor em que ainda não comentou. O
-exemplo mostra uma edição bloqueada pelo filtro. A última versão aprovada
-continua visível até uma nova versão passar pela verificação. Após uma edição
-aprovada, a lista indica que o comentário foi editado.
+professor em que ainda não comentou. O exemplo mostra uma edição bloqueada
+pelo filtro. A última versão aprovada continua visível até uma nova versão
+passar pela verificação. Após uma edição aprovada, a lista indica que o
+comentário foi editado.
 
 ## Apagar
 
 ![Diálogo com a consequência da exclusão e Cancelar em foco](mockups/comentarios/apagar.svg)
 
-O diálogo avisa que o texto e as reações serão apagados e oferece Cancelar
-antes de Apagar comentário. Após confirmar, a lista é atualizada e o foco retorna a uma
-ação visível. Em falha, o diálogo mantém o contexto e permite tentar novamente.
+O diálogo identifica a disciplina, avisa que o texto e as reações serão
+apagados e oferece Cancelar antes de Apagar comentário. Após confirmar, a
+lista é atualizada e o foco retorna a uma ação visível. Em falha, o diálogo
+mantém o contexto e permite tentar novamente.
 
 ## Denúncia e ocultação
 

@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 692" width="400" height="692" role="img" aria-labelledby="title description" font-family="Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 714" width="400" height="714" role="img" aria-labelledby="title description" font-family="Arial, sans-serif">
   <title id="title">Comentários no perfil do professor</title>
   <desc id="description">Perfil com comentários anônimos separados das notas. A pessoa já comentou em Cálculo 1 e pode escrever sobre outra disciplina. O comentário da outra conta tem Curtir selecionado.</desc>
   <defs>
@@ -7,7 +7,7 @@
       <rect x="2" y="8" width="4" height="10" rx="1"/>
     </g>
   </defs>
-  <rect x="0" y="0" width="400" height="692" fill="#F2F4F7"/>
+  <rect x="0" y="0" width="400" height="714" fill="#F2F4F7"/>
   <rect x="0" y="0" width="400" height="58" rx="0" fill="#174B83" stroke="none"/>
   <text x="16" y="37" font-size="20" font-weight="700" fill="#FFFFFF" text-anchor="start">AvaliaAi UnB</text>
   <text x="16" y="88" font-size="15" font-weight="700" fill="#174B83" text-anchor="start">Voltar à busca</text>
@@ -31,18 +31,19 @@
     <text x="32" y="407" font-size="15" font-weight="700" fill="#174B83">Editar</text>
     <text x="104" y="407" font-size="15" font-weight="700" fill="#A01818">Apagar</text>
     <text x="368" y="407" font-size="14" fill="#4F5357" text-anchor="end">3 curtidas · 0 descurtidas</text>
-    <rect x="16" y="444" width="368" height="168" rx="12" fill="#FFFFFF"/>
+    <rect x="16" y="444" width="368" height="190" rx="12" fill="#FFFFFF"/>
     <text x="32" y="472" font-size="15" font-weight="700" fill="#202124">Comentário anônimo</text>
     <text x="368" y="472" font-size="14" fill="#4F5357" text-anchor="end">08/11/2026</text>
-    <text x="32" y="503" font-size="15" fill="#202124">Os exercícios foram bem organizados.</text>
-    <path d="M32 518h336" stroke="#D4D9DF"/>
-    <rect x="32" y="540" width="94" height="44" rx="8" fill="#174B83"/>
-    <use href="#polegar" x="42" y="551" color="#FFFFFF"/>
-    <text x="69" y="568" font-size="15" font-weight="700" fill="#FFFFFF">8</text>
-    <path d="m94 562 4 4 7-8" fill="none" stroke="#FFFFFF" stroke-width="2"/>
-    <rect x="138" y="540" width="76" height="44" rx="8" fill="#FFFFFF" stroke="#174B83"/>
-    <use href="#polegar" transform="translate(170 572) rotate(180)" color="#174B83"/>
-    <text x="184" y="568" font-size="15" font-weight="700" fill="#174B83">1</text>
-    <text x="368" y="568" font-size="15" font-weight="700" fill="#174B83" text-anchor="end">Denunciar</text>
+    <text x="32" y="496" font-size="14" fill="#4F5357">Cálculo 2</text>
+    <text x="32" y="525" font-size="15" fill="#202124">Os exercícios foram bem organizados.</text>
+    <path d="M32 540h336" stroke="#D4D9DF"/>
+    <rect x="32" y="562" width="94" height="44" rx="8" fill="#174B83"/>
+    <use href="#polegar" x="42" y="573" color="#FFFFFF"/>
+    <text x="69" y="590" font-size="15" font-weight="700" fill="#FFFFFF">8</text>
+    <path d="m94 584 4 4 7-8" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+    <rect x="138" y="562" width="76" height="44" rx="8" fill="#FFFFFF" stroke="#174B83"/>
+    <use href="#polegar" transform="translate(170 594) rotate(180)" color="#174B83"/>
+    <text x="184" y="590" font-size="15" font-weight="700" fill="#174B83">1</text>
+    <text x="368" y="590" font-size="15" font-weight="700" fill="#174B83" text-anchor="end">Denunciar</text>
   </g>
 </svg>
