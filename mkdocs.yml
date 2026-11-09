@@ -50,14 +50,20 @@ nav:
   - Início: index.md
   - Projeto:
     - Funcionalidades: FUNCIONALIDADES.md
+    - Comentários avaliativos: COMENTARIOS.md
+    - Design system: DESIGN_SYSTEM.md
+    - Telas de comentários: TELAS_COMENTARIOS.md
     - Documento de Visão: DOCUMENTO_DE_VISAO.md
     - Protótipo no Figma: "https://www.figma.com/board/PgqkPopVXOiSqm9gD5RRNv/AvaliaAi---Template-MDS?node-id=0-1&p=f&t=Rxu6jVCgeVZHCyg2-0"
   - Arquitetura:
     - Diagramas de Arquitetura: ARQUITETURA.md
     - Modelo de Dados: "Modelo de Dados.md"
   - Desenvolvimento:
+    - Backend: BACKEND.md
+    - Frontend: FRONTEND.md
     - Como Usar o Scraper: COMO_USAR_SCRAPER.md
     - Pipeline: pipeline.md
     - Hospedagem: HOSPEDAGEM.md
   - Segurança:
+    - Cibersegurança: CIBERSEGURANCA.md
     - Auditoria de Segurança: AUDITORIA_SEGURANCA.md

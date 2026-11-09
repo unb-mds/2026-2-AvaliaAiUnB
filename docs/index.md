@@ -129,6 +129,24 @@ Na matrícula, o estudante decide em pouco tempo, e as informações estão espa
 
     Diagramas de contexto, de componentes e a tech stack.
 
+- :material-code-tags: **[Backend](BACKEND.md)**
+
+    ---
+
+    Rotas, sessão, persistência e testes da aplicação.
+
+- :material-monitor: **[Frontend](FRONTEND.md)**
+
+    ---
+
+    Templates, estilos, estados e contribuição.
+
+- :material-comment-outline: **[Comentários avaliativos](COMENTARIOS.md)**
+
+    ---
+
+    Especificação para revisão do grupo.
+
 - :material-shield-check-outline: **[Auditoria de segurança](AUDITORIA_SEGURANCA.md)**
 
     ---

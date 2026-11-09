@@ -90,6 +90,6 @@ Filtros por faixa de nota e volume de avaliações, favoritos, gráficos,
 comentários, denúncias e moderação ainda não têm fluxo implementado.
 
 A [proposta de banco para comentários](https://github.com/unb-mds/2026-2-AvaliaAiUnB/blob/main/docs/Modelo%20de%20Dados.md#6-proposta-tabela-comentarios)
-já está publicada. As regras de participação, quantidade, vínculo com a avaliação,
-denúncia e privacidade serão especificadas e revisadas pelo grupo na
+já está publicada. A [especificação proposta](COMENTARIOS.md) reúne participação,
+quantidade, vínculo com avaliação, denúncia e privacidade para revisão do grupo na
 [issue #116](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/116).
