@@ -378,9 +378,20 @@ textarea:focus-visible,
 }
 
 .menu > summary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: var(--altura-controle);
+    height: var(--altura-controle);
     padding: 0;
+    border-radius: var(--raio);
+    color: var(--cor-superficie);
     list-style: none;
+    cursor: pointer;
+}
+
+.menu > summary:hover {
+    background-color: rgba(255, 255, 255, 0.16);
 }
 
 .menu > summary::-webkit-details-marker {
@@ -426,4 +437,9 @@ textarea:focus-visible,
 /* Dentro do painel branco o foco volta a ser azul */
 .menu-painel :focus-visible {
     outline-color: var(--cor-principal);
+}
+
+/* O atributo hidden perde para display definido em .campo select; este vale sempre */
+[hidden] {
+    display: none !important;
 }
