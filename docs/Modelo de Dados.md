@@ -307,13 +307,15 @@ REVOKE ALL ON vw_professor_disciplina FROM anon, authenticated;
 
 | Tema | Proposta | Motivo |
 |---|---|---|
-| Ligação com usuário | `usuario_id` → `perfis(id)` | Mesmo padrão de `avaliacoes`. |
+| Ligação privada com usuário | `usuario_id` → `perfis(id)` | Garante autoria, unicidade e permissões sem identificar a pessoa em público. |
 | Ligação com professor | `professor_id` → `professores(id)`, `NOT NULL` | O comentário é sempre sobre um professor. |
 | Ligação com disciplina | `disciplina_id` → `disciplinas(id)`, **opcional** | Permite comentar o professor em geral ou numa disciplina específica. |
 | Quantidade por usuário | **1 comentário por usuário por professor** | Evita spam e mantém o comentário como complemento da avaliação. |
 | Exclusão | `ON DELETE CASCADE` em usuário e professor; `SET NULL` em disciplina | Segue o padrão do esquema, sem perder o comentário se a disciplina sumir. |
 | Tamanho do texto | de 10 a 1000 caracteres | Evita comentários vazios e textos gigantes. |
 | Edição | `atualizado_em` mantido por trigger | Mostra se o comentário foi editado. |
+| Visibilidade | `ocultado_em` nulo para comentários publicados e visíveis | A listagem exclui comentários ocultados pela moderação. |
+| Reações | Uma linha por conta e comentário, com valor `1` ou `-1` | Permite trocar e desfazer o voto. Só as contagens aparecem em público. |
 
 ### 6.2 SQL proposto
 
@@ -328,6 +330,7 @@ CREATE TABLE IF NOT EXISTS comentarios (
     texto TEXT NOT NULL,
     criado_em TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     atualizado_em TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    ocultado_em TIMESTAMPTZ,
     CONSTRAINT ck_comentarios_texto_tamanho
         CHECK (char_length(btrim(texto)) BETWEEN 10 AND 1000),
     CONSTRAINT uq_comentarios_usuario_professor UNIQUE (usuario_id, professor_id)
@@ -347,46 +350,35 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_comentarios_atualizado_em
-    BEFORE UPDATE ON comentarios
+    BEFORE UPDATE OF texto, disciplina_id ON comentarios
     FOR EACH ROW EXECUTE FUNCTION set_atualizado_em();
 
--- RLS
+-- Apenas o backend acessa as tabelas com vínculos de conta.
 ALTER TABLE comentarios ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON comentarios FROM PUBLIC, anon, authenticated;
 
--- Leitura pública (ajustar para "to authenticated" se o grupo preferir).
--- Atenção: as demais tabelas não têm política; os comentários seriam os primeiros.
-CREATE POLICY comentarios_select_publico
-    ON comentarios FOR SELECT
-    TO anon, authenticated
-    USING (true);
+CREATE TABLE IF NOT EXISTS comentarios_reacoes (
+    comentario_id BIGINT NOT NULL REFERENCES comentarios(id) ON DELETE CASCADE,
+    usuario_id UUID NOT NULL REFERENCES perfis(id) ON DELETE CASCADE,
+    valor SMALLINT NOT NULL CHECK (valor IN (-1, 1)),
+    PRIMARY KEY (comentario_id, usuario_id)
+);
 
--- Só o próprio usuário cria comentário em seu nome
-CREATE POLICY comentarios_insert_proprio
-    ON comentarios FOR INSERT
-    TO authenticated
-    WITH CHECK (auth.uid() = usuario_id);
-
--- Só o autor edita
-CREATE POLICY comentarios_update_proprio
-    ON comentarios FOR UPDATE
-    TO authenticated
-    USING (auth.uid() = usuario_id)
-    WITH CHECK (auth.uid() = usuario_id);
-
--- Só o autor apaga
-CREATE POLICY comentarios_delete_proprio
-    ON comentarios FOR DELETE
-    TO authenticated
-    USING (auth.uid() = usuario_id);
+ALTER TABLE comentarios_reacoes ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON comentarios_reacoes FROM PUBLIC, anon, authenticated;
 ```
 
 ### 6.3 Pontos para o grupo decidir
 
 1. **Um por professor ou um por professor + disciplina?** A proposta usa um por professor. Para um por disciplina, trocar a unicidade por `(usuario_id, professor_id, disciplina_id)` e tornar `disciplina_id` `NOT NULL`.
 2. **Exigir avaliação antes de comentar?** Seria possível acrescentar ao `WITH CHECK` do insert um `EXISTS (SELECT 1 FROM avaliacoes ...)`. A proposta não exige.
-3. **Políticas de RLS em `comentarios`?** A aplicação acessa o banco só pela `service_role` (seção 5), então as políticas abaixo não afetam o caminho atual. Opções: (a) manter o padrão das outras tabelas, com RLS ativo e **sem políticas**; (b) incluir as políticas como defesa extra caso um dia o frontend use o token do usuário. A proposta traz as políticas da opção (b), que podem ser removidas.
-4. **Moderação:** não há denúncia nem remoção por administrador. Se necessário, criar uma coluna `oculto BOOLEAN` e um papel de moderação em uma issue futura.
-5. **Exibição do autor:** o comentário exibe `perfis.username`? Como o backend lê com a `service_role`, basta fazer o `JOIN` no código. Se um dia o acesso for direto, a leitura de `perfis` precisará de política.
+3. **Leitura pública anônima.** O backend lista comentários visíveis e agrega
+   reações. A resposta traz o ID do comentário, texto, disciplina, datas e
+   contagens. Exclui IDs de contas, nomes, usernames e e-mails.
+4. **Moderação.** A tabela `comentarios` guarda o texto já aprovado. Textos
+   que precisam de revisão ficam em uma fila privada separada, inclusive
+   revisões de comentários publicados. O modelo de fila, denúncias e decisões
+   será detalhado na implementação do [fluxo de moderação](COMENTARIOS.md).
 
 ### 6.4 Onde cada regra é aplicada
 
@@ -394,8 +386,10 @@ CREATE POLICY comentarios_delete_proprio
 |---|---|
 | Um comentário por usuário e professor | Banco: `UNIQUE (usuario_id, professor_id)`. O backend deve tratar o erro de duplicidade. |
 | Tamanho do texto (10 a 1000) | Banco: `CHECK`. O backend deve validar antes para devolver mensagem amigável. |
-| Só o autor edita ou apaga | **Backend (Flask)**, pois a `service_role` ignora o RLS. As políticas só reforçam. |
-| `usuario_id` do comentário | Sempre tirado da sessão autenticada no servidor, **nunca** de campo de formulário. |
+| Só o autor edita ou apaga | O backend compara a sessão com o autor. A `service_role` ignora o RLS. |
+| Identidade do autor e de quem reage | O servidor usa a sessão verificada e não aceita `usuario_id` enviado pelo cliente. |
+| Uma reação por conta e comentário | A chave primária garante a unicidade. O backend valida comentário visível e autor diferente de quem reage. |
+| Filtro antes de publicar ou editar | O backend só grava texto público depois da aprovação automática ou manual. |
 
 ## 7. Como recriar o banco
 
