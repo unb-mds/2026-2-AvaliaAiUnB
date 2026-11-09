@@ -109,7 +109,8 @@ Proposta de fluxo:
    duplicação; a regra precisa ser refletida no futuro modelo.
 3. Um moderador autorizado consulta texto, motivo e contexto e registra a
    decisão de manter, ocultar ou restaurar, com justificativa.
-4. O autor pode solicitar revisão pelo canal que o grupo definir.
+4. O autor pode pedir revisão em um formulário privado associado ao comentário.
+   O pedido fica visível ao autor e aos moderadores designados.
 
 Os motivos propostos são ofensa ou ataque pessoal, exposição de dados pessoais,
 discriminação, ameaça, spam ou conteúdo alheio à experiência pedagógica.
@@ -120,7 +121,10 @@ A [proposta de banco](Modelo%20de%20Dados.md) ainda não contém armazenamento d
 denúncias, estado de moderação nem permissões de moderador. A implementação
 futura precisa acrescentar esses elementos e revisar políticas de acesso,
 inclusive o uso de service key descrito em [Cibersegurança](CIBERSEGURANCA.md).
-Responsáveis, prazo de análise e canal de revisão ficam pendentes da decisão do grupo.
+A proposta operacional é que o grupo designe dois moderadores antes de liberar
+comentários e use três dias úteis como meta para a primeira análise. Sempre
+que possível, outra pessoa moderadora analisa a contestação. Se ninguém puder
+atender a fila, a publicação de novos comentários fica pausada até haver cobertura.
 
 ## Privacidade e ciclo dos dados
 
@@ -136,9 +140,10 @@ indiscriminadamente o texto ou dados pessoais.
 
 As cascatas propostas na #109 apagam comentários quando o perfil do autor ou o
 professor é excluído. Ao excluir a disciplina, o vínculo passa a ser nulo,
-preservando o comentário. O prazo de retenção e o destino de denúncias e
-registros de moderação precisam de definição própria; este documento não
-presume que esses dados serão guardados indefinidamente.
+preservando o comentário. A proposta é guardar o registro mínimo da denúncia e
+da decisão por até 90 dias após encerrar o caso e então apagar esse registro.
+O texto excluído sai da listagem imediatamente. A definição da estrutura e da
+rotina de descarte fica para a implementação após revisão do grupo.
 
 ## Decisões para o grupo revisar
 
@@ -151,7 +156,7 @@ presume que esses dados serão guardados indefinidamente.
 | C05 | Autor identificado publicamente apenas por username | Aguardando revisão |
 | C06 | Denúncia privada e moderação por responsáveis autorizados | Aguardando revisão e projeto de dados |
 | C07 | Ocultação motivada, sem republicação automática por edição | Aguardando revisão |
-| C08 | Responsáveis, prazo de análise, canal de revisão e retenção | A definir pelo grupo |
+| C08 | Dois moderadores designados, primeira análise em até três dias úteis, formulário privado de contestação e retenção de até 90 dias após o encerramento | Aguardando revisão |
 
 As decisões podem ser revisadas no PR ou na
 [issue #116](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/116).

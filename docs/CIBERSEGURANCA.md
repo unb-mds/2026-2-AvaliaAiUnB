@@ -36,23 +36,25 @@ navegação de retorno, precisam de revisão própria.
 
 ## Banco e RLS
 
-Segundo o [modelo de dados](Modelo%20de%20Dados.md) e a auditoria, as cinco
-tabelas do banco consultado têm RLS ativo e não têm políticas. A aplicação
+Na data da auditoria, as cinco tabelas do banco consultado tinham RLS ativo
+sem políticas. O [modelo de dados](Modelo%20de%20Dados.md) detalha essa revisão. A aplicação
 usa a service key, que ignora RLS; a autorização do caminho atual depende do
 backend. A view `vw_professor_disciplina` expõe dados públicos de professores,
 disciplinas e turmas, com as permissões descritas no modelo.
 
-O script de migração ainda não reproduz o RLS do banco existente. A correção
-está na #123. Por isso, recriar apenas as tabelas não equivale a reproduzir
-todas as configurações de acesso do ambiente atual.
+O [PR #139](https://github.com/unb-mds/2026-2-AvaliaAiUnB/pull/139) incluiu RLS e
+políticas no esquema inicial. O SQL versionado contém leitura pública para
+catálogo, perfis e avaliações e regras de escrita vinculadas ao usuário em
+perfis e avaliações. A adoção da chave pública pela aplicação é tratada em
+etapas separadas.
 
 ## Correções acompanhadas
 
-Situação consultada em **03/11/2026**; as issues abaixo estão abertas.
+Situação consultada em **09/11/2026**.
 
 | Issue | Prioridade na auditoria | Entrega esperada |
 |---|---|---|
-| [#123](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/123) | Alta | RLS e políticas versionados nas migrações |
+| [#123](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/123) | Alta | RLS e políticas versionados no esquema inicial pelo PR #139 |
 | [#124](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/124) | Média | Cliente de chave pública e leitura pública com RLS |
 | [#129](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/129) | Desdobramento da #124 | Avaliações com sessão do usuário e autorização também no banco |
 | [#130](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/130) | Desdobramento da #124 | Perfil do usuário com chave pública e RLS |

@@ -41,15 +41,12 @@ por tela e o perfil do professor contém estilo inline.
 
 ## Design system e visual final
 
-A [issue #112](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/112), atribuída
-a `giiicostaa`, reúne a consolidação de cores, tipografia, espaçamentos,
-componentes e estados. A aplicação do visual nas telas principais está na
+A [issue #112](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/112) reúne a
+consolidação de cores, tipografia, espaçamentos, componentes e estados. A aplicação do visual nas telas principais está na
 [issue #114](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/114).
 
-Para concluir esta parte da documentação, falta incorporar o catálogo aprovado
-de componentes, os valores de cores e espaçamentos, as variações de botões e
-campos e as orientações de acessibilidade. O inventário acima pode apoiar esse
-trabalho, sem apresentar os estilos atuais como decisões finais de design.
+O inventário acima registra a interface que existe hoje. O catálogo de padrões
+e os protótipos de comentários são entregues separadamente na #112.
 
 As telas futuras de comentários devem seguir a
 [especificação para revisão](COMENTARIOS.md). A #112 depende dessa especificação

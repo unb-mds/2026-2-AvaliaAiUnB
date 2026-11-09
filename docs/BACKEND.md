@@ -60,7 +60,7 @@ Os caminhos da tabela são relativos à raiz do repositório.
 
 O perfil e o formulário de avaliação recebem também `next` para manter a URL
 de retorno da busca. A validação desse parâmetro está em `app/seguranca.py`;
-o ajuste de bloqueio de barra invertida é acompanhado no
+o bloqueio de barra invertida foi integrado no
 [PR #133](https://github.com/unb-mds/2026-2-AvaliaAiUnB/pull/133).
 
 As telas são renderizadas no servidor. Algumas rotas também retornam JSON
