@@ -10,13 +10,12 @@ validar os ambientes dessa integração, acompanhada na issue #106.
 |---|---|
 | Provedor configurado | Vercel |
 | Aplicação | Flask, exposta como `app` no módulo `run.py` |
-| Endereço de staging | Precisa ser copiado de um Preview existente no painel da Vercel |
-| Data e horário de produção | A definir pela responsável pelo lançamento, com fuso America/Sao_Paulo |
-| Estado da data | Planejamento; registrar uma data aqui não agenda uma publicação na plataforma |
+| Endereço público | [avaliaunb.com.br](https://avaliaunb.com.br/), conforme a página inicial da documentação |
+| Endereço de staging | A URL oficial precisa ser confirmada no painel da Vercel |
+| Data do lançamento | O histórico da publicação precisa ser conferido no painel da Vercel |
 
-A URL identifica um ambiente real e não deve ser criada apenas como texto na
-documentação. A data pode ser escolhida pela responsável; a execução depende
-do acesso ao projeto e das condições de publicação definidas abaixo.
+Para uma próxima publicação, registre a data e o horário planejados no fuso
+de Brasília. O histórico no painel é a referência para a data efetiva.
 
 ## Configuração do projeto
 

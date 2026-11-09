@@ -71,3 +71,30 @@ SELECT
 FROM turmas t
 JOIN professores p ON p.id = t.professor_id
 JOIN disciplinas d ON d.id = t.disciplina_id;
+
+
+
+-- Habilitar RLS em todas as tabelas
+ALTER TABLE professores ENABLE ROW LEVEL SECURITY;
+ALTER TABLE disciplinas ENABLE ROW LEVEL SECURITY;
+ALTER TABLE turmas ENABLE ROW LEVEL SECURITY;
+ALTER TABLE perfis ENABLE ROW LEVEL SECURITY;
+ALTER TABLE avaliacoes ENABLE ROW LEVEL SECURITY;
+
+
+-- Dados públicos (Leitura para todos, escrita apenas pelo scraper via service_role)
+CREATE POLICY "Leitura publica de professores" ON professores FOR SELECT USING (true);
+CREATE POLICY "Leitura publica de disciplinas" ON disciplinas FOR SELECT USING (true);
+CREATE POLICY "Leitura publica de turmas" ON turmas FOR SELECT USING (true);
+
+-- Perfis (Leitura pública, edição apenas pelo dono do perfil)
+CREATE POLICY "Leitura publica de perfis" ON perfis FOR SELECT USING (true);
+CREATE POLICY "Usuario pode gerir o proprio perfil" ON perfis 
+  USING (auth.uid() = id);
+
+-- Avaliações (Leitura pública, edição e criação apenas pelo autor)
+CREATE POLICY "Leitura publica de avaliacoes" ON avaliacoes FOR SELECT USING (true);
+CREATE POLICY "Usuario pode inserir propria avaliacao" ON avaliacoes 
+  FOR INSERT WITH CHECK (auth.uid() = usuario_id);
+CREATE POLICY "Usuario pode atualizar/deletar propria avaliacao" ON avaliacoes 
+  USING (auth.uid() = usuario_id);

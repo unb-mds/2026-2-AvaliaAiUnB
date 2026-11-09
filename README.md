@@ -6,7 +6,8 @@ O AvaliaAi reúne avaliações por critérios pedagógicos para ajudar estudante
 escolher disciplinas e docentes durante a matrícula. É um projeto da disciplina
 **Métodos de Desenvolvimento de Software (MDS/UnB), semestre 2026/2**.
 
-**Comece por aqui:** [documentação](docs/index.md) ·
+**Comece por aqui:** [site](https://avaliaunb.com.br/) ·
+[documentação oficial](https://unb-mds.github.io/2026-2-AvaliaAiUnB/) ·
 [documento de visão](docs/DOCUMENTO_DE_VISAO.md) ·
 [issues do projeto](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues)
 
@@ -139,10 +140,9 @@ Com o banco configurado, inicie o servidor:
 python run.py
 ```
 
-Acesse `http://127.0.0.1:5000`. A configuração do banco e a coleta de dados
-estão no [guia do scraper](docs/COMO_USAR_SCRAPER.md). A reprodução das políticas
-de RLS na migração está sendo corrigida na
-[issue #123](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/123).
+Acesse `http://127.0.0.1:5000`. O [guia do scraper](docs/COMO_USAR_SCRAPER.md)
+cobre o preparo do banco e a coleta. O esquema inicial passou a incluir RLS
+e políticas de acesso na [#123](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/123).
 
 ### Docker
 
@@ -157,11 +157,9 @@ O scraper é executado separadamente.
 
 ### Hospedagem
 
-A [issue #106](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/106) está
-fechada e a `main` contém configuração para Vercel com entrada `run:app`.
-O link de staging e a data de produção precisam ser registrados para completar
-as instruções de acesso e deploy. A configuração está no
-[`pyproject.toml` da main](pyproject.toml).
+O endereço público informado pela equipe é [avaliaunb.com.br](https://avaliaunb.com.br/).
+A configuração para Vercel está no [pyproject.toml](pyproject.toml), com entrada
+`run:app`. O guia de hospedagem registra o que está disponível sobre cada ambiente.
 
 As [instruções de hospedagem](docs/HOSPEDAGEM.md) detalham variáveis,
 Preview, produção e a validação dos fluxos no ambiente publicado.
@@ -176,8 +174,9 @@ exclusão confere o autor da avaliação no backend.
 A [auditoria de 02/11/2026](docs/AUDITORIA_SEGURANCA.md)
 foi concluída na #111. O relatório registra um achado de prioridade alta,
 três de prioridade média e oito de prioridade baixa, sem achados críticos.
-As correções continuam nas issues
-[#123](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/123),
+O [PR #139](https://github.com/unb-mds/2026-2-AvaliaAiUnB/pull/139)
+versionou RLS e políticas no esquema inicial. A aplicação ainda usa a chave
+de serviço. As mudanças seguintes estão nas issues
 [#124](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/124),
 [#125](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/125),
 [#126](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/126),
@@ -205,7 +204,7 @@ banco já está documentada na #109.
 | Automação e checks | [Pipeline do GitHub Actions](docs/pipeline.md) |
 | Hospedagem | [Configuração de Preview, produção e lançamento](docs/HOSPEDAGEM.md) |
 | Design | [Board do Figma](https://www.figma.com/board/PgqkPopVXOiSqm9gD5RRNv/AvaliaAi---Template-MDS?node-id=0-1&p=f&t=Rxu6jVCgeVZHCyg2-0) |
-| Histórico | [Notas da Release 1](RELEASE-v1.0.0.md) |
+| Histórico | [Release 1](RELEASE-v1.0.0.md) · [Release 2](RELEASE-v2.0.0.md) |
 
 Para abrir o site localmente, instale `mkdocs-material` no ambiente virtual e
 execute `mkdocs serve` na raiz. Valide com `mkdocs build --strict`.
