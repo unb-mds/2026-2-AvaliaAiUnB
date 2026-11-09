@@ -49,6 +49,7 @@ exclude_docs: |
 nav:
   - Início: index.md
   - Projeto:
+    - Funcionalidades: FUNCIONALIDADES.md
     - Documento de Visão: DOCUMENTO_DE_VISAO.md
     - Protótipo no Figma: "https://www.figma.com/board/PgqkPopVXOiSqm9gD5RRNv/AvaliaAi---Template-MDS?node-id=0-1&p=f&t=Rxu6jVCgeVZHCyg2-0"
   - Arquitetura:
@@ -57,5 +58,6 @@ nav:
   - Desenvolvimento:
     - Como Usar o Scraper: COMO_USAR_SCRAPER.md
     - Pipeline: pipeline.md
+    - Hospedagem: HOSPEDAGEM.md
   - Segurança:
     - Auditoria de Segurança: AUDITORIA_SEGURANCA.md

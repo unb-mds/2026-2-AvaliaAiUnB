@@ -1,363 +1,237 @@
 # 🎓 AvaliaAi UnB
 
-> **Plataforma de consulta, comparação e avaliação de professores e disciplinas da Universidade de Brasília (UnB).**
+> Consulta, comparação e avaliação de professores e disciplinas da Universidade de Brasília.
 
-O **AvaliaAi** nasce para tornar a escolha de disciplinas e docentes mais informada, centralizando avaliações pedagógicas e transformando relatos dispersos em informações organizadas, objetivas e fáceis de consultar.
+O AvaliaAi reúne avaliações por critérios pedagógicos para ajudar estudantes a
+escolher disciplinas e docentes durante a matrícula. É um projeto da disciplina
+**Métodos de Desenvolvimento de Software (MDS/UnB), semestre 2026/2**.
 
----
+**Comece por aqui:** [site](https://avaliaunb.com.br/) ·
+[documentação oficial](https://unb-mds.github.io/2026-2-AvaliaAiUnB/) ·
+[documento de visão](docs/DOCUMENTO_DE_VISAO.md) ·
+[issues do projeto](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues)
 
-## ✨ Visão geral
+## Sumário
 
-Durante o período de matrícula, estudantes precisam tomar decisões importantes em pouco tempo. Atualmente, informações sobre professores e disciplinas podem estar espalhadas em grupos de WhatsApp/Telegram ou simplesmente não estar disponíveis de forma estruturada.
+- [Sobre o projeto](#sobre-o-projeto)
+- [Funcionalidades e releases](#funcionalidades-e-releases)
+- [Quem pode usar](#quem-pode-usar)
+- [Tecnologias e arquitetura](#tecnologias-e-arquitetura)
+- [Como executar](#como-executar)
+- [Segurança e correções em andamento](#segurança-e-correções-em-andamento)
+- [Documentação](#documentação)
+- [Como contribuir](#como-contribuir)
+- [Equipe](#equipe)
 
-O AvaliaAi propõe uma plataforma web que reúne:
+## Sobre o projeto
 
-- 🔎 **Busca de professores e disciplinas**
-- ⭐ **Avaliações por critérios objetivos**
-- 📊 **Médias e estatísticas consolidadas**
-- ⚖️ **Comparação entre professores**
-- 🛡️ **Moderação de avaliações**
-- 🔐 **Autenticação de usuários**
-- 📚 **Informações organizadas para apoiar a escolha de turmas**
+Informações sobre professores costumam ficar dispersas em grupos de mensagens,
+o que dificulta comparar experiências na hora da matrícula. O AvaliaAi organiza
+a consulta por professor, disciplina e departamento, com notas de **didática,
+clareza, organização, disponibilidade e dificuldade**.
 
-A proposta é oferecer uma experiência focada na realidade acadêmica da UnB, com critérios como **didática, clareza, organização, disponibilidade e dificuldade**.
+O [documento de visão](docs/DOCUMENTO_DE_VISAO.md) apresenta o problema,
+as personas, os requisitos e as metas de usabilidade, desempenho e segurança.
 
----
+## Funcionalidades e releases
 
-## 🎨 Design e protótipo
+O planejamento e o estado da implementação são apresentados separadamente na
+tabela. As entregas disponíveis consideram a versão da `main`; branches
+anteriores podem conter apenas parte delas.
 
-O protótipo e os materiais de interface do projeto estão disponíveis no Figma:
+| Etapa | Funcionalidades | Estado |
+|---|---|---|
+| R1 — fluxo essencial | Cadastro, login, busca de professores e disciplinas, perfil do professor, avaliação por cinco critérios e consulta de médias | Implementado |
+| R2 — consulta e gestão de avaliações | Ranking, comparação entre dois professores, filtro por departamento, busca que ignora acentos e espaços extras e perfil do usuário com edição e exclusão das próprias avaliações | Implementado |
+| Evolução dos filtros | Faixa de nota e volume de avaliações | Pendente |
+| Comentários e moderação | Comentários, denúncias e remoção por moderação | Em especificação na [#116](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/116); sem fluxo implementado |
+| Outras funcionalidades planejadas | Favoritos e gráficos de desempenho | Pendente |
 
-👉 **[Acessar o board do Figma](https://www.figma.com/board/PgqkPopVXOiSqm9gD5RRNv/Template-MDS--c%C3%B3pia-limpa---c%C3%B3pia-?node-id=0-1&t=JgPcJPdPogrAMhcN-0)**
+A consulta principal fica em `/professores`; ranking e comparação ficam em
+`/ranking` e `/comparar`. A lista é ordenada pela quantidade de avaliações.
+O ranking usa a média de quatro critérios, excluindo dificuldade, e exige
+pelo menos cinco avaliações válidas.
 
----
+Veja as [regras de busca, notas, comparação e ranking](docs/FUNCIONALIDADES.md).
 
-## 📖 Documento de visão
+## Quem pode usar
 
-O documento de visão contém o detalhamento do problema, posicionamento do produto, personas, arquitetura, stack tecnológica, requisitos funcionais e não funcionais e restrições do projeto.
+| Perfil | Acesso | O que pode fazer |
+|---|---|---|
+| Visitante | Sem login | Consultar professores, disciplinas, médias, ranking e comparação |
+| Usuário cadastrado | Nome de usuário e senha | Consultar e registrar avaliações; listar, editar e excluir as próprias avaliações em `/perfil` |
 
-📄 **[Consultar o Documento de Visão](docs/DOCUMENTO_DE_VISAO.md)**
+O público principal são os estudantes da UnB. Docentes também podem consultar
+os indicadores públicos. O cadastro atual aceita e-mail `@gmail.com`; a
+confirmação do endereço está prevista na
+[issue #125](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/125).
 
-> O documento de visão é a principal referência para entender o contexto, objetivos e requisitos do AvaliaAi.
-
----
-
-## 🎯 Problema
-
-O problema central identificado pelo projeto é:
-
-> **“Insegurança e falta de transparência na escolha de docentes e disciplinas na matrícula da UnB.”**
-
-Entre as causas levantadas estão:
-
-- dados operacionais no SIGAA sem informações sobre metodologia de ensino;
-- opiniões dispersas em grupos de mensagens;
-- ausência de resultados consolidados acessíveis aos alunos no momento da matrícula;
-- avaliações subjetivas e pouco padronizadas;
-- falta de transparência sobre métodos de avaliação;
-- pressão causada pela janela curta de matrícula.
-
-O AvaliaAi busca centralizar essas informações e transformá-las em uma experiência de consulta estruturada.
-
----
-
-## 👥 Público-alvo
-
-### 🧑‍🎓 Estudantes
-
-Estudantes que precisam montar sua grade e desejam conhecer melhor professores e disciplinas antes de realizar a matrícula.
-
-**Principais necessidades:**
-
-- encontrar informações rapidamente;
-- consultar avaliações objetivas;
-- comparar professores;
-- montar uma grade mais consciente;
-- reduzir a incerteza na escolha de turmas.
-
-### 👩‍🏫 Docentes
-
-Professores que desejam receber feedback estruturado e construtivo sobre sua atuação pedagógica.
-
-**Principais necessidades:**
-
-- visualizar médias agregadas;
-- identificar pontos de melhoria;
-- receber feedback baseado em critérios claros;
-- contar com moderação contra conteúdos ofensivos ou ataques pessoais.
-
----
-
-## 🧩 Principais funcionalidades
-
-| Funcionalidade | Release prevista |
-|---|:---:|
-| Cadastro de usuário | 🚀 R1 |
-| Login / autenticação | 🚀 R1 |
-| Busca de professores e disciplinas | 🚀 R1 |
-| Perfil do professor | 🚀 R1 |
-| Avaliação por critérios | 🚀 R1 |
-| Visualização de médias | 🚀 R1 |
-| Ranking de professores | 🔮 R2 |
-| Comparação entre professores | 🔮 R2 |
-| Filtros avançados | 🔮 R2 |
-| Moderação de avaliações | 🔮 R2 |
-| Favoritar professores | 🔮 R2 |
-| Gráficos de desempenho | 🔮 R2 |
-
-### Comparação de professores (RF08)
-
-A página `/comparar` permite selecionar dois professores diferentes e consultar, lado a lado,
-as médias de didática, clareza, organização, disponibilidade e dificuldade, além da quantidade
-de avaliações válidas. O acesso está disponível na lista e no perfil de cada professor;
-os links individuais já preenchem a primeira seleção.
-
-As médias consideram todas as disciplinas e períodos, com o mesmo peso por avaliação.
-Uma avaliação só entra no cálculo quando todos os cinco critérios têm notas inteiras de 1 a 5.
-Dificuldade indica exigência (1 = muito fácil; 5 = muito difícil), enquanto nos demais critérios
-5 representa excelente. Professores sem avaliações aparecem com um aviso, sem nota artificial.
-As médias são consultadas a cada comparação e exibidas com duas casas decimais.
-### Ranking de professores (RF07)
-
-A página `/ranking` está disponível pelos links na página inicial e na lista de professores.
-Ela mostra posição, média geral, quantidade de avaliações e acesso ao perfil de cada professor.
-
-- Participam professores com **pelo menos 5 avaliações válidas** (todos os cinco critérios com notas inteiras de 1 a 5).
-- A média geral é a soma das notas de **didática, clareza, organização e disponibilidade**, dividida pelo número de avaliações válidas vezes quatro. Todas as disciplinas e períodos têm o mesmo peso por avaliação.
-- Dificuldade fica fora da média por medir exigência, sem representar qualidade de ensino.
-- A ordem usa a média sem arredondar, depois a quantidade de avaliações (maior primeiro), o nome (sem distinguir acentos e caixa) e o identificador. As posições são sequenciais; a média exibida usa duas casas decimais.
-- O ranking consulta as avaliações a cada acesso, sem depender do cache do catálogo. Se ninguém atingir o mínimo, a página informa esse estado.
-
----
-
-## 🏗️ Arquitetura
-
-O AvaliaAi UnB utiliza uma arquitetura web modular, desenvolvida em Python com Flask, organizada em camadas responsáveis pela interface, pelo processamento das requisições, pelas regras da aplicação e pela persistência de dados.
-
-```text
-┌─────────────────────────────────────────────┐
-│                FRONTEND                     │
-│       HTML5 · CSS3 · JavaScript · Jinja2    │
-└─────────────────────┬───────────────────────┘
-                      │
-                      ▼
-┌─────────────────────────────────────────────┐
-│                 BACKEND                     │
-│              Python · Flask                 │
-│                                             │
-│  auth_routes.py       professor_routes.py   │
-└─────────────────────┬───────────────────────┘
-                      │
-                      ▼
-┌─────────────────────────────────────────────┐
-│             LÓGICA DA APLICAÇÃO             │
-│                                             │
-│  session_controller.py · validacoes.py      │
-│  Autenticação · Sessões · Avaliações         │
-└─────────────────────┬───────────────────────┘
-                      │
-                      ▼
-┌─────────────────────────────────────────────┐
-│           MODELOS E REPOSITÓRIOS            │
-│                                             │
-│  models.py · repositorio.py · database.py   │
-└─────────────────────┬───────────────────────┘
-                      │
-                      ▼
-┌─────────────────────────────────────────────┐
-│              BANCO DE DADOS                 │
-│                                             │
-│                 Supabase                    │
-│  Usuários · Professores · Disciplinas       │
-│  Avaliações · Sessões                       │
-└─────────────────────────────────────────────┘
-```
-
----
-
-## 🛠️ Stack tecnológica
+## Tecnologias e arquitetura
 
 | Camada | Tecnologias |
 |---|---|
-| **Frontend** | HTML5, CSS3, JavaScript |
-| **Templates** | Jinja2 |
-| **Backend** | Python, Flask e Blueprints |
-| **Banco de dados** | Supabase |
-| **Design / Prototipagem** | Figma |
-| **Versionamento** | Git + GitHub |
-| **Deploy / Hospedagem** | Render / Heroku |
+| Interface | HTML5, CSS3, JavaScript e templates Jinja2 |
+| Backend | Python, Flask e Blueprints |
+| Persistência | PostgreSQL hospedado no Supabase |
+| Contas e sessões | Supabase Auth |
+| Coleta do SIGAA | Python e Selenium, com dependências próprias |
+| Execução em contêiner | Docker Compose e Gunicorn |
+| Documentação | MkDocs Material e GitHub Pages |
+| Testes e qualidade | unittest, pip-audit e Bandit |
+| Deploy | Configuração para Vercel adicionada no [PR #131](https://github.com/unb-mds/2026-2-AvaliaAiUnB/pull/131) |
 
----
+### Backend
 
-## Configuração e execução
+`run.py` cria a aplicação por `create_app`, em `app/__init__.py`.
+As requisições passam por rotas, controllers e validações até os repositórios,
+que acessam o Supabase. O scraper é executado separadamente e alimenta o catálogo.
 
-Instale as dependências com `pip install -r requirements.txt`, copie `.env.example`
-para `.env` na raiz e preencha as variáveis abaixo. O `.env` é ignorado pelo Git;
-em produção, configure as variáveis diretamente no ambiente da hospedagem.
-Variáveis já definidas no ambiente têm prioridade sobre o `.env`.
+Os [diagramas de arquitetura](docs/ARQUITETURA.md) apresentam as camadas do sistema.
+O detalhamento de rotas, sessões e repositórios será publicado na #116.
 
-| Variável | Obrigatória | Uso |
-|---|---|---|
-| `SECRET_KEY` | Sim | Assina a sessão Flask e os tokens CSRF. Use uma chave aleatória, privada e estável entre processos e reinícios. A aplicação não inicia se estiver ausente ou vazia. |
-| `SUPABASE_URL` | Sim | URL do projeto Supabase, usada pela aplicação e pelo scraper. |
-| `SUPABASE_SERVICE_KEY` | Sim | Chave de serviço do Supabase, restrita ao servidor. |
-| `FLASK_DEBUG` | Não | Desligado por padrão. Somente em desenvolvimento, habilite com `1`, `true`, `yes` ou `on` (sem distinção de maiúsculas). Outros valores mantêm o debug desligado. |
+### Dados e frontend
 
-Gere uma `SECRET_KEY` com `python -c "import secrets; print(secrets.token_hex(32))"`
-e salve o resultado no ambiente ou no `.env`, sem incluí-lo no controle de versão.
-Execute localmente com `python run.py`. Para publicar, use um servidor WSGI e
-mantenha `FLASK_DEBUG` ausente ou definido como `0`.
+O banco contém `professores`, `disciplinas`, `turmas`, `perfis` e
+`avaliacoes`, além da view `vw_professor_disciplina`. A chave de professor
+é nome e departamento; o departamento corresponde à unidade que oferece a
+disciplina no SIGAA. Consulte o
+[modelo de dados e a proposta de comentários](docs/Modelo%20de%20Dados.md).
 
-Todos os formulários POST (cadastro, login, avaliação e logout) enviam um campo
-oculto `csrf_token`. Requisições sem token, com token inválido ou expirado recebem
-HTTP 400 antes de executar a operação. Recarregue a página para obter um novo token.
-Clientes que enviam POSTs diretamente também precisam carregar o formulário por GET,
-preservar o cookie de sessão Flask e enviar o token no campo `csrf_token` ou no
-cabeçalho `X-CSRFToken`, conforme a [documentação do Flask-WTF](https://flask-wtf.readthedocs.io/en/stable/csrf/).
+As páginas são renderizadas no servidor a partir de `app/templates/`, com
+recursos em `app/static/`. O design system e a aplicação do visual final estão
+acompanhados nas issues
+[#112](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/112) e
+[#114](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/114).
 
-Para criar ou recriar a estrutura do banco de dados em um projeto Supabase vazio,
-abra o **SQL Editor** no painel do Supabase, cole o conteúdo de
-`docs/migrations/001_initial_schema.sql` e clique em **Run**. O script cria as
-tabelas (`professores`, `disciplinas`, `turmas`, `perfis` e `avaliacoes`), as
-constraints únicas e a view `vw_professor_disciplina`.
+## Como executar
 
-Execute os testes com `python -m unittest discover -s tests -t .`. Eles usam um
-cliente Supabase falso e uma chave exclusiva de teste, sem credenciais reais.
+### Ambiente local
 
----
+Use Python 3.11 ou superior e execute:
 
-## 🔐 Segurança e moderação
-
-O projeto prevê mecanismos para garantir uma utilização responsável da plataforma, incluindo:
-
-- autenticação segura;
-- armazenamento seguro de senhas;
-- comunicação via HTTPS;
-- moderação de avaliações;
-- denúncia e remoção de conteúdos ofensivos;
-- prevenção de conteúdos difamatórios e discursos de ódio;
-- atenção à **LGPD** no tratamento de dados de estudantes e professores.
-
----
-
-## ⚙️ Requisitos não funcionais
-
-O documento de visão estabelece, entre outros pontos:
-
-- **Usabilidade:** interface intuitiva, responsiva e acessível;
-- **Desempenho:** buscas e páginas de perfil com resposta inferior a 2 segundos sob carga normal;
-- **Segurança:** senhas protegidas e comunicação via HTTPS;
-- **Confiabilidade:** atualização atômica das médias após novas avaliações válidas;
-- **Portabilidade:** funcionamento consistente em navegadores modernos.
-
----
-
-## 📁 Organização da documentação
-
-```text
-.
-├── docs/
-│   └── DOCUMENTO_DE_VISAO.md
-└── README.md
+```bash
+git clone https://github.com/unb-mds/2026-2-AvaliaAiUnB.git
+cd 2026-2-AvaliaAiUnB
+python -m venv .venv
 ```
 
-O diretório `docs/` concentra a documentação de visão do projeto.
+Ative o ambiente virtual com `.\.venv\Scripts\Activate.ps1` no PowerShell ou
+`source .venv/bin/activate` no Linux/macOS. Depois instale as dependências:
 
----
-
-## 🚀 Release 1
-
-A realese 1 prioriza o fluxo essencial para consulta e avaliação:
-
-```text
-Cadastro
-   ↓
-Login
-   ↓
-Busca por professor/disciplina
-   ↓
-Perfil do professor
-   ↓
-Consulta das avaliações
-   ↓
-Avaliação por critérios
-   ↓
-Atualização das médias
+```bash
+pip install -r requirements.txt
 ```
 
-As funcionalidades de ranking, comparação, filtros avançados, favoritos e gráficos ficam previstas para etapas posteriores.
+Copie `.env.example` para `.env` na raiz e preencha:
 
----
-
-## 📌 Restrições do projeto
-
-De acordo com o documento de visão, o desenvolvimento deve:
-
-- ser realizado dentro do período letivo da disciplina de **MDS na UnB**;
-- utilizar **Python + Flask** no backend;
-- utilizar **Supabase** como banco de dados;
-- utilizar hospedagem em nuvem;
-- observar a **LGPD**;
-- aplicar diretrizes de moderação para conteúdos ofensivos, difamatórios ou de discurso de ódio.
-
----
-
-## 🧭 Roadmap conceitual
-
-```text
-[✓] Definição do problema
-        ↓
-[✓] Levantamento de personas e necessidades
-        ↓
-[✓] Definição da visão e requisitos
-        ↓
-[✓] Entrega de Release 1
-        ↓
-[✓] Autenticação e cadastro
-        ↓
-[✓] Catálogo de professores e disciplinas
-        ↓
-[✓] Sistema de avaliações
-        ↓
-[✓] Médias e estatísticas
-        ↓
-[✓] Funcionalidades da Release 2
-```
-
----
-
-## 📚 Documentação
-
-| Recurso | Acesso |
+| Variável | Uso |
 |---|---|
-| 🎨 **Protótipo / Board Figma** | [Abrir no Figma](https://www.figma.com/board/PgqkPopVXOiSqm9gD5RRNv/AvaliaAi---Template-MDS?node-id=0-1&p=f&t=Rxu6jVCgeVZHCyg2-0) |
-| 📖 **Documento de Visão** | [docs/DOCUMENTO_DE_VISAO.md](docs/DOCUMENTO_DE_VISAO.md) |
+| `SECRET_KEY` | Chave privada e estável para sessão Flask e CSRF. Obrigatória; em produção, pelo menos 32 caracteres e sem valores fracos. |
+| `SUPABASE_URL` | URL do projeto Supabase. |
+| `SUPABASE_SERVICE_KEY` | Chave de serviço, restrita ao servidor. |
+| `FLASK_DEBUG` | Opcional; desligado por padrão. Use `1` somente no desenvolvimento local. |
 
----
+Gere uma chave com `python -c "import secrets; print(secrets.token_hex(32))"`.
+O `.env` é ignorado pelo Git; variáveis já definidas no ambiente têm prioridade.
 
-## 💡 Sobre o projeto
+Com o banco configurado, inicie o servidor:
 
-O **AvaliaAi** é um projeto acadêmico desenvolvido no contexto de **MDS — Métodos de Desenvolvimento de Software na Universidade de Brasília (UnB)**.
+```bash
+python run.py
+```
 
-A proposta é criar uma ferramenta que aproxime estudantes e informações relevantes sobre sua experiência acadêmica, transformando avaliações dispersas em dados estruturados e úteis para consulta.
+Acesse `http://127.0.0.1:5000`. O [guia do scraper](docs/COMO_USAR_SCRAPER.md)
+cobre o preparo do banco e a coleta. O esquema inicial passou a incluir RLS
+e políticas de acesso na [#123](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/123).
 
-## Como rodar o projeto
+### Docker
 
-### Opção A: Execução Local
-1. Crie o ambiente virtual: `python -m venv venv`
-2. Ative o ambiente: `venv\Scripts\activate` (Windows) ou `source venv/bin/activate` (Linux/Mac)
-3. Instale as dependências: `pip install -r requirements.txt`
-4. Copie o ficheiro .env.example e mude o nome da cópia para .env. Preencha as seguintes variáveis: SECRET_KEY (chave de segurança da aplicação Flask), SUPABASE_URL (URL de conexão ao banco) e SUPABASE_SERVICE_KEY (chave de serviço para acesso aos dados). Aviso: O ficheiro .env contém dados sensíveis e nunca deve ser enviado para o GitHub!
-5. Inicie o servidor: `python run.py`
+Com Docker, Docker Compose e o `.env` configurados, execute:
 
-### Opção B: Execução com Docker
-1. Certifique-se de que tem o Docker instalado e o ficheiro `.env` criado na raiz.
-2. No terminal, execute: `docker compose up --build`
-3. Aceda à aplicação no navegador em `http://localhost:8000`
+```bash
+docker compose up --build
+```
 
----
+A aplicação será servida pelo Gunicorn em `http://localhost:8000`.
+O scraper é executado separadamente.
 
-<p align="center">
-  <strong>🎓 AvaliaAi UnB</strong><br>
-  Informação organizada para escolhas acadêmicas mais conscientes.
-</p>
+### Hospedagem
+
+O endereço público informado pela equipe é [avaliaunb.com.br](https://avaliaunb.com.br/).
+A configuração para Vercel está no [pyproject.toml](pyproject.toml), com entrada
+`run:app`. O guia de hospedagem registra o que está disponível sobre cada ambiente.
+
+As [instruções de hospedagem](docs/HOSPEDAGEM.md) detalham variáveis,
+Preview, produção e a validação dos fluxos no ambiente publicado.
+
+## Segurança e correções em andamento
+
+A versão da `main` inclui autenticação com Supabase Auth, proteção CSRF,
+cookies de autenticação com `HttpOnly`, `SameSite=Lax` e `Secure` fora do debug,
+headers de segurança e limites de requisições. A autorização de edição e
+exclusão confere o autor da avaliação no backend.
+
+A [auditoria de 02/11/2026](docs/AUDITORIA_SEGURANCA.md)
+foi concluída na #111. O relatório registra um achado de prioridade alta,
+três de prioridade média e oito de prioridade baixa, sem achados críticos.
+O [PR #139](https://github.com/unb-mds/2026-2-AvaliaAiUnB/pull/139)
+versionou RLS e políticas no esquema inicial. A aplicação ainda usa a chave
+de serviço. As mudanças seguintes estão nas issues
+[#124](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/124),
+[#125](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/125),
+[#126](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/126),
+[#127](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/127),
+[#129](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/129) e
+[#130](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/130).
+A conclusão da auditoria não significa que essas correções já foram aplicadas.
+
+Comentários e moderação ainda dependem da especificação e revisão do grupo na
+[#116](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/116). A proposta de
+banco já está documentada na #109.
+
+## Documentação
+
+| Assunto | Onde consultar |
+|---|---|
+| Início e instruções de execução | [Documentação do projeto](docs/index.md) |
+| Produto e requisitos | [Documento de visão](docs/DOCUMENTO_DE_VISAO.md) |
+| Funcionalidades | [Busca, notas, comparação e ranking](docs/FUNCIONALIDADES.md) |
+| Backend | [Detalhamento acompanhado na issue #116](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/116) |
+| Dados | [Modelo de dados](docs/Modelo%20de%20Dados.md) |
+| Arquitetura | [Diagramas do sistema](docs/ARQUITETURA.md) |
+| Coleta | [Guia do scraper](docs/COMO_USAR_SCRAPER.md) |
+| Cibersegurança | [Relatório da auditoria](docs/AUDITORIA_SEGURANCA.md) |
+| Automação e checks | [Pipeline do GitHub Actions](docs/pipeline.md) |
+| Hospedagem | [Configuração de Preview, produção e lançamento](docs/HOSPEDAGEM.md) |
+| Design | [Board do Figma](https://www.figma.com/board/PgqkPopVXOiSqm9gD5RRNv/AvaliaAi---Template-MDS?node-id=0-1&p=f&t=Rxu6jVCgeVZHCyg2-0) |
+| Histórico | [Release 1](RELEASE-v1.0.0.md) · [Release 2](RELEASE-v2.0.0.md) |
+
+Para abrir o site localmente, instale `mkdocs-material` no ambiente virtual e
+execute `mkdocs serve` na raiz. Valide com `mkdocs build --strict`.
+Na `main`, o workflow de documentação publica as mudanças em `docs/` ou
+`mkdocs.yml` no GitHub Pages.
+
+## Como contribuir
+
+1. Escolha uma [issue](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues)
+   e alinhe o escopo com os responsáveis.
+2. Crie uma branch a partir da `main` atualizada para a mudança.
+3. Use mensagens de commit que indiquem a alteração, como
+   `docs: reorganiza o README` ou `fix: corrige filtro de professores`.
+4. Para mudanças no código, execute `python -m unittest discover -s tests -t .`.
+   A suíte usa um Supabase falso e dispensa credenciais reais e Chrome.
+5. Para mudanças na documentação, confira os links e execute
+   `mkdocs build --strict`.
+6. Abra um pull request para a `main`, referenciando a issue, descrevendo a
+   mudança e informando a validação realizada. Confira os checks antes do merge.
+
+Consulte os [diagramas de arquitetura](docs/ARQUITETURA.md) e as
+[regras de funcionalidades](docs/FUNCIONALIDADES.md) ao alterar o sistema.
+
+## Equipe
+
+Projeto desenvolvido no contexto da disciplina **Métodos de Desenvolvimento
+de Software da Universidade de Brasília**, no semestre **2026/2**.
+
+Os integrantes e suas contribuições podem ser consultados no
+[histórico de contribuições](https://github.com/unb-mds/2026-2-AvaliaAiUnB/graphs/contributors).

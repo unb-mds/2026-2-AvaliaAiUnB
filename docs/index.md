@@ -111,6 +111,18 @@ Na matrícula, o estudante decide em pouco tempo, e as informações estão espa
 
     Problema, personas, requisitos, story map e user stories.
 
+- :material-list-box-outline: **[Funcionalidades](FUNCIONALIDADES.md)**
+
+    ---
+
+    Regras da busca, avaliações, ranking e comparação.
+
+- :material-cloud-outline: **[Hospedagem](HOSPEDAGEM.md)**
+
+    ---
+
+    Endereços, variáveis de ambiente e validação do deploy.
+
 - :material-sitemap-outline: **[Arquitetura](ARQUITETURA.md)**
 
     ---
