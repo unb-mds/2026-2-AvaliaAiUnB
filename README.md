@@ -6,6 +6,14 @@ O **AvaliaAi** nasce para tornar a escolha de disciplinas e docentes mais inform
 
 ---
 
+## 📚 Documentação Oficial (GitHub Pages)
+
+Toda a documentação técnica, arquitetura, story maps, guias de contribuição e manuais do projeto estão centralizados no nosso site oficial gerado com **MkDocs**:
+
+👉 **[Acessar a Documentação do AvaliaAi (GitHub Pages)](https://unb-mds.github.io/2026-2-AvaliaAiUnB/)**
+
+---
+
 ## ✨ Visão geral
 
 Durante o período de matrícula, estudantes precisam tomar decisões importantes em pouco tempo. Atualmente, informações sobre professores e disciplinas podem estar espalhadas em grupos de WhatsApp/Telegram ou simplesmente não estar disponíveis de forma estruturada.
@@ -68,7 +76,6 @@ O AvaliaAi busca centralizar essas informações e transformá-las em uma experi
 Estudantes que precisam montar sua grade e desejam conhecer melhor professores e disciplinas antes de realizar a matrícula.
 
 **Principais necessidades:**
-
 - encontrar informações rapidamente;
 - consultar avaliações objetivas;
 - comparar professores;
@@ -80,7 +87,6 @@ Estudantes que precisam montar sua grade e desejam conhecer melhor professores e
 Professores que desejam receber feedback estruturado e construtivo sobre sua atuação pedagógica.
 
 **Principais necessidades:**
-
 - visualizar médias agregadas;
 - identificar pontos de melhoria;
 - receber feedback baseado em critérios claros;
@@ -90,37 +96,28 @@ Professores que desejam receber feedback estruturado e construtivo sobre sua atu
 
 ## 🧩 Principais funcionalidades
 
-| Funcionalidade | Release prevista |
-|---|:---:|
-| Cadastro de usuário | 🚀 R1 |
-| Login / autenticação | 🚀 R1 |
-| Busca de professores e disciplinas | 🚀 R1 |
-| Perfil do professor | 🚀 R1 |
-| Avaliação por critérios | 🚀 R1 |
-| Visualização de médias | 🚀 R1 |
-| Ranking de professores | 🔮 R2 |
-| Comparação entre professores | 🔮 R2 |
-| Filtros avançados | 🔮 R2 |
-| Moderação de avaliações | 🔮 R2 |
-| Favoritar professores | 🔮 R2 |
-| Gráficos de desempenho | 🔮 R2 |
+| Funcionalidade | Release | Status |
+|---|:---:|:---:|
+| Cadastro de usuário | 🚀 R1 | ✅ Concluído |
+| Login / autenticação | 🚀 R1 | ✅ Concluído |
+| Busca de professores e disciplinas | 🚀 R1 | ✅ Concluído |
+| Perfil do professor | 🚀 R1 | ✅ Concluído |
+| Avaliação por critérios | 🚀 R1 | ✅ Concluído |
+| Visualização de médias | 🚀 R1 | ✅ Concluído |
+| Ranking de professores | 🔮 R2 | ✅ Concluído (v2.0.0) |
+| Comparação entre professores | 🔮 R2 | ✅ Concluído (v2.0.0) |
+| Moderação de avaliações | 🔮 R2 | Em desenvolvimento |
+| Segurança de Banco de Dados (RLS) | 🔮 R2 | ✅ Concluído (v2.0.0) |
 
 ### Comparação de professores (RF08)
 
-A página `/comparar` permite selecionar dois professores diferentes e consultar, lado a lado,
-as médias de didática, clareza, organização, disponibilidade e dificuldade, além da quantidade
-de avaliações válidas. O acesso está disponível na lista e no perfil de cada professor;
-os links individuais já preenchem a primeira seleção.
+A página `/comparar` permite selecionar dois professores diferentes e consultar, lado a lado, as médias de didática, clareza, organização, disponibilidade e dificuldade, além da quantidade de avaliações válidas. O acesso está disponível na lista e no perfil de cada professor; os links individuais já preenchem a primeira seleção.
 
-As médias consideram todas as disciplinas e períodos, com o mesmo peso por avaliação.
-Uma avaliação só entra no cálculo quando todos os cinco critérios têm notas inteiras de 1 a 5.
-Dificuldade indica exigência (1 = muito fácil; 5 = muito difícil), enquanto nos demais critérios
-5 representa excelente. Professores sem avaliações aparecem com um aviso, sem nota artificial.
-As médias são consultadas a cada comparação e exibidas com duas casas decimais.
+As médias consideram todas as disciplinas e períodos, com o mesmo peso por avaliação. Uma avaliação só entra no cálculo quando todos os cinco critérios têm notas inteiras de 1 a 5. Dificuldade indica exigência (1 = muito fácil; 5 = muito difícil), enquanto nos demais critérios 5 representa excelente. Professores sem avaliações aparecem com um aviso, sem nota artificial. As médias são consultadas a cada comparação e exibidas com duas casas decimais.
+
 ### Ranking de professores (RF07)
 
-A página `/ranking` está disponível pelos links na página inicial e na lista de professores.
-Ela mostra posição, média geral, quantidade de avaliações e acesso ao perfil de cada professor.
+A página `/ranking` está disponível pelos links na página inicial e na lista de professores. Ela mostra posição, média geral, quantidade de avaliações e acesso ao perfil de cada professor.
 
 - Participam professores com **pelo menos 5 avaliações válidas** (todos os cinco critérios com notas inteiras de 1 a 5).
 - A média geral é a soma das notas de **didática, clareza, organização e disponibilidade**, dividida pelo número de avaliações válidas vezes quatro. Todas as disciplinas e períodos têm o mesmo peso por avaliação.
@@ -132,46 +129,44 @@ Ela mostra posição, média geral, quantidade de avaliações e acesso ao perfi
 
 ## 🏗️ Arquitetura
 
-O AvaliaAi UnB utiliza uma arquitetura web modular, desenvolvida em Python com Flask, organizada em camadas responsáveis pela interface, pelo processamento das requisições, pelas regras da aplicação e pela persistência de dados.
+O AvaliaAi UnB utiliza uma arquitetura web modular conteinerizada, desenvolvida em Python com Flask, organizada em camadas responsáveis pela interface, processamento, regras da aplicação e persistência de dados em nuvem.
 
-```text
-┌─────────────────────────────────────────────┐
-│                FRONTEND                     │
-│       HTML5 · CSS3 · JavaScript · Jinja2    │
-└─────────────────────┬───────────────────────┘
-                      │
-                      ▼
-┌─────────────────────────────────────────────┐
-│                 BACKEND                     │
-│              Python · Flask                 │
-│                                             │
-│  auth_routes.py       professor_routes.py   │
-└─────────────────────┬───────────────────────┘
-                      │
-                      ▼
-┌─────────────────────────────────────────────┐
-│             LÓGICA DA APLICAÇÃO             │
-│                                             │
-│  session_controller.py · validacoes.py      │
-│  Autenticação · Sessões · Avaliações         │
-└─────────────────────┬───────────────────────┘
-                      │
-                      ▼
-┌─────────────────────────────────────────────┐
-│           MODELOS E REPOSITÓRIOS            │
-│                                             │
-│  models.py · repositorio.py · database.py   │
-└─────────────────────┬───────────────────────┘
-                      │
-                      ▼
-┌─────────────────────────────────────────────┐
-│              BANCO DE DADOS                 │
-│                                             │
-│                 Supabase                    │
-│  Usuários · Professores · Disciplinas       │
-│  Avaliações · Sessões                       │
-└─────────────────────────────────────────────┘
-```
+    ┌─────────────────────────────────────────────┐
+    │                FRONTEND                     │
+    │       HTML5 · CSS3 · JavaScript · Jinja2    │
+    └─────────────────────┬───────────────────────┘
+                          │
+                          ▼
+    ┌─────────────────────────────────────────────┐
+    │                 BACKEND                     │
+    │               Python · Flask                │
+    │                                             │
+    │  auth_routes.py       professor_routes.py   │
+    └─────────────────────┬───────────────────────┘
+                          │
+                          ▼
+    ┌─────────────────────────────────────────────┐
+    │             LÓGICA DA APLICAÇÃO             │
+    │                                             │
+    │  session_controller.py · validacoes.py      │
+    │  Autenticação · Sessões · Avaliações        │
+    └─────────────────────┬───────────────────────┘
+                          │
+                          ▼
+    ┌─────────────────────────────────────────────┐
+    │           MODELOS E REPOSITÓRIOS            │
+    │                                             │
+    │  models.py · repositorio.py · database.py   │
+    └─────────────────────┬───────────────────────┘
+                          │
+                          ▼
+    ┌─────────────────────────────────────────────┐
+    │              BANCO DE DADOS                 │
+    │                                             │
+    │           Supabase (PostgreSQL)             │
+    │  Usuários · Professores · Disciplinas       │
+    │  Avaliações · Sessões (com RLS Auth)        │
+    └─────────────────────────────────────────────┘
 
 ---
 
@@ -182,178 +177,112 @@ O AvaliaAi UnB utiliza uma arquitetura web modular, desenvolvida em Python com F
 | **Frontend** | HTML5, CSS3, JavaScript |
 | **Templates** | Jinja2 |
 | **Backend** | Python, Flask e Blueprints |
-| **Banco de dados** | Supabase |
+| **Banco de dados** | Supabase (PostgreSQL com RLS) |
+| **Infraestrutura** | Docker e Docker Compose |
+| **Documentação** | MkDocs (GitHub Pages) |
 | **Design / Prototipagem** | Figma |
 | **Versionamento** | Git + GitHub |
-| **Deploy / Hospedagem** | Render / Heroku |
 
 ---
 
-## Configuração e execução
+## ⚙️ Configuração e execução
 
-Instale as dependências com `pip install -r requirements.txt`, copie `.env.example`
-para `.env` na raiz e preencha as variáveis abaixo. O `.env` é ignorado pelo Git;
-em produção, configure as variáveis diretamente no ambiente da hospedagem.
-Variáveis já definidas no ambiente têm prioridade sobre o `.env`.
+O projeto foi atualizado para utilizar **Docker**, garantindo um ambiente idêntico para todos os membros da equipe. Contudo, a execução local nativa continua suportada.
+
+### 1. Variáveis de Ambiente
+Copie o ficheiro `.env.example` para um novo ficheiro chamado `.env` na raiz e preencha as variáveis abaixo. O `.env` é ignorado pelo Git; em produção, configure as variáveis diretamente no ambiente da hospedagem.
 
 | Variável | Obrigatória | Uso |
 |---|---|---|
-| `SECRET_KEY` | Sim | Assina a sessão Flask e os tokens CSRF. Use uma chave aleatória, privada e estável entre processos e reinícios. A aplicação não inicia se estiver ausente ou vazia. |
+| `SECRET_KEY` | Sim | Assina a sessão Flask e os tokens CSRF. Use uma chave aleatória, privada e estável. A aplicação não inicia se estiver ausente ou vazia. |
 | `SUPABASE_URL` | Sim | URL do projeto Supabase, usada pela aplicação e pelo scraper. |
 | `SUPABASE_SERVICE_KEY` | Sim | Chave de serviço do Supabase, restrita ao servidor. |
-| `FLASK_DEBUG` | Não | Desligado por padrão. Somente em desenvolvimento, habilite com `1`, `true`, `yes` ou `on` (sem distinção de maiúsculas). Outros valores mantêm o debug desligado. |
+| `FLASK_DEBUG` | Não | Habilite com `1` para ambiente de desenvolvimento local. |
 
-Gere uma `SECRET_KEY` com `python -c "import secrets; print(secrets.token_hex(32))"`
-e salve o resultado no ambiente ou no `.env`, sem incluí-lo no controle de versão.
-Execute localmente com `python run.py`. Para publicar, use um servidor WSGI e
-mantenha `FLASK_DEBUG` ausente ou definido como `0`.
+*Dica:* Gere uma `SECRET_KEY` segura executando `python -c "import secrets; print(secrets.token_hex(32))"` no terminal.
 
-Todos os formulários POST (cadastro, login, avaliação e logout) enviam um campo
-oculto `csrf_token`. Requisições sem token, com token inválido ou expirado recebem
-HTTP 400 antes de executar a operação. Recarregue a página para obter um novo token.
-Clientes que enviam POSTs diretamente também precisam carregar o formulário por GET,
-preservar o cookie de sessão Flask e enviar o token no campo `csrf_token` ou no
-cabeçalho `X-CSRFToken`, conforme a [documentação do Flask-WTF](https://flask-wtf.readthedocs.io/en/stable/csrf/).
+### 2. Executando com Docker (Recomendado)
+Certifique-se de ter o **Docker** e o **Docker Compose** instalados na sua máquina.
+1. No terminal, na raiz do projeto, execute:
+    docker compose up --build
+2. Aceda ao endereço `http://localhost:8000` no seu navegador.
 
-Para criar ou recriar a estrutura do banco de dados em um projeto Supabase vazio,
-abra o **SQL Editor** no painel do Supabase, cole o conteúdo de
-`docs/migrations/001_initial_schema.sql` e clique em **Run**. O script cria as
-tabelas (`professores`, `disciplinas`, `turmas`, `perfis` e `avaliacoes`), as
-constraints únicas e a view `vw_professor_disciplina`.
+### 3. Executando Localmente (Sem Docker)
+1. Crie o ambiente virtual: `python -m venv venv`
+2. Ative o ambiente: `venv\Scripts\activate` (Windows) ou `source venv/bin/activate` (Linux/Mac)
+3. Instale as dependências: `pip install -r requirements.txt`
+4. Execute o servidor: `python run.py`
 
-Execute os testes com `python -m unittest discover -s tests -t .`. Eles usam um
-cliente Supabase falso e uma chave exclusiva de teste, sem credenciais reais.
+### 4. Configuração do Banco de Dados e Testes
+Para criar ou recriar a estrutura do banco de dados em um projeto Supabase vazio, abra o **SQL Editor** no painel do Supabase, cole o conteúdo de `docs/migrations/001_initial_schema.sql` e clique em **Run**. O script cria as tabelas e configura o **Row Level Security (RLS)**.
+
+Execute os testes automatizados com:
+    python -m unittest discover -s tests -t .
+
+Eles usam um cliente Supabase falso e uma chave exclusiva de teste, sem expor credenciais reais.
+
+Todos os formulários POST (cadastro, login, avaliação e logout) exigem o envio de um `csrf_token` oculto, garantindo proteção nativa conforme a documentação do Flask-WTF.
 
 ---
 
-## 🔐 Segurança e moderação
+## 🔐 Segurança e integridade
 
-O projeto prevê mecanismos para garantir uma utilização responsável da plataforma, incluindo:
+O projeto prevê mecanismos rigorosos para garantir uma utilização segura:
 
-- autenticação segura;
-- armazenamento seguro de senhas;
-- comunicação via HTTPS;
-- moderação de avaliações;
-- denúncia e remoção de conteúdos ofensivos;
-- prevenção de conteúdos difamatórios e discursos de ódio;
-- atenção à **LGPD** no tratamento de dados de estudantes e professores.
+- **Autenticação em Nuvem:** Gestão de usuários validada pelo Supabase Auth.
+- **Row Level Security (RLS):** Políticas de acesso direto nas tabelas do PostgreSQL que impedem a escrita e manipulação de avaliações por usuários não autenticados ou não autorizados.
+- **Proteção CSRF:** Tokens injetados e exigidos em toda rota POST/PATCH/DELETE.
+- Atenção à **LGPD** no tratamento de dados de estudantes e professores.
 
 ---
 
 ## ⚙️ Requisitos não funcionais
 
-O documento de visão estabelece, entre outros pontos:
-
 - **Usabilidade:** interface intuitiva, responsiva e acessível;
 - **Desempenho:** buscas e páginas de perfil com resposta inferior a 2 segundos sob carga normal;
-- **Segurança:** senhas protegidas e comunicação via HTTPS;
+- **Segurança:** senhas protegidas e comunicação restrita via banco RLS;
 - **Confiabilidade:** atualização atômica das médias após novas avaliações válidas;
-- **Portabilidade:** funcionamento consistente em navegadores modernos.
+- **Portabilidade:** funcionamento via Docker e em navegadores modernos.
 
 ---
 
 ## 📁 Organização da documentação
 
-```text
-.
-├── docs/
-│   └── DOCUMENTO_DE_VISAO.md
-└── README.md
-```
-
-O diretório `docs/` concentra a documentação de visão do projeto.
+    .
+    ├── docs/
+    │   ├── DOCUMENTO_DE_VISAO.md
+    │   ├── migrations/
+    │   └── (demais arquivos gerados para o MkDocs)
+    ├── mkdocs.yml
+    └── README.md
 
 ---
 
-## 🚀 Release 1
+## 🧭 Roadmap conceitual
 
-A realese 1 prioriza o fluxo essencial para consulta e avaliação:
-
-```text
-Cadastro
-   ↓
-Login
-   ↓
-Busca por professor/disciplina
-   ↓
-Perfil do professor
-   ↓
-Consulta das avaliações
-   ↓
-Avaliação por critérios
-   ↓
-Atualização das médias
-```
-
-As funcionalidades de ranking, comparação, filtros avançados, favoritos e gráficos ficam previstas para etapas posteriores.
+    [✓] Definição do problema
+            ↓
+    [✓] Levantamento de personas e necessidades
+            ↓
+    [✓] Definição da visão e requisitos
+            ↓
+    [✓] Entrega de Release 1 (Autenticação, Catálogo, Avaliações Básicas)
+            ↓
+    [✓] Refatoração de Infraestrutura (Docker) e Segurança (Supabase RLS)
+            ↓
+    [✓] Entrega de Release 2.0.0 (Ranking, Comparação, MkDocs)
+            ↓
+    [ ] Funcionalidades futuras (Gráficos, Favoritos, Moderação nativa)
 
 ---
 
 ## 📌 Restrições do projeto
 
 De acordo com o documento de visão, o desenvolvimento deve:
-
 - ser realizado dentro do período letivo da disciplina de **MDS na UnB**;
 - utilizar **Python + Flask** no backend;
-- utilizar **Supabase** como banco de dados;
-- utilizar hospedagem em nuvem;
-- observar a **LGPD**;
-- aplicar diretrizes de moderação para conteúdos ofensivos, difamatórios ou de discurso de ódio.
-
----
-
-## 🧭 Roadmap conceitual
-
-```text
-[✓] Definição do problema
-        ↓
-[✓] Levantamento de personas e necessidades
-        ↓
-[✓] Definição da visão e requisitos
-        ↓
-[✓] Entrega de Release 1
-        ↓
-[✓] Autenticação e cadastro
-        ↓
-[✓] Catálogo de professores e disciplinas
-        ↓
-[✓] Sistema de avaliações
-        ↓
-[✓] Médias e estatísticas
-        ↓
-[✓] Funcionalidades da Release 2
-```
-
----
-
-## 📚 Documentação
-
-| Recurso | Acesso |
-|---|---|
-| 🎨 **Protótipo / Board Figma** | [Abrir no Figma](https://www.figma.com/board/PgqkPopVXOiSqm9gD5RRNv/AvaliaAi---Template-MDS?node-id=0-1&p=f&t=Rxu6jVCgeVZHCyg2-0) |
-| 📖 **Documento de Visão** | [docs/DOCUMENTO_DE_VISAO.md](docs/DOCUMENTO_DE_VISAO.md) |
-
----
-
-## 💡 Sobre o projeto
-
-O **AvaliaAi** é um projeto acadêmico desenvolvido no contexto de **MDS — Métodos de Desenvolvimento de Software na Universidade de Brasília (UnB)**.
-
-A proposta é criar uma ferramenta que aproxime estudantes e informações relevantes sobre sua experiência acadêmica, transformando avaliações dispersas em dados estruturados e úteis para consulta.
-
-## Como rodar o projeto
-
-### Opção A: Execução Local
-1. Crie o ambiente virtual: `python -m venv venv`
-2. Ative o ambiente: `venv\Scripts\activate` (Windows) ou `source venv/bin/activate` (Linux/Mac)
-3. Instale as dependências: `pip install -r requirements.txt`
-4. Copie o ficheiro .env.example e mude o nome da cópia para .env. Preencha as seguintes variáveis: SECRET_KEY (chave de segurança da aplicação Flask), SUPABASE_URL (URL de conexão ao banco) e SUPABASE_SERVICE_KEY (chave de serviço para acesso aos dados). Aviso: O ficheiro .env contém dados sensíveis e nunca deve ser enviado para o GitHub!
-5. Inicie o servidor: `python run.py`
-
-### Opção B: Execução com Docker
-1. Certifique-se de que tem o Docker instalado e o ficheiro `.env` criado na raiz.
-2. No terminal, execute: `docker compose up --build`
-3. Aceda à aplicação no navegador em `http://localhost:8000`
+- utilizar **Supabase** como banco de dados orquestrado com Docker;
+- observar rigorosamente a **LGPD** e adotar políticas contra discurso de ódio.
 
 ---
 
