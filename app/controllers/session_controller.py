@@ -84,10 +84,13 @@ def login_required(view_func):
 
 def encerrar_sessao(response):
     """Revoga a sessão no Supabase e apaga os cookies."""
-    acesso = request.cookies.get(COOKIE_ACESSO)
-    if acesso:
-        repositorios().usuarios.encerrar(acesso)
+    usuario = obter_usuario_atual()
+    
+    if usuario and "access_token" in usuario:
+        repositorios().usuarios.encerrar(usuario["access_token"])
+        
     g.pop("sessao_renovada", None)
     response.delete_cookie(COOKIE_ACESSO)
     response.delete_cookie(COOKIE_RENOVACAO)
+    
     return response
