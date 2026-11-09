@@ -12,9 +12,11 @@ notas.
 
 Visitantes leem os comentários anônimos e suas contagens. A área convida a
 entrar ou criar conta com qualquer e-mail verificado para escrever ou reagir.
-A pessoa logada que ainda não comentou vê **Escrever comentário**. O autor vê
-**Editar** e **Apagar** somente no próprio comentário. Na lista vazia, a seção
-convida a escrever o primeiro relato.
+A pessoa logada vê **Escrever comentário** se ainda puder publicar naquele
+perfil. O exemplo mostra uma conta que já comentou em Cálculo 1 e pode
+escrever sobre outra disciplina. Cada relato da própria conta tem as ações
+**Editar** e **Apagar**. Na lista vazia, a seção convida a escrever o primeiro
+relato.
 
 Os polegares mostram as contagens de **Curtir** e **Descurtir** nos comentários
 de outras pessoas. A reação selecionada tem cor e marca de confirmação. É
@@ -23,7 +25,12 @@ ativa, tocar no botão leva ao login sem gravar voto.
 
 ## Escrever
 
-![Formulário com disciplina opcional, contador e aviso de publicação anônima com verificação automática](mockups/comentarios/escrever.svg)
+![Formulário com Cálculo 2 selecionado para um novo relato, contador e aviso de verificação automática](mockups/comentarios/escrever.svg)
+
+No primeiro relato, a pessoa pode escolher uma disciplina ou deixar o
+comentário geral. Para escrever outro, precisa escolher uma disciplina
+ministrada pelo mesmo professor em que ainda não comentou. Se houver um
+comentário geral, a tela orienta a vinculá-lo a uma disciplina antes.
 
 O formulário avisa que o texto será público, a autoria ficará privada e o
 conteúdo passará por verificação. Durante o envio, o botão mostra
@@ -36,7 +43,8 @@ privado até a decisão.
 
 ![Formulário de edição com texto preservado e alerta do filtro sobre um e-mail no texto](mockups/comentarios/editar.svg)
 
-O autor edita o texto e a disciplina dentro dos vínculos do professor. O
+O autor edita o texto e pode trocar a disciplina para outra ministrada pelo
+professor em que ainda não comentou. O
 exemplo mostra uma edição bloqueada pelo filtro. A última versão aprovada
 continua visível até uma nova versão passar pela verificação. Após uma edição
 aprovada, a lista indica que o comentário foi editado.
