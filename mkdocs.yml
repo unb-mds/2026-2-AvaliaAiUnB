@@ -1,22 +1,67 @@
 site_name: AvaliaAi UnB
 site_description: Documentação do AvaliaAi UnB
+repo_url: https://github.com/unb-mds/2026-2-AvaliaAiUnB
+repo_name: unb-mds/2026-2-AvaliaAiUnB
 theme:
   name: material
   language: pt-BR
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: blue
+      toggle:
+        icon: material/weather-night
+        name: Ativar modo escuro
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: blue
+      toggle:
+        icon: material/weather-sunny
+        name: Ativar modo claro
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - content.code.copy
+    - content.tabs.link
+    - search.highlight
+extra_css:
+  - stylesheets/extra.css
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
 exclude_docs: |
   IMPLEMENTACAO_26_36_37.md
 nav:
   - Início: index.md
-  - Funcionalidades: FUNCIONALIDADES.md
-  - Modelo de Dados: Modelo de Dados.md
-  - Backend: BACKEND.md
-  - Frontend: FRONTEND.md
-  - Cibersegurança: CIBERSEGURANCA.md
-  - Comentários (proposta): COMENTARIOS.md
-  - Como Usar o Scraper: COMO_USAR_SCRAPER.md
-  - Documento de Visão (Story Map e User Stories): DOCUMENTO_DE_VISAO.md
-  - Diagramas de Arquitetura: ARQUITETURA.md
-  - Pipeline: pipeline.md
-  - Hospedagem: HOSPEDAGEM.md
-  - Auditoria de Segurança: AUDITORIA_SEGURANCA.md
-  - Link do Figma: "https://www.figma.com/board/PgqkPopVXOiSqm9gD5RRNv/AvaliaAi---Template-MDS?node-id=0-1&p=f&t=Rxu6jVCgeVZHCyg2-0"
+  - Projeto:
+    - Funcionalidades: FUNCIONALIDADES.md
+    - Comentários avaliativos: COMENTARIOS.md
+    - Documento de Visão: DOCUMENTO_DE_VISAO.md
+    - Protótipo no Figma: "https://www.figma.com/board/PgqkPopVXOiSqm9gD5RRNv/AvaliaAi---Template-MDS?node-id=0-1&p=f&t=Rxu6jVCgeVZHCyg2-0"
+  - Arquitetura:
+    - Diagramas de Arquitetura: ARQUITETURA.md
+    - Modelo de Dados: "Modelo de Dados.md"
+  - Desenvolvimento:
+    - Backend: BACKEND.md
+    - Frontend: FRONTEND.md
+    - Como Usar o Scraper: COMO_USAR_SCRAPER.md
+    - Pipeline: pipeline.md
+    - Hospedagem: HOSPEDAGEM.md
+  - Segurança:
+    - Cibersegurança: CIBERSEGURANCA.md
+    - Auditoria de Segurança: AUDITORIA_SEGURANCA.md
