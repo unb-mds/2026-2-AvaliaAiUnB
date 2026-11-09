@@ -4,7 +4,10 @@ import time
 import unittest
 from unittest.mock import patch
 
+from httpx import ConnectError
+
 from app import create_app
+from app.controllers.session_controller import COOKIE_ACESSO, COOKIE_RENOVACAO
 from app.repositorio import AvaliacaoRepository, ProfessorRepository, UsuarioRepository
 from app.validacoes import CRITERIOS
 from tests.fake_supabase import ClienteFalso
@@ -211,6 +214,37 @@ class TestFluxoWeb(unittest.TestCase):
         self.cliente.auth.expirar_acesso()
         self.assertEqual(self.web.get('/perfil', headers=json).status_code, 200)
         self.assertEqual(self.web.get('/perfil', headers=json).status_code, 200)   # cookie novo
+
+    def test_logout_com_acesso_expirado_revoga_refresh_e_limpa_cookies(self):
+        self.cadastrar()
+        self.entrar()
+        refresh_original = self.web.get_cookie(COOKIE_RENOVACAO).value
+        self.cliente.auth.expirar_acesso()
+
+        resposta = self.postar('/logout', data={'formato': 'html'})
+
+        self.assertEqual(resposta.status_code, 303)
+        self.assertIsNone(self.web.get_cookie(COOKIE_ACESSO))
+        self.assertIsNone(self.web.get_cookie(COOKIE_RENOVACAO))
+        self.assertNotIn(refresh_original, self.cliente.auth.refresh)
+        self.assertEqual(self.cliente.auth.refresh, {})
+        self.assertEqual(self.web.get('/perfil', headers={'Accept': 'application/json'}).status_code,
+                         401)
+
+    def test_logout_registra_falha_sem_reemitir_cookies_renovados(self):
+        self.cadastrar()
+        self.entrar()
+        self.cliente.auth.expirar_acesso()
+        with patch.object(self.cliente.auth.admin, 'sign_out',
+                          side_effect=ConnectError('detalhe privado da conexão')), \
+             self.assertLogs(self.web.application.logger, level='WARNING') as registros:
+            resposta = self.postar('/logout', data={'formato': 'html'})
+
+        self.assertEqual(resposta.status_code, 303)
+        self.assertIsNone(self.web.get_cookie(COOKIE_ACESSO))
+        self.assertIsNone(self.web.get_cookie(COOKIE_RENOVACAO))
+        self.assertIn('Falha ao revogar a sessão no Supabase (ConnectError)', registros.output[0])
+        self.assertNotIn('detalhe privado', registros.output[0])
 
     def test_listagem_e_perfil_de_professor(self):
         html = self.web.get('/professores?nome=maria').get_data(as_text=True)
