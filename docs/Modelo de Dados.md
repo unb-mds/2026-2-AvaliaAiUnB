@@ -312,7 +312,7 @@ REVOKE ALL ON vw_professor_disciplina FROM anon, authenticated;
 | Ligação com disciplina | `disciplina_id` → `disciplinas(id)`, `NOT NULL` | Todo relato se refere a uma disciplina ministrada pelo professor. |
 | Quantidade por usuário | **Um por professor e disciplina** | Permite relatos sobre disciplinas diferentes e evita duplicidade. |
 | Exclusão | `ON DELETE CASCADE` em usuário e professor. `RESTRICT` em disciplina | Preserva o vínculo obrigatório dos relatos existentes. |
-| Tamanho do texto | de 10 a 1000 caracteres | Evita comentários vazios e textos gigantes. |
+| Tamanho do texto | Até 1.000 caracteres, com conteúdo obrigatório | Aceita textos curtos e rejeita campos vazios ou preenchidos apenas com espaços em branco. |
 | Edição | `atualizado_em` mantido por trigger | Mostra se o comentário foi editado. |
 | Visibilidade | `ocultado_em` nulo para comentários publicados e visíveis | A listagem exclui comentários ocultados pela moderação. |
 | Reações | Uma linha por conta e comentário, com valor `1` ou `-1` | Permite trocar e desfazer o voto. Só as contagens aparecem em público. |
@@ -332,7 +332,7 @@ CREATE TABLE IF NOT EXISTS comentarios (
     atualizado_em TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     ocultado_em TIMESTAMPTZ,
     CONSTRAINT ck_comentarios_texto_tamanho
-        CHECK (char_length(btrim(texto)) BETWEEN 10 AND 1000),
+        CHECK (texto ~ '[^[:space:]]' AND char_length(btrim(texto)) <= 1000),
     CONSTRAINT uq_comentarios_usuario_prof_disc
         UNIQUE (usuario_id, professor_id, disciplina_id)
 );
@@ -391,7 +391,7 @@ REVOKE ALL ON comentarios_reacoes FROM PUBLIC, anon, authenticated;
 | Regra | Onde é garantida |
 |---|---|
 | Disciplina obrigatória e um relato por combinação | O banco usa `NOT NULL` e `UNIQUE (usuario_id, professor_id, disciplina_id)`. O backend valida o vínculo com o professor. |
-| Tamanho do texto (10 a 1000) | Banco: `CHECK`. O backend deve validar antes para devolver mensagem amigável. |
+| Texto preenchido e até 1.000 caracteres | Banco: `CHECK`. O backend valida antes para devolver mensagem amigável. |
 | Só o autor edita ou apaga | O backend compara a sessão com o autor. A `service_role` ignora o RLS. |
 | Identidade do autor e de quem reage | O servidor usa a sessão verificada e não aceita `usuario_id` enviado pelo cliente. |
 | Uma reação por conta e comentário | A chave primária garante a unicidade. O backend valida comentário visível e autor diferente de quem reage. |

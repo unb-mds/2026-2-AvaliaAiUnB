@@ -36,16 +36,15 @@ Uma conta de comentários não concede acesso à moderação.
 | Professor | Obrigatório e existente no catálogo |
 | Disciplina | Obrigatória. Deve ter sido ministrada pelo professor |
 | Quantidade | Um comentário por conta, professor e disciplina |
-| Tamanho | De 10 a 1.000 caracteres após remover espaços nas extremidades, conforme o `btrim` e o `char_length` da proposta de banco |
+| Tamanho | Até 1.000 caracteres após remover espaços nas extremidades. O texto precisa ter conteúdo |
 | Formato | Texto simples; HTML e Markdown não são interpretados |
-| Identificação pública | Rótulo «Comentário anônimo», com vínculo privado à conta para autorizar edição e exclusão |
+| Identificação pública | Todo comentário publicado aparece como «Comentário anônimo». O vínculo com a conta fica privado para autorizar edição e exclusão |
 | Ordem da lista | Mais recentes primeiro pela data de criação, com identificador como desempate |
 | Datas | Exibir criação e indicar quando houve edição |
 
 O backend deve validar as regras antes da gravação e escapar o texto na saída.
-Espaços ou quebras de linha não devem ser usados para contornar o limite mínimo
-de conteúdo. A interpretação exata de texto composto só por espaços deve ser
-alinhada com a constraint do banco durante a futura implementação.
+Um texto curto pode ser enviado. O servidor recusa o campo vazio ou preenchido
+apenas com espaços, tabulações ou quebras de linha.
 
 A autoria sempre vem da sessão autenticada. O servidor deve ignorar um
 `usuario_id` enviado pelo formulário. O servidor valida o vínculo entre a
@@ -165,9 +164,10 @@ atender a fila, a publicação de novos comentários fica pausada até haver cob
 ## Privacidade e ciclo dos dados
 
 A interface informa que o texto publicado fica visível para todos e a identidade
-fica privada. Respostas públicas da API e a interface excluem nome, username,
-e-mail, tokens, dados de denúncias e identificadores de conta. A verificação do
-texto e o vínculo entre conta, comentário e reação ficam no servidor.
+fica privada. O anonimato vale para todos os comentários publicados. Respostas
+públicas da API e a interface excluem nome, username, e-mail, tokens, dados de
+denúncias e identificadores de conta. A verificação do texto e o vínculo entre
+conta, comentário e reação ficam no servidor.
 
 A orientação ao autor deve pedir que não publique matrículas, contatos,
 documentos, informações pessoais de terceiros ou relatos que exponham pessoas
@@ -189,9 +189,9 @@ rotina de descarte fica para a implementação após revisão do grupo.
 |---|---|---|
 | C01 | Leitura pública e participação com conta comum e e-mail verificado de qualquer domínio. Sem espaço ou perfil exclusivo para professores | Aguardando revisão |
 | C02 | Disciplina obrigatória. Uma pessoa pode escrever um comentário por disciplina ministrada pelo professor | Aguardando revisão |
-| C03 | Texto simples de 10 a 1.000 caracteres | Aguardando revisão |
+| C03 | Texto simples de até 1.000 caracteres, com conteúdo obrigatório e sem mínimo de caracteres | Aguardando revisão |
 | C04 | Estrelas e comentários são opcionais e independentes. A pessoa pode usar só uma opção ou ambas em qualquer ordem | Aguardando revisão |
-| C05 | Comentários anônimos em público, com autoria privada vinculada à conta | Aguardando revisão |
+| C05 | Todos os comentários publicados são anônimos para o público. A autoria fica vinculada à conta em privado | Aguardando revisão |
 | C06 | Denúncia privada e moderação por responsáveis autorizados | Aguardando revisão e projeto de dados |
 | C07 | Ocultação motivada, sem republicação automática por edição | Aguardando revisão |
 | C08 | Dois moderadores designados, primeira análise em até três dias úteis, formulário privado de contestação e retenção de até 90 dias após o encerramento | Aguardando revisão |
@@ -208,8 +208,11 @@ acompanham estas regras.
 - Visitantes consultam comentários anônimos e contagens de reações. Entrar com
   conta verificada é obrigatório para comentar, reagir ou denunciar. O fluxo
   aceita, por exemplo, um e-mail Outlook ou de domínio próprio.
-- Duplicidade, limites de texto e disciplina ausente ou inválida recebem erro
-  claro e preservam o texto preenchido.
+- Um texto curto como «Boa aula.» passa pela validação de tamanho. Campo
+  vazio, só com espaços ou quebras de linha, e texto acima de 1.000 caracteres
+  recebem erro claro.
+- Duplicidade e disciplina ausente ou inválida recebem erro claro e
+  preservam o texto preenchido.
 - A mesma conta pode comentar Cálculo 1 e Cálculo 2 com o mesmo professor.
   Um segundo relato em Cálculo 1 é rejeitado, inclusive em envios simultâneos.
 - Só o autor edita ou exclui. O servidor nega tentativas de se passar por outro

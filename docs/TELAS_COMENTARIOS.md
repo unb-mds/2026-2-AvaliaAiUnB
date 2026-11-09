@@ -34,8 +34,9 @@ Para publicar, a pessoa precisa escolher uma disciplina ministrada pelo
 professor. Se já tiver um comentário naquela disciplina, a tela oferece a
 opção de editá-lo.
 
-O formulário avisa que o texto será público, a autoria ficará privada e o
-conteúdo passará por verificação. Durante o envio, o botão mostra
+O formulário avisa que todo comentário será publicado anonimamente e que o
+texto passará por verificação. O campo aceita textos curtos e mostra o limite
+de 1.000 caracteres. Durante o envio, o botão mostra
 **Verificando**. Se o filtro bloquear o texto, a mensagem junto ao campo
 explica o que precisa ser revisto e preserva o que foi digitado. Se a análise
 precisar de moderação, a confirmação informa **Em revisão** e o texto fica
