@@ -1,15 +1,17 @@
-body { font-family: Arial, sans-serif; color: #202124; max-width: 720px; margin: 48px auto; padding: 0 20px; }
+@import url("base.css");
+
+body { font-family: Arial, sans-serif; color: var(--cor-texto); max-width: 720px; margin: 48px auto; padding: 0 20px; }
 h1 { font-size: 1.6rem; overflow-wrap: anywhere; }
 h2 { font-size: 1.2rem; margin-top: 32px; }
 label { display: block; margin: 16px 0 6px; }
 select { max-width: 100%; padding: 10px; font: inherit; }
 button, .btn-avaliar { display: inline-block; padding: 10px 16px; margin: 16px 8px 16px 0; cursor: pointer; font: inherit; }
-a { color: #174b83; }
+a { color: var(--cor-principal); }
 .indicadores { list-style: none; padding: 0; }
 .indicadores li { display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; border-bottom: 1px solid #ddd; padding: 16px 0; }
 .indicadores strong { white-space: nowrap; }
-.ajuda { color: #4f5357; line-height: 1.5; }
-.erros { color: #a01818; line-height: 1.6; }
+.ajuda { color: var(--cor-texto-secundario); line-height: 1.5; }
+.erros { color: var(--cor-erro); line-height: 1.6; }
 input[type="search"] { box-sizing: border-box; width: 100%; padding: 10px; font: inherit; }
 .filtros { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0 16px; }
 .filtros > div { flex: 1 1 220px; }
@@ -24,7 +26,7 @@ input[type="search"] { box-sizing: border-box; width: 100%; padding: 10px; font:
 .tabela-comparacao { width: 100%; border-collapse: collapse; table-layout: fixed; }
 .tabela-comparacao caption { text-align: left; font-weight: bold; padding-bottom: 16px; }
 .tabela-comparacao th, .tabela-comparacao td { text-align: left; padding: 14px 8px; border-bottom: 1px solid #ddd; overflow-wrap: anywhere; }
-.tabela-comparacao thead { background-color: #f2f4f7; }
+.tabela-comparacao thead { background-color: var(--cor-fundo-suave); }
 @media (max-width: 480px) {
     .tabela-comparacao th, .tabela-comparacao td { padding: 12px 4px; font-size: 0.9rem; }
 }
@@ -33,7 +35,7 @@ input[type="search"] { box-sizing: border-box; width: 100%; padding: 10px; font:
 .tabela-ranking { width: 100%; border-collapse: collapse; text-align: left; }
 .tabela-ranking caption { text-align: left; font-weight: bold; padding: 16px 0; }
 .tabela-ranking th, .tabela-ranking td { border-bottom: 1px solid #ddd; padding: 16px 8px; }
-.tabela-ranking thead { background-color: #f2f4f7; }
+.tabela-ranking thead { background-color: var(--cor-fundo-suave); }
 .tabela-ranking th[scope="row"] { min-width: 120px; overflow-wrap: anywhere; }
 .departamento-ranking { display: block; font-size: 0.9rem; font-weight: normal; margin-top: 4px; }
 .nota-ranking { white-space: nowrap; font-weight: bold; }

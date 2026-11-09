@@ -1,0 +1,199 @@
+/*
+ * Base compartilhada do design system (docs/DESIGN_SYSTEM.md).
+ * Reúne os tokens e os componentes reutilizáveis. As telas carregam este
+ * arquivo diretamente ou por meio de indicadores.css (@import).
+ */
+
+:root {
+    /* Cores */
+    --cor-superficie: #ffffff;
+    --cor-fundo-suave: #f2f4f7;
+    --cor-texto: #202124;
+    --cor-texto-secundario: #4f5357;
+    --cor-principal: #174b83;
+    --cor-principal-hover: #123c69;
+    --cor-borda-campo: #767676;
+    --cor-divisor: #d4d9df;
+    --cor-erro: #a01818;
+    --cor-erro-hover: #801212;
+
+    /* Tipografia */
+    --fonte: Arial, sans-serif;
+    --texto-titulo-pagina: 2rem;
+    --texto-titulo-secao: 1.5rem;
+    --texto-titulo-card: 1.25rem;
+    --texto-base: 1rem;
+    --texto-pequeno: 0.875rem;
+
+    /* Espaçamento */
+    --espaco-1: 4px;
+    --espaco-2: 8px;
+    --espaco-3: 12px;
+    --espaco-4: 16px;
+    --espaco-5: 24px;
+    --espaco-6: 32px;
+    --espaco-7: 48px;
+
+    /* Forma e dimensões */
+    --raio: 8px;
+    --raio-card: 12px;
+    --altura-controle: 44px;
+    --largura-conteudo: 720px;
+    --largura-auth: 400px;
+    --margem-lateral: 16px;
+    --foco-largura: 2px;
+    --foco-distancia: 2px;
+}
+
+@media (min-width: 481px) {
+    :root {
+        --margem-lateral: 24px;
+    }
+}
+
+/* Foco visível por teclado */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+    outline: var(--foco-largura) solid var(--cor-principal);
+    outline-offset: var(--foco-distancia);
+}
+
+/* Botões */
+.botao {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-height: var(--altura-controle);
+    padding: var(--espaco-2) var(--espaco-4);
+    border: 1px solid transparent;
+    border-radius: var(--raio);
+    font-family: inherit;
+    font-size: var(--texto-base);
+    font-weight: 700;
+    line-height: 1.5;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.botao-primario {
+    background-color: var(--cor-principal);
+    border-color: var(--cor-principal);
+    color: var(--cor-superficie);
+}
+
+.botao-primario:hover {
+    background-color: var(--cor-principal-hover);
+    border-color: var(--cor-principal-hover);
+}
+
+.botao-secundario {
+    background-color: var(--cor-superficie);
+    border-color: var(--cor-principal);
+    color: var(--cor-principal);
+}
+
+.botao-secundario:hover {
+    background-color: var(--cor-fundo-suave);
+}
+
+.botao-destrutivo {
+    background-color: var(--cor-erro);
+    border-color: var(--cor-erro);
+    color: var(--cor-superficie);
+}
+
+.botao-destrutivo:hover {
+    background-color: var(--cor-erro-hover);
+    border-color: var(--cor-erro-hover);
+}
+
+.botao:disabled,
+.botao[aria-disabled="true"] {
+    background-color: var(--cor-fundo-suave);
+    border-color: var(--cor-divisor);
+    color: var(--cor-texto-secundario);
+    cursor: not-allowed;
+}
+
+/* Campos: rótulo visível, ajuda e erro junto ao controle */
+.campo {
+    margin-bottom: var(--espaco-4);
+}
+
+.campo label {
+    display: block;
+    margin: 0 0 var(--espaco-2);
+    font-weight: 700;
+}
+
+.campo input,
+.campo select,
+.campo textarea {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: var(--altura-controle);
+    padding: var(--espaco-2) var(--espaco-3);
+    border: 1px solid var(--cor-borda-campo);
+    border-radius: var(--raio);
+    background-color: var(--cor-superficie);
+    color: var(--cor-texto);
+    font: inherit;
+}
+
+.campo input:disabled,
+.campo select:disabled,
+.campo textarea:disabled {
+    background-color: var(--cor-fundo-suave);
+    color: var(--cor-texto-secundario);
+}
+
+.campo [aria-invalid="true"] {
+    border-color: var(--cor-erro);
+}
+
+.campo-ajuda {
+    margin: var(--espaco-1) 0 0;
+    color: var(--cor-texto-secundario);
+    font-size: var(--texto-pequeno);
+    line-height: 1.5;
+}
+
+.campo-erro {
+    margin: var(--espaco-1) 0 0;
+    color: var(--cor-erro);
+    font-size: var(--texto-pequeno);
+    font-weight: 700;
+    line-height: 1.5;
+}
+
+/* Card */
+.card {
+    box-sizing: border-box;
+    padding: var(--espaco-4);
+    border: 1px solid var(--cor-divisor);
+    border-radius: var(--raio-card);
+    background-color: var(--cor-superficie);
+}
+
+/* Mensagens: informação, erro e estado vazio */
+.mensagem {
+    margin: var(--espaco-4) 0;
+    padding: var(--espaco-3) var(--espaco-4);
+    border-radius: var(--raio);
+    background-color: var(--cor-fundo-suave);
+    color: var(--cor-texto);
+    line-height: 1.5;
+}
+
+.mensagem-erro {
+    border-left: 4px solid var(--cor-erro);
+    color: var(--cor-erro);
+    font-weight: 700;
+}
