@@ -9,8 +9,7 @@ from collections import Counter
 
 from flask import current_app
 from supabase_auth.errors import AuthError
-
-from app.supabase_db import get_supabase, novo_cliente
+from app.supabase_db import get_supabase, get_supabase_publico, novo_cliente
 from app.utils import normalizar_busca
 from app.validacoes import CRITERIOS
 
@@ -215,13 +214,14 @@ class ProfessorRepository:
 
 
 class AvaliacaoRepository:
-    def __init__(self, cliente):
+    def __init__(self, cliente, cliente_leitura=None):
         self.cliente = cliente
+        self.cliente_leitura = cliente_leitura or cliente
 
     def calcular_medias(self, professor_id, disciplina_id=None):
         colunas = ','.join(CRITERIOS)
         def consulta():
-            consulta = self.cliente.table('avaliacoes').select(colunas).eq('professor_id', professor_id)
+            consulta = self.cliente_leitura.table('avaliacoes').select(colunas).eq('professor_id', professor_id)
             if disciplina_id is not None:
                 consulta = consulta.eq('disciplina_id', disciplina_id)
             return consulta.order('id')
@@ -259,10 +259,10 @@ class AvaliacaoRepository:
             return []
         professores = {
             p['id']: p['nome']
-            for p in _paginar(lambda: self.cliente.table('professores').select('id,nome').order('id'))
+            for p in _paginar(lambda: self.cliente_leitura.table('professores').select('id,nome').order('id'))
         }
         vinculos = _paginar(
-            lambda: self.cliente.table('vw_professor_disciplina')
+            lambda: self.cliente_leitura.table('vw_professor_disciplina')
             .select('professor_id,disciplina_id,codigo_disciplina,disciplina')
             .order('disciplina_id')
         )
@@ -344,12 +344,23 @@ class Repositorios:
 
 
 def configurar_repositorios(app):
-    """Monta os repositórios do app. SUPABASE_CLIENT na config permite injetar um cliente (testes)."""
+    """Monta os repositórios do app. SUPABASE_CLIENT e SUPABASE_PUBLIC_CLIENT permitem injetar clientes nos testes."""
     injetado = app.config.get('SUPABASE_CLIENT')
+    injetado_publico = app.config.get('SUPABASE_PUBLIC_CLIENT')
+
+    cliente_publico = (
+        injetado_publico
+        or (injetado.como_publico() if hasattr(injetado, 'como_publico') else injetado)
+        or get_supabase_publico()
+    )
     cliente = injetado or get_supabase()
     fabrica = (lambda: injetado) if injetado else novo_cliente
+
     app.extensions['repositorios'] = Repositorios(
-        UsuarioRepository(cliente, fabrica), ProfessorRepository(cliente), AvaliacaoRepository(cliente))
+        UsuarioRepository(cliente, fabrica),
+        ProfessorRepository(cliente_publico),
+        AvaliacaoRepository(cliente, cliente_leitura=cliente_publico),
+    )
 
 
 def repositorios() -> Repositorios:
