@@ -1,24 +1,44 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 588" width="400" height="588" role="img" aria-labelledby="title description" font-family="Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 636" width="400" height="636" role="img" aria-labelledby="title description" font-family="Arial, sans-serif">
   <title id="title">Comentários no perfil do professor</title>
-  <desc id="description">Lista com um comentário da própria conta, outro comentário publicado e ações de editar, apagar e denunciar.</desc>
-  <rect x="0" y="0" width="400" height="588" rx="0" fill="#F2F4F7" stroke="none"/>
+  <desc id="description">Perfil do professor com lista de comentários anônimos separada das notas. A pessoa pode editar e apagar seu texto ou curtir, descurtir e denunciar o texto de outra conta. Curtir está selecionado no exemplo.</desc>
+  <defs>
+    <g id="polegar" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round">
+      <path d="M6 8h3l3-5c.6-1 2-.5 2 .7V8h3a2 2 0 0 1 2 2.4l-1.1 5.9a2 2 0 0 1-2 1.7H6z"/>
+      <rect x="2" y="8" width="4" height="10" rx="1"/>
+    </g>
+  </defs>
+  <rect x="0" y="0" width="400" height="636" fill="#F2F4F7"/>
   <rect x="0" y="0" width="400" height="58" rx="0" fill="#174B83" stroke="none"/>
   <text x="16" y="37" font-size="20" font-weight="700" fill="#FFFFFF" text-anchor="start">AvaliaAi UnB</text>
   <text x="16" y="88" font-size="15" font-weight="700" fill="#174B83" text-anchor="start">Voltar à busca</text>
   <text x="16" y="125" font-size="27" font-weight="700" fill="#202124" text-anchor="start">Professor de exemplo</text>
   <text x="16" y="151" font-size="15" font-weight="400" fill="#4F5357" text-anchor="start">Departamento de exemplo</text>
-  <text x="16" y="202" font-size="24" font-weight="700" fill="#202124" text-anchor="start">Comentários</text>
-  <text x="16" y="228" font-size="14" font-weight="400" fill="#4F5357" text-anchor="start">Mais recentes primeiro</text>
-  <rect x="16" y="252" width="368" height="153" rx="12" fill="#FFFFFF" stroke="none"/>
-  <text x="32" y="282" font-size="15" font-weight="700" fill="#202124" text-anchor="start">@estudante · 09/11/2026</text>
-  <text x="32" y="307" font-size="14" font-weight="400" fill="#4F5357" text-anchor="start">Disciplina de exemplo</text>
-  <text x="32" y="335" font-size="15" font-weight="400" fill="#202124" text-anchor="start">Os exemplos ajudaram a entender o conteúdo.</text>
-  <path d="M32 350h336" stroke="#D4D9DF"/>
-  <text x="32" y="379" font-size="15" font-weight="700" fill="#174B83" text-anchor="start">Editar</text>
-  <text x="118" y="379" font-size="15" font-weight="700" fill="#A01818" text-anchor="start">Apagar</text>
-  <rect x="16" y="421" width="368" height="142" rx="12" fill="#FFFFFF" stroke="none"/>
-  <text x="32" y="452" font-size="15" font-weight="700" fill="#202124" text-anchor="start">@colega · 08/11/2026</text>
-  <text x="32" y="480" font-size="15" font-weight="400" fill="#202124" text-anchor="start">Os exercícios foram bem organizados.</text>
-  <path d="M32 496h336" stroke="#D4D9DF"/>
-  <text x="32" y="526" font-size="15" font-weight="700" fill="#174B83" text-anchor="start">Denunciar</text>
+  <text x="16" y="192" font-size="15" font-weight="700" fill="#4F5357">Notas</text>
+  <text x="80" y="192" font-size="15" font-weight="700" fill="#174B83">Comentários</text>
+  <path d="M16 204h368" stroke="#D4D9DF"/>
+  <path d="M80 204h92" stroke="#174B83" stroke-width="3"/>
+  <text x="16" y="242" font-size="24" font-weight="700" fill="#202124">Comentários</text>
+  <text x="16" y="266" font-size="14" fill="#4F5357">Relatos anônimos, mais recentes primeiro.</text>
+  <rect x="16" y="288" width="368" height="140" rx="12" fill="#FFFFFF"/>
+  <text x="32" y="316" font-size="15" font-weight="700" fill="#202124">Seu comentário anônimo</text>
+  <text x="368" y="316" font-size="14" fill="#4F5357" text-anchor="end">09/11/2026</text>
+  <text x="32" y="340" font-size="14" fill="#4F5357">Disciplina de exemplo</text>
+  <text x="32" y="366" font-size="15" fill="#202124">Os exemplos ajudaram a entender o conteúdo.</text>
+  <path d="M32 380h336" stroke="#D4D9DF"/>
+  <text x="32" y="407" font-size="15" font-weight="700" fill="#174B83">Editar</text>
+  <text x="104" y="407" font-size="15" font-weight="700" fill="#A01818">Apagar</text>
+  <text x="368" y="407" font-size="14" fill="#4F5357" text-anchor="end">3 curtidas · 0 descurtidas</text>
+  <rect x="16" y="444" width="368" height="168" rx="12" fill="#FFFFFF"/>
+  <text x="32" y="472" font-size="15" font-weight="700" fill="#202124">Comentário anônimo</text>
+  <text x="368" y="472" font-size="14" fill="#4F5357" text-anchor="end">08/11/2026</text>
+  <text x="32" y="503" font-size="15" fill="#202124">Os exercícios foram bem organizados.</text>
+  <path d="M32 518h336" stroke="#D4D9DF"/>
+  <rect x="32" y="540" width="94" height="44" rx="8" fill="#174B83"/>
+  <use href="#polegar" x="42" y="551" color="#FFFFFF"/>
+  <text x="69" y="568" font-size="15" font-weight="700" fill="#FFFFFF">8</text>
+  <path d="m94 562 4 4 7-8" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+  <rect x="138" y="540" width="76" height="44" rx="8" fill="#FFFFFF" stroke="#174B83"/>
+  <use href="#polegar" transform="translate(170 572) rotate(180)" color="#174B83"/>
+  <text x="184" y="568" font-size="15" font-weight="700" fill="#174B83">1</text>
+  <text x="368" y="568" font-size="15" font-weight="700" fill="#174B83" text-anchor="end">Denunciar</text>
 </svg>

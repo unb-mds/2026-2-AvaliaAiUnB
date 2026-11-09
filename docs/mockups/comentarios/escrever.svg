@@ -1,12 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 564" width="400" height="564" role="img" aria-labelledby="title description" font-family="Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" width="400" height="600" role="img" aria-labelledby="title description" font-family="Arial, sans-serif">
   <title id="title">Escrever comentário</title>
-  <desc id="description">Formulário com disciplina opcional, contador de caracteres, aviso de visibilidade e ações de publicar e cancelar.</desc>
-  <rect x="0" y="0" width="400" height="564" rx="0" fill="#F2F4F7" stroke="none"/>
+  <desc id="description">Formulário com disciplina opcional, contador de caracteres, aviso de publicação anônima e verificação automática do texto.</desc>
+  <rect x="0" y="0" width="400" height="600" rx="0" fill="#F2F4F7" stroke="none"/>
   <rect x="0" y="0" width="400" height="58" rx="0" fill="#174B83" stroke="none"/>
   <text x="16" y="37" font-size="20" font-weight="700" fill="#FFFFFF" text-anchor="start">AvaliaAi UnB</text>
   <text x="16" y="100" font-size="27" font-weight="700" fill="#202124" text-anchor="start">Escrever comentário</text>
   <text x="16" y="127" font-size="16" font-weight="400" fill="#4F5357" text-anchor="start">Professor de exemplo</text>
-  <rect x="16" y="152" width="368" height="386" rx="12" fill="#FFFFFF" stroke="none"/>
+  <rect x="16" y="152" width="368" height="424" rx="12" fill="#FFFFFF" stroke="none"/>
   <text x="32" y="185" font-size="16" font-weight="700" fill="#202124" text-anchor="start">Disciplina (opcional)</text>
   <rect x="32" y="197" width="336" height="44" rx="8" fill="#FFFFFF" stroke="#767676"/>
   <text x="44" y="225" font-size="16" font-weight="400" fill="#202124" text-anchor="start">Selecionar disciplina</text>
@@ -16,9 +16,12 @@
   <text x="44" y="312" font-size="15" font-weight="400" fill="#4F5357" text-anchor="start">Escreva sobre sua experiência.</text>
   <text x="32" y="399" font-size="14" font-weight="400" fill="#4F5357" text-anchor="start">10 a 1.000 caracteres</text>
   <text x="368" y="399" font-size="14" font-weight="400" fill="#4F5357" text-anchor="end">0 / 1.000</text>
-  <text x="32" y="432" font-size="14" font-weight="400" fill="#4F5357" text-anchor="start">Seu texto e username ficarão públicos.</text>
-  <rect x="32" y="469" width="144" height="44" rx="8" fill="#174B83" stroke="none"/>
-  <text x="104" y="496" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">Publicar</text>
-  <rect x="192" y="469" width="144" height="44" rx="8" fill="#FFFFFF" stroke="#174B83"/>
-  <text x="264" y="496" font-size="15" font-weight="700" fill="#174B83" text-anchor="middle">Cancelar</text>
+  <rect x="32" y="418" width="336" height="72" rx="8" fill="#F2F4F7"/>
+  <text x="44" y="443" font-size="15" font-weight="700" fill="#202124">Publicação anônima</text>
+  <text x="44" y="466" font-size="14" fill="#4F5357">Sua identidade fica privada. O texto passa</text>
+  <text x="44" y="483" font-size="14" fill="#4F5357">por uma verificação antes de aparecer.</text>
+  <rect x="32" y="510" width="160" height="44" rx="8" fill="#174B83"/>
+  <text x="112" y="537" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">Publicar</text>
+  <rect x="208" y="510" width="160" height="44" rx="8" fill="#FFFFFF" stroke="#174B83"/>
+  <text x="288" y="537" font-size="15" font-weight="700" fill="#174B83" text-anchor="middle">Cancelar</text>
 </svg>
