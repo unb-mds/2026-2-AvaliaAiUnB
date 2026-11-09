@@ -12,6 +12,8 @@
 
     <link rel="stylesheet" href="{{ url_for('static', filename='indicadores.css') }}">
 
+    <link rel="stylesheet" href="{{ url_for('static', filename='comparacao.css') }}">
+
 </head>
 
 <body>
@@ -30,7 +32,7 @@
 
             {% for campo in ('professor_1', 'professor_2') %}
 
-            <div>
+            <div class="campo">
 
                 <label for="{{ campo }}">Professor {{ loop.index }}</label>
 
@@ -46,19 +48,19 @@
 
                 </select>
 
-                {% if campo in erros %}<p class="erros" id="erro-{{ campo }}" role="alert">{{ erros[campo] }}</p>{% endif %}
+                {% if campo in erros %}<p class="erros campo-erro" id="erro-{{ campo }}" role="alert">{{ erros[campo] }}</p>{% endif %}
 
             </div>
 
             {% endfor %}
 
-            <button type="submit">Comparar</button>
+            <button type="submit" class="botao botao-primario">Comparar</button>
 
         </form>
 
         {% else %}
 
-        <p role="status">É necessário ter pelo menos dois professores cadastrados para comparar.</p>
+        <p class="mensagem" role="status">É necessário ter pelo menos dois professores cadastrados para comparar.</p>
 
         {% endif %}
 
@@ -66,7 +68,7 @@
 
         {% for professor in comparacao if not professor.indicadores.quantidade %}
 
-        <p role="status">{{ professor.nome }}: ainda não há avaliações válidas.</p>
+        <p class="mensagem" role="status">{{ professor.nome }}: ainda não há avaliações válidas.</p>
 
         {% endfor %}
 

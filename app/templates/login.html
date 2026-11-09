@@ -4,13 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - AvaliaAi UnB</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='auth.css') }}">
 </head>
 <body>
+<main class="auth card">
+    <p class="voltar"><a href="{{ url_for('main.index') }}">&larr; Início</a></p>
     <h1>Entrar</h1>
 
     {% if erro %}
-    <p class="erro-login">{{ erro }}</p>
+    <p class="erro-login mensagem mensagem-erro" role="alert">{{ erro }}</p>
     {% endif %}
 
     <form action="/login" method="POST">
@@ -22,9 +25,10 @@
         <label for="senha">Senha</label>
         <input type="password" id="senha" name="senha" required>
 
-        <button type="submit">Entrar</button>
+        <button type="submit" class="botao botao-primario">Entrar</button>
     </form>
 
     <p class="link">Ainda não tem conta? <a href="/cadastro">Cadastre-se</a></p>
+</main>
 </body>
 </html>
