@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 588" width="400" height="588" role="img" aria-labelledby="title description" font-family="Arial, sans-serif">
+  <title id="title">Comentários no perfil do professor</title>
+  <desc id="description">Lista com um comentário da própria conta, outro comentário publicado e ações de editar, apagar e denunciar.</desc>
+  <rect x="0" y="0" width="400" height="588" rx="0" fill="#F2F4F7" stroke="none"/>
+  <rect x="0" y="0" width="400" height="58" rx="0" fill="#174B83" stroke="none"/>
+  <text x="16" y="37" font-size="20" font-weight="700" fill="#FFFFFF" text-anchor="start">AvaliaAi UnB</text>
+  <text x="16" y="88" font-size="15" font-weight="700" fill="#174B83" text-anchor="start">Voltar à busca</text>
+  <text x="16" y="125" font-size="27" font-weight="700" fill="#202124" text-anchor="start">Professor de exemplo</text>
+  <text x="16" y="151" font-size="15" font-weight="400" fill="#4F5357" text-anchor="start">Departamento de exemplo</text>
+  <text x="16" y="202" font-size="24" font-weight="700" fill="#202124" text-anchor="start">Comentários</text>
+  <text x="16" y="228" font-size="14" font-weight="400" fill="#4F5357" text-anchor="start">Mais recentes primeiro</text>
+  <rect x="16" y="252" width="368" height="153" rx="12" fill="#FFFFFF" stroke="none"/>
+  <text x="32" y="282" font-size="15" font-weight="700" fill="#202124" text-anchor="start">@estudante · 09/11/2026</text>
+  <text x="32" y="307" font-size="14" font-weight="400" fill="#4F5357" text-anchor="start">Disciplina de exemplo</text>
+  <text x="32" y="335" font-size="15" font-weight="400" fill="#202124" text-anchor="start">Os exemplos ajudaram a entender o conteúdo.</text>
+  <path d="M32 350h336" stroke="#D4D9DF"/>
+  <text x="32" y="379" font-size="15" font-weight="700" fill="#174B83" text-anchor="start">Editar</text>
+  <text x="118" y="379" font-size="15" font-weight="700" fill="#A01818" text-anchor="start">Apagar</text>
+  <rect x="16" y="421" width="368" height="142" rx="12" fill="#FFFFFF" stroke="none"/>
+  <text x="32" y="452" font-size="15" font-weight="700" fill="#202124" text-anchor="start">@colega · 08/11/2026</text>
+  <text x="32" y="480" font-size="15" font-weight="400" fill="#202124" text-anchor="start">Os exercícios foram bem organizados.</text>
+  <path d="M32 496h336" stroke="#D4D9DF"/>
+  <text x="32" y="526" font-size="15" font-weight="700" fill="#174B83" text-anchor="start">Denunciar</text>
+</svg>
