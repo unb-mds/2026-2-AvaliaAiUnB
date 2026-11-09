@@ -1,9 +1,8 @@
 # Especificação de comentários avaliativos
 
-**Status: proposta para revisão do grupo na issue #116.** Este documento define
-o comportamento futuro; comentários e denúncias ainda não foram implementados.
-A aprovação deve ser registrada no PR ou na issue antes de tratar as regras
-como decisões finais. A implementação não faz parte desta entrega.
+**Status: proposta para revisão do grupo, com origem na issue #116.** Este
+documento descreve o comportamento futuro dos comentários, das reações e da
+moderação.
 
 A base é a [proposta de dados da #109](Modelo%20de%20Dados.md#6-proposta-tabela-comentarios).
 O SQL dessa proposta permanece como referência e não é aplicado por este trabalho.
@@ -19,14 +18,16 @@ avaliação e disponibilidade, com contexto útil para outros estudantes.
 | Pessoa | Comportamento proposto |
 |---|---|
 | Visitante | Lê comentários publicados no perfil do professor |
-| Usuário autenticado | Publica um comentário por professor, edita e exclui o próprio comentário e denuncia conteúdo |
-| Autor | Vê o próprio texto e as datas de criação e atualização; alterações de autoria são bloqueadas |
-| Moderador autorizado | Analisa denúncias e oculta ou restaura conteúdo, com justificativa registrada |
+| Usuário autenticado | Usa uma conta comum com e-mail verificado de qualquer domínio para comentar, reagir e denunciar |
+| Autor | Edita ou exclui seu próprio comentário e acompanha sua análise em privado |
+| Moderador autorizado | Analisa textos sinalizados e denúncias, com decisão e justificativa registradas |
 
-O usuário comum não pode editar, excluir nem moderar comentários de outra pessoa.
-O papel de moderador e o fluxo de denúncia ainda precisam de desenho de dados e
-controle de acesso; não existem no esquema atual. Cadastrar uma conta não deve
-conceder acesso à moderação.
+O perfil do professor tem uma área de comentários sobre a experiência pedagógica.
+A participação usa a mesma conta comum para todos, sem perfil docente, espaço
+de resposta oficial ou selo de professor. O cadastro atual aceita Gmail. Para
+liberar a área de comentários, o fluxo de cadastro e verificação deve aceitar
+outros domínios e preservar as permissões das demais áreas, como o envio de notas.
+Uma conta de comentários não concede acesso à moderação.
 
 ## Texto, quantidade e vínculo
 
@@ -37,7 +38,7 @@ conceder acesso à moderação.
 | Quantidade | Um comentário por usuário e professor, mesmo que o usuário avalie várias disciplinas |
 | Tamanho | De 10 a 1.000 caracteres após remover espaços nas extremidades, conforme o `btrim` e o `char_length` da proposta de banco |
 | Formato | Texto simples; HTML e Markdown não são interpretados |
-| Identificação pública | Nome de usuário (`username`), sem nome completo, e-mail ou identificador interno |
+| Identificação pública | Rótulo «Comentário anônimo», com vínculo privado à conta para autorizar edição e exclusão |
 | Ordem da lista | Mais recentes primeiro pela data de criação, com identificador como desempate |
 | Datas | Exibir criação e indicar quando houve edição |
 
@@ -49,6 +50,19 @@ alinhada com a constraint do banco durante a futura implementação.
 A autoria sempre vem da sessão autenticada. O servidor deve ignorar um
 `usuario_id` enviado pelo formulário. A tentativa de criar um segundo comentário
 para o mesmo professor deve orientar o autor a editar o comentário existente.
+Na listagem pública, a API retorna só os campos de exibição e o ID do comentário.
+O servidor usa o vínculo privado para indicar ao autor quais ações estão
+disponíveis na sua sessão.
+
+## Reações
+
+Cada comentário publicado exibe **👍 Curtir** e **👎 Descurtir**, com contagens
+separadas. A leitura das contagens é pública. Para reagir a um comentário de
+outra pessoa, é preciso entrar na conta. Cada conta tem uma reação por
+comentário e pode trocar de opção ou tocar novamente para removê-la. O servidor
+confere a sessão, impede votos no próprio texto e grava a reação com unicidade
+por conta e comentário. A lista mostra as contagens, sem revelar quem reagiu.
+Reações não alteram a ordem cronológica da lista, as notas ou o ranking.
 
 ## Relação entre avaliação e comentário
 
@@ -69,14 +83,15 @@ quando ela é excluída, além de ajustar a validação e a proposta de dados.
 
 ### Listar e escrever
 
-O perfil do professor deve apresentar os comentários publicados e um estado
-vazio quando não houver nenhum. O visitante vê a orientação para entrar na
-conta antes de escrever. O usuário autenticado sem comentário vê o formulário;
-quem já comentou vê a ação de editar o próprio texto.
+O perfil do professor apresenta os comentários publicados em uma seção
+separada das notas. A lista vazia convida a escrever o primeiro comentário.
+Visitantes veem a opção de entrar ou criar conta para escrever ou reagir.
+Quem já comentou vê a ação de editar o próprio texto.
 
-O formulário informa o limite, oferece seleção opcional de disciplina e preserva
-o texto em erros de validação. Em caso de falha de envio, não deve indicar que
-o comentário foi publicado. O estado de envio deve evitar submissões repetidas.
+O formulário informa que o texto será público e a autoria ficará privada.
+Mostra o limite, oferece seleção opcional de disciplina e preserva o texto em
+erros de validação ou moderação. Durante a verificação, a interface evita
+envios repetidos e só confirma publicação quando o texto fica público.
 
 ### Editar e excluir
 
@@ -86,9 +101,7 @@ A disciplina opcional pode ser ajustada dentro dos vínculos do mesmo professor.
 
 A exclusão deve pedir confirmação, identificando o professor e a consequência.
 Depois de excluir, o texto deixa de aparecer e o usuário pode criar um novo
-comentário para esse professor. A exclusão do texto e a retenção de registros de
-moderação são decisões distintas; o grupo precisa definir a segunda antes de
-implementar a moderação.
+comentário para esse professor. As reações do comentário excluído são removidas.
 
 ### Conteúdo ocultado
 
@@ -96,7 +109,28 @@ Um comentário ocultado pela moderação deixa de aparecer na listagem pública.
 O autor recebe o estado e a justificativa; editar o texto não o republica
 automaticamente. A unicidade por usuário e professor continua valendo para
 evitar substituir o texto ocultado por um novo registro e contornar a análise.
-O grupo deve definir um canal de revisão da decisão.
+O autor pode pedir revisão pelo formulário privado descrito abaixo.
+
+## Filtro automático antes da publicação
+
+O backend verifica comentários novos e edições antes de disponibilizá-los.
+A proposta começa com regras em português para ofensas, discriminação,
+ameaças, spam e dados pessoais, como e-mails, telefones e matrículas. O filtro
+normaliza espaços e variações de escrita para reconhecer tentativas simples de
+disfarçar termos. Uma crítica à didática ou uma avaliação negativa, por si só,
+deve passar.
+
+| Resultado | Comportamento |
+|---|---|
+| Aprovado | Publica o texto ou aplica a edição |
+| Bloqueado | Mostra o motivo ao autor e mantém o texto no formulário para revisão |
+| Incerto | Encaminha o texto para análise privada e informa ao autor que está em revisão |
+| Filtro indisponível | Mantém o texto no formulário e pede nova tentativa sem publicar |
+
+Uma edição bloqueada ou em análise preserva a última versão aprovada de um
+comentário publicado. Se o comentário já estiver oculto, a edição continua
+privada até decisão da moderação. O filtro e a denúncia cumprem papéis
+complementares, pois uma regra automática pode deixar passar conteúdo impróprio.
 
 ## Denúncia e moderação
 
@@ -117,9 +151,9 @@ discriminação, ameaça, spam ou conteúdo alheio à experiência pedagógica.
 Uma avaliação negativa ou discordância com a opinião não são, por si só,
 motivos para remoção. O número de denúncias não oculta automaticamente o texto.
 
-A [proposta de banco](Modelo%20de%20Dados.md) ainda não contém armazenamento de
-denúncias, estado de moderação nem permissões de moderador. A implementação
-futura precisa acrescentar esses elementos e revisar políticas de acesso,
+A [proposta de banco](Modelo%20de%20Dados.md) descreve a proteção das tabelas
+de comentários e reações. A implementação futura precisa definir o registro
+privado das análises e denúncias e revisar as permissões de moderação,
 inclusive o uso de service key descrito em [Cibersegurança](CIBERSEGURANCA.md).
 A proposta operacional é que o grupo designe dois moderadores antes de liberar
 comentários e use três dias úteis como meta para a primeira análise. Sempre
@@ -128,9 +162,10 @@ atender a fila, a publicação de novos comentários fica pausada até haver cob
 
 ## Privacidade e ciclo dos dados
 
-A interface deve informar que o texto e o nome de usuário propostos serão
-públicos antes da publicação. Não deve exibir nome completo, e-mail, tokens,
-dados de denúncias ou identificadores internos na listagem.
+A interface informa que o texto publicado fica visível para todos e a identidade
+fica privada. Respostas públicas da API e a interface excluem nome, username,
+e-mail, tokens, dados de denúncias e identificadores de conta. A verificação do
+texto e o vínculo entre conta, comentário e reação ficam no servidor.
 
 A orientação ao autor deve pedir que não publique matrículas, contatos,
 documentos, informações pessoais de terceiros ou relatos que exponham pessoas
@@ -149,26 +184,37 @@ rotina de descarte fica para a implementação após revisão do grupo.
 
 | ID | Decisão proposta | Situação |
 |---|---|---|
-| C01 | Leitura pública e participação autenticada | Aguardando revisão |
+| C01 | Leitura pública e participação com conta comum e e-mail verificado de qualquer domínio. Sem espaço ou perfil exclusivo para professores | Aguardando revisão |
 | C02 | Um comentário por usuário e professor; disciplina opcional | Aguardando revisão |
 | C03 | Texto simples de 10 a 1.000 caracteres | Aguardando revisão |
 | C04 | Comentário independente de avaliação prévia | Aguardando revisão |
-| C05 | Autor identificado publicamente apenas por username | Aguardando revisão |
+| C05 | Comentários anônimos em público, com autoria privada vinculada à conta | Aguardando revisão |
 | C06 | Denúncia privada e moderação por responsáveis autorizados | Aguardando revisão e projeto de dados |
 | C07 | Ocultação motivada, sem republicação automática por edição | Aguardando revisão |
 | C08 | Dois moderadores designados, primeira análise em até três dias úteis, formulário privado de contestação e retenção de até 90 dias após o encerramento | Aguardando revisão |
+| C09 | Curtir ou descurtir comentários de outras pessoas. Uma reação por conta e comentário, com opção de trocar ou remover | Aguardando revisão |
+| C10 | Filtrar no servidor antes de publicar ou editar. Bloquear violações claras e encaminhar casos incertos à moderação | Aguardando revisão |
 
 As decisões podem ser revisadas no PR ou na
 [issue #116](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/116).
-Após a aprovação, atualizar este documento, a proposta da #109 e os desenhos
-da #112 para refletirem as mesmas regras.
+Os [protótipos da #112](TELAS_COMENTARIOS.md) e a [proposta de dados da #109](Modelo%20de%20Dados.md#6-proposta-tabela-comentarios)
+acompanham estas regras.
 
 ## Critérios para a futura implementação
 
-- Visitantes consultam comentários publicados e precisam entrar para participar.
+- Visitantes consultam comentários anônimos e contagens de reações. Entrar com
+  conta verificada é obrigatório para comentar, reagir ou denunciar. O fluxo
+  aceita, por exemplo, um e-mail Outlook ou de domínio próprio.
 - Duplicidade, limites de texto e disciplina inválida recebem erro claro e
   preservam o texto preenchido.
-- Só o autor edita ou exclui; o usuário de teste não altera o comentário de outro.
+- Só o autor edita ou exclui. O servidor nega tentativas de se passar por outro
+  usuário e mantém o vínculo com a conta fora das respostas públicas.
+- Uma conta troca ou desfaz sua reação. Pedidos simultâneos respeitam a
+  unicidade, e autores não reagem ao próprio comentário.
+- O filtro barra uma ofensa inequívoca e a exposição de um telefone, deixa
+  passar uma crítica respeitosa e encaminha um caso ambíguo sem publicar.
+- O filtro também cobre edições. Falhas deixam o texto disponível para tentar
+  de novo, e edições bloqueadas preservam a última versão aprovada.
 - As notas e os resultados de ranking e comparação não mudam por um comentário.
 - A identidade do denunciante e os dados privados não aparecem na listagem pública.
 - As telas cobrem vazio, envio, erro, edição, confirmação de exclusão e ocultação.
