@@ -33,7 +33,7 @@
             <div class="media-geral">
                 {% if ns.n %}
                 <p class="nota-geral"><span class="estrela" aria-hidden="true">★</span> <strong>{{ nota(ns.soma / ns.n) }}</strong> <span class="nota-escala">/ 5</span></p>
-                <p class="ajuda">Média geral · {{ geral.quantidade }} {{ 'avaliação' if geral.quantidade == 1 else 'avaliações' }} em todas as disciplinas. Não considera a dificuldade.</p>
+                <p class="ajuda">Média geral · {{ geral.quantidade }} {{ 'avaliação' if geral.quantidade == 1 else 'avaliações' }} em todas as disciplinas. <strong>Não considera a dificuldade.</strong></p>
                 {% else %}
                 <p class="nota-geral"><span class="estrela" aria-hidden="true">★</span> <strong>N/A</strong> <span class="nota-escala">(Não avaliado)</span></p>
                 <p class="ajuda">Média geral: ainda não há avaliações para este professor.</p>

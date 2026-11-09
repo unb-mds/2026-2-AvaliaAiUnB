@@ -4,27 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfil - AvaliaAi UnB</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='perfil.css') }}">
 </head>
 <body>
-    <h1>Perfil</h1>
-    <p><strong>Nome:</strong> {{ usuario.nome }}</p>
-    <p><strong>Usuário:</strong> {{ usuario.username }}</p>
-    <p><strong>E-mail:</strong> {{ usuario.email }}</p>
+    {% include '_topo.html' %}
 
-    <form action="/logout" method="POST" class="form-sair">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <input type="hidden" name="formato" value="html">
-        <button type="submit">Sair</button>
-    </form>
+    <main class="conteudo">
+        <h1>Perfil</h1>
 
-    <h2>Minhas Avaliações</h2>
-    {% if avaliacoes %}
-        {% for av in avaliacoes %}
-            <div class="avaliacao-card">
+        <section class="card dados-usuario" aria-label="Dados da conta">
+            <dl>
+                <div>
+                    <dt>Nome</dt>
+                    <dd>{{ usuario.nome }}</dd>
+                </div>
+                <div>
+                    <dt>Usuário</dt>
+                    <dd>{{ usuario.username }}</dd>
+                </div>
+                <div>
+                    <dt>E-mail</dt>
+                    <dd>{{ usuario.email }}</dd>
+                </div>
+            </dl>
+        </section>
+
+        <h2>Minhas Avaliações</h2>
+        {% if avaliacoes %}
+            {% for av in avaliacoes %}
+            <article class="card avaliacao-card">
                 <div class="avaliacao-cabecalho">
-                    <strong>{{ av.professor_nome }}</strong>
-                    <span>{{ av.codigo_disciplina }} — {{ av.disciplina_nome }} ({{ av.ano }}/{{ av.periodo }})</span>
+                    <h3>{{ av.professor_nome }}</h3>
+                    <p class="ajuda">{{ av.codigo_disciplina }} — {{ av.disciplina_nome }} ({{ av.ano }}/{{ av.periodo }})</p>
                 </div>
                 <ul class="notas-lista">
                     <li>Didática: <strong>{{ av.didatica }}</strong>/5</li>
@@ -34,16 +46,24 @@
                     <li>Dificuldade: <strong>{{ av.dificuldade }}</strong>/5</li>
                 </ul>
                 <div class="acoes">
-                    <a class="btn" href="{{ url_for('professores.editar_avaliacao', avaliacao_id=av.id) }}">Editar</a>
-                    <form action="{{ url_for('professores.excluir_avaliacao', avaliacao_id=av.id) }}" method="POST">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <button type="submit" class="btn-perigo">Apagar</button>
-                    </form>
+                    <a class="botao botao-secundario" href="{{ url_for('professores.editar_avaliacao', avaliacao_id=av.id) }}">Editar</a>
+
+                    {# Confirmação sem JavaScript: Apagar abre o aviso e só o botão vermelho envia #}
+                    <details class="exclusao">
+                        <summary class="botao botao-secundario botao-apagar">Apagar</summary>
+                        <form action="{{ url_for('professores.excluir_avaliacao', avaliacao_id=av.id) }}" method="POST" class="confirmacao">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <p>Apagar a avaliação de <strong>{{ av.professor_nome }}</strong>? Esta ação não pode ser desfeita.</p>
+                            <button type="submit" class="botao botao-destrutivo">Confirmar exclusão</button>
+                        </form>
+                    </details>
                 </div>
-            </div>
-        {% endfor %}
-    {% else %}
-        <p>Você ainda não realizou nenhuma avaliação.</p>
-    {% endif %}
+            </article>
+            {% endfor %}
+        {% else %}
+            <p class="mensagem" role="status">Você ainda não realizou nenhuma avaliação.</p>
+            <a class="botao botao-primario" href="{{ url_for('professores.listar') }}">Consultar professores</a>
+        {% endif %}
+    </main>
 </body>
 </html>
