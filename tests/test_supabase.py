@@ -129,7 +129,7 @@ class TestUsuarios(unittest.TestCase):
                          ('ana', 'Ana Souza', 'ana@gmail.com'))
         self.usuarios.encerrar(sessao['access_token'])
         self.assertIsNone(self.usuarios.usuario_do_token(sessao['access_token']))
-        self.assertIsNotNone(self.usuarios.renovar(sessao['refresh_token']))
+        self.assertIsNone(self.usuarios.renovar(sessao['refresh_token']))
         self.assertIsNone(self.usuarios.renovar('invalido'))
 
 
