@@ -1,3 +1,4 @@
+{% from '_macros.html' import nota %}
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -22,6 +23,22 @@
                 <strong>Departamento:</strong>
                 {{ professor.departamento }}
             </p>
+
+            {# Média geral do professor em todas as disciplinas, sem a dificuldade (como no ranking) #}
+            {% set ns = namespace(soma=0, n=0) %}
+            {% for c in criterios if c != 'dificuldade' and geral.quantidade %}
+            {% set ns.soma = ns.soma + geral.medias[c] %}
+            {% set ns.n = ns.n + 1 %}
+            {% endfor %}
+            <div class="media-geral">
+                {% if ns.n %}
+                <p class="nota-geral"><span class="estrela" aria-hidden="true">★</span> <strong>{{ nota(ns.soma / ns.n) }}</strong> <span class="nota-escala">/ 5</span></p>
+                <p class="ajuda">Média geral · {{ geral.quantidade }} {{ 'avaliação' if geral.quantidade == 1 else 'avaliações' }} em todas as disciplinas. Não considera a dificuldade.</p>
+                {% else %}
+                <p class="nota-geral"><span class="estrela" aria-hidden="true">★</span> <strong>N/A</strong> <span class="nota-escala">(Não avaliado)</span></p>
+                <p class="ajuda">Média geral: ainda não há avaliações para este professor.</p>
+                {% endif %}
+            </div>
 
             {% if disciplinas %}
             <div class="acoes-professor">
@@ -68,7 +85,7 @@
                 {% for criterio, titulo in criterios.items() %}
                 <li>
                     <span>{{ titulo }}</span>
-                    <strong>{{ ('%.1f'|format(indicadores.medias[criterio]))|replace('.', ',') }} / 5 <span aria-hidden="true">★</span></strong>
+                    <strong>{{ nota(indicadores.medias[criterio]) }} / 5 <span aria-hidden="true">★</span></strong>
                 </li>
                 {% endfor %}
             </ul>

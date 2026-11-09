@@ -1,3 +1,4 @@
+{% from '_macros.html' import nota %}
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -63,7 +64,22 @@
                         <h2><a href="{{ url_for('professores.perfil', professor_id=professor.id, next=request.full_path) }}">{{ professor.nome }}</a></h2>
                         <p class="departamento">{{ professor.departamento }}</p>
                     </div>
-                    <p class="contagem">{{ professor.total_avaliacoes }} {{ 'avaliação' if professor.total_avaliacoes == 1 else 'avaliações' }}</p>
+                    <div class="professor-resumo">
+                        {% if professor.media_geral is not none %}
+                        {# Preenchimento em %: nota / 5, arredondado a décimos (classe .preenche-N) #}
+                        {% set preenchimento = ((professor.media_geral * 10 + 0.5)|int) * 2 %}
+                        <p class="nota-geral">
+                            <span class="estrelas" role="img" aria-label="Média geral {{ nota(professor.media_geral) }} de 5">
+                                <span class="estrelas-fundo" aria-hidden="true">★★★★★</span>
+                                <span class="estrelas-cheias preenche-{{ preenchimento }}" aria-hidden="true">★★★★★</span>
+                            </span>
+                            <strong>{{ nota(professor.media_geral) }}</strong> <span class="nota-rotulo">média geral</span>
+                        </p>
+                        {% else %}
+                        <p class="nota-geral"><span class="estrela" aria-hidden="true">★</span> <strong>N/A</strong> <span class="nota-rotulo">(Não avaliado)</span></p>
+                        {% endif %}
+                        <p class="contagem">{{ professor.total_avaliacoes }} {{ 'avaliação' if professor.total_avaliacoes == 1 else 'avaliações' }}</p>
+                    </div>
                 </div>
 
                 {% if disciplinas %}

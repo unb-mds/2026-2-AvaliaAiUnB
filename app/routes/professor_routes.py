@@ -42,6 +42,7 @@ def perfil(professor_id):
     return render_template('perfil_professor.html', professor=professor, disciplinas=disciplinas,
                            disciplina=disciplina, indicadores=indicadores,
                            criterios=controller.criterios(), next_url=next_url,
+                           geral=controller.indicadores(professor_id, None),
                            usuario=obter_usuario_atual())
 
 @professor_bp.route('/avaliar/<int:professor_id>', methods=['GET', 'POST'])

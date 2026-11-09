@@ -1,0 +1,5 @@
+{# Nota com uma casa decimal e vírgula; inteiros sem decimal (5,0 vira 5). #}
+{% macro nota(valor) -%}
+{%- set decimos = (valor * 10 + 0.5)|int -%}
+{%- if decimos % 10 == 0 -%}{{ decimos // 10 }}{%- else -%}{{ (decimos / 10)|string|replace('.', ',') }}{%- endif -%}
+{%- endmacro %}

@@ -135,3 +135,15 @@ h2 {
         width: auto;
     }
 }
+
+/* Média geral do professor */
+.media-geral {
+    margin-top: var(--espaco-4);
+    padding-top: var(--espaco-4);
+    border-top: 1px solid var(--cor-divisor);
+}
+
+.media-geral .ajuda {
+    margin: var(--espaco-1) 0 0;
+    font-size: var(--texto-pequeno);
+}

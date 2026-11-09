@@ -210,3 +210,18 @@ h1 {
         flex: 1;
     }
 }
+
+/* Resumo à direita: média geral e quantidade de avaliações */
+.professor-resumo {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--espaco-2);
+}
+
+@media (min-width: 481px) {
+    .professor-resumo {
+        align-items: flex-end;
+        text-align: right;
+    }
+}
