@@ -1,8 +1,8 @@
-# 🎓 AvaliaAi UnB
+# 🎓 AvaliaUnb
 
 > Consulta, comparação e avaliação de professores e disciplinas da Universidade de Brasília.
 
-O AvaliaAi reúne avaliações por critérios pedagógicos para ajudar estudantes a
+O AvaliaUnb reúne avaliações por critérios pedagógicos para ajudar estudantes a
 escolher disciplinas e docentes durante a matrícula. É um projeto da disciplina
 **Métodos de Desenvolvimento de Software (MDS/UnB), semestre 2026/2**.
 
@@ -26,7 +26,7 @@ escolher disciplinas e docentes durante a matrícula. É um projeto da disciplin
 ## Sobre o projeto
 
 Informações sobre professores costumam ficar dispersas em grupos de mensagens,
-o que dificulta comparar experiências na hora da matrícula. O AvaliaAi organiza
+o que dificulta comparar experiências na hora da matrícula. O AvaliaUnb organiza
 a consulta por professor, disciplina e departamento, com notas de **didática,
 clareza, organização, disponibilidade e dificuldade**.
 
@@ -117,7 +117,7 @@ Use Python 3.11 ou superior e execute:
 
 ```bash
 git clone https://github.com/unb-mds/2026-2-AvaliaAiUnB.git
-cd 2026-2-AvaliaAiUnB
+cd 2026-2-AvaliaUnbUnB
 python -m venv .venv
 ```
 
