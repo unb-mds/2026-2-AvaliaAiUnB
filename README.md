@@ -117,7 +117,7 @@ Use Python 3.11 ou superior e execute:
 
 ```bash
 git clone https://github.com/unb-mds/2026-2-AvaliaAiUnB.git
-cd 2026-2-AvaliaUnbUnB
+cd 2026-2-AvaliaAiUnB
 python -m venv .venv
 ```
 
