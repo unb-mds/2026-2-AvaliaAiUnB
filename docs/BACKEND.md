@@ -7,10 +7,10 @@ Supabase; contas e senhas são gerenciadas pelo Supabase Auth.
 ## Inicialização e estrutura
 
 `run.py` chama `create_app`, definida em `app/__init__.py`. A fábrica carrega o
-`.env` da raiz, configura a aplicação, exige `SECRET_KEY`, habilita o
-`CSRFProtect`, monta os repositórios, registra a renovação de sessão e os três
-Blueprints. Na `main`, também chama `configurar_seguranca` para headers,
-cookies e limites de requisições. O Gunicorn usa a mesma aplicação pelo alvo `run:app`.
+`.env` da raiz, configura a aplicação, exige `SECRET_KEY`, configura a proteção CSRF, monta os repositórios, registra a renovação de
+sessão e os três Blueprints. A função `configurar_seguranca` também define
+headers, cookies e limites de requisições; a revisão da inicialização do
+CSRF faz parte da [#127](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/127). O Gunicorn usa a mesma aplicação pelo alvo `run:app`.
 
 ```text
 Requisição HTTP
@@ -140,7 +140,9 @@ O ranking exige cinco avaliações válidas e calcula a média de didática,
 clareza, organização e disponibilidade. Dificuldade não entra na média geral.
 Os desempates usam quantidade de avaliações, nome normalizado e identificador.
 
-O esquema versionado está em `docs/migrations/001_initial_schema.sql`.
+O esquema e as políticas RLS versionadas estão em
+`docs/migrations/001_initial_schema.sql`. Sua aplicação ao ambiente real
+deve ser conferida no Supabase.
 O
 [modelo de dados e a proposta de comentários](Modelo%20de%20Dados.md)
 foram publicados na [issue #109](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/109).
@@ -184,3 +186,6 @@ preservar o cookie de sessão Flask e enviar o token no campo `csrf_token` ou no
 cabeçalho `X-CSRFToken`. POSTs sem token, com token inválido ou expirado recebem
 HTTP 400 antes da operação. As regras de notas, busca e indicadores estão no
 [guia de funcionalidades](FUNCIONALIDADES.md).
+
+Relacionado: [arquitetura](ARQUITETURA.md), [modelo de dados](Modelo%20de%20Dados.md),
+[cibersegurança](CIBERSEGURANCA.md) e [critérios de contribuição](PROCESSO_CONTRIBUICAO.md).

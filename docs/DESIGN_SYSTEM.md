@@ -79,3 +79,7 @@ resultados. Ao fechar o diálogo de exclusão, devolva o foco ao contexto de ori
 
 Os [protótipos de comentários](TELAS_COMENTARIOS.md) mostram os fluxos de
 listar, escrever, editar e apagar.
+
+Relacionado: [inventário do frontend](FRONTEND.md),
+[protótipos de comentários](TELAS_COMENTARIOS.md) e
+[checklist de contribuição](PROCESSO_CONTRIBUICAO.md).

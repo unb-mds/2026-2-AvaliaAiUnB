@@ -1,7 +1,7 @@
 # Modelo de dados do AvaliaAí UnB (Supabase / PostgreSQL)
 
 > Issue #109. Depende da #90 (esquema versionado em `docs/migrations/`).
-> Este documento descreve o esquema **atual** e **propõe** a tabela de comentários. Nada aqui foi aplicado no banco.
+> O esquema e as políticas estão versionados em SQL; sua aplicação em cada ambiente deve ser conferida. A tabela de comentários é **apenas proposta**, sem migração aplicada.
 
 ## 1. Visão geral
 
@@ -196,108 +196,68 @@ Limitação conhecida: não existe hoje uma identificação única do docente (c
 
 ## 5. Políticas de RLS
 
-Consultas executadas no SQL Editor do Supabase:
+### Esquema versionado e ambiente real
+
+A versão atual de [`001_initial_schema.sql`](migrations/001_initial_schema.sql)
+habilita RLS nas cinco tabelas e contém políticas para leitura e operações
+de escrita. Isso **substitui** o diagnóstico feito na auditoria de 02/11/2026,
+quando o banco inspecionado não tinha políticas. O SQL no Git **não demonstra**
+que as políticas já foram aplicadas em cada ambiente Supabase.
+
+| Tabela | Políticas declaradas no SQL versionado | Atenção |
+|---|---|---|
+| `professores`, `disciplinas`, `turmas` | Leitura pública (`SELECT`) | Escrita prevista para o scraper com chave de serviço |
+| `perfis` | Leitura pública e política de gerenciamento com `auth.uid() = id` | A leitura pública inclui `nome_completo` no esquema; revisar privacidade e acesso antes da migração #130 |
+| `avaliacoes` | Leitura pública, inserção pelo autor e política de alteração/exclusão pelo autor | A segurança do acesso com token do usuário ainda depende da migração #129 |
+
+A aplicação Flask em `main` ainda cria clientes com `SUPABASE_SERVICE_KEY`.
+O papel `service_role` ignora o RLS, portanto as permissões no código Flask
+continuam essenciais. A adoção da chave pública e de um token de usuário é
+acompanhada nas issues [#124](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/124),
+[#129](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/129) e
+[#130](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/130).
+
+As políticas atuais da migração são a **base versionada**, não uma comprovação
+de isolamento suficiente: antes de migrar perfis, definir exatamente quais
+colunas podem ser lidas por visitantes e quais operações podem ser feitas pelo
+dono. A issue #130 exige que cada pessoa leia e edite apenas seu próprio perfil,
+e por isso a política de leitura pública não atende integralmente ao objetivo.
+
+### Como conferir no Supabase
+
+No SQL Editor do **ambiente correto**, execute:
 
 ```sql
--- Tabelas com RLS ativo
-SELECT c.relname, c.relrowsecurity, c.relforcerowsecurity
-FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
-WHERE n.nspname = 'public' AND c.relkind = 'r';
-
--- Políticas
-SELECT tablename, policyname, permissive, roles, cmd, qual, with_check
+SELECT tablename, policyname, roles, cmd, qual, with_check
 FROM pg_policies
 WHERE schemaname = 'public'
 ORDER BY tablename, policyname;
+
+SELECT c.relname, c.relrowsecurity, c.relforcerowsecurity
+FROM pg_class c
+JOIN pg_namespace n ON n.oid = c.relnamespace
+WHERE n.nspname = 'public' AND c.relkind = 'r';
 ```
 
-### Resultado
+Compare o resultado com [o script versionado](migrations/001_initial_schema.sql)
+e teste efetivamente os papéis `anon`, `authenticated` e dois usuários
+distintos; não use `service_role` como prova de restrição de RLS.
 
-| Tabela | RLS ativo | `FORCE` RLS | Políticas |
-|---|---|---|---|
-| `professores` | sim | não | nenhuma |
-| `disciplinas` | sim | não | nenhuma |
-| `turmas` | sim | não | nenhuma |
-| `perfis` | sim | não | nenhuma |
-| `avaliacoes` | sim | não | nenhuma |
+### View `vw_professor_disciplina`
 
-### O que isso significa
+A view reúne somente catálogo público (professores, disciplinas e turmas).
+No PostgreSQL, views podem executar com os privilégios do dono por padrão;
+isso deve ser considerado ao revisar as concessões e o `security_invoker`.
+Caso a view passe a expor dados de usuário, será necessária nova revisão de
+permissões. Não altere privilégios em produção sem validar as consultas do
+catálogo e as políticas aplicadas no ambiente.
 
-- Com RLS ativo e **nenhuma política**, o PostgreSQL nega todo acesso aos papéis `anon` e `authenticated`. Um cliente que use a chave pública (anon key) ou o token de um usuário logado **não consegue ler nem escrever** em nenhuma tabela.
-- A `service_role` (chave secreta) ignora o RLS, e é por ela que a aplicação Flask lê e grava (ver "Como a aplicação acessa o banco" abaixo).
-- `FORCE` RLS está desligado, então o dono das tabelas (papel `postgres`) também ignora as políticas.
-- Consequência: **hoje toda a segurança depende de o acesso passar pelo backend com a `service_role`**. A chave `service_role` nunca pode ir para o frontend nem para o repositório.
-### Privilégios e a view `vw_professor_disciplina`
+### Relação com a auditoria
 
-Consulta usada:
-
-```sql
-SELECT grantee, privilege_type
-FROM information_schema.role_table_grants
-WHERE table_schema = 'public' AND table_name = 'vw_professor_disciplina';
-```
-
-Resultado: `postgres`, `anon`, `authenticated` e `service_role` têm todos os privilégios (`SELECT`, `INSERT`, `UPDATE`, `DELETE`, `TRUNCATE`, `REFERENCES`, `TRIGGER`) sobre a view. Esse é o padrão do Supabase para objetos criados no schema `public`; ninguém concedeu isso explicitamente.
-
-Efeitos:
-
-- **Leitura aberta.** Uma view executa com as permissões do dono (`postgres`), que ignora o RLS. Como `anon` tem `SELECT`, qualquer pessoa com a chave pública (anon key) consegue consultar a view e ler **professores, departamentos, disciplinas e turmas**, apesar de as tabelas de base estarem bloqueadas pelo RLS. As tabelas `perfis` e `avaliacoes` **não** são expostas, pois não entram na view.
-- **Escrita.** Os privilégios de `INSERT`/`UPDATE`/`DELETE` constam, mas a view faz `JOIN` de três tabelas e, por isso, o PostgreSQL não a trata como atualizável. Na prática, as escritas falham.
-- **Dados envolvidos.** São dados públicos do SIGAA, então a leitura aberta pode ser aceitável ou até desejada (por exemplo, para a busca funcionar sem login). O ponto é que isso deve ser uma **decisão consciente**, e hoje parece ser consequência do padrão do Supabase.
-- **Não é usada pela aplicação.** O backend só usa a `service_role` (ver abaixo), então a leitura anônima da view não é necessária para o funcionamento atual. Ela existe apenas porque o Supabase concede os privilégios por padrão.
-
-Opções para o grupo avaliar (**não aplicadas**):
-
-```sql
--- Opção A: manter a leitura pública, mas só leitura (remove privilégios de escrita)
-REVOKE INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER
-    ON vw_professor_disciplina FROM anon, authenticated;
-
--- Opção B: restringir a leitura a usuários logados
-REVOKE ALL ON vw_professor_disciplina FROM anon;
-
--- Opção C: fazer a view respeitar o RLS de quem consulta (PostgreSQL 15+).
--- Exige criar políticas de SELECT nas três tabelas de base, senão a view passa a retornar vazio.
-ALTER VIEW vw_professor_disciplina SET (security_invoker = true);
-```
-
-**Recomendação:** a opção B (ou uma variação que revogue de `anon` e `authenticated`), pois o backend usa a `service_role`, que não é afetada por `REVOKE`. Antes de aplicar, buscar no repositório por `vw_professor_disciplina` e conferir que nenhum código a consulta com outra chave.
-
-### Como a aplicação acessa o banco
-
-Pelo `.env_example` e pelo módulo `supabase_db.py`:
-
-- A aplicação é um backend Flask. As variáveis são `SECRET_KEY`, `SUPABASE_URL`, `SUPABASE_SERVICE_KEY` e `FLASK_DEBUG`.
-- O cliente Supabase é criado **somente com a `SUPABASE_SERVICE_KEY`**. Não há `anon key` na configuração.
-- O próprio código documenta que a service key fica só no servidor, nunca em templates.
-- Existe um segundo cliente (`novo_cliente`) usado para validar a senha de um usuário sem alterar o cliente principal.
-
-Consequências:
-
-1. **O RLS não protege o caminho da aplicação**, pois a `service_role` o ignora. Toda regra de autorização (quem pode editar ou apagar o quê) é responsabilidade do código Flask.
-2. O RLS sem políticas funciona como **trava de segurança**: se alguém usar a anon key ou um token de usuário diretamente contra a API do Supabase, não consegue ler nem escrever nas tabelas. A única exceção é a view, tratada acima.
-3. Políticas que usam `auth.uid()` só teriam efeito se um cliente acessasse o Supabase com o token do usuário, o que a aplicação atual não faz.
-
-### Divergência entre o script do repositório e o banco
-
-O banco real tem RLS ativo nas cinco tabelas, mas o script de `docs/migrations/` **não contém** nenhum `ENABLE ROW LEVEL SECURITY`. Quem recriar o banco só com o script obtém tabelas com RLS desligado e, pelos privilégios padrão do Supabase, legíveis e graváveis por `anon` com a chave pública. Isso contradiz o critério da #90 de que o script recria o esquema, e abre o banco.
-
-Proposta de acréscimo ao final do script (idempotente; o banco atual já está assim, então não muda nada nele):
-
-```sql
--- PROPOSTA: não aplicar sem aprovação do grupo.
-ALTER TABLE professores ENABLE ROW LEVEL SECURITY;
-ALTER TABLE disciplinas ENABLE ROW LEVEL SECURITY;
-ALTER TABLE turmas      ENABLE ROW LEVEL SECURITY;
-ALTER TABLE perfis      ENABLE ROW LEVEL SECURITY;
-ALTER TABLE avaliacoes  ENABLE ROW LEVEL SECURITY;
-
--- Sem políticas: acesso apenas pela service_role (backend e scraper).
--- Opcional, mas recomendado: tirar os privilégios padrão dos papéis públicos.
-REVOKE ALL ON professores, disciplinas, turmas, perfis, avaliacoes
-    FROM anon, authenticated;
-REVOKE ALL ON vw_professor_disciplina FROM anon, authenticated;
-```
+O [relatório da auditoria](AUDITORIA_SEGURANCA.md) registra o cenário da data
+da inspeção. O [resumo de cibersegurança](CIBERSEGURANCA.md) acompanha o plano
+atual. Não trate a ausência de políticas naquele diagnóstico como descrição
+do conteúdo atual da migração.
 
 ## 6. Proposta: tabela `comentarios`
 
@@ -354,7 +314,7 @@ CREATE TRIGGER trg_comentarios_atualizado_em
 ALTER TABLE comentarios ENABLE ROW LEVEL SECURITY;
 
 -- Leitura pública (ajustar para "to authenticated" se o grupo preferir).
--- Atenção: as demais tabelas não têm política; os comentários seriam os primeiros.
+-- Conferir as políticas existentes e as permissões antes de aplicar.
 CREATE POLICY comentarios_select_publico
     ON comentarios FOR SELECT
     TO anon, authenticated
@@ -384,7 +344,7 @@ CREATE POLICY comentarios_delete_proprio
 
 1. **Um por professor ou um por professor + disciplina?** A proposta usa um por professor. Para um por disciplina, trocar a unicidade por `(usuario_id, professor_id, disciplina_id)` e tornar `disciplina_id` `NOT NULL`.
 2. **Exigir avaliação antes de comentar?** Seria possível acrescentar ao `WITH CHECK` do insert um `EXISTS (SELECT 1 FROM avaliacoes ...)`. A proposta não exige.
-3. **Políticas de RLS em `comentarios`?** A aplicação acessa o banco só pela `service_role` (seção 5), então as políticas abaixo não afetam o caminho atual. Opções: (a) manter o padrão das outras tabelas, com RLS ativo e **sem políticas**; (b) incluir as políticas como defesa extra caso um dia o frontend use o token do usuário. A proposta traz as políticas da opção (b), que podem ser removidas.
+3. **Políticas de RLS em `comentarios`?** O SQL atual já versiona políticas para as tabelas existentes. A futura tabela deve ter políticas específicas para leitura e autoria, testadas com o token de usuário, e não presumir acesso irrestrito.
 4. **Moderação:** não há denúncia nem remoção por administrador. Se necessário, criar uma coluna `oculto BOOLEAN` e um papel de moderação em uma issue futura.
 5. **Exibição do autor:** o comentário exibe `perfis.username`? Como o backend lê com a `service_role`, basta fazer o `JOIN` no código. Se um dia o acesso for direto, a leitura de `perfis` precisará de política.
 
@@ -400,11 +360,13 @@ CREATE POLICY comentarios_delete_proprio
 ## 7. Como recriar o banco
 
 1. Criar um projeto Supabase vazio.
-2. No **SQL Editor**, executar o script de `docs/migrations/` (e, se aprovado, o bloco de RLS da seção 5).
-3. Copiar `.env_example` para `.env` e preencher:
+2. No **SQL Editor**, executar o script versionado em `docs/migrations/001_initial_schema.sql` e verificar tabelas e políticas. Não executar blocos de proposta de comentários.
+3. Copiar `.env.example` para `.env` e preencher:
    - `SECRET_KEY`: gerar com `python -c "import secrets; print(secrets.token_hex(32))"`.
    - `SUPABASE_URL`: URL do projeto (o código remove sufixos como `/rest/v1`).
    - `SUPABASE_SERVICE_KEY`: chave `service_role` em *Project Settings → API*. É secreta: não commitar e não expor em templates.
    - `FLASK_DEBUG`: `0`, ou `1` somente em desenvolvimento local.
 4. Executar o scraper do SIGAA para popular `professores`, `disciplinas` e `turmas`.
 5. A tabela `comentarios` só entra depois da aprovação da proposta da seção 6.
+
+Veja também: [guia do backend](BACKEND.md), [guia do scraper](COMO_USAR_SCRAPER.md) e [mapa da documentação](GUIA_DOCUMENTACAO.md).

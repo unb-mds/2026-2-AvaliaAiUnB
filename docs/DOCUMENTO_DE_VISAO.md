@@ -86,7 +86,7 @@ O AvaliaUnb atua como um sistema autônomo complementar aos sistemas acadêmicos
 
 - **Estudante (Ator Principal):** Acessa a plataforma para consultar perfis, visualizar notas consolidadas, comparar professores e submeter avaliações.
 - **Plataforma AvaliaUnb:** Aplicação central que processa regras de negócio, calcula médias ponderadas e gerencia o catálogo.
-- **Sistema de Autenticação:** Serviço de validação de identidade (conta própria / OAuth) para garantir que apenas estudantes reais submetam avaliações.
+- **Sistema de Autenticação:** Supabase Auth, usado pelo backend para cadastro, login e sessões. A confirmação de e-mail ainda depende de implementação específica.
 - **Portal SIGAA / Dados Públicos:** Fonte pública de dados de turmas, códigos de disciplinas, horários e departamentos para cruzamento inicial de informações.
 
 ### 4.2 Pilha Tecnológica (Tech Stack)
@@ -94,7 +94,7 @@ O AvaliaUnb atua como um sistema autônomo complementar aos sistemas acadêmicos
 | Camada / Área | Tecnologias Selecionadas |
 | --- | --- |
 | **Frontend** | HTML5, CSS3, JavaScript e Figma (Design e Prototipagem da Interface). |
-| **Backend** | Python, Flask (Microframework Web), Jinja2 (Engine de Templates) e Render / Heroku (Deploy e Hospedagem). |
+| **Backend** | Python, Flask (Microframework Web), Jinja2 (Engine de Templates) e Vercel (configuração de hospedagem). |
 | **Banco de Dados & Ferramentas** | Supabase (Banco de dados relacional), Git e GitHub (Versionamento e Integração Contínua). |
 
 ### 4.3 Arquitetura do Sistema e Componentes
@@ -102,12 +102,17 @@ O sistema é estruturado em uma arquitetura modular em camadas:
 
 - **Camada de Apresentação (Frontend / Client UI):** Interface web construída com HTML5/CSS3/JS e templates renderizados dinamicamente via Jinja2.
 - **Camada de Controle (Controllers):** Contém o *Autenticação Controller* (gestão de sessões e segurança), *Avaliação Controller* (cálculo de notas e validação) e *Professor/Turma Controller* (consultas, buscas e filtros).
-- **Camada de Serviços e Repositórios:** Inclui o *Serviço de Autenticação*, *Avaliação Repository* (persistência Supabase das avaliações e comentários) e *Serviço de Sincronização / Parser* (processamento de dados de turmas).
-- **Camada de Dados:** Persistência principal via Supabase, dados temporários de sessão em cache e integração com fontes públicas do SIGAA.
+- **Camada de Serviços e Repositórios:** Inclui os repositórios de usuários, professores e avaliações, integrados ao Supabase, e o scraper SIGAA executado separadamente. Comentários ainda são uma proposta, não persistência implementada.
+- **Camada de Dados:** Supabase (PostgreSQL e Auth); cookies do navegador guardam tokens de autenticação. O catálogo pode ser mantido em cache por processo no backend.
 
 ---
 
 ## 5. Requisitos Funcionais
+
+Esta seção registra requisitos da visão do produto, não a situação de entrega.
+Consulte [Funcionalidades](FUNCIONALIDADES.md) para saber o que já existe e
+[Comentários](COMENTARIOS.md) para regras ainda em proposta.
+
 
 | Código | Nome | Descrição | Prioridade |
 | --- | --- | --- | --- |
@@ -126,16 +131,23 @@ O sistema é estruturado em uma arquitetura modular em camadas:
 
 ---
 
+Para o estado atual de arquitetura e tecnologia, veja [Arquitetura](ARQUITETURA.md),
+[Backend](BACKEND.md) e [Hospedagem](HOSPEDAGEM.md).
+
 ## 6. Restrições
 
 - **Restrição de Prazo e Recursos:** O desenvolvimento do projeto deve ser concluído no período letivo da disciplina de MDS na UnB.
-- **Tecnologias:** O backend deve ser desenvolvido em Python utilizando o microframework Flask com banco de dados Supabase e hospedagem em nuvem (Render/Heroku).
+- **Tecnologias:** O backend deve ser desenvolvido em Python utilizando o microframework Flask com banco de dados Supabase e hospedagem em nuvem (Vercel, conforme configuração atual).
 - **Conformidade com a LGPD:** O tratamento de dados de estudantes e professores deve atender à Lei Geral de Proteção de Dados (LGPD).
 - **Diretrizes de Moderação:** O sistema deve barrar conteúdos ofensivos, difamatórios ou discursos de ódio, garantindo a ética nas avaliações docentes.
 
 ---
 
 ## 7. Requisitos Não Funcionais
+
+Os indicadores abaixo são **metas de produto**, não medições de carga,
+segurança ou acessibilidade já homologadas.
+
 
 - **RNF01 - Usabilidade:** A interface do sistema deve ser intuitiva, responsiva e acessível em dispositivos desktops sem necessidade de treinamento prévio.
 - **RNF02 - Desempenho:** A busca por professores e o carregamento das páginas de perfil devem responder em menos de 2 segundos sob carga normal de uso.

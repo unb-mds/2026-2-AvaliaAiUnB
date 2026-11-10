@@ -50,7 +50,9 @@ etapas separadas.
 
 ## Correções acompanhadas
 
-Situação consultada em **09/11/2026**.
+**Registro histórico consultado em 09/11/2026.** As issues abaixo podem
+ter PRs posteriores ainda em revisão; nenhuma correção deve ser considerada
+implantada apenas porque existe uma branch ou PR.
 
 | Issue | Prioridade na auditoria | Entrega esperada |
 |---|---|---|
@@ -72,3 +74,7 @@ A proposta de comentários, denúncia, permissões de moderação e privacidade 
 em [Comentários](COMENTARIOS.md). As regras dependem de revisão do grupo.
 O esquema atual não implementa denúncia nem um papel de moderador; esses fluxos
 precisam de projeto e implementação próprios após a especificação.
+
+Relacionado: [auditoria de 02/11](AUDITORIA_SEGURANCA.md),
+[modelo de dados](Modelo%20de%20Dados.md), [pipeline](pipeline.md) e
+[mapa da documentação](GUIA_DOCUMENTACAO.md).
