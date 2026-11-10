@@ -179,6 +179,30 @@ class TestFluxoWeb(unittest.TestCase):
         self.assertIn('username', resposta.get_json()['erros'])
         self.assertNotIn('senha123', resposta.get_data(as_text=True))
 
+    def test_cadastro_informa_email_ou_username_ja_cadastrado(self):
+        self.assertEqual(self.cadastrar().status_code, 201)
+
+        conflito_username = self.cadastrar(email='outro@gmail.com')
+        self.assertEqual(conflito_username.status_code, 409)
+        self.assertEqual(
+            conflito_username.get_json()['erros']['username'],
+            'Este nome de usuário já está em uso.',
+        )
+
+        conflito_email = self.cadastrar(username='outro')
+        self.assertEqual(conflito_email.status_code, 409)
+        self.assertEqual(
+            conflito_email.get_json()['erros']['email'],
+            'Este e-mail já está cadastrado.',
+        )
+
+        conflito_html = self.cadastrar(
+            username='outro', formato='html'
+        )
+        self.assertEqual(conflito_html.status_code, 409)
+        self.assertIn('Este e-mail já está cadastrado.',
+                      conflito_html.get_data(as_text=True))
+
     def test_cadastro_html_mostra_erro_de_gmail(self):
         resposta = self.postar('/cadastro', data=dict(
             nome='Ana', username='ana', email='ana@unb.br', senha='senha123',

@@ -51,7 +51,7 @@ class UsuarioRepository:
     def criar(self, nome, username, email, senha):
         """Retorna (True, id) ou (False, campo_com_erro, mensagem)."""
         if self.cliente.table('perfis').select('id').eq('username', username).limit(1).execute().data:
-            return False, 'username', 'Não foi possível concluir o cadastro com os dados informados.'
+            return False, 'username', 'Este nome de usuário já está em uso.'
         try:
             resposta = self.cliente.auth.admin.create_user({
                 'email': email, 'password': senha, 'email_confirm': True,
@@ -59,7 +59,7 @@ class UsuarioRepository:
         except AuthError as erro:
             if getattr(erro, 'code', '') in ('email_exists', 'user_already_exists') \
                     or 'already' in str(erro).lower():
-                return False, 'email', 'Não foi possível concluir o cadastro com os dados informados.'
+                return False, 'email', 'Este e-mail já está cadastrado.'
             raise
         usuario_id = str(resposta.user.id)
         try:
@@ -68,7 +68,7 @@ class UsuarioRepository:
         except Exception:
             self.cliente.auth.admin.delete_user(usuario_id)   # não deixa conta sem perfil
             if self.cliente.table('perfis').select('id').eq('username', username).execute().data:
-                return False, 'username', 'Não foi possível concluir o cadastro com os dados informados.'
+                return False, 'username', 'Este nome de usuário já está em uso.'
             raise
         return True, usuario_id
 
