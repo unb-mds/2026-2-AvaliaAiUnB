@@ -41,9 +41,6 @@ SUPABASE_URL = normalizar_url(os.getenv("SUPABASE_URL"))
 SUPABASE_SERVICE_KEY = (os.getenv("SUPABASE_SERVICE_KEY") or "").strip()
 
 
-print(f"[supabase_client] URL normalizada: {SUPABASE_URL}")
-
-
 if not SUPABASE_URL or not SUPABASE_SERVICE_KEY:
     raise RuntimeError(
         "SUPABASE_URL e SUPABASE_SERVICE_KEY precisam estar definidos no .env\n"
