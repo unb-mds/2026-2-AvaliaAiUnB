@@ -17,7 +17,6 @@ from app.seguranca import (
     csrf,
     limitar_avaliacao,
     limitar_cadastro,
-    limitar_login_por_conta,
     limitar_login_por_ip,
     limiter,
 )
@@ -45,7 +44,6 @@ def criar_app(monkeypatch, *, secret=CHAVE_FORTE, debug=False, testing=False):
 
     @app.post("/login")
     @limitar_login_por_ip
-    @limitar_login_por_conta
     def login():
         return jsonify(ok=True)
 
@@ -101,6 +99,14 @@ def test_desenvolvimento_sem_secret_key_gera_chave_aleatoria(monkeypatch):
 def test_debug_desligado_por_padrao(monkeypatch):
     monkeypatch.delenv("FLASK_DEBUG", raising=False)
     assert Flask(__name__).debug is False
+
+
+def test_producao_exige_rate_limit_compartilhado(monkeypatch):
+    monkeypatch.setenv("APP_ENV", "production")
+    monkeypatch.delenv("RATELIMIT_STORAGE_URI", raising=False)
+    with pytest.raises(RuntimeError, match="RATELIMIT_STORAGE_URI"):
+        criar_app(monkeypatch)
+    monkeypatch.delenv("APP_ENV", raising=False)
 
 
 # ------------------------------------------------------------------ headers
@@ -191,15 +197,14 @@ def test_login_limita_por_ip(client):
     assert codigos[10] == 429
 
 
-def test_login_limita_tentativas_contra_a_mesma_conta(client):
-    # 10/hora na mesma conta, mesmo variando o IP de origem
-    for i in range(10):
-        r = client.post("/login", data={"username": "Alvo", "csrf_token": token_csrf(client)},
-                        environ_overrides={"REMOTE_ADDR": f"10.0.0.{i}"})
-        assert r.status_code == 200
-    r = client.post("/login", data={"username": "alvo", "csrf_token": token_csrf(client)},
-                    environ_overrides={"REMOTE_ADDR": "10.0.0.99"})
-    assert r.status_code == 429
+def test_username_nao_bloqueia_uma_conta_por_ips_diferentes(client):
+    # Várias origens usando o mesmo username não devem impedir o login de outro IP.
+    for i in range(12):
+        resposta = client.post(
+            "/login", data={"username": "Alvo", "csrf_token": token_csrf(client)},
+            environ_overrides={"REMOTE_ADDR": f"10.0.0.{i}"})
+        assert resposta.status_code == 200
+
 
 
 def test_cadastro_limita_por_ip(client):

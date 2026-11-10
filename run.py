@@ -22,5 +22,5 @@ app = create_app()
 if __name__ == "__main__":
     # Debug só liga com FLASK_DEBUG explícito e, nesse caso, só escuta em localhost
     # (o debugger do Werkzeug permite executar código no servidor).
-    debug = os.environ.get("FLASK_DEBUG", "0").strip().lower() in {"1", "true", "yes", "on"}
+    debug = app.debug
     app.run(host="127.0.0.1" if debug else os.environ.get("HOST", "127.0.0.1"), debug=debug)

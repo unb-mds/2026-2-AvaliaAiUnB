@@ -4,7 +4,6 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 from flask import Flask
-from flask_wtf.csrf import CSRFProtect
 
 from app.controllers.session_controller import registrar_renovacao
 from app.repositorio import configurar_repositorios
@@ -24,10 +23,11 @@ def create_app(config=None) -> Flask:
 
     if config:
         app.config.update(config)
+    if os.getenv('APP_ENV', '').strip().lower() == 'production' and app.debug:
+        raise RuntimeError('O modo DEBUG deve estar desativado em produção.')
     if not app.config['SECRET_KEY'] or not app.config['SECRET_KEY'].strip():
         raise RuntimeError('Defina a variável de ambiente SECRET_KEY antes de iniciar a aplicação.')
 
-    CSRFProtect(app)
     configurar_repositorios(app)
     registrar_renovacao(app)
     configurar_seguranca(app)

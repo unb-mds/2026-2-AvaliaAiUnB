@@ -48,8 +48,8 @@ def perfil(professor_id):
                            usuario=obter_usuario_atual())
 
 @professor_bp.route('/avaliar/<int:professor_id>', methods=['GET', 'POST'])
-@limitar_avaliacao
 @login_required
+@limitar_avaliacao
 def avaliar(professor_id):
     professor, _, disciplina = controller.carregar_perfil(professor_id)
     if disciplina is None:
@@ -80,8 +80,8 @@ def avaliar(professor_id):
 
 
 @professor_bp.route('/avaliacoes/<int:avaliacao_id>/editar', methods=['GET', 'POST'])
-@limitar_avaliacao
 @login_required
+@limitar_avaliacao
 def editar_avaliacao(avaliacao_id):
     usuario = obter_usuario_atual()
     avaliacao = controller.carregar_avaliacao_do_usuario(avaliacao_id, usuario)
@@ -116,8 +116,8 @@ def editar_avaliacao(avaliacao_id):
 
 
 @professor_bp.post('/avaliacoes/<int:avaliacao_id>/excluir')
-@limitar_avaliacao
 @login_required
+@limitar_avaliacao
 def excluir_avaliacao(avaliacao_id):
     controller.excluir_avaliacao(avaliacao_id, obter_usuario_atual())
     if request.accept_mimetypes.best == 'application/json':

@@ -58,16 +58,8 @@ def chave_usuario_ou_ip():
     return f"usuario:{usuario['id']}" if usuario else get_remote_address()
 
 
-def _chave_username():
-    """Limita tentativas contra a MESMA conta, mesmo vindas de IPs diferentes."""
-    username = request.form.get("username", "").strip().lower()
-    return f"username:{username}" if username else get_remote_address()
-
-
 # Só POST é limitado: renderizar o formulário (GET) não é o alvo de abuso.
 limitar_login_por_ip = limiter.limit("10 per minute;50 per hour", methods=["POST"], scope="login-ip")
-limitar_login_por_conta = limiter.limit("10 per hour", key_func=_chave_username,
-                                        methods=["POST"], scope="login-conta")
 limitar_cadastro = limiter.limit("5 per hour", methods=["POST"], scope="cadastro")
 limitar_avaliacao = limiter.limit("20 per hour", key_func=chave_usuario_ou_ip,
                                   methods=["POST"], scope="avaliacao")
@@ -144,6 +136,9 @@ def _configurar_limites(app):
     app.config.setdefault("RATELIMIT_STORAGE_URI",
                           os.environ.get("RATELIMIT_STORAGE_URI", "memory://"))
     app.config.setdefault("RATELIMIT_HEADERS_ENABLED", True)
+    if (os.getenv("APP_ENV", "").strip().lower() == "production"
+            and app.config["RATELIMIT_STORAGE_URI"].startswith("memory://")):
+        raise RuntimeError("Configure RATELIMIT_STORAGE_URI compartilhado em produção.")
     limiter.init_app(app)
 
     if app.config["RATELIMIT_STORAGE_URI"].startswith("memory://") and not app.debug:
