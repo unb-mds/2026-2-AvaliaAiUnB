@@ -1,6 +1,6 @@
-# 🚀 Como Usar o Projeto
+# Como executar o scraper do SIGAA
 
-Este documento centraliza as instruções para configurar o ambiente, subir o banco de dados e executar o scraper.
+Este guia cobre a coleta do SIGAA e o preparo do banco. Para iniciar a aplicação Flask, use o [README](https://github.com/unb-mds/2026-2-AvaliaAiUnB/blob/main/README.md); para o esquema, consulte o [modelo de dados](Modelo%20de%20Dados.md).
 
 ## 1. Instalação de Dependências
 
@@ -13,18 +13,17 @@ pip install -r requirements-scraper.txt
 
 ## 2. Credenciais do Supabase
 
+No painel do Supabase, consulte **Project Settings > API**. Crie um arquivo
+`.env` na raiz a partir de `.env.example`, configure a URL e a chave de serviço
+**apenas no servidor**; nunca adicione o `.env` ao Git:
+
+```dotenv
+SUPABASE_URL=https://seu-projeto.supabase.co
+SUPABASE_SERVICE_KEY=chave-de-servico-do-projeto
 ```
-Acesse o painel do Supabase e vá em Project Settings > API.
 
-Copie a Project URL (ex: https://xxxx.supabase.co).
-
-Copie a chave service_role.
-
-Crie um arquivo .env na pasta raiz do projeto, e coloque as credenciais dessa fora:
-
-SUPABASE_URL=credencial1
-SUPABASE_SERVICE_KEY=credencial2
-```
+A chave de serviço ignora RLS e só deve ser usada pelo scraper e por operações
+administrativas estritamente necessárias. Veja [Cibersegurança](CIBERSEGURANCA.md).
 ## 2.1. Criando ou Recriando o Esquema do Banco no Supabase
 
 Para configurar um projeto Supabase do zero (ou recriar o ambiente), execute a migração versionada no repositório:
@@ -33,7 +32,7 @@ Para configurar um projeto Supabase do zero (ou recriar o ambiente), execute a m
 2. No menu lateral esquerdo, clique em **SQL Editor** e depois em **New query**.
 3. Copie todo o conteúdo do arquivo [`docs/migrations/001_initial_schema.sql`](migrations/001_initial_schema.sql) e cole no editor.
 4. Clique em **Run** (ou pressione `Ctrl + Enter`). O script criará as tabelas (`professores`, `disciplinas`, `turmas`, `perfis`, `avaliacoes`), as constraints únicas usadas pelo scraper e a view `vw_professor_disciplina`.
-5. Para validar se todas as tabelas foram criadas corretamente, execute localmente:
+5. Confira também as políticas RLS do SQL versionado e valide o ambiente de destino. Para verificar as tabelas, execute localmente:
    ```bash
    python scraper/checar_tabelas.py
    ```
@@ -94,3 +93,5 @@ criada no diretório onde o comando foi executado e está no `.gitignore`.
 A listagem do SIGAA vem inteira em uma página. Se o scraper detectar algum controle de
 paginação, avisa no log e salva o HTML em `debug/`; nesse caso a extração leria só a
 página atual, então avise a equipe.
+
+Relacionado: [modelo de dados](Modelo%20de%20Dados.md), [backend](BACKEND.md) e [pipeline](pipeline.md).

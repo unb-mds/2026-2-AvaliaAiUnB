@@ -12,7 +12,7 @@ separado para executar essas telas.
 | `index.html` | Início, consulta, ranking e acesso à conta | `base.css`, `index.css` |
 | `cadastro.html` | Cadastro, validações e mensagem de sucesso | `base.css`, `auth.css` |
 | `login.html` | Login e mensagem de erro | `base.css`, `auth.css` |
-| `lista_professores.html` | Filtros, catálogo paginado, média geral em estrelas e estados sem resultado | `indicadores.css` (que importa `base.css`), `lista_professores.css` |
+| `lista_professores.html` | Filtros, catálogo, média geral em estrelas e estados sem resultado | `indicadores.css` (que importa `base.css`), `lista_professores.css` |
 | `perfil_professor.html` | Disciplinas (campo digitável), indicadores, média geral, comparação e avaliação | `indicadores.css`, `perfil_professor.css` |
 | `avaliacao.html` | Criação e edição de notas (botões de 1 a 5) | `indicadores.css`, `avaliacao.css` |
 | `perfil.html` | Avaliações do usuário e ações de editar e excluir | `base.css`, `perfil.css` |
@@ -46,7 +46,7 @@ carregam depois uma folha própria que ajusta o que é específico delas, sem al
 `indicadores.css`, porque o ranking depende dele.
 
 O catálogo mostra mensagens diferentes para ausência de dados e ausência de
-resultados dos filtros, pagina 100 professores por vez (`?pagina=N`) e exibe a média
+resultados dos filtros e exibe a média
 geral em cinco estrelas ou `N/A (Não avaliado)`. O filtro de departamento é um campo
 de texto com sugestões. O perfil informa quando não há avaliações válidas e mostra a
 média geral do professor; cadastro e avaliação exibem erros de campo; a comparação
@@ -60,8 +60,8 @@ dificuldade, como o ranking. A política de segurança (`style-src 'self'` em
 precisam virar classes de CSS.
 
 Cores, Arial, espaçamentos, raios e alturas seguem o design system e vêm das
-variáveis de `base.css`. O ranking ainda não usa o novo visual e será removido em
-outra issue.
+variáveis de `base.css`. O ranking possui uma folha de estilos própria e segue disponível na rota `/ranking`;
+qualquer alteração de escopo deve ser tratada em sua issue específica.
 
 Scripts em `app/static/` (a política de segurança só aceita scripts do próprio
 domínio): `topo.js` fecha o menu do topo ao clicar fora ou apertar Esc, e
@@ -78,6 +78,8 @@ consolidação de cores, tipografia, espaçamentos, componentes e estados. A apl
 O inventário acima registra a interface que existe hoje. O
 [design system](DESIGN_SYSTEM.md) reúne o padrão proposto para os componentes.
 Os [protótipos de comentários](TELAS_COMENTARIOS.md) aplicam esse padrão.
+O [mapa da documentação](GUIA_DOCUMENTACAO.md) conecta as regras de interface,
+[funcionalidades](FUNCIONALIDADES.md) e [contribuição](PROCESSO_CONTRIBUICAO.md).
 
 As telas futuras de comentários devem seguir a
 [especificação para revisão](COMENTARIOS.md). A #112 depende dessa especificação
