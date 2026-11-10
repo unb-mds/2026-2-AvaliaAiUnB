@@ -91,6 +91,7 @@ comentários, reações, denúncias e moderação ainda não têm fluxo implemen
 
 A [proposta de banco para comentários](https://github.com/unb-mds/2026-2-AvaliaAiUnB/blob/main/docs/Modelo%20de%20Dados.md#6-proposta-tabela-comentarios)
 já está publicada. A [especificação proposta](COMENTARIOS.md) reúne acesso com
-e-mail de qualquer domínio, anonimato público, reações, filtro e denúncias.
+e-mail de qualquer domínio, nome de usuário visível, consulta ao e-mail do
+autor, reações, filtro e denúncias.
 A proposta começou na
 [issue #116](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/116).

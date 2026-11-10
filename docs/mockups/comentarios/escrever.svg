@@ -1,12 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 624" width="400" height="624" role="img" aria-labelledby="title description" font-family="Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 680" width="400" height="680" role="img" aria-labelledby="title description" font-family="Arial, sans-serif">
   <title id="title">Escrever comentário</title>
-  <desc id="description">Formulário com Cálculo 2 selecionado para o segundo comentário sobre o professor, contador e aviso de verificação antes da publicação anônima.</desc>
-  <rect x="0" y="0" width="400" height="624" rx="0" fill="#F2F4F7" stroke="none"/>
+  <desc id="description">Formulário com Cálculo 2 selecionado, contador e confirmação de que o e-mail pode aparecer ao clicar no nome de usuário.</desc>
+  <rect x="0" y="0" width="400" height="680" rx="0" fill="#F2F4F7" stroke="none"/>
   <rect x="0" y="0" width="400" height="58" rx="0" fill="#174B83" stroke="none"/>
   <text x="16" y="37" font-size="20" font-weight="700" fill="#FFFFFF" text-anchor="start">AvaliaAi UnB</text>
   <text x="16" y="100" font-size="27" font-weight="700" fill="#202124" text-anchor="start">Escrever comentário</text>
   <text x="16" y="127" font-size="16" font-weight="400" fill="#4F5357" text-anchor="start">Professor de exemplo</text>
-  <rect x="16" y="152" width="368" height="448" rx="12" fill="#FFFFFF" stroke="none"/>
+  <rect x="16" y="152" width="368" height="504" rx="12" fill="#FFFFFF" stroke="none"/>
   <text x="32" y="185" font-size="16" font-weight="700" fill="#202124" text-anchor="start">Disciplina (obrigatória)</text>
   <rect x="32" y="197" width="336" height="44" rx="8" fill="#FFFFFF" stroke="#767676"/>
   <text x="44" y="225" font-size="16" font-weight="400" fill="#202124" text-anchor="start">Cálculo 2</text>
@@ -19,12 +19,15 @@
     <text x="32" y="399" font-size="14" font-weight="400" fill="#4F5357" text-anchor="start">Até 1.000 caracteres</text>
     <text x="368" y="399" font-size="14" font-weight="400" fill="#4F5357" text-anchor="end">0 / 1.000</text>
     <rect x="32" y="418" width="336" height="72" rx="8" fill="#F2F4F7"/>
-    <text x="44" y="443" font-size="15" font-weight="700" fill="#202124">Publicação anônima</text>
-    <text x="44" y="466" font-size="14" fill="#4F5357">Sua identidade fica privada. O texto passa</text>
-    <text x="44" y="483" font-size="14" fill="#4F5357">por uma verificação antes de aparecer.</text>
-    <rect x="32" y="510" width="160" height="44" rx="8" fill="#174B83"/>
-    <text x="112" y="537" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">Publicar</text>
-    <rect x="208" y="510" width="160" height="44" rx="8" fill="#FFFFFF" stroke="#174B83"/>
-    <text x="288" y="537" font-size="15" font-weight="700" fill="#174B83" text-anchor="middle">Cancelar</text>
+    <text x="44" y="443" font-size="15" font-weight="700" fill="#202124">Dados visíveis no comentário</text>
+    <text x="44" y="466" font-size="14" fill="#4F5357">Seu nome de usuário será público. Qualquer</text>
+    <text x="44" y="483" font-size="14" fill="#4F5357">pessoa poderá clicar nele e ver seu e-mail.</text>
+    <rect x="34" y="507" width="18" height="18" rx="3" fill="#FFFFFF" stroke="#767676"/>
+    <text x="62" y="521" font-size="14" fill="#202124">Confirmo que meu e-mail ficará acessível</text>
+    <text x="62" y="540" font-size="14" fill="#202124">pelo meu nome de usuário.</text>
+    <rect x="32" y="566" width="160" height="44" rx="8" fill="#F2F4F7" stroke="#767676"/>
+    <text x="112" y="593" font-size="15" font-weight="700" fill="#4F5357" text-anchor="middle">Publicar</text>
+    <rect x="208" y="566" width="160" height="44" rx="8" fill="#FFFFFF" stroke="#174B83"/>
+    <text x="288" y="593" font-size="15" font-weight="700" fill="#174B83" text-anchor="middle">Cancelar</text>
   </g>
 </svg>

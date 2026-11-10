@@ -307,7 +307,7 @@ REVOKE ALL ON vw_professor_disciplina FROM anon, authenticated;
 
 | Tema | Proposta | Motivo |
 |---|---|---|
-| Ligação privada com usuário | `usuario_id` → `perfis(id)` | Garante autoria, unicidade e permissões sem identificar a pessoa em público. |
+| Ligação privada com usuário | `usuario_id` → `perfis(id)` | Garante autoria, unicidade e permissões. A listagem exibe o nome de usuário sem expor o identificador da conta. |
 | Ligação com professor | `professor_id` → `professores(id)`, `NOT NULL` | O comentário é sempre sobre um professor. |
 | Ligação com disciplina | `disciplina_id` → `disciplinas(id)`, `NOT NULL` | Todo relato se refere a uma disciplina ministrada pelo professor. |
 | Quantidade por usuário | **Um por professor e disciplina** | Permite relatos sobre disciplinas diferentes e evita duplicidade. |
@@ -378,9 +378,13 @@ REVOKE ALL ON comentarios_reacoes FROM PUBLIC, anon, authenticated;
 2. **Registros independentes.** Comentários e avaliações por estrelas são
    gravados em tabelas separadas. Cada operação verifica suas próprias
    permissões e campos, independentemente de haver registro na outra tabela.
-3. **Leitura pública anônima.** O backend lista comentários visíveis e agrega
-   reações. A resposta traz o ID do comentário, texto, disciplina, datas e
-   contagens. Exclui IDs de contas, nomes, usernames e e-mails.
+3. **Leitura pública com autoria.** O backend lista comentários visíveis com
+   ID do comentário, texto, disciplina, datas, contagens e `perfis.username`.
+   Uma consulta separada, por ID do comentário visível, retorna apenas o
+   e-mail de conta verificado cuja divulgação o autor confirmou. O backend
+   valida a autorização para o endereço atual e mantém o e-mail fora da
+   listagem. O registro dessa confirmação fica privado e será definido na
+   implementação do [fluxo de privacidade](COMENTARIOS.md).
 4. **Moderação.** A tabela `comentarios` guarda o texto já aprovado. Textos
    que precisam de revisão ficam em uma fila privada separada, inclusive
    revisões de comentários publicados. O modelo de fila, denúncias e decisões

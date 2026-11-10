@@ -10,11 +10,13 @@ pessoa pode voltar ao perfil e encerrar ou escolher a outra.
 
 ## Listar
 
-![Perfil com comentários anônimos, contagens de reações e ações de editar, apagar e denunciar](mockups/comentarios/listar.svg)
+![Perfil com nome de usuário nos comentários, e-mail expandido em um deles e contagens de reações](mockups/comentarios/listar.svg)
 
-Visitantes leem os comentários anônimos com suas disciplinas e contagens. A
-área convida a entrar ou criar conta com qualquer e-mail verificado para
-escrever ou reagir.
+Visitantes leem os comentários com o nome de usuário do autor, disciplina
+e contagens. Clicar, tocar ou ativar o nome pelo teclado abre o e-mail
+verificado que o autor autorizou divulgar. Ativar o botão outra vez fecha
+o contato. A área convida a entrar ou criar conta com qualquer e-mail
+verificado para escrever ou reagir.
 A pessoa logada vê **Escrever comentário** se ainda puder publicar naquele
 perfil. O exemplo mostra uma conta que já comentou em Cálculo 1 e pode
 escrever sobre outra disciplina. Cada relato da própria conta tem as ações
@@ -34,9 +36,10 @@ Para publicar, a pessoa precisa escolher uma disciplina ministrada pelo
 professor. Se já tiver um comentário naquela disciplina, a tela oferece a
 opção de editá-lo.
 
-O formulário avisa que todo comentário será publicado anonimamente e que o
-texto passará por verificação. O campo aceita textos curtos e mostra o limite
-de 1.000 caracteres. Durante o envio, o botão mostra
+O formulário avisa que o nome de usuário fica público e que qualquer pessoa
+poderá clicar nele para consultar o e-mail. O autor confirma a divulgação
+antes de enviar o texto para verificação. O campo aceita textos curtos e
+mostra o limite de 1.000 caracteres. Durante o envio, o botão mostra
 **Verificando**. Se o filtro bloquear o texto, a mensagem junto ao campo
 explica o que precisa ser revisto e preserva o que foi digitado. Se a análise
 precisar de moderação, a confirmação informa **Em revisão** e o texto fica
