@@ -124,6 +124,13 @@ class TestUsuarios(unittest.TestCase):
         self.assertIsNone(self.usuarios.autenticar('ana', 'errada123'))
         self.assertIsNone(self.usuarios.autenticar('naoexiste', 'senha123'))
 
+    def test_login_de_usuario_inexistente_e_senha_errada_nao_autentica(self):
+        self.criar()
+        with patch('app.repositorio.time.sleep') as atraso:
+            self.assertIsNone(self.usuarios.autenticar('inexistente', 'senha123'))
+            self.assertIsNone(self.usuarios.autenticar('ana', 'incorreta'))
+        self.assertGreaterEqual(atraso.call_count, 2)
+
     def test_token_renovacao_e_logout(self):
         self.criar()
         sessao = self.usuarios.autenticar('ana', 'senha123')
@@ -259,6 +266,23 @@ class TestFluxoWeb(unittest.TestCase):
         self.assertEqual(self.web.get('/avaliar/1').status_code, 302)
         self.assertEqual(self.postar('/avaliar/1', headers={'Accept': 'application/json'}).status_code, 401)
 
+    def test_edicao_e_exclusao_exigem_login_html_e_json(self):
+        for rota in ('/avaliacoes/1/editar', '/avaliacoes/1/excluir'):
+            metodos = ('get', 'post') if rota.endswith('/editar') else ('post',)
+            for metodo in metodos:
+                for accept, esperado in (('text/html', 302), ('application/json', 401)):
+                    with self.subTest(rota=rota, metodo=metodo, accept=accept):
+                        if metodo == 'get':
+                            resposta = self.web.get(rota, headers={'Accept': accept})
+                        else:
+                            resposta = self.postar(rota, headers={'Accept': accept})
+                        self.assertEqual(resposta.status_code, esperado)
+                        if esperado == 302:
+                            self.assertTrue(resposta.headers['Location'].endswith('/login'))
+                        else:
+                            self.assertEqual(resposta.get_json()['erro'], 'Não autenticado')
+        self.assertEqual(self.cliente.tabelas['avaliacoes'], [])
+
     def test_fluxo_avaliacao_e_ordem_da_listagem(self):
         self.cadastrar()
         self.entrar()
@@ -300,11 +324,18 @@ class TestFluxoWeb(unittest.TestCase):
 
     def test_csrf_rejeita_token_expirado(self):
         token = self.token_csrf()
-        with patch('time.time', return_value=time.time() + 7200):
+        with patch('time.time', return_value=time.time() + 12 * 60 * 60 + 60):
             resposta = self.web.post('/cadastro', data={'csrf_token': token})
         self.assertEqual(resposta.status_code, 400)
         self.assertIn('CSRF', resposta.get_data(as_text=True))
         self.assertEqual(self.cliente.auth.usuarios, {})
+
+    def test_csrf_aceita_token_apos_uma_hora(self):
+        token = self.token_csrf()
+        with patch('time.time', return_value=time.time() + 60 * 60 + 60):
+            resposta = self.web.post('/cadastro', data={'csrf_token': token})
+        self.assertEqual(resposta.status_code, 400)
+        self.assertNotIn('CSRF', resposta.get_data(as_text=True))
 
     def test_csrf_aceita_token_no_cabecalho(self):
         token = self.token_csrf()
