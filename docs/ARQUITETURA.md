@@ -1,18 +1,25 @@
 # Diagramas de Arquitetura
 
-Aqui estão as versões mais recentes e atualizadas da arquitetura do projeto AvaliaUnb.
+Os diagramas representam a arquitetura do AvaliaUnB implementada na `main`.
 
 === "Contexto"
 
     ### Diagrama de Contexto
 
-    ![Diagrama de Contexto](Diagrama%20de%20contexto.png)
+    ![Diagrama de contexto do AvaliaUnB](diagrama-contexto.svg)
 
-=== "Componentes da API"
+    Qualquer visitante pode consultar o catálogo. O registro de notas exige
+    login com nome de usuário e senha, validados pelo Supabase Auth. O scraper
+    importa professores, disciplinas e turmas do SIGAA.
 
-    ### Diagrama de Componentes da API
+=== "Componentes da aplicação"
 
-    ![Diagrama de Componentes](Diagrama%20de%20Componentes%20da%20API.png)
+    ### Diagrama de Componentes da Aplicação
+
+    ![Diagrama de componentes da aplicação](diagrama-componentes.svg)
+
+    As rotas Flask renderizam os templates Jinja2 e delegam as operações aos
+    controllers. Os repositórios usam o cliente Supabase para dados e autenticação.
 
 === "Tech Stack"
 

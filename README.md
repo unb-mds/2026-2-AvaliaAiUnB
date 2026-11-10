@@ -80,6 +80,8 @@ confirmação do endereço está prevista na
 | Testes e qualidade | unittest, pip-audit e Bandit |
 | Deploy | Configuração para Vercel adicionada no [PR #131](https://github.com/unb-mds/2026-2-AvaliaAiUnB/pull/131) |
 
+![Diagrama de contexto do AvaliaUnB](docs/diagrama-contexto.svg)
+
 ### Backend
 
 `run.py` cria a aplicação por `create_app`, em `app/__init__.py`.
