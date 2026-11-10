@@ -1,6 +1,6 @@
 # Backend
 
-O AvaliaAi UnB usa Python e Flask para renderizar páginas Jinja2 e processar
+O AvaliaUnb usa Python e Flask para renderizar páginas Jinja2 e processar
 cadastros, sessões, consultas e avaliações. A persistência usa PostgreSQL no
 Supabase; contas e senhas são gerenciadas pelo Supabase Auth.
 
@@ -61,7 +61,7 @@ Os caminhos da tabela são relativos à raiz do repositório.
 O perfil e o formulário de avaliação recebem também `next` para manter a URL
 de retorno da busca. A validação desse parâmetro está em `app/seguranca.py`;
 o bloqueio de barra invertida foi integrado no
-[PR #133](https://github.com/unb-mds/2026-2-AvaliaAiUnB/pull/133).
+[PR #133](https://github.com/unb-mds/2026-2-AvaliaUnbUnB/pull/133).
 
 As telas são renderizadas no servidor. Algumas rotas também retornam JSON
 conforme o cabeçalho `Accept`; o cadastro e o login reconhecem ainda o campo
@@ -90,7 +90,7 @@ necessário e guarda o usuário em `flask.g` durante a requisição. O hook
 `after_request` envia os cookies renovados. O logout solicita a revogação ao
 Supabase e remove os cookies. A falha de revogação com token de acesso expirado
 foi registrada na auditoria e é tratada na
-[issue #126](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/126).
+[issue #126](https://github.com/unb-mds/2026-2-AvaliaUnbUnB/issues/126).
 
 `login_required` redireciona navegadores sem sessão para `/login`; clientes que
 aceitam apenas JSON recebem HTTP 401. Tentativas de carregar, editar ou excluir
@@ -143,10 +143,10 @@ Os desempates usam quantidade de avaliações, nome normalizado e identificador.
 O esquema versionado está em `docs/migrations/001_initial_schema.sql`.
 O
 [modelo de dados e a proposta de comentários](Modelo%20de%20Dados.md)
-foram publicados na [issue #109](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/109).
+foram publicados na [issue #109](https://github.com/unb-mds/2026-2-AvaliaUnbUnB/issues/109).
 Este guia descreve as operações do backend; as regras futuras de comentários
 serão consolidadas e revisadas na
-[issue #116](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/116).
+[issue #116](https://github.com/unb-mds/2026-2-AvaliaUnbUnB/issues/116).
 
 ## Scraper
 
