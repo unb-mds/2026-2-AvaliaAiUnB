@@ -1,6 +1,6 @@
 # Design system
 
-Proposta da #112 para a aplicação AvaliaAi UnB. A paleta parte das telas atuais,
+Proposta da #112 para a aplicação AvaliaUnb. A paleta parte das telas atuais,
 com Arial, fundo branco, texto escuro e links azuis. O padrão orienta os
 protótipos de comentários e os ajustes da #114. O [inventário do frontend](FRONTEND.md)
 registra os estilos que já existem no código.

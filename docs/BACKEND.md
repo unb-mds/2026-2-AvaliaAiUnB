@@ -1,6 +1,6 @@
 # Backend
 
-O AvaliaAi UnB usa Python e Flask para renderizar páginas Jinja2 e processar
+O AvaliaUnb usa Python e Flask para renderizar páginas Jinja2 e processar
 cadastros, sessões, consultas e avaliações. A persistência usa PostgreSQL no
 Supabase; contas e senhas são gerenciadas pelo Supabase Auth.
 
