@@ -10,22 +10,29 @@ pessoa pode voltar ao perfil e encerrar ou escolher a outra.
 
 ## Listar
 
-![Perfil com nome de usuário nos comentários, e-mail expandido em um deles e contagens de reações](mockups/comentarios/listar.svg)
+![Perfil com seletor de ordenação, datas, curtidas e descurtidas e um e-mail expandido](mockups/comentarios/listar.svg)
 
-Visitantes leem os comentários com o nome de usuário do autor, disciplina
-e contagens. Clicar, tocar ou ativar o nome pelo teclado abre o e-mail
-verificado que o autor autorizou divulgar. Ativar o botão outra vez fecha
-o contato. A área convida a entrar ou criar conta com qualquer e-mail
+Visitantes leem os comentários com o nome de usuário do autor, disciplina,
+data da primeira publicação e as duas contagens de reações. Clicar, tocar
+ou ativar o nome pelo teclado abre o e-mail verificado que o autor autorizou
+divulgar. Ativar o botão outra vez fecha o contato. A área convida a entrar
+ou criar conta com qualquer e-mail
 verificado para escrever ou reagir.
 A pessoa logada pode usar **Escrever comentário** mesmo que já tenha
 comentado naquele perfil. Cada relato da própria conta tem as ações
 **Editar** e **Apagar**. Na lista vazia, a seção convida a escrever o primeiro
 relato.
 
-Os polegares mostram as contagens de **Curtir** e **Descurtir** nos comentários
-de outras pessoas. A reação selecionada tem cor e marca de confirmação. É
-possível trocar a reação ou desfazê-la com outro toque. Se a sessão não estiver
-ativa, tocar no botão leva ao login sem gravar voto.
+O seletor **Ordenar por** abre em **Mais recentes**. Também oferece
+**Mais curtidos**, **Mais antigos** e **Mais reações**, que soma curtidas
+e descurtidas.
+
+Os polegares permitem **Curtir** e **Descurtir** comentários de outras
+pessoas. As duas contagens ficam visíveis, inclusive nos comentários
+da própria conta e quando uma delas é zero. A reação selecionada tem
+cor e marca de confirmação. É possível trocar a reação ou desfazê-la com
+outro toque. Se a sessão não estiver ativa, tocar no botão leva ao login sem
+gravar voto.
 
 ## Escrever
 

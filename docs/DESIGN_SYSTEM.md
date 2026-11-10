@@ -68,7 +68,7 @@ das tabelas com rolagem horizontal quando necessário.
 | Campo, seletor e área de texto | Rótulo visível, borda, ajuda e erro junto ao campo | Vazio, preenchido, foco, erro e desabilitado |
 | Card de professor | Nome, departamento, disciplinas e ações | Padrão e resultado de filtro |
 | Card de comentário | Texto, nome de usuário, data, disciplina e ações permitidas. O nome é um botão que abre ou fecha o e-mail do autor | Publicado, contato aberto, em edição e ocultado para o autor |
-| Reação a comentário | Botões de polegar com contagem, rótulo acessível Curtir ou Descurtir e seleção anunciada com `aria-pressed` | Neutro, selecionado com ícone e cor, foco e envio |
+| Reação a comentário | Botões de polegar com rótulo Curtir ou Descurtir e contagens separadas, inclusive zero. A seleção é anunciada com `aria-pressed` | Neutro, selecionado com ícone e cor, foco e envio |
 | Mensagem | Explica o estado e a próxima ação | Informação, sucesso, erro, vazio e carregamento |
 | Diálogo de exclusão | Identifica o item e sua consequência. Cancelar recebe o foco inicial | Aberto, confirmando e falha |
 | Tabela de indicadores | Legenda, cabeçalhos associados e valores legíveis | Com dados, sem dados e erro |

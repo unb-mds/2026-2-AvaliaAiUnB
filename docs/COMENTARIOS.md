@@ -39,8 +39,8 @@ Uma conta de comentários não concede acesso à moderação.
 | Tamanho | De 2 a 1.000 caracteres após remover espaços, tabulações e quebras de linha das extremidades |
 | Formato | Texto simples; HTML e Markdown não são interpretados |
 | Identificação pública | Todo comentário publicado mostra o nome de usuário. Ao clicar nele, qualquer visitante pode consultar o e-mail verificado que o autor confirmou para divulgação |
-| Ordem da lista | Mais recentes primeiro pela data de criação, com identificador como desempate |
-| Datas | Exibir criação e indicar quando houve edição |
+| Ordem da lista | Mais recentes por padrão. A pessoa pode escolher Mais curtidos, Mais antigos ou Mais reações |
+| Datas | Exibir a data da primeira publicação em cada comentário e indicar quando houve edição |
 
 O backend deve validar as regras antes da gravação e escapar o texto na saída.
 Um texto curto como «ok» passa pela validação de tamanho. O servidor recusa
@@ -56,13 +56,29 @@ disponíveis na sua sessão.
 
 ## Reações
 
-Cada comentário publicado exibe **👍 Curtir** e **👎 Descurtir**, com contagens
-separadas. A leitura das contagens é pública. Para reagir a um comentário de
-outra pessoa, é preciso entrar na conta. Cada conta tem uma reação por
-comentário e pode trocar de opção ou tocar novamente para removê-la. O servidor
+Cada comentário publicado mostra as contagens separadas de **👍 Curtir** e
+**👎 Descurtir**, inclusive quando uma delas é zero. A leitura das contagens é
+pública. Para reagir a um comentário de outra pessoa, é preciso entrar na
+conta. Cada conta tem uma reação por comentário e pode trocar de opção ou
+tocar novamente para removê-la. O servidor
 confere a sessão, impede votos no próprio texto e grava a reação com unicidade
 por conta e comentário. A lista mostra as contagens, sem revelar quem reagiu.
-Reações não alteram a ordem cronológica da lista, as notas ou o ranking.
+Reações podem mudar a posição de um comentário nas ordenações por curtidas
+ou reações. As notas e o ranking são independentes.
+
+## Ordenação dos comentários
+
+| Opção | Como a lista é ordenada |
+|---|---|
+| Mais recentes | Primeira publicação mais recente primeiro. É a ordem padrão |
+| Mais curtidos | Maior quantidade de curtidas primeiro |
+| Mais antigos | Primeira publicação mais antiga primeiro |
+| Mais reações | Maior soma de curtidas e descurtidas primeiro |
+
+Em empate por curtidas ou reações, o comentário mais recente vem primeiro.
+Se dois comentários tiverem a mesma data e hora de publicação, o
+identificador desempata na mesma direção da ordenação por data. Editar um comentário
+preserva sua data original.
 
 ## Estrelas e comentários
 
@@ -73,9 +89,10 @@ e comentar depois. Cada ação tem seu próprio formulário e envio.
 
 - Criar, editar ou excluir comentário não altera notas, médias ou ranking.
 - Editar ou excluir uma avaliação não remove o comentário.
-- A avaliação por estrelas continua limitada a um registro por usuário,
-  professor e disciplina. A pessoa pode publicar vários comentários para
-  essa mesma combinação.
+- Cada estudante pode registrar uma avaliação por estrelas para cada par
+  de professor e disciplina. Pode avaliar o mesmo professor em Cálculo 1
+  e Cálculo 2. Para mudar a nota de Cálculo 1, edita a avaliação existente.
+  A pessoa pode publicar vários comentários para a mesma disciplina.
 
 ## Fluxos para as telas da #112
 
@@ -199,13 +216,14 @@ rotina de descarte fica para a implementação após revisão do grupo.
 | C01 | Leitura pública e participação com conta comum e e-mail verificado de qualquer domínio. Sem espaço ou perfil exclusivo para professores | Aguardando revisão |
 | C02 | Disciplina obrigatória. A pessoa pode comentar quantas vezes quiser para o mesmo professor e disciplina | Aguardando revisão |
 | C03 | Texto simples de 2 a 1.000 caracteres após remover espaços em branco das extremidades | Aguardando revisão |
-| C04 | Estrelas e comentários são opcionais e independentes. A pessoa pode usar só uma opção ou ambas em qualquer ordem | Aguardando revisão |
+| C04 | Estrelas e comentários são independentes e podem ser enviados em qualquer ordem. Uma avaliação por estrelas por estudante, professor e disciplina | Aguardando revisão |
 | C05 | Nome de usuário em todos os comentários. E-mail verificado disponível ao clicar no nome, após confirmação do autor | Aguardando revisão do grupo antes da publicação no site |
 | C06 | Denúncia privada e moderação por responsáveis autorizados | Aguardando revisão e projeto de dados |
 | C07 | Ocultação motivada, sem republicação automática por edição | Aguardando revisão |
 | C08 | Dois moderadores designados, primeira análise em até três dias úteis, formulário privado de contestação e retenção de até 90 dias após o encerramento | Aguardando revisão |
-| C09 | Curtir ou descurtir comentários de outras pessoas. Uma reação por conta e comentário, com opção de trocar ou remover | Aguardando revisão |
+| C09 | Contagens públicas separadas de curtidas e descurtidas. Uma reação por conta e comentário, com opção de trocar ou remover | Aguardando revisão |
 | C10 | Filtrar no servidor antes de publicar ou editar. Bloquear violações claras e encaminhar casos incertos à moderação | Aguardando revisão |
+| C11 | Data em cada comentário. Ordenação por Mais recentes, Mais curtidos, Mais antigos ou Mais reações | Aguardando revisão |
 
 As decisões podem ser revisadas no PR ou na
 [issue #116](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/116).
@@ -233,12 +251,20 @@ acompanham estas regras.
   para aquele comentário se ele for ocultado ou excluído.
 - Uma conta troca ou desfaz sua reação. Pedidos simultâneos respeitam a
   unicidade, e autores não reagem ao próprio comentário.
+- A lista exibe a data de publicação e as duas contagens em cada comentário.
+  Com 8 curtidas e 1 descurtida, o comentário aparece com 8 e 1 separados.
+  Na opção Mais reações, as duas contagens somam 9 para a ordenação.
+- Mais recentes abre por padrão. Mais curtidos ordena apenas pelas
+  curtidas, e Mais antigos inverte a ordem por data. A edição preserva
+  a posição nas duas ordens por data.
 - O filtro barra uma ofensa inequívoca e a exposição de um telefone, deixa
   passar uma crítica respeitosa e encaminha um caso ambíguo sem publicar.
 - O filtro também cobre edições. Falhas deixam o texto disponível para tentar
   de novo, e edições bloqueadas preservam a última versão aprovada.
 - Uma conta autorizada a usar as duas ações consegue enviar só estrelas,
   publicar só um comentário ou fazer os dois em qualquer ordem.
+- A mesma conta pode avaliar com estrelas Cálculo 1 e Cálculo 2 com o mesmo
+  professor. Uma segunda avaliação por estrelas em Cálculo 1 é recusada.
 - As notas e os resultados de ranking e comparação não mudam por um comentário.
 - A identidade do denunciante e os dados privados não aparecem na listagem pública.
 - As telas cobrem vazio, envio, erro, edição, confirmação de exclusão e ocultação.

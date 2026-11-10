@@ -315,7 +315,7 @@ REVOKE ALL ON vw_professor_disciplina FROM anon, authenticated;
 | Tamanho do texto | De 2 a 1.000 caracteres após retirar espaços em branco das extremidades | Aceita textos curtos e rejeita campos vazios ou com apenas um caractere. |
 | Edição | `atualizado_em` mantido por trigger | Mostra se o comentário foi editado. |
 | Visibilidade | `ocultado_em` nulo para comentários publicados e visíveis | A listagem exclui comentários ocultados pela moderação. |
-| Reações | Uma linha por conta e comentário, com valor `1` ou `-1` | Permite trocar e desfazer o voto. Só as contagens aparecem em público. |
+| Reações | Uma linha por conta e comentário, com valor `1` ou `-1` | A listagem conta curtidas e descurtidas separadamente. Quando não houver reações, mostra zero. |
 
 ### 6.2 SQL proposto
 
@@ -378,8 +378,13 @@ REVOKE ALL ON comentarios_reacoes FROM PUBLIC, anon, authenticated;
 2. **Registros independentes.** Comentários e avaliações por estrelas são
    gravados em tabelas separadas. Cada operação verifica suas próprias
    permissões e campos, independentemente de haver registro na outra tabela.
+   A tabela `avaliacoes` admite um registro por conta, professor e
+   disciplina, conforme a seção 2.5.
 3. **Leitura pública com autoria.** O backend lista comentários visíveis com
    ID do comentário, texto, disciplina, datas, contagens e `perfis.username`.
+   A ordenação usa a data da primeira publicação (`criado_em`), a contagem
+   de curtidas ou a soma de curtidas e descurtidas, conforme a
+   [especificação](COMENTARIOS.md).
    Uma consulta separada, por ID do comentário visível, retorna apenas o
    e-mail de conta verificado cuja divulgação o autor confirmou. O backend
    valida a autorização para o endereço atual e mantém o e-mail fora da
