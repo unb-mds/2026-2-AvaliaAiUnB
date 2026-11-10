@@ -18,7 +18,11 @@ Aqui estão as versões mais recentes e atualizadas da arquitetura do projeto Av
 
     ### Tech Stack
 
-    ![Tech Stack](teck%20stack.png)
+    ![Tech Stack do AvaliaUnB](tech-stack.svg)
+
+    O Flask renderiza as páginas Jinja2. O Supabase hospeda o PostgreSQL e
+    gerencia contas e sessões com o Supabase Auth. O scraper coleta o catálogo
+    do SIGAA em um processo separado.
 
 ## Aprofundamento
 
