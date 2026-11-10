@@ -6,7 +6,7 @@ hide:
 
 <div class="hero" markdown>
 
-# AvaliaAi UnB
+# AvaliaUnb
 
 Plataforma de consulta, comparação e avaliação de professores e disciplinas da Universidade de Brasília.
 
@@ -14,7 +14,7 @@ Plataforma de consulta, comparação e avaliação de professores e disciplinas 
 
 [Acessar o site :material-open-in-new:](https://avaliaunb.com.br/){ .md-button .md-button--primary }
 
-[Código no GitHub :fontawesome-brands-github:](https://github.com/unb-mds/2026-2-AvaliaAiUnB){ .md-button .md-button--primary }
+[Código no GitHub :fontawesome-brands-github:](https://github.com/unb-mds/2026-2-AvaliaUnbUnB){ .md-button .md-button--primary }
 
 [Documento de visão :material-file-document-outline:](DOCUMENTO_DE_VISAO.md){ .md-button .md-button--primary }
 
@@ -22,7 +22,7 @@ Plataforma de consulta, comparação e avaliação de professores e disciplinas 
 
 </div>
 
-## O que o AvaliaAi faz
+## O que o AvaliaUnb faz
 
 <div class="grid cards" markdown>
 
@@ -69,7 +69,7 @@ Plataforma de consulta, comparação e avaliação de professores e disciplinas 
 !!! info "O problema"
     **Insegurança e falta de transparência na escolha de docentes e disciplinas na matrícula da UnB.**
 
-Na matrícula, o estudante decide em pouco tempo, e as informações estão espalhadas em grupos de WhatsApp e Telegram ou nem existem de forma organizada. O SIGAA mostra horários e vagas, mas não o jeito de ensinar de cada professor. O AvaliaAi reúne isso em avaliações objetivas e fáceis de consultar.
+Na matrícula, o estudante decide em pouco tempo, e as informações estão espalhadas em grupos de WhatsApp e Telegram ou nem existem de forma organizada. O SIGAA mostra horários e vagas, mas não o jeito de ensinar de cada professor. O AvaliaUnb reúne isso em avaliações objetivas e fáceis de consultar.
 
 ## Como é feito
 
@@ -153,7 +153,7 @@ Na matrícula, o estudante decide em pouco tempo, e as informações estão espa
 
     O que foi verificado e o que foi encontrado.
 
-- :simple-figma: **[Protótipo no Figma](https://www.figma.com/board/PgqkPopVXOiSqm9gD5RRNv/AvaliaAi---Template-MDS?node-id=0-1&p=f&t=Rxu6jVCgeVZHCyg2-0)**
+- :simple-figma: **[Protótipo no Figma](https://www.figma.com/board/PgqkPopVXOiSqm9gD5RRNv/AvaliaUnb---Template-MDS?node-id=0-1&p=f&t=Rxu6jVCgeVZHCyg2-0)**
 
     ---
 
