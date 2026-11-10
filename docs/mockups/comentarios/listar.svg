@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 844" width="400" height="844" role="img" aria-labelledby="title description" font-family="Arial, sans-serif">
   <title id="title">Comentários no perfil do professor</title>
-  <desc id="description">Lista ordenada pelos mais recentes, com datas de publicação e contagens das reações recebidas. O e-mail de exemplo de @colega está expandido.</desc>
+  <desc id="description">Lista com datas e ícones de reação sempre visíveis. @estudante tem três curtidas. @colega tem oito curtidas, uma descurtida e e-mail expandido.</desc>
   <defs>
     <g id="polegar" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round">
       <path d="M6 8h3l3-5c.6-1 2-.5 2 .7V8h3a2 2 0 0 1 2 2.4l-1.1 5.9a2 2 0 0 1-2 1.7H6z"/>
@@ -35,7 +35,9 @@
     <path d="M32 380h336" stroke="#D4D9DF"/>
     <text x="32" y="407" font-size="15" font-weight="700" fill="#174B83">Editar</text>
     <text x="104" y="407" font-size="15" font-weight="700" fill="#A01818">Apagar</text>
-    <text x="368" y="407" font-size="14" fill="#4F5357" text-anchor="end">3 curtidas</text>
+    <use href="#polegar" x="253" y="391" color="#4F5357"/>
+    <text x="280" y="407" font-size="14" fill="#4F5357">3</text>
+    <use href="#polegar" transform="translate(333 411) rotate(180)" color="#4F5357"/>
     <rect x="16" y="444" width="368" height="238" rx="12" fill="#FFFFFF"/>
     <text x="32" y="472" font-size="15" font-weight="700" fill="#174B83" text-decoration="underline">@colega</text>
     <path d="m101 470 4-4 4 4" fill="none" stroke="#174B83" stroke-width="2"/>
@@ -46,13 +48,13 @@
       <text x="32" y="496" font-size="14" fill="#4F5357">Cálculo 2</text>
       <text x="32" y="525" font-size="15" fill="#202124">Os exercícios foram bem organizados.</text>
       <path d="M32 540h336" stroke="#D4D9DF"/>
-      <rect x="32" y="562" width="108" height="44" rx="8" fill="#174B83"/>
+      <rect x="32" y="562" width="72" height="44" rx="8" fill="#174B83"/>
       <use href="#polegar" x="42" y="573" color="#FFFFFF"/>
-      <text x="67" y="590" font-size="14" font-weight="700" fill="#FFFFFF">Curtir 8</text>
-      <path d="m119 584 4 4 7-8" fill="none" stroke="#FFFFFF" stroke-width="2"/>
-      <rect x="150" y="562" width="128" height="44" rx="8" fill="#FFFFFF" stroke="#174B83"/>
-      <use href="#polegar" transform="translate(181 594) rotate(180)" color="#174B83"/>
-      <text x="187" y="590" font-size="14" font-weight="700" fill="#174B83">Descurtir 1</text>
+      <text x="67" y="590" font-size="14" font-weight="700" fill="#FFFFFF">8</text>
+      <path d="m81 584 4 4 7-8" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+      <rect x="116" y="562" width="60" height="44" rx="8" fill="#FFFFFF" stroke="#174B83"/>
+      <use href="#polegar" transform="translate(147 594) rotate(180)" color="#174B83"/>
+      <text x="153" y="590" font-size="14" font-weight="700" fill="#174B83">1</text>
       <text x="368" y="590" font-size="15" font-weight="700" fill="#174B83" text-anchor="end">Denunciar</text>
     </g>
   </g>

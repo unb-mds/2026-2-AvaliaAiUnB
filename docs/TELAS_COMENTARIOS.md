@@ -27,13 +27,13 @@ O seletor **Ordenar por** abre em **Mais recentes**. Também oferece
 **Mais curtidos**, **Mais antigos** e **Mais reações**, que soma curtidas
 e descurtidas.
 
-Os polegares permitem **Curtir** e **Descurtir** comentários de outras
-pessoas. Cada total aparece quando é maior que zero, inclusive nos
-comentários da própria conta. Sem reações, os botões de quem pode votar
-aparecem sem números. A reação selecionada tem
-cor e marca de confirmação. É possível trocar a reação ou desfazê-la com
-outro toque. Se a sessão não estiver ativa, tocar no botão leva ao login sem
-gravar voto.
+Os ícones **👍** e **👎** aparecem direto em todos os comentários, mesmo
+com o e-mail recolhido e sem login. Cada ícone mostra um número apenas
+quando recebeu reações. No próprio comentário, os ícones só informam as
+contagens. Nos comentários de outras pessoas, são botões com nomes
+acessíveis para leitores de tela. A reação selecionada tem cor e marca de
+confirmação. É possível trocar ou desfazer a reação com outro toque. Se a
+sessão não estiver ativa, tocar no botão leva ao login sem gravar voto.
 
 ## Escrever
 
