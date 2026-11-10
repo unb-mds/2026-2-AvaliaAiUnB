@@ -17,9 +17,8 @@ e contagens. Clicar, tocar ou ativar o nome pelo teclado abre o e-mail
 verificado que o autor autorizou divulgar. Ativar o botão outra vez fecha
 o contato. A área convida a entrar ou criar conta com qualquer e-mail
 verificado para escrever ou reagir.
-A pessoa logada vê **Escrever comentário** se ainda puder publicar naquele
-perfil. O exemplo mostra uma conta que já comentou em Cálculo 1 e pode
-escrever sobre outra disciplina. Cada relato da própria conta tem as ações
+A pessoa logada pode usar **Escrever comentário** mesmo que já tenha
+comentado naquele perfil. Cada relato da própria conta tem as ações
 **Editar** e **Apagar**. Na lista vazia, a seção convida a escrever o primeiro
 relato.
 
@@ -30,11 +29,11 @@ ativa, tocar no botão leva ao login sem gravar voto.
 
 ## Escrever
 
-![Formulário com Cálculo 2 selecionado para um novo relato, contador e aviso de verificação automática](mockups/comentarios/escrever.svg)
+![Formulário com Cálculo 1 selecionado para outro relato sobre a mesma disciplina](mockups/comentarios/escrever.svg)
 
 Para publicar, a pessoa precisa escolher uma disciplina ministrada pelo
-professor. Se já tiver um comentário naquela disciplina, a tela oferece a
-opção de editá-lo.
+professor. O exemplo mostra um novo comentário em Cálculo 1, disciplina
+em que a pessoa já comentou.
 
 O formulário avisa que o nome de usuário fica público e que qualquer pessoa
 poderá clicar nele para consultar o e-mail. O autor confirma a divulgação
@@ -50,8 +49,8 @@ privado até a decisão.
 ![Formulário de edição com texto preservado e alerta do filtro sobre um e-mail no texto](mockups/comentarios/editar.svg)
 
 O autor edita o texto e pode trocar a disciplina para outra ministrada pelo
-professor em que ainda não comentou. O exemplo mostra uma edição bloqueada
-pelo filtro. A última versão aprovada continua visível até uma nova versão
+professor. O exemplo mostra uma edição bloqueada pelo filtro. A última
+versão aprovada continua visível até uma nova versão
 passar pela verificação. Após uma edição aprovada, a lista indica que o
 comentário foi editado.
 

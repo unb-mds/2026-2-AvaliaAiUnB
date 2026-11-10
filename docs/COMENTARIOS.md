@@ -35,7 +35,7 @@ Uma conta de comentários não concede acesso à moderação.
 |---|---|
 | Professor | Obrigatório e existente no catálogo |
 | Disciplina | Obrigatória. Deve ter sido ministrada pelo professor |
-| Quantidade | Um comentário por conta, professor e disciplina |
+| Quantidade | Sem limite por conta, inclusive para o mesmo professor e disciplina |
 | Tamanho | De 2 a 1.000 caracteres após remover espaços, tabulações e quebras de linha das extremidades |
 | Formato | Texto simples; HTML e Markdown não são interpretados |
 | Identificação pública | Todo comentário publicado mostra o nome de usuário. Ao clicar nele, qualquer visitante pode consultar o e-mail verificado que o autor confirmou para divulgação |
@@ -49,8 +49,7 @@ em branco das extremidades.
 
 A autoria sempre vem da sessão autenticada. O servidor deve ignorar um
 `usuario_id` enviado pelo formulário. O servidor valida o vínculo entre a
-disciplina e o professor. Se a conta já tiver comentado nessa combinação,
-o servidor orienta a editar o relato existente.
+disciplina e o professor.
 Na listagem pública, a API retorna só os campos de exibição e o ID do comentário.
 O servidor usa o vínculo privado para indicar ao autor quais ações estão
 disponíveis na sua sessão.
@@ -74,8 +73,9 @@ e comentar depois. Cada ação tem seu próprio formulário e envio.
 
 - Criar, editar ou excluir comentário não altera notas, médias ou ranking.
 - Editar ou excluir uma avaliação não remove o comentário.
-- Avaliação e comentário têm limites independentes de um registro por
-  usuário, professor e disciplina.
+- A avaliação por estrelas continua limitada a um registro por usuário,
+  professor e disciplina. A pessoa pode publicar vários comentários para
+  essa mesma combinação.
 
 ## Fluxos para as telas da #112
 
@@ -84,35 +84,34 @@ e comentar depois. Cada ação tem seu próprio formulário e envio.
 O perfil do professor apresenta os comentários publicados em uma seção
 separada das notas. A lista vazia convida a escrever o primeiro comentário.
 Visitantes veem a opção de entrar ou criar conta para escrever ou reagir.
-Cada relato exibe sua disciplina. Quem já comentou pode editar o próprio
-texto e escrever sobre outra disciplina do mesmo professor.
+Cada relato exibe sua disciplina. Quem já comentou pode editar os próprios
+textos e escrever outro relato para a mesma disciplina ou para outra
+ministrada pelo professor.
 
 O formulário informa que o texto e o nome de usuário serão públicos. Antes
 de publicar, a pessoa confirma que seu e-mail verificado ficará disponível
 para quem clicar no nome de usuário.
 Mostra o limite, exige a escolha de uma disciplina ministrada pelo professor
 e preserva o texto em erros de validação ou moderação. Durante a
-verificação, a interface evita envios repetidos e só confirma publicação
-quando o texto fica público.
+verificação, a interface desabilita o botão de envio e só confirma a
+publicação quando o texto fica público.
 
 ### Editar e excluir
 
 A edição é exclusiva do autor, preserva a data original e atualiza `atualizado_em`.
 O identificador do professor e a autoria não podem ser alterados pela edição.
-A disciplina pode ser trocada por outra ministrada pelo mesmo professor
-em que a conta ainda não comentou.
+A disciplina pode ser trocada por outra ministrada pelo mesmo professor.
 
 A exclusão deve pedir confirmação, identificando o professor, a disciplina
-e a consequência. Depois de excluir, o texto e as reações saem da lista
-e a conta pode voltar a comentar naquela disciplina.
+e a consequência. Depois de excluir, o texto e as reações daquele
+comentário saem da lista.
 
 ### Conteúdo ocultado
 
 Um comentário ocultado pela moderação deixa de aparecer na listagem pública.
-O autor recebe o estado e a justificativa; editar o texto não o republica
-automaticamente. Um comentário ocultado continua contando no limite da
-disciplina, para evitar que a pessoa o substitua por um novo registro e
-contorne a análise.
+O autor recebe o estado e a justificativa. A edição continua privada até a
+decisão da moderação. Qualquer novo relato passa pelo filtro antes da
+publicação.
 O autor pode pedir revisão pelo formulário privado descrito abaixo.
 
 ## Filtro automático antes da publicação
@@ -187,7 +186,7 @@ indiscriminadamente o texto ou dados pessoais.
 
 As cascatas propostas na #109 apagam comentários quando o perfil do autor ou o
 professor é excluído. Uma disciplina com comentários vinculados deve ser
-mantida para preservar os relatos históricos e suas regras de quantidade.
+mantida para preservar o vínculo dos relatos históricos.
 A proposta é guardar o registro mínimo da denúncia e
 da decisão por até 90 dias após encerrar o caso e então apagar esse registro.
 O texto excluído sai da listagem imediatamente. A definição da estrutura e da
@@ -198,7 +197,7 @@ rotina de descarte fica para a implementação após revisão do grupo.
 | ID | Decisão proposta | Situação |
 |---|---|---|
 | C01 | Leitura pública e participação com conta comum e e-mail verificado de qualquer domínio. Sem espaço ou perfil exclusivo para professores | Aguardando revisão |
-| C02 | Disciplina obrigatória. Uma pessoa pode escrever um comentário por disciplina ministrada pelo professor | Aguardando revisão |
+| C02 | Disciplina obrigatória. A pessoa pode comentar quantas vezes quiser para o mesmo professor e disciplina | Aguardando revisão |
 | C03 | Texto simples de 2 a 1.000 caracteres após remover espaços em branco das extremidades | Aguardando revisão |
 | C04 | Estrelas e comentários são opcionais e independentes. A pessoa pode usar só uma opção ou ambas em qualquer ordem | Aguardando revisão |
 | C05 | Nome de usuário em todos os comentários. E-mail verificado disponível ao clicar no nome, após confirmação do autor | Aguardando revisão do grupo antes da publicação no site |
@@ -222,10 +221,11 @@ acompanham estas regras.
 - «ok» passa pela validação de tamanho. Campo vazio, texto com menos de
   dois caracteres após retirar os espaços em branco das extremidades e
   texto acima de 1.000 caracteres recebem erro claro.
-- Duplicidade e disciplina ausente ou inválida recebem erro claro e
-  preservam o texto preenchido.
-- A mesma conta pode comentar Cálculo 1 e Cálculo 2 com o mesmo professor.
-  Um segundo relato em Cálculo 1 é rejeitado, inclusive em envios simultâneos.
+- Disciplina ausente ou inválida recebe erro claro e preserva o texto
+  preenchido.
+- A mesma conta pode publicar dois relatos distintos em Cálculo 1 com o
+  mesmo professor. Cada relato tem seu próprio texto, reações e ações de
+  editar ou apagar.
 - Só o autor edita ou exclui. O servidor nega tentativas de se passar por outro
   usuário e mantém os identificadores de conta fora das respostas públicas.
 - Clicar no nome de um comentário visível abre o e-mail verificado autorizado.

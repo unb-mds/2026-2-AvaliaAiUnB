@@ -307,10 +307,10 @@ REVOKE ALL ON vw_professor_disciplina FROM anon, authenticated;
 
 | Tema | Proposta | Motivo |
 |---|---|---|
-| Ligação privada com usuário | `usuario_id` → `perfis(id)` | Garante autoria, unicidade e permissões. A listagem exibe o nome de usuário sem expor o identificador da conta. |
+| Ligação privada com usuário | `usuario_id` → `perfis(id)` | Garante autoria e permissões. A listagem exibe o nome de usuário sem expor o identificador da conta. |
 | Ligação com professor | `professor_id` → `professores(id)`, `NOT NULL` | O comentário é sempre sobre um professor. |
 | Ligação com disciplina | `disciplina_id` → `disciplinas(id)`, `NOT NULL` | Todo relato se refere a uma disciplina ministrada pelo professor. |
-| Quantidade por usuário | **Um por professor e disciplina** | Permite relatos sobre disciplinas diferentes e evita duplicidade. |
+| Quantidade por usuário | Vários relatos para o mesmo professor e disciplina | Cada comentário é identificado pelo seu próprio ID. |
 | Exclusão | `ON DELETE CASCADE` em usuário e professor. `RESTRICT` em disciplina | Preserva o vínculo obrigatório dos relatos existentes. |
 | Tamanho do texto | De 2 a 1.000 caracteres após retirar espaços em branco das extremidades | Aceita textos curtos e rejeita campos vazios ou com apenas um caractere. |
 | Edição | `atualizado_em` mantido por trigger | Mostra se o comentário foi editado. |
@@ -335,9 +335,7 @@ CREATE TABLE IF NOT EXISTS comentarios (
         CHECK (
             char_length(regexp_replace(texto, '^[[:space:]]+|[[:space:]]+$', '', 'g'))
             BETWEEN 2 AND 1000
-        ),
-    CONSTRAINT uq_comentarios_usuario_prof_disc
-        UNIQUE (usuario_id, professor_id, disciplina_id)
+        )
 );
 
 -- Listagem dos comentários de um professor, do mais recente ao mais antigo
@@ -374,10 +372,9 @@ REVOKE ALL ON comentarios_reacoes FROM PUBLIC, anon, authenticated;
 
 ### 6.3 Pontos para o grupo decidir
 
-1. **Um por professor e disciplina.** O banco exige a disciplina e garante a
-   unicidade inclusive para comentários ocultados. O backend valida se a
-   disciplina foi ministrada pelo professor ao criar, trocar a disciplina ou
-   aprovar textos em revisão.
+1. **Disciplina obrigatória.** O backend valida se a disciplina foi
+   ministrada pelo professor ao criar, trocar a disciplina ou aprovar textos
+   em revisão. Uma conta pode ter vários relatos na mesma disciplina.
 2. **Registros independentes.** Comentários e avaliações por estrelas são
    gravados em tabelas separadas. Cada operação verifica suas próprias
    permissões e campos, independentemente de haver registro na outra tabela.
@@ -397,7 +394,7 @@ REVOKE ALL ON comentarios_reacoes FROM PUBLIC, anon, authenticated;
 
 | Regra | Onde é garantida |
 |---|---|
-| Disciplina obrigatória e um relato por combinação | O banco usa `NOT NULL` e `UNIQUE (usuario_id, professor_id, disciplina_id)`. O backend valida o vínculo com o professor. |
+| Disciplina obrigatória | O banco exige `disciplina_id` e o backend valida o vínculo com o professor. |
 | Texto de 2 a 1.000 caracteres | O banco verifica o tamanho após retirar os espaços em branco das extremidades. O backend valida antes para devolver mensagem amigável. |
 | Só o autor edita ou apaga | O backend compara a sessão com o autor. A `service_role` ignora o RLS. |
 | Identidade do autor e de quem reage | O servidor usa a sessão verificada e não aceita `usuario_id` enviado pelo cliente. |

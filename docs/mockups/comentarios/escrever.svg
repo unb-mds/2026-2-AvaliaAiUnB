@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 680" width="400" height="680" role="img" aria-labelledby="title description" font-family="Arial, sans-serif">
   <title id="title">Escrever comentário</title>
-  <desc id="description">Formulário com Cálculo 2 selecionado, contador e confirmação de que o e-mail pode aparecer ao clicar no nome de usuário.</desc>
+  <desc id="description">Formulário para escrever outro comentário em Cálculo 1, com contador e confirmação de divulgação do e-mail.</desc>
   <rect x="0" y="0" width="400" height="680" rx="0" fill="#F2F4F7" stroke="none"/>
   <rect x="0" y="0" width="400" height="58" rx="0" fill="#174B83" stroke="none"/>
   <text x="16" y="37" font-size="20" font-weight="700" fill="#FFFFFF" text-anchor="start">AvaliaAi UnB</text>
@@ -9,9 +9,9 @@
   <rect x="16" y="152" width="368" height="504" rx="12" fill="#FFFFFF" stroke="none"/>
   <text x="32" y="185" font-size="16" font-weight="700" fill="#202124" text-anchor="start">Disciplina (obrigatória)</text>
   <rect x="32" y="197" width="336" height="44" rx="8" fill="#FFFFFF" stroke="#767676"/>
-  <text x="44" y="225" font-size="16" font-weight="400" fill="#202124" text-anchor="start">Cálculo 2</text>
+  <text x="44" y="225" font-size="16" font-weight="400" fill="#202124" text-anchor="start">Cálculo 1</text>
   <text x="350" y="225" font-size="16" font-weight="700" fill="#4F5357" text-anchor="middle">⌄</text>
-  <text x="32" y="265" font-size="14" fill="#4F5357">Você já comentou sobre Cálculo 1.</text>
+  <text x="32" y="265" font-size="14" fill="#4F5357">Você pode escrever outro relato nesta disciplina.</text>
   <g transform="translate(0 24)">
     <text x="32" y="270" font-size="16" font-weight="700" fill="#202124" text-anchor="start">Comentário</text>
     <rect x="32" y="282" width="336" height="92" rx="8" fill="#FFFFFF" stroke="#767676"/>
