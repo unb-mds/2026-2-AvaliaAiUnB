@@ -1,5 +1,7 @@
 # Telas de comentários
 
+**Protótipos, não telas implementadas na aplicação.**
+
 Protótipos da #112 para revisar a experiência em uma tela estreita. Os fluxos
 seguem a [especificação da #116](COMENTARIOS.md) e os componentes do
 [design system](DESIGN_SYSTEM.md). Os nomes e textos das telas são exemplos.
@@ -44,3 +46,7 @@ opcional. A confirmação de recebimento fica visível à pessoa que denunciou.
 A identidade de quem enviou a denúncia fica no fluxo privado de moderação.
 O autor vê a justificativa quando seu comentário é ocultado e pode pedir revisão
 no canal descrito na [especificação](COMENTARIOS.md).
+
+Para componentes já implementados, consulte o [frontend](FRONTEND.md).
+Para a distinção entre requisitos e implementação, veja o
+[mapa da documentação](GUIA_DOCUMENTACAO.md).

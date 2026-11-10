@@ -1,5 +1,7 @@
 # Auditoria de Segurança
 
+**Registro histórico, não checklist de correções implantadas.**
+
 Auditoria feita em 02/11/2026, na Sprint 7 (issue #111). O objetivo foi saber se existe algum problema grave de segurança no projeto e ter um plano de correção por prioridade.
 
 ## Resultado
@@ -55,3 +57,6 @@ Também não existe teste de `/avaliacoes/<id>/editar` e `/excluir` sem login. E
 ## Próximos passos
 
 As correções ficam nas issues #123 a #127, na Sprint 8.
+Consulte o [resumo de cibersegurança](CIBERSEGURANCA.md) para o acompanhamento
+das correções, o [modelo de dados](Modelo%20de%20Dados.md) para o SQL versionado
+e o [pipeline](pipeline.md) para os checks atuais.

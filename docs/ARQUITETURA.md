@@ -19,3 +19,10 @@ Aqui estão as versões mais recentes e atualizadas da arquitetura do projeto Av
     ### Tech Stack
 
     ![Tech Stack](teck%20stack.png)
+
+## Aprofundamento
+
+Os diagramas mostram as relações gerais. Consulte o [guia do backend](BACKEND.md)
+para rotas e repositórios, o [modelo de dados](Modelo%20de%20Dados.md)
+para tabelas e RLS, o [scraper](COMO_USAR_SCRAPER.md) para a coleta e
+[o mapa da documentação](GUIA_DOCUMENTACAO.md) para os demais temas.
