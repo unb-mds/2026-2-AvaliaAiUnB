@@ -71,9 +71,9 @@ O `<select>` continua no formulário, então a tela funciona sem JavaScript.
 
 ## Design system e visual final
 
-A [issue #112](https://github.com/unb-mds/2026-2-AvaliaUnbUnB/issues/112) reúne a
+A [issue #112](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/112) reúne a
 consolidação de cores, tipografia, espaçamentos, componentes e estados. A aplicação do visual nas telas principais está na
-[issue #114](https://github.com/unb-mds/2026-2-AvaliaUnbUnB/issues/114).
+[issue #114](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/114).
 
 O inventário acima registra a interface que existe hoje. O
 [design system](DESIGN_SYSTEM.md) reúne o padrão proposto para os componentes.
