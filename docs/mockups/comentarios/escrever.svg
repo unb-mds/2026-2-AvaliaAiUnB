@@ -3,7 +3,7 @@
   <desc id="description">Formulário para escrever outro comentário em Cálculo 1, com contador e confirmação de divulgação do e-mail.</desc>
   <rect x="0" y="0" width="400" height="680" rx="0" fill="#F2F4F7" stroke="none"/>
   <rect x="0" y="0" width="400" height="58" rx="0" fill="#174B83" stroke="none"/>
-  <text x="16" y="37" font-size="20" font-weight="700" fill="#FFFFFF" text-anchor="start">AvaliaAi UnB</text>
+  <text x="16" y="37" font-size="20" font-weight="700" fill="#FFFFFF" text-anchor="start">AvaliaUnB</text>
   <text x="16" y="100" font-size="27" font-weight="700" fill="#202124" text-anchor="start">Escrever comentário</text>
   <text x="16" y="127" font-size="16" font-weight="400" fill="#4F5357" text-anchor="start">Professor de exemplo</text>
   <rect x="16" y="152" width="368" height="504" rx="12" fill="#FFFFFF" stroke="none"/>

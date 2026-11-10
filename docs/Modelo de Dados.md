@@ -1,4 +1,4 @@
-# Modelo de dados do AvaliaAí UnB (Supabase / PostgreSQL)
+# Modelo de dados do AvaliaUnB (Supabase / PostgreSQL)
 
 > Issue #109. Depende da #90 (esquema versionado em `docs/migrations/`).
 > Este documento descreve o esquema **atual** e **propõe** a tabela de comentários. Nada aqui foi aplicado no banco.

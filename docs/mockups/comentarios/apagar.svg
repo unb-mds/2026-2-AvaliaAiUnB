@@ -3,7 +3,7 @@
   <desc id="description">Diálogo de confirmação identifica o professor, a disciplina e a consequência. O foco inicial está em Cancelar.</desc>
   <rect x="0" y="0" width="400" height="508" rx="0" fill="#F2F4F7" stroke="none"/>
   <rect x="0" y="0" width="400" height="58" rx="0" fill="#174B83" stroke="none"/>
-  <text x="16" y="37" font-size="20" font-weight="700" fill="#FFFFFF" text-anchor="start">AvaliaAi UnB</text>
+  <text x="16" y="37" font-size="20" font-weight="700" fill="#FFFFFF" text-anchor="start">AvaliaUnB</text>
   <text x="16" y="111" font-size="24" font-weight="700" fill="#202124" text-anchor="start">Comentários</text>
   <rect x="16" y="134" width="368" height="145" rx="12" fill="#FFFFFF" stroke="none"/>
   <text x="32" y="164" font-size="15" font-weight="700" fill="#202124" text-anchor="start">@estudante · Cálculo 1</text>
