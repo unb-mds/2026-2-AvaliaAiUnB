@@ -36,15 +36,16 @@ Uma conta de comentários não concede acesso à moderação.
 | Professor | Obrigatório e existente no catálogo |
 | Disciplina | Obrigatória. Deve ter sido ministrada pelo professor |
 | Quantidade | Um comentário por conta, professor e disciplina |
-| Tamanho | Até 1.000 caracteres após remover espaços nas extremidades. O texto precisa ter conteúdo |
+| Tamanho | De 2 a 1.000 caracteres após remover espaços, tabulações e quebras de linha das extremidades |
 | Formato | Texto simples; HTML e Markdown não são interpretados |
 | Identificação pública | Todo comentário publicado mostra o nome de usuário. Ao clicar nele, qualquer visitante pode consultar o e-mail verificado que o autor confirmou para divulgação |
 | Ordem da lista | Mais recentes primeiro pela data de criação, com identificador como desempate |
 | Datas | Exibir criação e indicar quando houve edição |
 
 O backend deve validar as regras antes da gravação e escapar o texto na saída.
-Um texto curto pode ser enviado. O servidor recusa o campo vazio ou preenchido
-apenas com espaços, tabulações ou quebras de linha.
+Um texto curto como «ok» passa pela validação de tamanho. O servidor recusa
+o texto que fica com menos de dois caracteres depois de remover os espaços
+em branco das extremidades.
 
 A autoria sempre vem da sessão autenticada. O servidor deve ignorar um
 `usuario_id` enviado pelo formulário. O servidor valida o vínculo entre a
@@ -198,7 +199,7 @@ rotina de descarte fica para a implementação após revisão do grupo.
 |---|---|---|
 | C01 | Leitura pública e participação com conta comum e e-mail verificado de qualquer domínio. Sem espaço ou perfil exclusivo para professores | Aguardando revisão |
 | C02 | Disciplina obrigatória. Uma pessoa pode escrever um comentário por disciplina ministrada pelo professor | Aguardando revisão |
-| C03 | Texto simples de até 1.000 caracteres, com conteúdo obrigatório e sem mínimo de caracteres | Aguardando revisão |
+| C03 | Texto simples de 2 a 1.000 caracteres após remover espaços em branco das extremidades | Aguardando revisão |
 | C04 | Estrelas e comentários são opcionais e independentes. A pessoa pode usar só uma opção ou ambas em qualquer ordem | Aguardando revisão |
 | C05 | Nome de usuário em todos os comentários. E-mail verificado disponível ao clicar no nome, após confirmação do autor | Aguardando revisão do grupo antes da publicação no site |
 | C06 | Denúncia privada e moderação por responsáveis autorizados | Aguardando revisão e projeto de dados |
@@ -218,9 +219,9 @@ acompanham estas regras.
   reações. Entrar com conta verificada é obrigatório para comentar, reagir
   ou denunciar. O fluxo aceita, por exemplo, um e-mail Outlook ou de domínio
   próprio.
-- Um texto curto como «Boa aula.» passa pela validação de tamanho. Campo
-  vazio, só com espaços ou quebras de linha, e texto acima de 1.000 caracteres
-  recebem erro claro.
+- «ok» passa pela validação de tamanho. Campo vazio, texto com menos de
+  dois caracteres após retirar os espaços em branco das extremidades e
+  texto acima de 1.000 caracteres recebem erro claro.
 - Duplicidade e disciplina ausente ou inválida recebem erro claro e
   preservam o texto preenchido.
 - A mesma conta pode comentar Cálculo 1 e Cálculo 2 com o mesmo professor.

@@ -38,8 +38,8 @@ opção de editá-lo.
 
 O formulário avisa que o nome de usuário fica público e que qualquer pessoa
 poderá clicar nele para consultar o e-mail. O autor confirma a divulgação
-antes de enviar o texto para verificação. O campo aceita textos curtos e
-mostra o limite de 1.000 caracteres. Durante o envio, o botão mostra
+antes de enviar o texto para verificação. O campo mostra o limite de 2 a
+1.000 caracteres. Durante o envio, o botão mostra
 **Verificando**. Se o filtro bloquear o texto, a mensagem junto ao campo
 explica o que precisa ser revisto e preserva o que foi digitado. Se a análise
 precisar de moderação, a confirmação informa **Em revisão** e o texto fica

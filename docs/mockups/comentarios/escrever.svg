@@ -16,7 +16,7 @@
     <text x="32" y="270" font-size="16" font-weight="700" fill="#202124" text-anchor="start">Comentário</text>
     <rect x="32" y="282" width="336" height="92" rx="8" fill="#FFFFFF" stroke="#767676"/>
     <text x="44" y="312" font-size="15" font-weight="400" fill="#4F5357" text-anchor="start">Escreva sobre sua experiência.</text>
-    <text x="32" y="399" font-size="14" font-weight="400" fill="#4F5357" text-anchor="start">Até 1.000 caracteres</text>
+    <text x="32" y="399" font-size="14" font-weight="400" fill="#4F5357" text-anchor="start">2 a 1.000 caracteres</text>
     <text x="368" y="399" font-size="14" font-weight="400" fill="#4F5357" text-anchor="end">0 / 1.000</text>
     <rect x="32" y="418" width="336" height="72" rx="8" fill="#F2F4F7"/>
     <text x="44" y="443" font-size="15" font-weight="700" fill="#202124">Dados visíveis no comentário</text>
