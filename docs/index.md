@@ -14,7 +14,7 @@ Plataforma de consulta, comparação e avaliação de professores e disciplinas 
 
 [Acessar o site :material-open-in-new:](https://avaliaunb.com.br/){ .md-button .md-button--primary }
 
-[Código no GitHub :fontawesome-brands-github:](https://github.com/unb-mds/2026-2-AvaliaUnbUnB){ .md-button .md-button--primary }
+[Código no GitHub :fontawesome-brands-github:](https://github.com/unb-mds/2026-2-AvaliaAiUnB){ .md-button .md-button--primary }
 
 [Documento de visão :material-file-document-outline:](DOCUMENTO_DE_VISAO.md){ .md-button .md-button--primary }
 
@@ -153,7 +153,7 @@ Na matrícula, o estudante decide em pouco tempo, e as informações estão espa
 
     O que foi verificado e o que foi encontrado.
 
-- :simple-figma: **[Protótipo no Figma](https://www.figma.com/board/PgqkPopVXOiSqm9gD5RRNv/AvaliaUnb---Template-MDS?node-id=0-1&p=f&t=Rxu6jVCgeVZHCyg2-0)**
+- :simple-figma: **[Protótipo no Figma](https://www.figma.com/board/PgqkPopVXOiSqm9gD5RRNv/AvaliaAi---Template-MDS?node-id=0-1&p=f&t=Rxu6jVCgeVZHCyg2-0)**
 
     ---
 
