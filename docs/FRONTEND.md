@@ -1,6 +1,6 @@
 # Frontend
 
-A interface do AvaliaAi é renderizada pelo Flask com templates Jinja2 em
+A interface do AvaliaUnb é renderizada pelo Flask com templates Jinja2 em
 `app/templates/` e folhas de estilo em `app/static/`. A navegação e o envio de
 dados usam links e formulários HTML; a aplicação não exige um build de frontend
 separado para executar essas telas.

@@ -1,6 +1,6 @@
 # Diagramas de Arquitetura
 
-Aqui estão as versões mais recentes e atualizadas da arquitetura do projeto AvaliaAi.
+Aqui estão as versões mais recentes e atualizadas da arquitetura do projeto AvaliaUnb.
 
 === "Contexto"
 

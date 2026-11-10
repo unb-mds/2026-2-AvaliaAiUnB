@@ -6,7 +6,7 @@ hide:
 
 <div class="hero" markdown>
 
-# AvaliaAi UnB
+# AvaliaUnb
 
 Plataforma de consulta, comparação e avaliação de professores e disciplinas da Universidade de Brasília.
 
@@ -22,7 +22,7 @@ Plataforma de consulta, comparação e avaliação de professores e disciplinas 
 
 </div>
 
-## O que o AvaliaAi faz
+## O que o AvaliaUnb faz
 
 <div class="grid cards" markdown>
 
@@ -69,7 +69,7 @@ Plataforma de consulta, comparação e avaliação de professores e disciplinas 
 !!! info "O problema"
     **Insegurança e falta de transparência na escolha de docentes e disciplinas na matrícula da UnB.**
 
-Na matrícula, o estudante decide em pouco tempo, e as informações estão espalhadas em grupos de WhatsApp e Telegram ou nem existem de forma organizada. O SIGAA mostra horários e vagas, mas não o jeito de ensinar de cada professor. O AvaliaAi reúne isso em avaliações objetivas e fáceis de consultar.
+Na matrícula, o estudante decide em pouco tempo, e as informações estão espalhadas em grupos de WhatsApp e Telegram ou nem existem de forma organizada. O SIGAA mostra horários e vagas, mas não o jeito de ensinar de cada professor. O AvaliaUnb reúne isso em avaliações objetivas e fáceis de consultar.
 
 ## Como é feito
 
