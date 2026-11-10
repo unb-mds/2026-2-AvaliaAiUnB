@@ -315,7 +315,7 @@ REVOKE ALL ON vw_professor_disciplina FROM anon, authenticated;
 | Tamanho do texto | De 2 a 1.000 caracteres após retirar espaços em branco das extremidades | Aceita textos curtos e rejeita campos vazios ou com apenas um caractere. |
 | Edição | `atualizado_em` mantido por trigger | Mostra se o comentário foi editado. |
 | Visibilidade | `ocultado_em` nulo para comentários publicados e visíveis | A listagem exclui comentários ocultados pela moderação. |
-| Reações | Uma linha por conta e comentário, com valor `1` ou `-1` | A listagem conta curtidas e descurtidas separadamente. Quando não houver reações, mostra zero. |
+| Reações | Uma linha por conta e comentário, com valor `1` ou `-1` | A interface mostra as contagens separadas e oculta valores iguais a zero. A ordenação considera zero quando não houver votos. |
 
 ### 6.2 SQL proposto
 

@@ -13,7 +13,7 @@ pessoa pode voltar ao perfil e encerrar ou escolher a outra.
 ![Perfil com seletor de ordenação, datas, curtidas e descurtidas e um e-mail expandido](mockups/comentarios/listar.svg)
 
 Visitantes leem os comentários com o nome de usuário do autor, disciplina,
-data da primeira publicação e as duas contagens de reações. Clicar, tocar
+data da primeira publicação e as contagens de reações recebidas. Clicar, tocar
 ou ativar o nome pelo teclado abre o e-mail verificado que o autor autorizou
 divulgar. Ativar o botão outra vez fecha o contato. A área convida a entrar
 ou criar conta com qualquer e-mail
@@ -28,8 +28,9 @@ O seletor **Ordenar por** abre em **Mais recentes**. Também oferece
 e descurtidas.
 
 Os polegares permitem **Curtir** e **Descurtir** comentários de outras
-pessoas. As duas contagens ficam visíveis, inclusive nos comentários
-da própria conta e quando uma delas é zero. A reação selecionada tem
+pessoas. Cada total aparece quando é maior que zero, inclusive nos
+comentários da própria conta. Sem reações, os botões de quem pode votar
+aparecem sem números. A reação selecionada tem
 cor e marca de confirmação. É possível trocar a reação ou desfazê-la com
 outro toque. Se a sessão não estiver ativa, tocar no botão leva ao login sem
 gravar voto.

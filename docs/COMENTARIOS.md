@@ -56,10 +56,11 @@ disponíveis na sua sessão.
 
 ## Reações
 
-Cada comentário publicado mostra as contagens separadas de **👍 Curtir** e
-**👎 Descurtir**, inclusive quando uma delas é zero. A leitura das contagens é
-pública. Para reagir a um comentário de outra pessoa, é preciso entrar na
-conta. Cada conta tem uma reação por comentário e pode trocar de opção ou
+Cada comentário publicado mostra separadamente o total de **👍 Curtir** e de
+**👎 Descurtir** quando a contagem correspondente é maior que zero. Sem
+reações, os botões aparecem sem números para quem pode votar. A leitura das
+contagens é pública. Para reagir a um comentário de outra pessoa, é preciso
+entrar na conta. Cada conta tem uma reação por comentário e pode trocar de opção ou
 tocar novamente para removê-la. O servidor
 confere a sessão, impede votos no próprio texto e grava a reação com unicidade
 por conta e comentário. A lista mostra as contagens, sem revelar quem reagiu.
@@ -221,7 +222,7 @@ rotina de descarte fica para a implementação após revisão do grupo.
 | C06 | Denúncia privada e moderação por responsáveis autorizados | Aguardando revisão e projeto de dados |
 | C07 | Ocultação motivada, sem republicação automática por edição | Aguardando revisão |
 | C08 | Dois moderadores designados, primeira análise em até três dias úteis, formulário privado de contestação e retenção de até 90 dias após o encerramento | Aguardando revisão |
-| C09 | Contagens públicas separadas de curtidas e descurtidas. Uma reação por conta e comentário, com opção de trocar ou remover | Aguardando revisão |
+| C09 | Contagens públicas separadas de curtidas e descurtidas. O zero fica oculto. Uma reação por conta e comentário, com opção de trocar ou remover | Aguardando revisão |
 | C10 | Filtrar no servidor antes de publicar ou editar. Bloquear violações claras e encaminhar casos incertos à moderação | Aguardando revisão |
 | C11 | Data em cada comentário. Ordenação por Mais recentes, Mais curtidos, Mais antigos ou Mais reações | Aguardando revisão |
 
@@ -251,9 +252,13 @@ acompanham estas regras.
   para aquele comentário se ele for ocultado ou excluído.
 - Uma conta troca ou desfaz sua reação. Pedidos simultâneos respeitam a
   unicidade, e autores não reagem ao próprio comentário.
-- A lista exibe a data de publicação e as duas contagens em cada comentário.
+- A lista exibe a data de publicação e mostra números só para reações
+  recebidas.
   Com 8 curtidas e 1 descurtida, o comentário aparece com 8 e 1 separados.
   Na opção Mais reações, as duas contagens somam 9 para a ordenação.
+- Com 3 curtidas e nenhuma descurtida, a lista exibe só o número 3.
+  Sem nenhuma reação, nenhum número aparece e os botões continuam
+  disponíveis para quem pode reagir.
 - Mais recentes abre por padrão. Mais curtidos ordena apenas pelas
   curtidas, e Mais antigos inverte a ordem por data. A edição preserva
   a posição nas duas ordens por data.
