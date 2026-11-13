@@ -1,0 +1,2052 @@
+
+<!doctype html>
+<html lang="pt" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentação do AvaliaUnb">
+      
+      
+      
+      
+        <link rel="prev" href="../FUNCIONALIDADES/">
+      
+      
+        <link rel="next" href="../DESIGN_SYSTEM/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
+    
+    
+      
+        <title>Comentários avaliativos - AvaliaUnb</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#especificacao-de-comentarios-avaliativos" class="md-skip">
+          Pular para conteúdo
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabeçalho">
+    <a href=".." title="AvaliaUnb" class="md-header__button md-logo" aria-label="AvaliaUnb" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AvaliaUnb
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Comentários avaliativos
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="blue"  aria-label="Ativar modo escuro"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Ativar modo escuro" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="blue"  aria-label="Ativar modo claro"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Ativar modo claro" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Buscar" placeholder="Buscar" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Pesquisar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpar" aria-label="Limpar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando busca
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/unb-mds/2026-2-AvaliaAiUnB" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    unb-mds/2026-2-AvaliaAiUnB
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Abas" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Início
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../GUIA_DOCUMENTACAO/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Guia da documentação
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../FUNCIONALIDADES/" class="md-tabs__link">
+          
+  
+  
+  Projeto
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../ARQUITETURA/" class="md-tabs__link">
+          
+  
+  
+  Arquitetura
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../BACKEND/" class="md-tabs__link">
+          
+  
+  
+  Desenvolvimento
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../CIBERSEGURANCA/" class="md-tabs__link">
+          
+  
+  
+  Segurança
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navegação" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="AvaliaUnb" class="md-nav__button md-logo" aria-label="AvaliaUnb" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    AvaliaUnb
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/unb-mds/2026-2-AvaliaAiUnB" title="Ir para repositório" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    unb-mds/2026-2-AvaliaAiUnB
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Início
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GUIA_DOCUMENTACAO/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guia da documentação
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Projeto
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Projeto
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FUNCIONALIDADES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Funcionalidades
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Comentários avaliativos
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Comentários avaliativos
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#objetivo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Objetivo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quem-pode-consultar-e-participar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quem pode consultar e participar
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#texto-quantidade-e-vinculo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Texto, quantidade e vínculo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reacoes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reações
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ordenacao-dos-comentarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ordenação dos comentários
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#estrelas-e-comentarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Estrelas e comentários
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fluxos-para-as-telas-da-112" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fluxos para as telas da #112
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Fluxos para as telas da #112">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#listar-e-escrever" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Listar e escrever
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#editar-e-excluir" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Editar e excluir
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#conteudo-ocultado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Conteúdo ocultado
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#filtro-automatico-antes-da-publicacao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filtro automático antes da publicação
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#denuncia-e-moderacao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Denúncia e moderação
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#privacidade-e-ciclo-dos-dados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Privacidade e ciclo dos dados
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#decisoes-para-o-grupo-revisar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Decisões para o grupo revisar
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#criterios-para-a-futura-implementacao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Critérios para a futura implementação
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DESIGN_SYSTEM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design system
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../TELAS_COMENTARIOS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telas de comentários
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DOCUMENTO_DE_VISAO/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Documento de Visão
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROCESSO_CONTRIBUICAO/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contribuição (DoR e DoD)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://www.figma.com/board/PgqkPopVXOiSqm9gD5RRNv/AvaliaAi---Template-MDS?node-id=0-1&p=f&t=Rxu6jVCgeVZHCyg2-0" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protótipo no Figma
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arquitetura
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Arquitetura
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ARQUITETURA/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagramas de Arquitetura
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Modelo%20de%20Dados/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modelo de Dados
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Desenvolvimento
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Desenvolvimento
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BACKEND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FRONTEND/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frontend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../COMO_USAR_SCRAPER/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Como Usar o Scraper
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pipeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../HOSPEDAGEM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hospedagem
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Segurança
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Segurança
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CIBERSEGURANCA/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cibersegurança
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../AUDITORIA_SEGURANCA/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Auditoria de Segurança
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Índice">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Índice
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#objetivo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Objetivo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quem-pode-consultar-e-participar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quem pode consultar e participar
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#texto-quantidade-e-vinculo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Texto, quantidade e vínculo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reacoes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reações
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ordenacao-dos-comentarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ordenação dos comentários
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#estrelas-e-comentarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Estrelas e comentários
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fluxos-para-as-telas-da-112" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fluxos para as telas da #112
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Fluxos para as telas da #112">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#listar-e-escrever" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Listar e escrever
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#editar-e-excluir" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Editar e excluir
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#conteudo-ocultado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Conteúdo ocultado
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#filtro-automatico-antes-da-publicacao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filtro automático antes da publicação
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#denuncia-e-moderacao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Denúncia e moderação
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#privacidade-e-ciclo-dos-dados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Privacidade e ciclo dos dados
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#decisoes-para-o-grupo-revisar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Decisões para o grupo revisar
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#criterios-para-a-futura-implementacao" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Critérios para a futura implementação
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="especificacao-de-comentarios-avaliativos">Especificação de comentários avaliativos<a class="headerlink" href="#especificacao-de-comentarios-avaliativos" title="Permanent link">&para;</a></h1>
+<p><strong>Status: proposta para revisão do grupo, com origem na issue #116.</strong> Este
+documento descreve o comportamento futuro dos comentários, das reações e da
+moderação.</p>
+<p>A base é a <a href="../Modelo%20de%20Dados/#6-proposta-tabela-comentarios">proposta de dados da #109</a>.
+O SQL dessa proposta permanece como referência e não é aplicado por este trabalho.</p>
+<h2 id="objetivo">Objetivo<a class="headerlink" href="#objetivo" title="Permanent link">&para;</a></h2>
+<p>Permitir relatos sobre a experiência pedagógica com um professor. O conteúdo
+deve tratar de aspectos como didática, organização,
+avaliação e disponibilidade, com contexto útil para outros estudantes.</p>
+<h2 id="quem-pode-consultar-e-participar">Quem pode consultar e participar<a class="headerlink" href="#quem-pode-consultar-e-participar" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Pessoa</th>
+<th>Comportamento proposto</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Visitante</td>
+<td>Lê comentários publicados no perfil do professor</td>
+</tr>
+<tr>
+<td>Usuário autenticado</td>
+<td>Usa uma conta comum com e-mail verificado de qualquer domínio para comentar, reagir e denunciar</td>
+</tr>
+<tr>
+<td>Autor</td>
+<td>Edita ou exclui seu próprio comentário e acompanha sua análise em privado</td>
+</tr>
+<tr>
+<td>Moderador autorizado</td>
+<td>Analisa textos sinalizados e denúncias, com decisão e justificativa registradas</td>
+</tr>
+</tbody>
+</table>
+<p>O perfil do professor tem uma área de comentários sobre a experiência pedagógica.
+A participação usa a mesma conta comum para todos, sem perfil docente, espaço
+de resposta oficial ou selo de professor. O cadastro atual aceita Gmail. Para
+liberar a área de comentários, o fluxo de cadastro e verificação deve aceitar
+outros domínios e preservar as permissões das demais áreas, como o envio de notas.
+Uma conta de comentários não concede acesso à moderação.</p>
+<h2 id="texto-quantidade-e-vinculo">Texto, quantidade e vínculo<a class="headerlink" href="#texto-quantidade-e-vinculo" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Regra</th>
+<th>Proposta para revisão</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Professor</td>
+<td>Obrigatório e existente no catálogo</td>
+</tr>
+<tr>
+<td>Disciplina</td>
+<td>Obrigatória. Deve ter sido ministrada pelo professor</td>
+</tr>
+<tr>
+<td>Quantidade</td>
+<td>Sem limite por conta, inclusive para o mesmo professor e disciplina</td>
+</tr>
+<tr>
+<td>Tamanho</td>
+<td>De 2 a 1.000 caracteres após remover espaços, tabulações e quebras de linha das extremidades</td>
+</tr>
+<tr>
+<td>Formato</td>
+<td>Texto simples; HTML e Markdown não são interpretados</td>
+</tr>
+<tr>
+<td>Identificação pública</td>
+<td>Todo comentário publicado mostra o nome de usuário. Ao clicar nele, qualquer visitante pode consultar o e-mail verificado que o autor confirmou para divulgação</td>
+</tr>
+<tr>
+<td>Ordem da lista</td>
+<td>Mais recentes por padrão. A pessoa pode escolher Mais curtidos, Mais antigos ou Mais reações</td>
+</tr>
+<tr>
+<td>Datas</td>
+<td>Exibir a data da primeira publicação em cada comentário e indicar quando houve edição</td>
+</tr>
+</tbody>
+</table>
+<p>O backend deve validar as regras antes da gravação e escapar o texto na saída.
+Um texto curto como «ok» passa pela validação de tamanho. O servidor recusa
+o texto que fica com menos de dois caracteres depois de remover os espaços
+em branco das extremidades.</p>
+<p>A autoria sempre vem da sessão autenticada. O servidor deve ignorar um
+<code>usuario_id</code> enviado pelo formulário. O servidor valida o vínculo entre a
+disciplina e o professor.
+Na listagem pública, a API retorna só os campos de exibição e o ID do comentário.
+O servidor usa o vínculo privado para indicar ao autor quais ações estão
+disponíveis na sua sessão.</p>
+<h2 id="reacoes">Reações<a class="headerlink" href="#reacoes" title="Permanent link">&para;</a></h2>
+<p>Os ícones <strong>👍</strong> e <strong>👎</strong> ficam sempre visíveis em cada comentário para
+qualquer visitante. Cada ícone exibe seu total quando houver reações
+daquele tipo. Os nomes das ações ficam disponíveis para leitores de tela.
+Para reagir a um comentário de outra pessoa, é preciso entrar na conta.
+Cada conta tem uma reação por comentário e pode trocar de opção ou tocar
+novamente para removê-la. O servidor
+confere a sessão, impede votos no próprio texto e grava a reação com unicidade
+por conta e comentário. A lista mostra as contagens, sem revelar quem reagiu.
+Reações podem mudar a posição de um comentário nas ordenações por curtidas
+ou reações. As notas e o ranking são independentes.</p>
+<h2 id="ordenacao-dos-comentarios">Ordenação dos comentários<a class="headerlink" href="#ordenacao-dos-comentarios" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Opção</th>
+<th>Como a lista é ordenada</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mais recentes</td>
+<td>Primeira publicação mais recente primeiro. É a ordem padrão</td>
+</tr>
+<tr>
+<td>Mais curtidos</td>
+<td>Maior quantidade de curtidas primeiro</td>
+</tr>
+<tr>
+<td>Mais antigos</td>
+<td>Primeira publicação mais antiga primeiro</td>
+</tr>
+<tr>
+<td>Mais reações</td>
+<td>Maior soma de curtidas e descurtidas primeiro</td>
+</tr>
+</tbody>
+</table>
+<p>Em empate por curtidas ou reações, o comentário mais recente vem primeiro.
+Se dois comentários tiverem a mesma data e hora de publicação, o
+identificador desempata na mesma direção da ordenação por data. Editar um comentário
+preserva sua data original.</p>
+<h2 id="estrelas-e-comentarios">Estrelas e comentários<a class="headerlink" href="#estrelas-e-comentarios" title="Permanent link">&para;</a></h2>
+<p>Dar estrelas e escrever um comentário são ações independentes. A pessoa pode
+usar só uma delas ou as duas na ordem que preferir. Para a mesma disciplina,
+pode comentar primeiro e dar estrelas mais tarde, ou dar estrelas primeiro
+e comentar depois. Cada ação tem seu próprio formulário e envio.</p>
+<ul>
+<li>Criar, editar ou excluir comentário não altera notas, médias ou ranking.</li>
+<li>Editar ou excluir uma avaliação não remove o comentário.</li>
+<li>Cada estudante pode registrar uma avaliação por estrelas para cada par
+  de professor e disciplina. Pode avaliar o mesmo professor em Cálculo 1
+  e Cálculo 2. Para mudar a nota de Cálculo 1, edita a avaliação existente.
+  A pessoa pode publicar vários comentários para a mesma disciplina.</li>
+</ul>
+<h2 id="fluxos-para-as-telas-da-112">Fluxos para as telas da #112<a class="headerlink" href="#fluxos-para-as-telas-da-112" title="Permanent link">&para;</a></h2>
+<h3 id="listar-e-escrever">Listar e escrever<a class="headerlink" href="#listar-e-escrever" title="Permanent link">&para;</a></h3>
+<p>O perfil do professor apresenta os comentários publicados em uma seção
+separada das notas. A lista vazia convida a escrever o primeiro comentário.
+Visitantes veem a opção de entrar ou criar conta para escrever ou reagir.
+Cada relato exibe sua disciplina. Quem já comentou pode editar os próprios
+textos e escrever outro relato para a mesma disciplina ou para outra
+ministrada pelo professor.</p>
+<p>O formulário informa que o texto e o nome de usuário serão públicos. Antes
+de publicar, a pessoa confirma que seu e-mail verificado ficará disponível
+para quem clicar no nome de usuário.
+Mostra o limite, exige a escolha de uma disciplina ministrada pelo professor
+e preserva o texto em erros de validação ou moderação. Durante a
+verificação, a interface desabilita o botão de envio e só confirma a
+publicação quando o texto fica público.</p>
+<h3 id="editar-e-excluir">Editar e excluir<a class="headerlink" href="#editar-e-excluir" title="Permanent link">&para;</a></h3>
+<p>A edição é exclusiva do autor, preserva a data original e atualiza <code>atualizado_em</code>.
+O identificador do professor e a autoria não podem ser alterados pela edição.
+A disciplina pode ser trocada por outra ministrada pelo mesmo professor.</p>
+<p>A exclusão deve pedir confirmação, identificando o professor, a disciplina
+e a consequência. Depois de excluir, o texto e as reações daquele
+comentário saem da lista.</p>
+<h3 id="conteudo-ocultado">Conteúdo ocultado<a class="headerlink" href="#conteudo-ocultado" title="Permanent link">&para;</a></h3>
+<p>Um comentário ocultado pela moderação deixa de aparecer na listagem pública.
+O autor recebe o estado e a justificativa. A edição continua privada até a
+decisão da moderação. Qualquer novo relato passa pelo filtro antes da
+publicação.
+O autor pode pedir revisão pelo formulário privado descrito abaixo.</p>
+<h2 id="filtro-automatico-antes-da-publicacao">Filtro automático antes da publicação<a class="headerlink" href="#filtro-automatico-antes-da-publicacao" title="Permanent link">&para;</a></h2>
+<p>O backend verifica comentários novos e edições antes de disponibilizá-los.
+A proposta começa com regras em português para ofensas, discriminação,
+ameaças, spam e dados pessoais, como e-mails, telefones e matrículas. O filtro
+normaliza espaços e variações de escrita para reconhecer tentativas simples de
+disfarçar termos. Uma crítica à didática ou uma avaliação negativa, por si só,
+deve passar.</p>
+<table>
+<thead>
+<tr>
+<th>Resultado</th>
+<th>Comportamento</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Aprovado</td>
+<td>Publica o texto ou aplica a edição</td>
+</tr>
+<tr>
+<td>Bloqueado</td>
+<td>Mostra o motivo ao autor e mantém o texto no formulário para revisão</td>
+</tr>
+<tr>
+<td>Incerto</td>
+<td>Encaminha o texto para análise privada e informa ao autor que está em revisão</td>
+</tr>
+<tr>
+<td>Filtro indisponível</td>
+<td>Mantém o texto no formulário e pede nova tentativa sem publicar</td>
+</tr>
+</tbody>
+</table>
+<p>Uma edição bloqueada ou em análise preserva a última versão aprovada de um
+comentário publicado. Se o comentário já estiver oculto, a edição continua
+privada até decisão da moderação. O filtro e a denúncia cumprem papéis
+complementares, pois uma regra automática pode deixar passar conteúdo impróprio.</p>
+<h2 id="denuncia-e-moderacao">Denúncia e moderação<a class="headerlink" href="#denuncia-e-moderacao" title="Permanent link">&para;</a></h2>
+<p>Proposta de fluxo:</p>
+<ol>
+<li>Um usuário autenticado denuncia um comentário, selecionando motivo e, se
+   necessário, acrescentando uma explicação.</li>
+<li>O sistema confirma o recebimento sem expor a identidade do denunciante ao
+   autor ou a visitantes. Uma denúncia ativa por usuário e comentário evita
+   duplicação; a regra precisa ser refletida no futuro modelo.</li>
+<li>Um moderador autorizado consulta texto, motivo e contexto e registra a
+   decisão de manter, ocultar ou restaurar, com justificativa.</li>
+<li>O autor pode pedir revisão em um formulário privado associado ao comentário.
+   O pedido fica visível ao autor e aos moderadores designados.</li>
+</ol>
+<p>Os motivos propostos são ofensa ou ataque pessoal, exposição de dados pessoais,
+discriminação, ameaça, spam ou conteúdo alheio à experiência pedagógica.
+Uma avaliação negativa ou discordância com a opinião não são, por si só,
+motivos para remoção. O número de denúncias não oculta automaticamente o texto.</p>
+<p>A <a href="../Modelo%20de%20Dados/">proposta de banco</a> descreve a proteção das tabelas
+de comentários e reações. A implementação futura precisa definir o registro
+privado das análises e denúncias e revisar as permissões de moderação,
+inclusive o uso de service key descrito em <a href="../CIBERSEGURANCA/">Cibersegurança</a>.
+A proposta operacional é que o grupo designe dois moderadores antes de liberar
+comentários e use três dias úteis como meta para a primeira análise. Sempre
+que possível, outra pessoa moderadora analisa a contestação. Se ninguém puder
+atender a fila, a publicação de novos comentários fica pausada até haver cobertura.</p>
+<h2 id="privacidade-e-ciclo-dos-dados">Privacidade e ciclo dos dados<a class="headerlink" href="#privacidade-e-ciclo-dos-dados" title="Permanent link">&para;</a></h2>
+<p>Cada comentário publicado mostra o nome de usuário da conta. Ao clicar ou
+tocar nesse nome, o visitante pode consultar o e-mail verificado autorizado
+para divulgação. O endereço é carregado só quando solicitado e fica fora da
+resposta da listagem. O servidor entrega o endereço apenas enquanto o
+comentário estiver público e a divulgação daquele endereço estiver autorizada.
+Uma troca de e-mail exige nova confirmação antes de exibir o novo endereço.</p>
+<p>Um endereço acessível a visitantes pode ser copiado ou coletado mesmo quando
+aparece só após um clique. Antes de liberar essa consulta no site, o grupo
+deve revisar a necessidade de expor o e-mail de cadastro e o aviso apresentado
+ao autor. Nome completo, tokens, dados de denúncias e identificadores internos
+da conta ficam privados.</p>
+<p>A orientação ao autor deve pedir que não publique matrículas, contatos,
+documentos, informações pessoais de terceiros ou relatos que exponham pessoas
+sem necessidade. O acesso às denúncias e aos registros de moderação deve ficar
+restrito aos responsáveis autorizados. Logs operacionais não devem copiar
+indiscriminadamente o texto ou dados pessoais.</p>
+<p>As cascatas propostas na #109 apagam comentários quando o perfil do autor ou o
+professor é excluído. Uma disciplina com comentários vinculados deve ser
+mantida para preservar o vínculo dos relatos históricos.
+A proposta é guardar o registro mínimo da denúncia e
+da decisão por até 90 dias após encerrar o caso e então apagar esse registro.
+O texto excluído sai da listagem imediatamente. A definição da estrutura e da
+rotina de descarte fica para a implementação após revisão do grupo.</p>
+<h2 id="decisoes-para-o-grupo-revisar">Decisões para o grupo revisar<a class="headerlink" href="#decisoes-para-o-grupo-revisar" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Decisão proposta</th>
+<th>Situação</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C01</td>
+<td>Leitura pública e participação com conta comum e e-mail verificado de qualquer domínio. Sem espaço ou perfil exclusivo para professores</td>
+<td>Aguardando revisão</td>
+</tr>
+<tr>
+<td>C02</td>
+<td>Disciplina obrigatória. A pessoa pode comentar quantas vezes quiser para o mesmo professor e disciplina</td>
+<td>Aguardando revisão</td>
+</tr>
+<tr>
+<td>C03</td>
+<td>Texto simples de 2 a 1.000 caracteres após remover espaços em branco das extremidades</td>
+<td>Aguardando revisão</td>
+</tr>
+<tr>
+<td>C04</td>
+<td>Estrelas e comentários são independentes e podem ser enviados em qualquer ordem. Uma avaliação por estrelas por estudante, professor e disciplina</td>
+<td>Aguardando revisão</td>
+</tr>
+<tr>
+<td>C05</td>
+<td>Nome de usuário em todos os comentários. E-mail verificado disponível ao clicar no nome, após confirmação do autor</td>
+<td>Aguardando revisão do grupo antes da publicação no site</td>
+</tr>
+<tr>
+<td>C06</td>
+<td>Denúncia privada e moderação por responsáveis autorizados</td>
+<td>Aguardando revisão e projeto de dados</td>
+</tr>
+<tr>
+<td>C07</td>
+<td>Ocultação motivada, sem republicação automática por edição</td>
+<td>Aguardando revisão</td>
+</tr>
+<tr>
+<td>C08</td>
+<td>Dois moderadores designados, primeira análise em até três dias úteis, formulário privado de contestação e retenção de até 90 dias após o encerramento</td>
+<td>Aguardando revisão</td>
+</tr>
+<tr>
+<td>C09</td>
+<td>Ícones 👍 e 👎 sempre visíveis, com números apenas nas reações recebidas. Uma reação por conta e comentário, com opção de trocar ou remover</td>
+<td>Aguardando revisão</td>
+</tr>
+<tr>
+<td>C10</td>
+<td>Filtrar no servidor antes de publicar ou editar. Bloquear violações claras e encaminhar casos incertos à moderação</td>
+<td>Aguardando revisão</td>
+</tr>
+<tr>
+<td>C11</td>
+<td>Data em cada comentário. Ordenação por Mais recentes, Mais curtidos, Mais antigos ou Mais reações</td>
+<td>Aguardando revisão</td>
+</tr>
+</tbody>
+</table>
+<p>As decisões podem ser revisadas no PR ou na
+<a href="https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/116">issue #116</a>.
+Os <a href="../TELAS_COMENTARIOS/">protótipos da #112</a> e a <a href="../Modelo%20de%20Dados/#6-proposta-tabela-comentarios">proposta de dados da #109</a>
+acompanham estas regras.</p>
+<h2 id="criterios-para-a-futura-implementacao">Critérios para a futura implementação<a class="headerlink" href="#criterios-para-a-futura-implementacao" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Visitantes consultam comentários com nome de usuário e contagens de
+  reações. Entrar com conta verificada é obrigatório para comentar, reagir
+  ou denunciar. O fluxo aceita, por exemplo, um e-mail Outlook ou de domínio
+  próprio.</li>
+<li>«ok» passa pela validação de tamanho. Campo vazio, texto com menos de
+  dois caracteres após retirar os espaços em branco das extremidades e
+  texto acima de 1.000 caracteres recebem erro claro.</li>
+<li>Disciplina ausente ou inválida recebe erro claro e preserva o texto
+  preenchido.</li>
+<li>A mesma conta pode publicar dois relatos distintos em Cálculo 1 com o
+  mesmo professor. Cada relato tem seu próprio texto, reações e ações de
+  editar ou apagar.</li>
+<li>Só o autor edita ou exclui. O servidor nega tentativas de se passar por outro
+  usuário e mantém os identificadores de conta fora das respostas públicas.</li>
+<li>Clicar no nome de um comentário visível abre o e-mail verificado autorizado.
+  O endereço fica fora da resposta da listagem e a consulta deixa de funcionar
+  para aquele comentário se ele for ocultado ou excluído.</li>
+<li>Uma conta troca ou desfaz sua reação. Pedidos simultâneos respeitam a
+  unicidade, e autores não reagem ao próprio comentário.</li>
+<li>A lista exibe a data e os dois ícones em cada comentário, inclusive para
+  visitantes sem login e com o e-mail recolhido.
+  Os números aparecem só para reações recebidas.
+  Com 8 curtidas e 1 descurtida, o comentário aparece com 8 e 1 separados.
+  Na opção Mais reações, as duas contagens somam 9 para a ordenação.</li>
+<li>Com 3 curtidas e nenhuma descurtida, a lista exibe 👍 3 e 👎 sem número.
+  Sem nenhuma reação, aparecem só os dois ícones.</li>
+<li>Mais recentes abre por padrão. Mais curtidos ordena apenas pelas
+  curtidas, e Mais antigos inverte a ordem por data. A edição preserva
+  a posição nas duas ordens por data.</li>
+<li>O filtro barra uma ofensa inequívoca e a exposição de um telefone, deixa
+  passar uma crítica respeitosa e encaminha um caso ambíguo sem publicar.</li>
+<li>O filtro também cobre edições. Falhas deixam o texto disponível para tentar
+  de novo, e edições bloqueadas preservam a última versão aprovada.</li>
+<li>Uma conta autorizada a usar as duas ações consegue enviar só estrelas,
+  publicar só um comentário ou fazer os dois em qualquer ordem.</li>
+<li>A mesma conta pode avaliar com estrelas Cálculo 1 e Cálculo 2 com o mesmo
+  professor. Uma segunda avaliação por estrelas em Cálculo 1 é recusada.</li>
+<li>As notas e os resultados de ranking e comparação não mudam por um comentário.</li>
+<li>A identidade do denunciante e os dados privados não aparecem na listagem pública.</li>
+<li>As telas cobrem vazio, envio, erro, edição, confirmação de exclusão e ocultação.</li>
+<li>As permissões de backend e banco seguem o modelo aprovado, com testes de
+  autorização e sem execução de migrações propostas durante a fase de documentação.</li>
+</ul>
+<p>Documentos relacionados: <a href="../Modelo%20de%20Dados/">modelo de dados</a>,
+<a href="../TELAS_COMENTARIOS/">protótipos</a>, <a href="../FRONTEND/">frontend</a> e
+<a href="../CIBERSEGURANCA/">cibersegurança</a>. A execução depende de decisões
+registradas em issue/PR; este arquivo não ativa um sistema de comentários.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Voltar para o topo
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Rodapé" >
+        
+          
+          <a href="../FUNCIONALIDADES/" class="md-footer__link md-footer__link--prev" aria-label="Anterior: Funcionalidades">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Anterior
+              </span>
+              <div class="md-ellipsis">
+                Funcionalidades
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../DESIGN_SYSTEM/" class="md-footer__link md-footer__link--next" aria-label="Próximo: Design system">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Próximo
+              </span>
+              <div class="md-ellipsis">
+                Design system
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.footer", "content.code.copy", "content.tabs.link", "search.highlight"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado para \u00e1rea de transfer\u00eancia", "clipboard.copy": "Copiar para \u00e1rea de transfer\u00eancia", "search.result.more.one": "mais 1 nesta p\u00e1gina", "search.result.more.other": "# mais nesta p\u00e1gina", "search.result.none": "Nenhum documento encontrado", "search.result.one": "1 documento encontrado", "search.result.other": "# documentos encontrados", "search.result.placeholder": "Digite para iniciar a busca", "search.result.term.missing": "Ausente", "select.version": "Selecione a vers\u00e3o"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+    
+  </body>
+</html>
