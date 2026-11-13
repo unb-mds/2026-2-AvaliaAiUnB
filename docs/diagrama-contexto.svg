@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 405" role="img" aria-labelledby="titulo descricao">
+  <title id="titulo">Diagrama de contexto do AvaliaUnB</title>
+  <desc id="descricao">Visitantes consultam o catálogo e usuários com conta avaliam disciplinas. O AvaliaUnB usa o Supabase Auth para o login por nome de usuário e senha. O scraper coleta os dados do SIGAA para o catálogo.</desc>
+  <defs>
+    <marker id="seta" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0 0L10 5 0 10Z" fill="#4b6380"/>
+    </marker>
+  </defs>
+  <style>
+    text { font-family: system-ui, sans-serif; text-anchor: middle; fill: #172b4d }
+    .titulo { font-size: 28px; font-weight: 700 }
+    .rotulo { font-size: 21px; font-weight: 650 }
+    .detalhe { font-size: 17px; fill: #314763 }
+    .ligacao { font-size: 15px; fill: #314763 }
+  </style>
+  <rect width="800" height="405" rx="20" fill="#f0f5fb"/>
+  <text x="400" y="50" class="titulo">Contexto do AvaliaUnB</text>
+  <g fill="#fff" stroke="#a5b8ce">
+    <rect x="240" y="78" width="320" height="76" rx="12"/>
+    <rect x="50" y="288" width="300" height="82" rx="12"/>
+    <rect x="450" y="288" width="300" height="82" rx="12"/>
+  </g>
+  <rect x="240" y="191" width="320" height="61" rx="12" fill="#dceaf9" stroke="#7f9ab8"/>
+  <g fill="none" stroke="#4b6380" stroke-width="2" marker-end="url(#seta)">
+    <path d="M400 154V186"/>
+    <path d="M315 252V272H200V283"/>
+    <path d="M600 288V272H485V257"/>
+  </g>
+  <text x="400" y="108" class="rotulo">Visitante e usuário com conta</text>
+  <text x="400" y="134" class="detalhe">Consulta pública e avaliação com login</text>
+  <text x="400" y="228" class="rotulo">AvaliaUnB</text>
+  <text x="155" y="263" class="ligacao">Autenticação</text>
+  <text x="680" y="263" class="ligacao">Coleta via scraper</text>
+  <text x="200" y="321" class="rotulo">Supabase Auth</text>
+  <text x="200" y="347" class="detalhe">Contas e validação da senha</text>
+  <text x="600" y="321" class="rotulo">SIGAA</text>
+  <text x="600" y="347" class="detalhe">Professores, disciplinas e turmas</text>
+</svg>

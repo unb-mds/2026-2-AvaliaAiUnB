@@ -80,6 +80,8 @@ confirmação do endereço está prevista na
 | Testes e qualidade | unittest, pip-audit e Bandit |
 | Deploy | Configuração para Vercel adicionada no [PR #131](https://github.com/unb-mds/2026-2-AvaliaAiUnB/pull/131) |
 
+![Diagrama de contexto do AvaliaUnB](docs/diagrama-contexto.svg)
+
 ### Backend
 
 `run.py` cria a aplicação por `create_app`, em `app/__init__.py`.
@@ -216,7 +218,7 @@ filtro antes da publicação e denúncias. O recurso ainda não está implementa
 | Comentários | [Especificação para revisão do grupo](docs/COMENTARIOS.md) |
 | Automação e checks | [Pipeline do GitHub Actions](docs/pipeline.md) · [DoR e DoD](docs/PROCESSO_CONTRIBUICAO.md) |
 | Hospedagem | [Configuração de Preview, produção e lançamento](docs/HOSPEDAGEM.md) |
-| Design | [Board do Figma](https://www.figma.com/board/PgqkPopVXOiSqm9gD5RRNv/AvaliaAi---Template-MDS?node-id=0-1&p=f&t=Rxu6jVCgeVZHCyg2-0) |
+| Design | [Board do Figma](https://www.figma.com/board/PgqkPopVXOiSqm9gD5RRNv/AvaliaAi---Template-MDS?node-id=0-1) |
 | Histórico | [Release 1](RELEASE-v1.0.0.md) · [Release 2](RELEASE-v2.0.0.md) |
 
 Para abrir o site localmente, instale `mkdocs-material` no ambiente virtual e
