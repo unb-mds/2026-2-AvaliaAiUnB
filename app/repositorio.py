@@ -16,7 +16,7 @@ from app.utils import normalizar_busca
 from app.validacoes import CRITERIOS
 
 COLUNAS_AVALIACAO = ','.join(('id', 'usuario_id', 'professor_id', 'disciplina_id',
-                                  'ano', 'periodo', *CRITERIOS))
+                              'ano', 'periodo', *CRITERIOS))
 
 TAMANHO_PAGINA = 1000          # limite padrão de linhas por requisição do PostgREST
 VALIDADE_CATALOGO = 300        # segundos de cache da listagem completa
@@ -93,6 +93,17 @@ class UsuarioRepository:
             restante = 0.15 - (time.monotonic() - inicio)
             if restante > 0:
                 time.sleep(restante)
+
+    def enviar_email_recuperacao(self, email):
+        """Usa o Supabase Auth para enviar um link de recuperação de senha por e-mail."""
+        try:
+            # MÉTODO RIGOROSAMENTE CORRETO NO SUPABASE-PY: reset_password_for_email
+            self.fabrica_cliente().auth.reset_password_for_email(email.strip().lower())
+            return True
+        except AuthError as erro:
+            # Silencia o erro para evitar vazamento de informações (enumeration)
+            current_app.logger.warning("Falha ao pedir recuperação de senha: %s", str(erro))
+            return False
 
     def usuario_do_token(self, access_token):
         """Dados do usuário dono do token, ou None se inválido/expirado/revogado."""
@@ -180,12 +191,12 @@ class ProfessorRepository:
 
     def listar_departamentos(self):
         """Departamentos distintos (opções do filtro), em ordem alfabética sem acento."""
-        unicos = {}
+        unicas = {}
         for professor, _ in self._carregar_catalogo():
             departamento = (professor.get('departamento') or '').strip()
             if departamento:
-                unicos.setdefault(normalizar_busca(departamento), departamento)
-        return [unicos[chave] for chave in sorted(unicos)]
+                unicas.setdefault(normalizar_busca(departamento), departamento)
+        return [unicas[chave] for chave in sorted(unicas)]
 
     def catalogo(self, nome='', disciplina='', departamento=''):
         """[(professor, disciplinas)] filtrado sem distinguir acento/caixa/espaços,
@@ -230,7 +241,7 @@ class ProfessorRepository:
                 resultado.append({**professor, 'quantidade': total['quantidade'],
                                   'media': total['soma'] / (total['quantidade'] * len(CRITERIOS_RANKING))})
         resultado.sort(key=lambda p: (-p['media'], -p['quantidade'],
-                                     normalizar_busca(p['nome']), p['id']))
+                                      normalizar_busca(p['nome']), p['id']))
         return [{**professor, 'posicao': posicao}
                 for posicao, professor in enumerate(resultado, start=1)]
 
