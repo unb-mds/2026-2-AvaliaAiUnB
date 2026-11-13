@@ -20,3 +20,10 @@ def autenticar(formulario):
     """Sessão ({'access_token', 'refresh_token'}) se o par usuário/senha for válido, senão None."""
     return repositorios().usuarios.autenticar(
         formulario.get('username', ''), formulario.get('senha', ''))
+
+
+def enviar_email_recuperacao(email):
+    """Delega ao repositório a requisição para envio do e-mail de recuperação de senha."""
+    if not email:
+        return False
+    return repositorios().usuarios.enviar_email_recuperacao(email)
