@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Definir Nova Senha - AvaliaUnb</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='auth.css') }}">
+</head>
+<body>
+<main class="auth card">
+    <h1>Criar Nova Senha</h1>
+    
+    <p class="descricao-auth">Digite a sua nova senha abaixo.</p>
+
+    {% if erro %}
+    <p class="mensagem mensagem-erro" role="alert">{{ erro }}</p>
+    {% endif %}
+
+    <form action="/redefinir-senha" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="formato" value="html">
+        
+        <label for="senha">Nova Senha</label>
+        <input type="password" id="senha" name="senha" required minlength="6" placeholder="Mínimo 6 caracteres">
+
+        <label for="confirmar_senha">Confirmar Nova Senha</label>
+        <input type="password" id="confirmar_senha" name="confirmar_senha" required>
+
+        <button type="submit" class="botao botao-primario">Atualizar Senha</button>
+    </form>
+</main>
+</body>
+</html>
