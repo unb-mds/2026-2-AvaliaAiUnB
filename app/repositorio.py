@@ -15,6 +15,9 @@ from app.supabase_db import get_supabase, novo_cliente
 from app.utils import normalizar_busca
 from app.validacoes import CRITERIOS
 
+COLUNAS_AVALIACAO = ','.join(('id', 'usuario_id', 'professor_id', 'disciplina_id',
+                                  'ano', 'periodo', *CRITERIOS))
+
 TAMANHO_PAGINA = 1000          # limite padrão de linhas por requisição do PostgREST
 VALIDADE_CATALOGO = 300        # segundos de cache da listagem completa
 MINIMO_AVALIACOES_RANKING = 5
@@ -70,19 +73,26 @@ class UsuarioRepository:
         return True, usuario_id
 
     def autenticar(self, username, senha):
-        """Valida username + senha. Retorna {'access_token', 'refresh_token'} ou None."""
-        perfil = (self.cliente.table('perfis').select('id').eq('username', username.strip().lower())
-                  .limit(1).execute().data)
-        if not perfil:
-            return None
+        """Autentica e reduz diferenças de tempo entre usuários existentes/inexistentes."""
+        inicio = time.monotonic()
         try:
-            email = self.cliente.auth.admin.get_user_by_id(perfil[0]['id']).user.email
-            # Cliente descartável: o login não pode alterar a sessão do cliente principal.
-            resposta = self.fabrica_cliente().auth.sign_in_with_password(
-                {'email': email, 'password': senha})
-        except AuthError:
-            return None
-        return _sessao_para_dict(resposta)
+            perfil = (self.cliente.table('perfis').select('id')
+                      .eq('username', username.strip().lower()).limit(1).execute().data)
+            if not perfil:
+                return None
+            try:
+                email = self.cliente.auth.admin.get_user_by_id(perfil[0]['id']).user.email
+                # Cliente descartável: o login não altera a sessão principal.
+                resposta = self.fabrica_cliente().auth.sign_in_with_password(
+                    {'email': email, 'password': senha})
+            except AuthError:
+                return None
+            return _sessao_para_dict(resposta)
+        finally:
+            # Atraso mínimo, não uma garantia de tempo constante (rede e Auth variam).
+            restante = 0.15 - (time.monotonic() - inicio)
+            if restante > 0:
+                time.sleep(restante)
 
     def usuario_do_token(self, access_token):
         """Dados do usuário dono do token, ou None se inválido/expirado/revogado."""
@@ -148,12 +158,21 @@ class ProfessorRepository:
                             .select('professor_id,disciplina_id,codigo_disciplina,disciplina')
                             .order('professor_id').order('disciplina_id'))
         avaliados = _paginar(lambda: self.cliente.table('avaliacoes')
-                             .select('professor_id').order('id'))
+                             .select(','.join(('professor_id', *CRITERIOS))).order('id'))
         total = Counter(l['professor_id'] for l in avaliados)
+        # Média geral como no ranking: critérios sem a dificuldade, só avaliações válidas.
+        somas = {}
+        for l in avaliados:
+            if all(type(l.get(c)) is int and 1 <= l[c] <= 5 for c in CRITERIOS):
+                soma = somas.setdefault(l['professor_id'], [0, 0])
+                soma[0] += sum(l[c] for c in CRITERIOS_RANKING)
+                soma[1] += 1
+        medias = {pid: s / (n * len(CRITERIOS_RANKING)) for pid, (s, n) in somas.items()}
         por_professor = {}
         for linha in vinculos:
             por_professor.setdefault(linha['professor_id'], []).append(linha)
-        self._catalogo = [({**p, 'total_avaliacoes': total.get(p['id'], 0)},
+        self._catalogo = [({**p, 'total_avaliacoes': total.get(p['id'], 0),
+                            'media_geral': medias.get(p['id'])},
                            self._disciplinas_unicas(por_professor.get(p['id'], [])))
                           for p in professores]
         self._catalogo_em = time.monotonic()
@@ -286,7 +305,7 @@ class AvaliacaoRepository:
         """Lista as avaliações feitas pelo usuário com nomes de professor e disciplina."""
         linhas = _paginar(
             lambda: self.cliente.table('avaliacoes')
-            .select('*')
+            .select(COLUNAS_AVALIACAO)
             .eq('usuario_id', usuario_id)
             .order('id')
         )
@@ -296,7 +315,7 @@ class AvaliacaoRepository:
         """Retorna a avaliação enriquecida se pertencer ao usuário, ou None."""
         dados = (
             self.cliente.table('avaliacoes')
-            .select('*')
+            .select(COLUNAS_AVALIACAO)
             .eq('id', avaliacao_id)
             .eq('usuario_id', usuario_id)
             .limit(1)

@@ -1,0 +1,99 @@
+/* Comparação de professores. Carregado depois de indicadores.css (só esta tela o usa). */
+body {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    background-color: var(--cor-fundo-suave);
+    font-size: var(--texto-base);
+    line-height: 1.5;
+}
+
+main {
+    box-sizing: border-box;
+    max-width: var(--largura-conteudo);
+    margin: 0 auto;
+    padding: var(--espaco-5) var(--margem-lateral) var(--espaco-7);
+}
+
+h1 {
+    font-size: var(--texto-titulo-pagina);
+    line-height: 1.2;
+}
+
+/* Seleção dos dois professores num card */
+.selecao-comparacao {
+    padding: var(--espaco-5) var(--espaco-4);
+    border: 1px solid var(--cor-divisor);
+    border-radius: var(--raio-card);
+    background-color: var(--cor-superficie);
+}
+
+.selecao-comparacao .campo select {
+    padding: var(--espaco-2) var(--espaco-3);
+}
+
+.selecao-comparacao button {
+    width: 100%;
+    margin: 0;
+}
+
+.comparacao-container {
+    padding: var(--espaco-2);
+    border: 1px solid var(--cor-divisor);
+    border-radius: var(--raio-card);
+    background-color: var(--cor-superficie);
+}
+
+.mensagem {
+    border: 1px solid var(--cor-divisor);
+    background-color: var(--cor-superficie);
+}
+
+@media (min-width: 481px) {
+    .selecao-comparacao {
+        padding: var(--espaco-5);
+    }
+
+    .selecao-comparacao button {
+        width: auto;
+        margin-bottom: var(--espaco-4);
+    }
+}
+
+.voltar {
+    margin: 0;
+}
+
+.voltar a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--altura-controle);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.voltar a:hover {
+    text-decoration: underline;
+}
+
+h1 {
+    margin: 0 0 var(--espaco-2);
+}
+
+main > .ajuda {
+    margin: 0 0 var(--espaco-4);
+}
+
+/* Tabela: critério à esquerda em destaque e valores legíveis */
+.tabela-comparacao tbody th[scope="row"] {
+    width: 34%;
+    font-weight: 700;
+}
+
+.tabela-comparacao thead th {
+    overflow-wrap: anywhere;
+}
+
+.tabela-comparacao caption {
+    padding: var(--espaco-3) var(--espaco-2);
+}

@@ -32,6 +32,14 @@ class TestCadastro(unittest.TestCase):
         for username in ('', 'ab', 'a' * 31, 'com espaco', 'acentuação', 'a@b'):
             self.assertIn('username', validar_cadastro(formulario(username=username))[1], username)
 
+    def test_limites_de_tamanho(self):
+        self.assertIn('nome', validar_cadastro(formulario(nome='A' * 121))[1])
+        self.assertNotIn('nome', validar_cadastro(formulario(nome='A' * 120))[1])
+        self.assertIn('senha', validar_cadastro(formulario(senha='a' * 129,
+                                                          confirmar_senha='a' * 129))[1])
+        self.assertNotIn('senha', validar_cadastro(formulario(senha='a' * 128,
+                                                              confirmar_senha='a' * 128))[1])
+
     def test_nome_e_senha(self):
         self.assertIn('nome', validar_cadastro(formulario(nome='   '))[1])
         self.assertIn('senha', validar_cadastro(formulario(senha='curta', confirmar_senha='curta'))[1])

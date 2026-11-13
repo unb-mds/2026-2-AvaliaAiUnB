@@ -1,16 +1,16 @@
 # DOCUMENTO DE VISÃO
 
-*Projeto AvaliaAi — Plataforma de Consulta, Comparação e Avaliação de Professores da UnB*
+*Projeto AvaliaUnb — Plataforma de Consulta, Comparação e Avaliação de Professores da UnB*
 
 ---
 
 ## 1. Introdução
 
 ### 1.1 Finalidade
-Este documento visa o entendimento geral do projeto ao definir as necessidades para o desenvolvimento do sistema AvaliaAi, uma plataforma voltada para consulta, indicação e avaliação pedagógica de professores e disciplinas na Universidade de Brasília (UnB). As informações são apresentadas em alto nível de abstração, servindo como guia de alinhamento comum entre estudantes e docentes.
+Este documento visa o entendimento geral do projeto ao definir as necessidades para o desenvolvimento do sistema AvaliaUnb, uma plataforma voltada para consulta, indicação e avaliação pedagógica de professores e disciplinas na Universidade de Brasília (UnB). As informações são apresentadas em alto nível de abstração, servindo como guia de alinhamento comum entre estudantes e docentes.
 
 ### 1.2 Escopo
-São tratados neste documento os aspectos estratégicos, funcionais, arquiteturais e estruturais do projeto AvaliaAi, abrangendo desde a fase de imersão e análise das causas-raiz do problema e arquitetura do sistema. O sistema engloba busca e filtragem de docentes/disciplinas, avaliação por critérios pedagógicos objetivos, visualização de médias consolidadas, rankings, arquitetura baseada em Python/Flask com banco Supabase e mecanismos de moderação.
+São tratados neste documento os aspectos estratégicos, funcionais, arquiteturais e estruturais do projeto AvaliaUnb, abrangendo desde a fase de imersão e análise das causas-raiz do problema e arquitetura do sistema. O sistema engloba busca e filtragem de docentes/disciplinas, avaliação por critérios pedagógicos objetivos, visualização de médias consolidadas, rankings, arquitetura baseada em Python/Flask com banco Supabase e mecanismos de moderação.
 
 ### 1.3 Visão Geral
 Este documento detalha o posicionamento do produto, analisa as causas-raiz da desinformação na matrícula, mapeia os perfis de usuários e personas, estabelece a arquitetura e stack tecnológica, e especifica os Requisitos Funcionais, Não Funcionais e Restrições.
@@ -20,7 +20,7 @@ Este documento detalha o posicionamento do produto, analisa as causas-raiz da de
 ## 2. Posicionamento
 
 ### 2.1 Oportunidade de Negócios
-Durante o período semestral de matrícula na UnB, os estudantes precisam selecionar disciplinas e docentes que definem seu percurso acadêmico. Contudo, a ausência de uma base centralizada de avaliações didáticas faz com que as decisões ocorram no escuro ou através de grupos dispersos no WhatsApp/Telegram. O AvaliaAi surge para transformar essa realidade, estruturando métricas de didática, organização e clareza, oferecendo transparência aos estudantes e feedback pedagógico construtivo aos professores.
+Durante o período semestral de matrícula na UnB, os estudantes precisam selecionar disciplinas e docentes que definem seu percurso acadêmico. Contudo, a ausência de uma base centralizada de avaliações didáticas faz com que as decisões ocorram no escuro ou através de grupos dispersos no WhatsApp/Telegram. O AvaliaUnb surge para transformar essa realidade, estruturando métricas de didática, organização e clareza, oferecendo transparência aos estudantes e feedback pedagógico construtivo aos professores.
 
 ### 2.2 Análise do Problema e Causas-Raiz (Diagrama de Ishikawa)
 O problema central identificado é a **"Insegurança e falta de transparência na escolha de docentes e disciplinas na matrícula da UnB"**. A análise aprofundada revelou 6 causas-raiz principais:
@@ -39,7 +39,7 @@ O problema central identificado é a **"Insegurança e falta de transparência n
 | **O problema** | Insegurança e falta de transparência na escolha de docentes e disciplinas no período de matrícula da UnB. |
 | **Afeta** | Estudantes da UnB (que realizam escolhas desinformadas) e Docentes (que carecem de feedback formal e estruturado para aprimoramento pedagógico). |
 | **Cujo impacto é** | Alta taxa de reprovações e trancamentos surpresa, estresse na montagem da grade e falta de canal para evolução metodológica docente. |
-| **Uma boa solução seria** | Uma plataforma web dedicada (AvaliaAi) com autenticação segura, busca e filtragem de disciplinas/professores, avaliações por critérios padronizados (didática, clareza, organização, disponibilidade, dificuldade), cálculo de médias e moderação de conteúdo. |
+| **Uma boa solução seria** | Uma plataforma web dedicada (AvaliaUnb) com autenticação segura, busca e filtragem de disciplinas/professores, avaliações por critérios padronizados (didática, clareza, organização, disponibilidade, dificuldade), cálculo de médias e moderação de conteúdo. |
 
 ### 2.4 Sentença de Posição do Produto
 
@@ -47,7 +47,7 @@ O problema central identificado é a **"Insegurança e falta de transparência n
 | --- | --- |
 | **Para** | Estudantes e professores da Universidade de Brasília (UnB) |
 | **Que** | Necessitam de informações claras para escolher disciplinas e receber feedback didático |
-| **O** | AvaliaAi |
+| **O** | AvaliaUnb |
 | **Que** | Centraliza pesquisas, permite avaliações por critérios objetivos e exibe médias e comparações |
 | **Diferente de** | Redes sociais genéricas, grupos informais de WhatsApp/Telegram e fóruns sem moderação |
 | **Nosso produto** | Oferece uma estrutura focada na realidade acadêmica da UnB, com métricas pedagógicas específicas, arquitetura modular e moderação de conteúdo. |
@@ -75,18 +75,18 @@ O problema central identificado é a **"Insegurança e falta de transparência n
 - **Dores & Frustrações:** Falta de diagnóstico contínuo sobre o aprendizado dos alunos, receio de comentários difamatórios anônimos.
 
 ### 3.2 Ambiente do Usuário
-O AvaliaAi será disponibilizado através de aplicação web responsiva, acessível fluidamente em desktops e notebooks. O Sistema deve suportar múltiplos acessos simultâneos durante os picos de matrícula acadêmica.
+O AvaliaUnb será disponibilizado através de aplicação web responsiva, acessível fluidamente em desktops e notebooks. O Sistema deve suportar múltiplos acessos simultâneos durante os picos de matrícula acadêmica.
 
 ---
 
 ## 4. Visão Geral do Produto e Arquitetura
 
 ### 4.1 Perspectiva e Diagrama de Contexto
-O AvaliaAi atua como um sistema autônomo complementar aos sistemas acadêmicos da UnB. O diagrama de contexto estabelece a relação entre os atores e módulos:
+O AvaliaUnb atua como um sistema autônomo complementar aos sistemas acadêmicos da UnB. O diagrama de contexto estabelece a relação entre os atores e módulos:
 
 - **Estudante (Ator Principal):** Acessa a plataforma para consultar perfis, visualizar notas consolidadas, comparar professores e submeter avaliações.
-- **Plataforma AvaliaAi:** Aplicação central que processa regras de negócio, calcula médias ponderadas e gerencia o catálogo.
-- **Sistema de Autenticação:** Serviço de validação de identidade (conta própria / OAuth) para garantir que apenas estudantes reais submetam avaliações.
+- **Plataforma AvaliaUnb:** Aplicação central que processa regras de negócio, calcula médias ponderadas e gerencia o catálogo.
+- **Sistema de Autenticação:** Supabase Auth, usado pelo backend para cadastro, login e sessões. A confirmação de e-mail ainda depende de implementação específica.
 - **Portal SIGAA / Dados Públicos:** Fonte pública de dados de turmas, códigos de disciplinas, horários e departamentos para cruzamento inicial de informações.
 
 ### 4.2 Pilha Tecnológica (Tech Stack)
@@ -94,7 +94,7 @@ O AvaliaAi atua como um sistema autônomo complementar aos sistemas acadêmicos 
 | Camada / Área | Tecnologias Selecionadas |
 | --- | --- |
 | **Frontend** | HTML5, CSS3, JavaScript e Figma (Design e Prototipagem da Interface). |
-| **Backend** | Python, Flask (Microframework Web), Jinja2 (Engine de Templates) e Render / Heroku (Deploy e Hospedagem). |
+| **Backend** | Python, Flask (Microframework Web), Jinja2 (Engine de Templates) e Vercel (configuração de hospedagem). |
 | **Banco de Dados & Ferramentas** | Supabase (Banco de dados relacional), Git e GitHub (Versionamento e Integração Contínua). |
 
 ### 4.3 Arquitetura do Sistema e Componentes
@@ -102,16 +102,21 @@ O sistema é estruturado em uma arquitetura modular em camadas:
 
 - **Camada de Apresentação (Frontend / Client UI):** Interface web construída com HTML5/CSS3/JS e templates renderizados dinamicamente via Jinja2.
 - **Camada de Controle (Controllers):** Contém o *Autenticação Controller* (gestão de sessões e segurança), *Avaliação Controller* (cálculo de notas e validação) e *Professor/Turma Controller* (consultas, buscas e filtros).
-- **Camada de Serviços e Repositórios:** Inclui o *Serviço de Autenticação*, *Avaliação Repository* (persistência Supabase das avaliações e comentários) e *Serviço de Sincronização / Parser* (processamento de dados de turmas).
-- **Camada de Dados:** Persistência principal via Supabase, dados temporários de sessão em cache e integração com fontes públicas do SIGAA.
+- **Camada de Serviços e Repositórios:** Inclui os repositórios de usuários, professores e avaliações, integrados ao Supabase, e o scraper SIGAA executado separadamente. Comentários ainda são uma proposta, não persistência implementada.
+- **Camada de Dados:** Supabase (PostgreSQL e Auth); cookies do navegador guardam tokens de autenticação. O catálogo pode ser mantido em cache por processo no backend.
 
 ---
 
 ## 5. Requisitos Funcionais
 
+Esta seção registra requisitos da visão do produto, não a situação de entrega.
+Consulte [Funcionalidades](FUNCIONALIDADES.md) para saber o que já existe e
+[Comentários](COMENTARIOS.md) para regras ainda em proposta.
+
+
 | Código | Nome | Descrição | Prioridade |
 | --- | --- | --- | --- |
-| **RF01** | Cadastro de Usuário | Permitir que estudantes criem uma conta no AvaliaAi. | Alta (R1) |
+| **RF01** | Cadastro de Usuário | Permitir que estudantes criem uma conta no AvaliaUnb. | Alta (R1) |
 | **RF02** | Login / Autenticação | Permitir que usuários cadastrados façam login com credenciais seguras. | Alta (R1) |
 | **RF03** | Busca de Professores e Disciplinas | Pesquisar professores por nome, código, departamento ou disciplina. | Alta (R1) |
 | **RF04** | Perfil do Professor | Exibir informações do professor, disciplinas ministradas e histórico de notas. | Alta (R1) |
@@ -126,16 +131,23 @@ O sistema é estruturado em uma arquitetura modular em camadas:
 
 ---
 
+Para o estado atual de arquitetura e tecnologia, veja [Arquitetura](ARQUITETURA.md),
+[Backend](BACKEND.md) e [Hospedagem](HOSPEDAGEM.md).
+
 ## 6. Restrições
 
 - **Restrição de Prazo e Recursos:** O desenvolvimento do projeto deve ser concluído no período letivo da disciplina de MDS na UnB.
-- **Tecnologias:** O backend deve ser desenvolvido em Python utilizando o microframework Flask com banco de dados Supabase e hospedagem em nuvem (Render/Heroku).
+- **Tecnologias:** O backend deve ser desenvolvido em Python utilizando o microframework Flask com banco de dados Supabase e hospedagem em nuvem (Vercel, conforme configuração atual).
 - **Conformidade com a LGPD:** O tratamento de dados de estudantes e professores deve atender à Lei Geral de Proteção de Dados (LGPD).
 - **Diretrizes de Moderação:** O sistema deve barrar conteúdos ofensivos, difamatórios ou discursos de ódio, garantindo a ética nas avaliações docentes.
 
 ---
 
 ## 7. Requisitos Não Funcionais
+
+Os indicadores abaixo são **metas de produto**, não medições de carga,
+segurança ou acessibilidade já homologadas.
+
 
 - **RNF01 - Usabilidade:** A interface do sistema deve ser intuitiva, responsiva e acessível em dispositivos desktops sem necessidade de treinamento prévio.
 - **RNF02 - Desempenho:** A busca por professores e o carregamento das páginas de perfil devem responder em menos de 2 segundos sob carga normal de uso.

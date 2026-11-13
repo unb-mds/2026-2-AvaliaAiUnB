@@ -11,7 +11,6 @@ from app.controllers.session_controller import (
 )
 from app.seguranca import (
     limitar_cadastro,
-    limitar_login_por_conta,
     limitar_login_por_ip,
 )
 
@@ -42,7 +41,6 @@ def cadastro():
 
 @auth_bp.route("/login", methods=["GET", "POST"])
 @limitar_login_por_ip
-@limitar_login_por_conta
 def login():
     if request.method == "GET":
         return render_template("login.html")

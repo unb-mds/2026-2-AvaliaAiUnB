@@ -1,6 +1,6 @@
 # Design system
 
-Proposta da #112 para a aplicação AvaliaUnB. A paleta parte das telas atuais,
+Proposta da #112 para a aplicação AvaliaUnb. A paleta parte das telas atuais,
 com Arial, fundo branco, texto escuro e links azuis. O padrão orienta os
 protótipos de comentários e os ajustes da #114. O [inventário do frontend](FRONTEND.md)
 registra os estilos que já existem no código.
@@ -80,3 +80,7 @@ resultados. Ao fechar o diálogo de exclusão, devolva o foco ao contexto de ori
 
 Os [protótipos de comentários](TELAS_COMENTARIOS.md) mostram os fluxos de
 listar, reagir, escrever, editar e apagar.
+
+Relacionado: [inventário do frontend](FRONTEND.md),
+[protótipos de comentários](TELAS_COMENTARIOS.md) e
+[checklist de contribuição](PROCESSO_CONTRIBUICAO.md).

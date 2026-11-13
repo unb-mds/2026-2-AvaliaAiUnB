@@ -2,6 +2,8 @@
 import re
 
 MINIMO_SENHA = 8
+MAXIMO_SENHA = 128
+MAXIMO_NOME = 120
 DOMINIO_EMAIL = 'gmail.com'
 PADRAO_USERNAME = re.compile(r'[a-z0-9._]{3,30}')
 
@@ -23,6 +25,8 @@ def validar_cadastro(dados):
     erros = {}
     if not nome:
         erros['nome'] = 'Informe seu nome.'
+    elif len(nome) > MAXIMO_NOME:
+        erros['nome'] = f'O nome deve ter no máximo {MAXIMO_NOME} caracteres.'
     if not PADRAO_USERNAME.fullmatch(username):
         erros['username'] = ('O nome de usuário deve ter de 3 a 30 caracteres: '
                              'letras, números, ponto ou sublinhado.')
@@ -40,6 +44,8 @@ def validar_cadastro(dados):
         erros['email'] = f'Use um e-mail @{DOMINIO_EMAIL}.'
     if not senha.strip() or len(senha) < MINIMO_SENHA:
         erros['senha'] = f'A senha deve ter pelo menos {MINIMO_SENHA} caracteres.'
+    elif len(senha) > MAXIMO_SENHA:
+        erros['senha'] = f'A senha deve ter no máximo {MAXIMO_SENHA} caracteres.'
     if dados.get('confirmar_senha', '') != senha or not senha:
         erros['confirmar_senha'] = 'A confirmação deve ser igual à senha.'
     return {'nome': nome, 'username': username, 'email': email, 'senha': senha}, erros

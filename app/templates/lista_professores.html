@@ -1,125 +1,131 @@
+{% from '_macros.html' import nota %}
 <!DOCTYPE html>
-
 <html lang="pt-BR">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <title>Professores - AvaliaAi</title>
-
+    <title>Professores - AvaliaUnb</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='indicadores.css') }}">
-
+    <link rel="stylesheet" href="{{ url_for('static', filename='lista_professores.css') }}">
 </head>
-
 <body>
+    {% include '_topo.html' %}
 
-    <main>
-
+    <main class="conteudo">
         <h1>Professores</h1>
-
-        <p><a href="{{ url_for('professores.comparar') }}">Comparar professores</a></p>
-
-        <p><a href="{{ url_for('professores.ranking') }}">Ver ranking de professores</a></p>
-
         <p class="ajuda">Ordenados pela quantidade de avaliações.</p>
 
-        <form method="get" action="{{ url_for('professores.listar') }}" class="filtros">
+        <div class="atalhos">
+            <a class="botao botao-secundario" href="{{ url_for('professores.comparar') }}">Comparar professores</a>
+            <a class="botao botao-secundario" href="{{ url_for('professores.ranking') }}">Ver ranking de professores</a>
+        </div>
 
-            <div>
-
+        <form method="get" action="{{ url_for('professores.listar') }}" class="filtros filtros-busca card">
+            <div class="campo">
                 <label for="nome">Nome do professor</label>
-
                 <input type="search" id="nome" name="nome" value="{{ filtros.nome }}">
-
             </div>
 
-            <div>
-
+            <div class="campo">
                 <label for="disciplina">Disciplina (nome ou código)</label>
-
                 <input type="search" id="disciplina" name="disciplina" value="{{ filtros.disciplina }}">
-
             </div>
 
-            <div>
-
+            <div class="campo">
                 <label for="departamento">Departamento</label>
-
-                <select id="departamento" name="departamento">
-
-                    <option value="">Todos</option>
-
+                <input type="search" id="departamento" name="departamento" value="{{ filtros.departamento }}" list="lista-departamentos" autocomplete="off" aria-describedby="departamento-ajuda">
+                <datalist id="lista-departamentos">
                     {% for dep in departamentos %}
-
-                    <option value="{{ dep }}" {% if dep == filtros.departamento %}selected{% endif %}>{{ dep }}</option>
-
+                    <option value="{{ dep }}"></option>
                     {% endfor %}
-
-                </select>
-
+                </datalist>
+                <p class="campo-ajuda" id="departamento-ajuda">Digite para filtrar a lista ou escolha uma opção. Deixe vazio para todos.</p>
             </div>
 
-            <button type="submit">Buscar</button>
-
+            <button type="submit" class="botao botao-primario">Buscar</button>
         </form>
 
         {% if catalogo %}
-
+        {# Paginação no template: 100 professores por página #}
+        {% set por_pagina = 100 %}
+        {% set total = catalogo|length %}
+        {% set total_paginas = ((total + por_pagina - 1) // por_pagina) %}
+        {% set pagina = [[request.args.get('pagina', '1')|int(1), 1]|max, total_paginas]|min %}
+        {% set inicio = (pagina - 1) * por_pagina %}
+        {% set fim = [inicio + por_pagina, total]|min %}
+        {% if total_paginas > 1 %}
+        <p class="ajuda resumo-pagina">Mostrando {{ inicio + 1 }}–{{ fim }} de {{ total }} professores.</p>
+        {% endif %}
         <ul class="lista-professores">
-
-            {% for professor, disciplinas in catalogo %}
-
-            <li>
-
-                <h2><a href="{{ url_for('professores.perfil', professor_id=professor.id, next=request.full_path) }}">{{ professor.nome }}</a></h2>
-
-                <p>{{ professor.departamento }}</p>
-
-                <p><a href="{{ url_for('professores.comparar', professor_1=professor.id) }}">Comparar este professor</a></p>
-
-                <p class="ajuda">{{ professor.total_avaliacoes }} {{ 'avaliação' if professor.total_avaliacoes == 1 else 'avaliações' }}</p>
+            {% for professor, disciplinas in catalogo[inicio:fim] %}
+            <li class="card">
+                <div class="professor-cabecalho">
+                    <div class="professor-identificacao">
+                        <h2><a href="{{ url_for('professores.perfil', professor_id=professor.id, next=request.full_path) }}">{{ professor.nome }}</a></h2>
+                        <p class="departamento">{{ professor.departamento }}</p>
+                    </div>
+                    <div class="professor-resumo">
+                        {% if professor.media_geral is not none %}
+                        {# Preenchimento em %: nota / 5, arredondado a décimos (classe .preenche-N) #}
+                        {% set preenchimento = ((professor.media_geral * 10 + 0.5)|int) * 2 %}
+                        <p class="nota-geral">
+                            <span class="estrelas" role="img" aria-label="Média geral {{ nota(professor.media_geral) }} de 5">
+                                <span class="estrelas-fundo" aria-hidden="true">★★★★★</span>
+                                <span class="estrelas-cheias preenche-{{ preenchimento }}" aria-hidden="true">★★★★★</span>
+                            </span>
+                            <strong>{{ nota(professor.media_geral) }}</strong> <span class="nota-rotulo">média geral</span>
+                        </p>
+                        {% else %}
+                        <p class="nota-geral"><span class="estrela" aria-hidden="true">★</span> <strong>N/A</strong> <span class="nota-rotulo">(Não avaliado)</span></p>
+                        {% endif %}
+                        <p class="contagem">{{ professor.total_avaliacoes }} {{ 'avaliação' if professor.total_avaliacoes == 1 else 'avaliações' }}</p>
+                    </div>
+                </div>
 
                 {% if disciplinas %}
-
-                <ul>
-
+                <ul class="disciplinas">
                     {% for disciplina in disciplinas %}
-
                     <li>{{ disciplina.nome }}{% if disciplina.codigo %} — {{ disciplina.codigo }}{% endif %}</li>
-
                     {% endfor %}
-
                 </ul>
-
                 {% else %}
-
                 <p class="ajuda">Ainda não há disciplinas cadastradas para este professor.</p>
-
                 {% endif %}
 
+                <div class="professor-acoes">
+                    {# Com várias disciplinas, o perfil permite escolher qual avaliar #}
+                    {% if disciplinas|length == 1 %}
+                    <a class="botao botao-primario" href="{{ url_for('professores.avaliar', professor_id=professor.id, disciplina_id=disciplinas[0].id, next=request.full_path) }}">Avaliar</a>
+                    {% elif disciplinas %}
+                    <a class="botao botao-primario" href="{{ url_for('professores.perfil', professor_id=professor.id, next=request.full_path) }}">Avaliar</a>
+                    {% endif %}
+                    <a class="botao botao-secundario" href="{{ url_for('professores.comparar', professor_1=professor.id) }}">Comparar este professor</a>
+                </div>
             </li>
-
             {% endfor %}
-
         </ul>
 
-        {% elif filtros.nome or filtros.disciplina or filtros.departamento %}
-
-        <p role="status">Nenhum professor encontrado para os filtros informados.
-
-            <a href="{{ url_for('professores.listar') }}">Limpar filtros</a></p>
-
-        {% else %}
-
-        <p role="status">Ainda não há professores cadastrados.</p>
-
+        {% if total_paginas > 1 %}
+        <nav class="paginacao" aria-label="Paginação">
+            {% if pagina > 1 %}
+            <a class="botao botao-secundario" rel="prev" href="{{ url_for('professores.listar', nome=filtros.nome, disciplina=filtros.disciplina, departamento=filtros.departamento, pagina=pagina - 1) }}">Anterior</a>
+            {% else %}
+            <span class="botao botao-secundario" aria-disabled="true">Anterior</span>
+            {% endif %}
+            <span class="paginacao-posicao" aria-current="page">Página {{ pagina }} de {{ total_paginas }}</span>
+            {% if pagina < total_paginas %}
+            <a class="botao botao-secundario" rel="next" href="{{ url_for('professores.listar', nome=filtros.nome, disciplina=filtros.disciplina, departamento=filtros.departamento, pagina=pagina + 1) }}">Próxima</a>
+            {% else %}
+            <span class="botao botao-secundario" aria-disabled="true">Próxima</span>
+            {% endif %}
+        </nav>
         {% endif %}
-
+        {% elif filtros.nome or filtros.disciplina or filtros.departamento %}
+        <p class="mensagem" role="status">Nenhum professor encontrado para os filtros informados.
+            <a href="{{ url_for('professores.listar') }}">Limpar filtros</a></p>
+        {% else %}
+        <p class="mensagem" role="status">Ainda não há professores cadastrados.</p>
+        {% endif %}
     </main>
-
 </body>
-
 </html>

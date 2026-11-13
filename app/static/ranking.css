@@ -1,0 +1,84 @@
+/* Ranking de professores. Carregado depois de indicadores.css (só esta tela o usa). */
+body {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    background-color: var(--cor-fundo-suave);
+    font-size: var(--texto-base);
+    line-height: 1.5;
+}
+
+main {
+    box-sizing: border-box;
+    max-width: var(--largura-conteudo);
+    margin: 0 auto;
+    padding: var(--espaco-5) var(--margem-lateral) var(--espaco-7);
+}
+
+.voltar {
+    margin: 0;
+}
+
+.voltar a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--altura-controle);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.voltar a:hover {
+    text-decoration: underline;
+}
+
+h1 {
+    margin: 0 0 var(--espaco-3);
+    font-size: var(--texto-titulo-pagina);
+    line-height: 1.2;
+}
+
+main > .ajuda {
+    margin: 0 0 var(--espaco-3);
+    font-size: var(--texto-pequeno);
+}
+
+.mensagem {
+    border: 1px solid var(--cor-divisor);
+    background-color: var(--cor-superficie);
+}
+
+/* Tabela dentro de um card, rolando na horizontal só dentro dele */
+.tabela-ranking-container {
+    margin-top: var(--espaco-4);
+    padding: var(--espaco-2);
+    border: 1px solid var(--cor-divisor);
+    border-radius: var(--raio-card);
+    background-color: var(--cor-superficie);
+}
+
+.tabela-ranking caption {
+    padding: var(--espaco-3) var(--espaco-2);
+    font-size: var(--texto-titulo-card);
+}
+
+.tabela-ranking th,
+.tabela-ranking td {
+    padding: var(--espaco-3) var(--espaco-2);
+}
+
+.tabela-ranking tbody td:first-child {
+    font-weight: 700;
+}
+
+.tabela-ranking th[scope="row"] a {
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.tabela-ranking th[scope="row"] a:hover {
+    text-decoration: underline;
+}
+
+.nota-ranking {
+    color: var(--cor-principal);
+}

@@ -1,3 +1,4 @@
+import logging
 import re
 import sys
 import time
@@ -33,6 +34,8 @@ from texto_sigaa import (
 )
 from turmas_sigaa import montar_payload_turmas
 from unidades_sigaa import escolher_unidades
+
+log = logging.getLogger(__name__)
 
 # Status de uma busca por unidade
 OK = "ok"
@@ -93,7 +96,8 @@ class SigaaScraper:
             print(f"[!] Alerta detectado: {alert.text}")
             alert.accept()
             return True
-        except Exception:
+        except (WebDriverException, UnexpectedAlertPresentException):
+            log.debug('Não foi possível acessar ou fechar o alerta do navegador.', exc_info=True)
             return False
 
     def _ha_alerta(self) -> bool:
@@ -135,8 +139,8 @@ class SigaaScraper:
             try:
                 self.driver.save_screenshot(str(caminho_png))
                 print(f"[DEBUG] Screenshot: {caminho_png.resolve()}")
-            except Exception:
-                pass
+            except (OSError, WebDriverException):
+                log.warning('Falha ao registrar arquivo ou metadados de debug.', exc_info=True)
 
             caminho_html = pasta / f"{nome}.html"
             try:
@@ -457,10 +461,8 @@ class SigaaScraper:
     def fechar(self):
         try:
             self.driver.quit()
-        except OSError:
-            pass
-        except Exception:
-            pass
+        except (OSError, WebDriverException):
+            log.warning('Falha ao encerrar o driver do scraper.', exc_info=True)
 
 
 # ---------- execução ----------

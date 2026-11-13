@@ -6,7 +6,7 @@ hide:
 
 <div class="hero" markdown>
 
-# AvaliaAi UnB
+# AvaliaUnb
 
 Plataforma de consulta, comparação e avaliação de professores e disciplinas da Universidade de Brasília.
 
@@ -22,7 +22,7 @@ Plataforma de consulta, comparação e avaliação de professores e disciplinas 
 
 </div>
 
-## O que o AvaliaAi faz
+## O que o AvaliaUnb faz
 
 <div class="grid cards" markdown>
 
@@ -69,7 +69,7 @@ Plataforma de consulta, comparação e avaliação de professores e disciplinas 
 !!! info "O problema"
     **Insegurança e falta de transparência na escolha de docentes e disciplinas na matrícula da UnB.**
 
-Na matrícula, o estudante decide em pouco tempo, e as informações estão espalhadas em grupos de WhatsApp e Telegram ou nem existem de forma organizada. O SIGAA mostra horários e vagas, mas não o jeito de ensinar de cada professor. O AvaliaAi reúne isso em avaliações objetivas e fáceis de consultar.
+Na matrícula, o estudante decide em pouco tempo, e as informações estão espalhadas em grupos de WhatsApp e Telegram ou nem existem de forma organizada. O SIGAA mostra horários e vagas, mas não o jeito de ensinar de cada professor. O AvaliaUnb reúne isso em avaliações objetivas e fáceis de consultar.
 
 ## Como é feito
 
@@ -103,6 +103,9 @@ Na matrícula, o estudante decide em pouco tempo, e as informações estão espa
 
 ## Explore a documentação
 
+Para navegar por assunto e evitar versões divergentes, consulte o
+[mapa da documentação](GUIA_DOCUMENTACAO.md).
+
 <div class="grid cards" markdown>
 
 - :material-file-document-outline: **[Documento de visão](DOCUMENTO_DE_VISAO.md)**
@@ -116,6 +119,18 @@ Na matrícula, o estudante decide em pouco tempo, e as informações estão espa
     ---
 
     Regras da busca, avaliações, ranking e comparação.
+
+- :material-database: **[Modelo de dados](Modelo%20de%20Dados.md)**
+
+    ---
+
+    Esquema, relações, políticas e diferenças entre versão SQL e banco implantado.
+
+- :material-database-import: **[Scraper SIGAA](COMO_USAR_SCRAPER.md)**
+
+    ---
+
+    Instalação, coleta, dry-run e atualização do catálogo.
 
 - :material-cloud-outline: **[Hospedagem](HOSPEDAGEM.md)**
 
@@ -147,11 +162,29 @@ Na matrícula, o estudante decide em pouco tempo, e as informações estão espa
 
     Especificação para revisão do grupo.
 
+- :material-source-branch: **[Pipeline](pipeline.md)**
+
+    ---
+
+    Testes, auditoria automatizada e publicação da documentação.
+
+- :material-check-all: **[DoR e DoD](PROCESSO_CONTRIBUICAO.md)**
+
+    ---
+
+    Critérios de início e conclusão para issues e pull requests.
+
 - :material-shield-check-outline: **[Auditoria de segurança](AUDITORIA_SEGURANCA.md)**
 
     ---
 
-    O que foi verificado e o que foi encontrado.
+    Diagnóstico histórico, correções e limites da auditoria.
+
+- :material-shield-lock-outline: **[Cibersegurança](CIBERSEGURANCA.md)**
+
+    ---
+
+    Mecanismos atuais e plano de correções.
 
 - :simple-figma: **[Protótipo no Figma](https://www.figma.com/board/PgqkPopVXOiSqm9gD5RRNv/AvaliaAi---Template-MDS?node-id=0-1&p=f&t=Rxu6jVCgeVZHCyg2-0)**
 

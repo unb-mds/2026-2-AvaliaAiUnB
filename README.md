@@ -1,8 +1,8 @@
-# 🎓 AvaliaUnB
+# 🎓 AvaliaUnb
 
 > Consulta, comparação e avaliação de professores e disciplinas da Universidade de Brasília.
 
-O AvaliaUnB reúne avaliações por critérios pedagógicos para ajudar estudantes a
+O AvaliaUnb reúne avaliações por critérios pedagógicos para ajudar estudantes a
 escolher disciplinas e docentes durante a matrícula. É um projeto da disciplina
 **Métodos de Desenvolvimento de Software (MDS/UnB), semestre 2026/2**.
 
@@ -26,7 +26,7 @@ escolher disciplinas e docentes durante a matrícula. É um projeto da disciplin
 ## Sobre o projeto
 
 Informações sobre professores costumam ficar dispersas em grupos de mensagens,
-o que dificulta comparar experiências na hora da matrícula. O AvaliaUnB organiza
+o que dificulta comparar experiências na hora da matrícula. O AvaliaUnb organiza
 a consulta por professor, disciplina e departamento, com notas de **didática,
 clareza, organização, disponibilidade e dificuldade**.
 
@@ -204,7 +204,7 @@ filtro antes da publicação e denúncias. O recurso ainda não está implementa
 
 | Assunto | Onde consultar |
 |---|---|
-| Início e instruções de execução | [Documentação do projeto](docs/index.md) |
+| Início e instruções de execução | [Documentação do projeto](docs/index.md) · [Mapa e índice por assunto](docs/GUIA_DOCUMENTACAO.md) |
 | Produto e requisitos | [Documento de visão](docs/DOCUMENTO_DE_VISAO.md) |
 | Funcionalidades | [Busca, notas, comparação e ranking](docs/FUNCIONALIDADES.md) |
 | Backend | [Estrutura, rotas, sessões e repositórios](docs/BACKEND.md) |
@@ -214,7 +214,7 @@ filtro antes da publicação e denúncias. O recurso ainda não está implementa
 | Coleta | [Guia do scraper](docs/COMO_USAR_SCRAPER.md) |
 | Cibersegurança | [Mecanismos e correções](docs/CIBERSEGURANCA.md) · [Relatório da auditoria](docs/AUDITORIA_SEGURANCA.md) |
 | Comentários | [Especificação para revisão do grupo](docs/COMENTARIOS.md) |
-| Automação e checks | [Pipeline do GitHub Actions](docs/pipeline.md) |
+| Automação e checks | [Pipeline do GitHub Actions](docs/pipeline.md) · [DoR e DoD](docs/PROCESSO_CONTRIBUICAO.md) |
 | Hospedagem | [Configuração de Preview, produção e lançamento](docs/HOSPEDAGEM.md) |
 | Design | [Board do Figma](https://www.figma.com/board/PgqkPopVXOiSqm9gD5RRNv/AvaliaAi---Template-MDS?node-id=0-1&p=f&t=Rxu6jVCgeVZHCyg2-0) |
 | Histórico | [Release 1](RELEASE-v1.0.0.md) · [Release 2](RELEASE-v2.0.0.md) |
@@ -237,6 +237,9 @@ Na `main`, o workflow de documentação publica as mudanças em `docs/` ou
    `mkdocs build --strict`.
 6. Abra um pull request para a `main`, referenciando a issue, descrevendo a
    mudança e informando a validação realizada. Confira os checks antes do merge.
+
+Consulte também os [critérios de contribuição](docs/PROCESSO_CONTRIBUICAO.md),
+com o Definition of Ready e Definition of Done usados nos templates de issue e PR.
 
 Consulte o [guia do backend](docs/BACKEND.md), os
 [diagramas de arquitetura](docs/ARQUITETURA.md) e as

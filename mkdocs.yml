@@ -1,5 +1,5 @@
-site_name: AvaliaAi UnB
-site_description: Documentação do AvaliaAi UnB
+site_name: AvaliaUnb
+site_description: Documentação do AvaliaUnb
 repo_url: https://github.com/unb-mds/2026-2-AvaliaAiUnB
 repo_name: unb-mds/2026-2-AvaliaAiUnB
 theme:
@@ -48,12 +48,14 @@ exclude_docs: |
   IMPLEMENTACAO_26_36_37.md
 nav:
   - Início: index.md
+  - Guia da documentação: GUIA_DOCUMENTACAO.md
   - Projeto:
     - Funcionalidades: FUNCIONALIDADES.md
     - Comentários avaliativos: COMENTARIOS.md
     - Design system: DESIGN_SYSTEM.md
     - Telas de comentários: TELAS_COMENTARIOS.md
     - Documento de Visão: DOCUMENTO_DE_VISAO.md
+    - Contribuição (DoR e DoD): PROCESSO_CONTRIBUICAO.md
     - Protótipo no Figma: "https://www.figma.com/board/PgqkPopVXOiSqm9gD5RRNv/AvaliaAi---Template-MDS?node-id=0-1&p=f&t=Rxu6jVCgeVZHCyg2-0"
   - Arquitetura:
     - Diagramas de Arquitetura: ARQUITETURA.md

@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Avaliar Professor - AvaliaAi</title>
+    <title>Avaliar Professor - AvaliaUnb</title>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='indicadores.css') }}">
 
     <link rel="stylesheet" href="{{ url_for('static', filename='avaliacao.css') }}">
 </head>
 <body>
-    <main class="avaliacao-container">
+    <main class="avaliacao-container card">
         <h1>{{ 'Editar Avaliação de' if modo_edicao else 'Avaliar' }} {{ professor.nome }}</h1>
 
         <p>
@@ -23,7 +23,7 @@
         <p>Sua identidade não será exibida nas avaliações públicas.</p>
 
         {% if erros %}
-        <ul class="erros" role="alert">
+        <ul class="erros mensagem mensagem-erro" role="alert">
             {% for erro in erros.values() %}
             <li>{{ erro }}</li>
             {% endfor %}
@@ -43,36 +43,35 @@
             >
 
             {% for criterio, titulo in criterios.items() %}
-            <div class="form-group">
-                <label for="{{ criterio }}">
-                    {{ titulo }} (1 a 5)
-                </label>
+            <fieldset class="nota-grupo">
+                <legend>{{ titulo }} (1 a 5)</legend>
 
-                <select name="{{ criterio }}" id="{{ criterio }}" required>
-                    <option value="">Selecione...</option>
-
+                <div class="notas-opcoes">
                     {% for nota in range(1, 6) %}
-                    <option
+                    <input
+                        type="radio"
+                        name="{{ criterio }}"
+                        id="{{ criterio }}-{{ nota }}"
                         value="{{ nota }}"
-                        {% if dados.get(criterio) == nota|string %}selected{% endif %}
+                        {% if dados.get(criterio) == nota|string %}checked{% endif %}
+                        required
                     >
-                        {{ nota }}
-                        {% if nota == 1 %}
-                            — {{ 'Muito fácil' if criterio == 'dificuldade' else 'Muito ruim' }}
-                        {% elif nota == 5 %}
-                            — {{ 'Muito difícil' if criterio == 'dificuldade' else 'Excelente' }}
-                        {% endif %}
-                    </option>
+                    <label for="{{ criterio }}-{{ nota }}">{{ nota }}</label>
                     {% endfor %}
-                </select>
-            </div>
+                </div>
+
+                <p class="notas-escala">
+                    <span>1 = {{ 'Muito fácil' if criterio == 'dificuldade' else 'Muito ruim' }}</span>
+                    <span>5 = {{ 'Muito difícil' if criterio == 'dificuldade' else 'Excelente' }}</span>
+                </p>
+            </fieldset>
             {% endfor %}
 
             <div class="acoes">
-                <button type="submit">{{ 'Salvar Alterações' if modo_edicao else 'Enviar Avaliação' }}</button>
+                <button type="submit" class="botao botao-primario">{{ 'Salvar Alterações' if modo_edicao else 'Enviar Avaliação' }}</button>
 
                 <a
-                    class="cancelar"
+                    class="cancelar botao botao-secundario"
                     href="{{ url_for('auth.perfil') if modo_edicao else url_for('professores.perfil', professor_id=professor.id, disciplina_id=disciplina.id, next=next_url) }}"
                 >
                     Cancelar

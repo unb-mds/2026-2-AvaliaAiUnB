@@ -13,19 +13,22 @@ CAMPOS_FILTRO = ('nome', 'disciplina', 'departamento')
 @professor_bp.get('/comparar')
 def comparar():
     contexto = controller.carregar_comparacao(request.args)
-    return render_template('comparacao.html', **contexto), 400 if contexto['erros'] else 200
+    return render_template('comparacao.html', **contexto,
+                           usuario=obter_usuario_atual()), 400 if contexto['erros'] else 200
 @professor_bp.get('/ranking')
 def ranking():
     professores, minimo_avaliacoes = controller.carregar_ranking()
     return render_template('ranking.html', ranking=professores,
-                           minimo_avaliacoes=minimo_avaliacoes)
+                           minimo_avaliacoes=minimo_avaliacoes,
+                           usuario=obter_usuario_atual())
 
 
 @professor_bp.get('/professores')
 def listar():
     filtros = {campo: request.args.get(campo, '').strip() for campo in CAMPOS_FILTRO}
     return render_template('lista_professores.html', catalogo=controller.catalogo(**filtros),
-                           filtros=filtros, departamentos=controller.departamentos())
+                           filtros=filtros, departamentos=controller.departamentos(),
+                           usuario=obter_usuario_atual())
 
 
 @professor_bp.get('/professores/<int:professor_id>')
@@ -40,11 +43,13 @@ def perfil(professor_id):
 
     return render_template('perfil_professor.html', professor=professor, disciplinas=disciplinas,
                            disciplina=disciplina, indicadores=indicadores,
-                           criterios=controller.criterios(), next_url=next_url)
+                           criterios=controller.criterios(), next_url=next_url,
+                           geral=controller.indicadores(professor_id, None),
+                           usuario=obter_usuario_atual())
 
 @professor_bp.route('/avaliar/<int:professor_id>', methods=['GET', 'POST'])
-@limitar_avaliacao
 @login_required
+@limitar_avaliacao
 def avaliar(professor_id):
     professor, _, disciplina = controller.carregar_perfil(professor_id)
     if disciplina is None:
@@ -75,8 +80,8 @@ def avaliar(professor_id):
 
 
 @professor_bp.route('/avaliacoes/<int:avaliacao_id>/editar', methods=['GET', 'POST'])
-@limitar_avaliacao
 @login_required
+@limitar_avaliacao
 def editar_avaliacao(avaliacao_id):
     usuario = obter_usuario_atual()
     avaliacao = controller.carregar_avaliacao_do_usuario(avaliacao_id, usuario)
@@ -111,8 +116,8 @@ def editar_avaliacao(avaliacao_id):
 
 
 @professor_bp.post('/avaliacoes/<int:avaliacao_id>/excluir')
-@limitar_avaliacao
 @login_required
+@limitar_avaliacao
 def excluir_avaliacao(avaliacao_id):
     controller.excluir_avaliacao(avaliacao_id, obter_usuario_atual())
     if request.accept_mimetypes.best == 'application/json':

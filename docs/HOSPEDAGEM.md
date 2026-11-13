@@ -90,3 +90,8 @@ Antes de considerar o endereço validado, confira com dados de teste:
 Registre o ambiente, a versão e o resultado da conferência. Os testes e a
 auditoria do código já existentes são referências complementares; um check de
 build aprovado não substitui a validação dos fluxos no ambiente publicado.
+
+Para abertura e conclusão de entregas, consulte
+[Definition of Ready e Done](PROCESSO_CONTRIBUICAO.md). Veja ainda o
+[pipeline de CI](pipeline.md), a [auditoria](AUDITORIA_SEGURANCA.md) e o
+[guia de scraper](COMO_USAR_SCRAPER.md) para dependências de atualização do catálogo.

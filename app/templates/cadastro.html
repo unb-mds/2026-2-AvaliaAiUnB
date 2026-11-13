@@ -3,22 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro - AvaliaAi UnB</title>
+    <title>Cadastro - AvaliaUnb</title>
 
+    <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='auth.css') }}">
 </head>
 <body>
+<main class="auth card">
+    <p class="voltar"><a href="{{ url_for('main.index') }}">&larr; Início</a></p>
     <h1>Criar conta</h1>
 
     {% set dados = dados|default({}) %}
     {% set erros = erros|default({}) %}
 
     {% if erro %}
-    <p role="alert" class="erro-form">{{ erro }}</p>
+    <p role="alert" class="erro-form mensagem mensagem-erro">{{ erro }}</p>
     {% endif %}
 
     {% if erros %}
-    <ul role="alert" class="erro-form">
+    <ul role="alert" class="erro-form mensagem mensagem-erro">
         {% for mensagem in erros.values() %}
         <li>{{ mensagem }}</li>
         {% endfor %}
@@ -26,7 +29,7 @@
     {% endif %}
 
     {% if sucesso %}
-    <p role="status">
+    <p role="status" class="mensagem">
         {{ sucesso }} <a href="/login">Entrar</a>
     </p>
     {% endif %}
@@ -56,7 +59,7 @@
             aria-describedby="username-ajuda"
             required
         >
-        <p id="username-ajuda">De 3 a 30 caracteres: letras, números, ponto ou sublinhado. Você entra com ele.</p>
+        <p id="username-ajuda" class="campo-ajuda">De 3 a 30 caracteres: letras, números, ponto ou sublinhado. Você entra com ele.</p>
 
         <label for="email">E-mail (@gmail.com)</label>
         <input
@@ -81,7 +84,7 @@
             required
         >
 
-        <p id="senha-ajuda">Use pelo menos 8 caracteres.</p>
+        <p id="senha-ajuda" class="campo-ajuda">Use pelo menos 8 caracteres.</p>
 
         <label for="confirmar_senha">Confirmar senha</label>
         <input
@@ -93,7 +96,8 @@
             required
         >
 
-        <button type="submit">Cadastrar</button>
+        <button type="submit" class="botao botao-primario">Cadastrar</button>
     </form>
+</main>
 </body>
 </html>

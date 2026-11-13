@@ -275,3 +275,8 @@ acompanham estas regras.
 - As telas cobrem vazio, envio, erro, edição, confirmação de exclusão e ocultação.
 - As permissões de backend e banco seguem o modelo aprovado, com testes de
   autorização e sem execução de migrações propostas durante a fase de documentação.
+
+Documentos relacionados: [modelo de dados](Modelo%20de%20Dados.md),
+[protótipos](TELAS_COMENTARIOS.md), [frontend](FRONTEND.md) e
+[cibersegurança](CIBERSEGURANCA.md). A execução depende de decisões
+registradas em issue/PR; este arquivo não ativa um sistema de comentários.
