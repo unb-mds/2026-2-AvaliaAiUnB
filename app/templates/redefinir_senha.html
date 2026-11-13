@@ -21,6 +21,9 @@
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <input type="hidden" name="formato" value="html">
         
+        <!-- NOVO: Campo oculto que vai guardar o token vindo da URL -->
+        <input type="hidden" id="access_token" name="access_token" value="">
+        
         <label for="senha">Nova Senha</label>
         <input type="password" id="senha" name="senha" required minlength="6" placeholder="Mínimo 6 caracteres">
 
@@ -30,5 +33,17 @@
         <button type="submit" class="botao botao-primario">Atualizar Senha</button>
     </form>
 </main>
+
+<!-- NOVO: Script para resgatar o token do Supabase e colocar no formulário antes de enviar -->
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        const hash = window.location.hash.substring(1);
+        const params = new URLSearchParams(hash);
+        const accessToken = params.get('access_token');
+        if (accessToken) {
+            document.getElementById('access_token').value = accessToken;
+        }
+    });
+</script>
 </body>
 </html>
