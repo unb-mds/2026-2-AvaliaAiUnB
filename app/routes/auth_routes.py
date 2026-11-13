@@ -58,6 +58,25 @@ def login():
     return criar_sessao(sessao, make_response(jsonify({"mensagem": "Login realizado com sucesso"})))
 
 
+@auth_bp.route("/recuperar-senha", methods=["GET", "POST"])
+def recuperar_senha():
+    if request.method == "GET":
+        return render_template("recuperar_senha.html")
+
+    email = request.form.get("email")
+    if email:
+        # Chama o controller para processar o envio via Supabase
+        auth_controller.enviar_email_recuperacao(email)
+
+    # Mensagem genérica para evitar vazamento de dados (enumeration attack)
+    mensagem = "Se o e-mail estiver cadastrado, você receberá um link de recuperação em instantes."
+    
+    if _quer_html():
+        return render_template("recuperar_senha.html", mensagem=mensagem, tipo_mensagem="mensagem-sucesso"), 200
+    
+    return jsonify({"mensagem": mensagem}), 200
+
+
 @auth_bp.route("/logout", methods=["POST"])
 @login_required
 def logout():
