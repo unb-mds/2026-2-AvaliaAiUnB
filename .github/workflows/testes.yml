@@ -9,7 +9,7 @@ jobs:
   testes:
     runs-on: ubuntu-latest
     env:
-      SECRET_KEY: chave-falsa-apenas-para-testes
+      SECRET_KEY: chave-secreta-super-segura-e-com-mais-de-32-caracteres-para-a-pipeline
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
