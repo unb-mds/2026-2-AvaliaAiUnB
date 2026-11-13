@@ -65,16 +65,32 @@ def recuperar_senha():
 
     email = request.form.get("email")
     if email:
-        # Chama o controller para processar o envio via Supabase
         auth_controller.enviar_email_recuperacao(email)
 
-    # Mensagem genérica para evitar vazamento de dados (enumeration attack)
     mensagem = "Se o e-mail estiver cadastrado, você receberá um link de recuperação em instantes."
     
     if _quer_html():
         return render_template("recuperar_senha.html", mensagem=mensagem, tipo_mensagem="mensagem-sucesso"), 200
     
     return jsonify({"mensagem": mensagem}), 200
+
+
+@auth_bp.route("/redefinir-senha", methods=["GET", "POST"])
+def redefinir_senha():
+    if request.method == "GET":
+        return render_template("redefinir_senha.html")
+
+    sucesso, erro_msg = auth_controller.redefinir_senha(request.form)
+
+    if not sucesso:
+        if _quer_html():
+            return render_template("redefinir_senha.html", erro=erro_msg), 400
+        return jsonify({"erro": erro_msg}), 400
+
+    # Se for sucesso, redireciona o usuário para o login
+    if _quer_html():
+        return redirect(url_for("auth.login"))
+    return jsonify({"mensagem": "Senha atualizada com sucesso!"}), 200
 
 
 @auth_bp.route("/logout", methods=["POST"])

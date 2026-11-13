@@ -27,3 +27,21 @@ def enviar_email_recuperacao(email):
     if not email:
         return False
     return repositorios().usuarios.enviar_email_recuperacao(email)
+
+
+def redefinir_senha(formulario):
+    """Valida as regras de negócio e delega a atualização da nova senha ao repositório."""
+    senha = formulario.get('senha', '')
+    confirmar_senha = formulario.get('confirmar_senha', '')
+    access_token = formulario.get('access_token', '')
+
+    if not access_token:
+        return False, "Link de recuperação inválido ou expirado. Solicite um novo e-mail."
+    
+    if not senha or len(senha) < 6:
+        return False, "A nova senha deve ter no mínimo 6 caracteres."
+    
+    if senha != confirmar_senha:
+        return False, "As senhas não coincidem."
+        
+    return repositorios().usuarios.atualizar_senha(access_token, senha)

@@ -97,13 +97,28 @@ class UsuarioRepository:
     def enviar_email_recuperacao(self, email):
         """Usa o Supabase Auth para enviar um link de recuperação de senha por e-mail."""
         try:
-            # MÉTODO RIGOROSAMENTE CORRETO NO SUPABASE-PY: reset_password_for_email
             self.fabrica_cliente().auth.reset_password_for_email(email.strip().lower())
             return True
         except AuthError as erro:
-            # Silencia o erro para evitar vazamento de informações (enumeration)
             current_app.logger.warning("Falha ao pedir recuperação de senha: %s", str(erro))
             return False
+
+    def atualizar_senha(self, access_token, nova_senha):
+        """Atualiza a senha usando o token validado da URL de recuperação."""
+        try:
+            # 1. Verifica no Supabase quem é o verdadeiro dono do token
+            resposta = self.cliente.auth.get_user(access_token)
+            if not resposta or not getattr(resposta, 'user', None):
+                return False, "Sessão de recuperação inválida."
+            
+            uid = str(resposta.user.id)
+            
+            # 2. Atualiza a senha cirurgicamente usando os privilégios do servidor
+            self.cliente.auth.admin.update_user_by_id(uid, {'password': nova_senha})
+            return True, None
+        except AuthError as erro:
+            current_app.logger.warning("Falha ao redefinir senha: %s", str(erro))
+            return False, "Sessão inválida ou expirada. Peça um novo link de recuperação."
 
     def usuario_do_token(self, access_token):
         """Dados do usuário dono do token, ou None se inválido/expirado/revogado."""
