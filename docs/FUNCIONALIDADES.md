@@ -87,11 +87,13 @@ catálogo. Se ninguém atingir o mínimo, a página informa esse estado.
 ## Funcionalidades planejadas
 
 Filtros por faixa de nota e volume de avaliações, favoritos, gráficos,
-comentários, denúncias e moderação ainda não têm fluxo implementado.
+comentários, reações, denúncias e moderação ainda não têm fluxo implementado.
 
 A [proposta de banco para comentários](Modelo%20de%20Dados.md#6-proposta-tabela-comentarios)
-já está publicada. A [especificação proposta](COMENTARIOS.md) reúne participação,
-quantidade, vínculo com avaliação, denúncia e privacidade para revisão do grupo na
+já está publicada. A [especificação proposta](COMENTARIOS.md) reúne acesso com
+e-mail de qualquer domínio, nome de usuário visível, consulta ao e-mail do
+autor, reações, filtro e denúncias.
+A proposta começou na
 [issue #116](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/116).
 
 Relacionado: [visão e requisitos](DOCUMENTO_DE_VISAO.md), [backend](BACKEND.md),

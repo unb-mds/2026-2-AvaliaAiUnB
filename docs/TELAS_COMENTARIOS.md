@@ -5,39 +5,73 @@
 Protótipos da #112 para revisar a experiência em uma tela estreita. Os fluxos
 seguem a [especificação da #116](COMENTARIOS.md) e os componentes do
 [design system](DESIGN_SYSTEM.md). Os nomes e textos das telas são exemplos.
+O perfil do professor oferece as seções **Notas** e **Comentários**. Dar
+estrelas e escrever um relato são ações separadas. Quem pode usar as duas
+escolhe uma delas ou faz ambas em qualquer ordem. Depois de enviar uma, a
+pessoa pode voltar ao perfil e encerrar ou escolher a outra.
 
 ## Listar
 
-![Perfil com comentários, autoria, disciplina e ações de editar, apagar e denunciar](mockups/comentarios/listar.svg)
+![Perfil com seletor de ordenação, datas, curtidas e descurtidas e um e-mail expandido](mockups/comentarios/listar.svg)
 
-Visitantes veem os comentários publicados e um convite para entrar. A sessão
-do autor mostra Editar e Apagar no próprio comentário. Para quem está autenticado
-e ainda não escreveu sobre o professor, a lista oferece Escrever comentário.
-Em uma lista vazia, o texto orienta como escrever o primeiro comentário.
+Visitantes leem os comentários com o nome de usuário do autor, disciplina,
+data da primeira publicação e as contagens de reações recebidas. Clicar, tocar
+ou ativar o nome pelo teclado abre o e-mail verificado que o autor autorizou
+divulgar. Ativar o botão outra vez fecha o contato. A área convida a entrar
+ou criar conta com qualquer e-mail
+verificado para escrever ou reagir.
+A pessoa logada pode usar **Escrever comentário** mesmo que já tenha
+comentado naquele perfil. Cada relato da própria conta tem as ações
+**Editar** e **Apagar**. Na lista vazia, a seção convida a escrever o primeiro
+relato.
+
+O seletor **Ordenar por** abre em **Mais recentes**. Também oferece
+**Mais curtidos**, **Mais antigos** e **Mais reações**, que soma curtidas
+e descurtidas.
+
+Os ícones **👍** e **👎** aparecem direto em todos os comentários, mesmo
+com o e-mail recolhido e sem login. Cada ícone mostra um número apenas
+quando recebeu reações. No próprio comentário, os ícones só informam as
+contagens. Nos comentários de outras pessoas, são botões com nomes
+acessíveis para leitores de tela. A reação selecionada tem cor e marca de
+confirmação. É possível trocar ou desfazer a reação com outro toque. Se a
+sessão não estiver ativa, tocar no botão leva ao login sem gravar voto.
 
 ## Escrever
 
-![Formulário para escrever com disciplina opcional, contador e aviso de visibilidade](mockups/comentarios/escrever.svg)
+![Formulário com Cálculo 1 selecionado para outro relato sobre a mesma disciplina](mockups/comentarios/escrever.svg)
 
-O formulário exibe o limite e a visibilidade antes de Publicar. Durante o envio,
-a ação muda para Publicando e fica desabilitada. Em caso de erro, mantém o
-conteúdo digitado e mostra a causa junto ao campo ou no início do formulário.
+Para publicar, a pessoa precisa escolher uma disciplina ministrada pelo
+professor. O exemplo mostra um novo comentário em Cálculo 1, disciplina
+em que a pessoa já comentou.
+
+O formulário avisa que o nome de usuário fica público e que qualquer pessoa
+poderá clicar nele para consultar o e-mail. O autor confirma a divulgação
+antes de enviar o texto para verificação. O campo mostra o limite de 2 a
+1.000 caracteres. Durante o envio, o botão mostra
+**Verificando**. Se o filtro bloquear o texto, a mensagem junto ao campo
+explica o que precisa ser revisto e preserva o que foi digitado. Se a análise
+precisar de moderação, a confirmação informa **Em revisão** e o texto fica
+privado até a decisão.
 
 ## Editar
 
-![Formulário de edição com texto preservado e mensagem de erro de comprimento](mockups/comentarios/editar.svg)
+![Formulário de edição com texto preservado e alerta do filtro sobre um e-mail no texto](mockups/comentarios/editar.svg)
 
-O autor edita o texto e a disciplina dentro dos vínculos do professor. O exemplo
-mostra o estado de texto curto. Após salvar, volta para a lista com confirmação
-e indicação de que o comentário foi editado.
+O autor edita o texto e pode trocar a disciplina para outra ministrada pelo
+professor. O exemplo mostra uma edição bloqueada pelo filtro. A última
+versão aprovada continua visível até uma nova versão
+passar pela verificação. Após uma edição aprovada, a lista indica que o
+comentário foi editado.
 
 ## Apagar
 
 ![Diálogo com a consequência da exclusão e Cancelar em foco](mockups/comentarios/apagar.svg)
 
-O diálogo indica qual comentário será afetado e oferece Cancelar antes de
-Apagar comentário. Após confirmar, a lista é atualizada e o foco retorna a uma
-ação visível. Em falha, o diálogo mantém o contexto e permite tentar novamente.
+O diálogo identifica a disciplina, avisa que o texto e as reações serão
+apagados e oferece Cancelar antes de Apagar comentário. Após confirmar, a
+lista é atualizada e o foco retorna a uma ação visível. Em falha, o diálogo
+mantém o contexto e permite tentar novamente.
 
 ## Denúncia e ocultação
 

@@ -44,7 +44,7 @@ anteriores podem conter apenas parte delas.
 | R1 — fluxo essencial | Cadastro, login, busca de professores e disciplinas, perfil do professor, avaliação por cinco critérios e consulta de médias | Implementado |
 | R2 — consulta e gestão de avaliações | Ranking, comparação entre dois professores, filtro por departamento, busca que ignora acentos e espaços extras e perfil do usuário com edição e exclusão das próprias avaliações | Implementado |
 | Evolução dos filtros | Faixa de nota e volume de avaliações | Pendente |
-| Comentários e moderação | Comentários, denúncias e remoção por moderação | Em especificação na [#116](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/116); sem fluxo implementado |
+| Comentários e moderação | Comentários com nome de usuário, reações, filtro e denúncias | [Proposta para revisão](docs/COMENTARIOS.md) |
 | Outras funcionalidades planejadas | Favoritos e gráficos de desempenho | Pendente |
 
 A consulta principal fica em `/professores`; ranking e comparação ficam em
@@ -196,8 +196,9 @@ código, a situação do RLS e os resultados da auditoria com cada correção.
 Comentários e moderação têm uma [especificação proposta](docs/COMENTARIOS.md),
 baseada na #109, para revisão do grupo na
 [#116](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/116).
-Ela propõe quem pode participar, limites, relação com avaliações, denúncia e
-privacidade. A revisão das regras permanece pendente; o recurso não está implementado.
+Ela propõe exibir o nome de usuário e permitir consultar o e-mail pelo nome,
+além de participação com conta verificada de qualquer domínio, reações,
+filtro antes da publicação e denúncias. O recurso ainda não está implementado.
 
 ## Documentação
 

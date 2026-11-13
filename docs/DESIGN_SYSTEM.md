@@ -67,7 +67,8 @@ das tabelas com rolagem horizontal quando necessário.
 | Botão destrutivo | Vermelho e texto branco na confirmação de exclusão | Padrão, foco e envio |
 | Campo, seletor e área de texto | Rótulo visível, borda, ajuda e erro junto ao campo | Vazio, preenchido, foco, erro e desabilitado |
 | Card de professor | Nome, departamento, disciplinas e ações | Padrão e resultado de filtro |
-| Card de comentário | Texto, username, data, indicação de edição e ações permitidas | Publicado, em edição e ocultado para o autor |
+| Card de comentário | Texto, nome de usuário, data, disciplina e ações permitidas. O nome é um botão que abre ou fecha o e-mail do autor | Publicado, contato aberto, em edição e ocultado para o autor |
+| Reação a comentário | Ícones de polegar sempre visíveis. Cada número aparece só com reações recebidas. Os botões têm nomes acessíveis Curtir e Descurtir e usam `aria-pressed` para indicar a seleção | Neutro, selecionado com marca e cor, foco, envio e leitura no próprio comentário |
 | Mensagem | Explica o estado e a próxima ação | Informação, sucesso, erro, vazio e carregamento |
 | Diálogo de exclusão | Identifica o item e sua consequência. Cancelar recebe o foco inicial | Aberto, confirmando e falha |
 | Tabela de indicadores | Legenda, cabeçalhos associados e valores legíveis | Com dados, sem dados e erro |
@@ -78,7 +79,7 @@ visível. No estado vazio, informe se faltam dados ou se o filtro não encontrou
 resultados. Ao fechar o diálogo de exclusão, devolva o foco ao contexto de origem.
 
 Os [protótipos de comentários](TELAS_COMENTARIOS.md) mostram os fluxos de
-listar, escrever, editar e apagar.
+listar, reagir, escrever, editar e apagar.
 
 Relacionado: [inventário do frontend](FRONTEND.md),
 [protótipos de comentários](TELAS_COMENTARIOS.md) e
