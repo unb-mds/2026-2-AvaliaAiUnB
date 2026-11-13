@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperar Senha - AvaliaUnb</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='auth.css') }}">
+</head>
+<body>
+<main class="auth card">
+    <p class="voltar"><a href="/login">&larr; Voltar para o Login</a></p>
+    <h1>Recuperar Senha</h1>
+    
+    <p class="descricao-auth">Digite o seu e-mail de cadastro. Enviaremos um link para redefinir a sua senha.</p>
+
+    {% if mensagem %}
+    <p class="mensagem {{ tipo_mensagem }}" role="alert">{{ mensagem }}</p>
+    {% endif %}
+
+    <form action="/recuperar-senha" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="formato" value="html">
+        
+        <label for="email">E-mail</label>
+        <input type="email" id="email" name="email" required placeholder="seu@email.com">
+
+        <button type="submit" class="botao botao-primario">Enviar Link de Recuperação</button>
+    </form>
+</main>
+</body>
+</html>
