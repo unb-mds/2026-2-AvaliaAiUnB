@@ -443,3 +443,24 @@ textarea:focus-visible,
 [hidden] {
     display: none !important;
 }
+
+/* Rodapé compartilhado */
+.rodape {
+    box-sizing: border-box;
+    margin-top: var(--espaco-6);
+    padding: var(--espaco-4);
+    border-top: 1px solid var(--cor-divisor);
+    background-color: var(--cor-fundo-suave);
+    color: var(--cor-texto-secundario);
+    font-size: var(--texto-pequeno);
+    text-align: center;
+}
+
+.rodape p {
+    margin: 0;
+}
+
+.rodape a {
+    color: var(--cor-principal);
+    text-decoration: underline;
+}
