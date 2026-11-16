@@ -18,22 +18,6 @@ body {
     padding: var(--espaco-5) var(--margem-lateral) var(--espaco-7);
 }
 
-.voltar {
-    margin: 0;
-}
-
-.voltar a {
-    display: inline-flex;
-    align-items: center;
-    min-height: var(--altura-controle);
-    font-weight: 700;
-    text-decoration: none;
-}
-
-.voltar a:hover {
-    text-decoration: underline;
-}
-
 .conteudo .card {
     padding: var(--espaco-5) var(--espaco-4);
 }
@@ -92,8 +76,13 @@ h2 {
 
 .indicadores li {
     align-items: center;
+    gap: var(--espaco-2) var(--espaco-3);
     padding: var(--espaco-3) 0;
-    border-bottom: 1px solid var(--cor-divisor);
+    border-bottom: 1px solid var(--cor-divisor-suave);
+}
+
+.indicadores .barra {
+    flex-basis: 100%;
 }
 
 .indicadores li:last-child {
@@ -140,7 +129,7 @@ h2 {
 .media-geral {
     margin-top: var(--espaco-4);
     padding-top: var(--espaco-4);
-    border-top: 1px solid var(--cor-divisor);
+    border-top: 1px solid var(--cor-divisor-suave);
 }
 
 .media-geral .ajuda {

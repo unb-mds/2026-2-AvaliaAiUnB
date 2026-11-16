@@ -18,6 +18,7 @@
         <p class="voltar"><a href="{{ next_url }}">&larr; Voltar</a></p>
 
         <section class="card cabecalho-professor" aria-labelledby="titulo-professor">
+            <p class="selo">Professor</p>
             <h1 id="titulo-professor">{{ professor.nome }}</h1>
             <p class="departamento">
                 <strong>Departamento:</strong>
@@ -84,9 +85,13 @@
             {% if indicadores.quantidade %}
             <ul class="indicadores">
                 {% for criterio, titulo in criterios.items() %}
+                {% set media = indicadores.medias[criterio] %}
                 <li>
                     <span>{{ titulo }}</span>
-                    <strong>{{ nota(indicadores.medias[criterio]) }} / 5 <span aria-hidden="true">★</span></strong>
+                    <strong>{{ nota(media) }} / 5 <span aria-hidden="true">★</span></strong>
+                    {% if media is not none %}
+                    <span class="barra" aria-hidden="true"><span class="barra-cheia preenche-{{ ((media * 10 + 0.5)|int) * 2 }}{% if criterio == 'dificuldade' %} barra-dificuldade{% endif %}"></span></span>
+                    {% endif %}
                 </li>
                 {% endfor %}
             </ul>
