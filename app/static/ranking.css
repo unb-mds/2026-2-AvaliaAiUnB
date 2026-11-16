@@ -65,18 +65,18 @@ main > .ajuda {
 }
 
 .posicao-1 {
-    background-color: #fdf0c4;
-    color: #7a5a00;
+    background-color: var(--cor-ouro-fundo);
+    color: var(--cor-ouro-texto);
 }
 
 .posicao-2 {
-    background-color: #e8ebef;
-    color: #3d4652;
+    background-color: var(--cor-prata-fundo);
+    color: var(--cor-prata-texto);
 }
 
 .posicao-3 {
-    background-color: #f6dfcc;
-    color: #7a3f12;
+    background-color: var(--cor-bronze-fundo);
+    color: var(--cor-bronze-texto);
 }
 
 .tabela-ranking th[scope="row"] a {
