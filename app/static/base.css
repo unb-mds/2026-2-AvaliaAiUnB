@@ -13,20 +13,22 @@
 }
 
 :root {
+    color-scheme: dark;
+
     /* Cores */
-    --cor-superficie: #ffffff;
-    --cor-fundo-suave: #f2f4f7;
-    --cor-texto: #202124;
-    --cor-texto-secundario: #4f5357;
-    --cor-principal: #174b83;
-    --cor-principal-hover: #123c69;
-    --cor-borda-campo: #767676;
-    --cor-divisor: #d4d9df;
-    --cor-divisor-suave: #e4e7ec;
-    --cor-principal-suave: rgb(23 75 131 / 0.1);
-    --cor-erro: #a01818;
-    --cor-erro-hover: #801212;
-    --cor-estrela: #b45309;
+    --cor-superficie: #0f1a2b;
+    --cor-fundo-suave: #070d17;
+    --cor-texto: #e8eef7;
+    --cor-texto-secundario: #a9b6c8;
+    --cor-principal: #4f93e6;
+    --cor-principal-hover: #7ab3f2;
+    --cor-borda-campo: #6b7a90;
+    --cor-divisor: #22334d;
+    --cor-divisor-suave: #1a2a42;
+    --cor-principal-suave: rgb(79 147 230 / 0.14);
+    --cor-erro: #f28b82;
+    --cor-erro-hover: #ffb4ad;
+    --cor-estrela: #f5b94a;
 
     /* Tipografia */
     --fonte: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
@@ -51,8 +53,8 @@
     --raio-pilula: 999px;
 
     /* Profundidade e movimento */
-    --sombra-card: 0 1px 2px rgb(16 24 40 / 0.04), 0 4px 16px -6px rgb(16 24 40 / 0.1);
-    --sombra-elevada: 0 2px 4px rgb(16 24 40 / 0.06), 0 12px 28px -10px rgb(16 24 40 / 0.18);
+    --sombra-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -8px rgb(0 0 0 / 0.5);
+    --sombra-elevada: 0 2px 4px rgb(0 0 0 / 0.5), 0 16px 32px -10px rgb(0 0 0 / 0.6);
     --transicao: 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
     --altura-controle: 44px;
     --largura-conteudo: 720px;
