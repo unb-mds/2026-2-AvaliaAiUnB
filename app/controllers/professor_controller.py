@@ -51,7 +51,6 @@ def _carregar_comparacao_legada(dados):
 
 
 def carregar_comparacao(dados):
-    """Prepara a comparação de professores vinculados à disciplina selecionada."""
     if 'disciplina_id' not in dados and 'professor_2' in dados:
         return _carregar_comparacao_legada(dados)
 

@@ -20,7 +20,6 @@ h1 {
     line-height: 1.2;
 }
 
-/* Seleção dos professores num card */
 .selecao-comparacao {
     padding: var(--espaco-5) var(--espaco-4);
     border: 1px solid var(--cor-divisor);

@@ -250,7 +250,6 @@ class AvaliacaoRepository:
         return self._resumir_notas(linhas)
 
     def calcular_medias_por_disciplina(self, disciplina_id, professor_ids):
-        """Resume as avaliações da disciplina em uma única consulta paginada."""
         colunas = ','.join(('professor_id', *CRITERIOS))
         linhas = _paginar(lambda: self.cliente.table('avaliacoes').select(colunas)
                           .eq('disciplina_id', disciplina_id).order('id'))
