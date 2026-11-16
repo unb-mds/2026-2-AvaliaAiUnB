@@ -4,6 +4,14 @@
  * arquivo diretamente ou por meio de indicadores.css (@import).
  */
 
+@font-face {
+    font-family: "Inter";
+    src: url("fonts/inter-latin-wght-normal.woff2") format("woff2");
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
 :root {
     /* Cores */
     --cor-superficie: #ffffff;
@@ -21,7 +29,7 @@
     --cor-estrela: #b45309;
 
     /* Tipografia */
-    --fonte: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    --fonte: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
     --texto-titulo-pagina: 2rem;
     --texto-titulo-secao: 1.5rem;
     --texto-titulo-card: 1.25rem;
