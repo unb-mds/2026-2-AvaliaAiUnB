@@ -50,6 +50,24 @@ ambiente da hospedagem. Para manter os dados de teste separados dos reais,
 configure no Preview um projeto Supabase de testes; essa separação precisa ser
 confirmada no ambiente, não é criada por esta documentação.
 
+## Verificação de e-mail
+
+Aplique [`003_emails_verificados.sql`](migrations/003_emails_verificados.sql)
+depois do esquema inicial. Configure `VERIFICACAO_EMAIL_ORIGEM` com o endereço
+HTTPS do site naquele ambiente e use um provedor de e-mail com SMTP sobre TLS
+na porta 465. Informe `VERIFICACAO_EMAIL_SMTP_HOST`,
+`VERIFICACAO_EMAIL_SMTP_USUARIO`, `VERIFICACAO_EMAIL_SMTP_SENHA` e
+`VERIFICACAO_EMAIL_REMETENTE` nas variáveis do ambiente. O remetente deve
+estar autorizado pelo provedor. Use uma configuração separada no Preview e
+confira a entrega do link e a confirmação com uma conta de teste.
+
+A titularidade é registrada pelo fluxo do perfil e vale para o endereço
+atual da conta. A implementação de comentários na
+[#167](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/167) deve chamar
+`app.verificacao_email.email_verificado(usuario)` antes de publicar e ao
+consultar o e-mail de um autor. A consulta precisa partir de um comentário
+público e buscar o endereço atual no Supabase Auth pelo ID do autor.
+
 ## Staging com Preview
 
 Na integração Git, branches que não são a de produção podem gerar Previews.

@@ -1,7 +1,10 @@
 # app/routes/auth_routes.py
 """Rotas de autenticação: cadastro -> login -> rota protegida -> logout."""
-from flask import Blueprint, jsonify, make_response, redirect, render_template, request, url_for
+from smtplib import SMTPException
 
+from flask import Blueprint, abort, jsonify, make_response, redirect, render_template, request, url_for
+
+from app import verificacao_email
 from app.controllers import auth_controller, professor_controller
 from app.controllers.session_controller import (
     criar_sessao,
@@ -10,6 +13,8 @@ from app.controllers.session_controller import (
     obter_usuario_atual,
 )
 from app.seguranca import (
+    chave_usuario_ou_ip,
+    limiter,
     limitar_cadastro,
     limitar_login_por_ip,
     limitar_recuperacao_senha,
@@ -114,8 +119,55 @@ def perfil():
             usuario=usuario_logado,
             avaliacoes=avaliacoes,
             criterios=professor_controller.criterios(),
+            verificacao_disponivel=verificacao_email.disponivel(),
+            email_verificado=verificacao_email.email_verificado(usuario_logado),
         )
     return jsonify({
         **{k: usuario_logado[k] for k in ("id", "nome", "email", "username")},
         "avaliacoes": avaliacoes,
     })
+
+
+@auth_bp.post("/perfil/enviar-verificacao")
+@login_required
+@limiter.limit("4 per hour", key_func=chave_usuario_ou_ip)
+@limiter.limit("20 per hour")
+def enviar_verificacao():
+    if not verificacao_email.disponivel():
+        abort(503)
+    usuario = obter_usuario_atual()
+    if verificacao_email.email_verificado(usuario):
+        return redirect(url_for('auth.verificar_email'), code=303)
+    if not usuario.get('email'):
+        abort(400)
+    try:
+        verificacao_email.enviar_link(usuario)
+    except (OSError, SMTPException):
+        return _pagina_verificacao(usuario, erro='Não foi possível enviar o link. Tente de novo.', status=503)
+    return redirect(url_for('auth.verificar_email', enviado=1), code=303)
+
+
+def _pagina_verificacao(usuario, status=200, **contexto):
+    resposta = make_response(render_template('verificar_email.html', usuario=usuario, **contexto), status)
+    resposta.headers['Cache-Control'] = 'no-store'
+    resposta.headers['Referrer-Policy'] = 'origin'
+    return resposta
+
+
+@auth_bp.route("/perfil/verificar-email", methods=["GET", "POST"])
+@login_required
+@limiter.limit("12 per hour", methods=['POST'], key_func=chave_usuario_ou_ip)
+def verificar_email():
+    if not verificacao_email.disponivel():
+        abort(503)
+    usuario = obter_usuario_atual()
+    if request.method == 'POST':
+        if verificacao_email.confirmar(usuario, request.form.get('chave', '')):
+            return redirect(url_for('auth.verificar_email'), code=303)
+        return _pagina_verificacao(usuario, erro='Link inválido ou expirado. Peça um novo link.', status=400)
+
+    chave = request.args.get('chave', '')
+    if chave and not verificacao_email.link_valido(usuario, chave):
+        return _pagina_verificacao(usuario, erro='Link inválido ou expirado. Peça um novo link.', status=400)
+    return _pagina_verificacao(usuario, chave=chave, enviado=request.args.get('enviado') == '1',
+                               verificado=verificacao_email.email_verificado(usuario))

@@ -47,6 +47,17 @@ class UsuarioRepository:
         self.cliente = cliente
         self.fabrica_cliente = fabrica_cliente
 
+    def email_verificado(self, usuario_id, endereco_sha256):
+        resposta = (self.cliente.table('emails_verificados').select('usuario_id')
+                    .eq('usuario_id', usuario_id).eq('endereco_sha256', endereco_sha256)
+                    .limit(1).execute())
+        return bool(resposta.data)
+
+    def gravar_email_verificado(self, usuario_id, endereco_sha256):
+        self.cliente.table('emails_verificados').upsert([{
+            'usuario_id': usuario_id, 'endereco_sha256': endereco_sha256,
+        }], on_conflict='usuario_id').execute()
+
     def criar(self, nome, username, email, senha):
         """Retorna (True, id) ou (False, campo_com_erro, mensagem)."""
         if self.cliente.table('perfis').select('id').eq('username', username).limit(1).execute().data:
