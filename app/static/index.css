@@ -1,5 +1,6 @@
 /* Home. Usa os tokens de base.css. */
 body {
+    position: relative;
     margin: 0;
     background-color: var(--cor-fundo-suave);
     color: var(--cor-texto);
@@ -18,6 +19,32 @@ body {
 
 .hero {
     margin-bottom: var(--espaco-6);
+}
+
+/*
+ * Fundo animado em largura total: o canvas é filho direto do <body> (que é
+ * position: relative), então ocupa 100% da largura útil da janela, sem usar
+ * 100vw e sem gerar rolagem horizontal. Fica atrás do conteúdo (z-index
+ * negativo) e as quatro bordas são esmaecidas por máscara.
+ */
+.fundo-animado {
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 100%;
+    height: 28rem;
+    max-width: 100%;
+    pointer-events: none;
+    -webkit-mask-image:
+        linear-gradient(to right, transparent, #000 18%, #000 82%, transparent),
+        linear-gradient(to bottom, transparent, #000 16%, #000 62%, transparent);
+    -webkit-mask-composite: source-in;
+    mask-image:
+        linear-gradient(to right, transparent, #000 18%, #000 82%, transparent),
+        linear-gradient(to bottom, transparent, #000 16%, #000 62%, transparent);
+    mask-composite: intersect;
 }
 
 h1 {
