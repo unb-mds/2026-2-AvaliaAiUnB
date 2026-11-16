@@ -41,12 +41,15 @@ class TestComparacao(unittest.TestCase):
         self.assertAlmostEqual(resultado['medias']['clareza'], 11 / 3)
 
     def test_selecao_inicial_e_preenchida_pelo_perfil(self):
+        self._vincular(2)
         for caminho in ('/comparar', '/comparar?professor_1=1'):
             resposta = self.web.get(caminho)
             self.assertEqual(resposta.status_code, 200)
-            self.assertIn('Professor 2', resposta.text)
+            self.assertIn('Escolher disciplina', resposta.text)
             self.assertNotIn('<table', resposta.text)
-        self.assertIn('value="1" selected', resposta.text)
+        self.assertIn('name="professor_1" value="1"', resposta.text)
+        self.assertIn('value="1" selected',
+                      self.web.get('/comparar?professor_1=1&disciplina_id=10').text)
         for caminho in ('/professores', '/professores/1', '/professores/3'):
             html = self.web.get(caminho).text
             self.assertIn('/comparar?professor_1=', html)
@@ -92,6 +95,42 @@ class TestComparacao(unittest.TestCase):
         resposta = self.web.get('/comparar')
         self.assertEqual(resposta.status_code, 200)
         self.assertIn('pelo menos dois professores', resposta.text)
+
+    def _vincular(self, professor_id):
+        vinculo = self.cliente.tabelas['vw_professor_disciplina'][0]
+        self.cliente.tabelas['vw_professor_disciplina'].append({
+            **vinculo, 'professor_id': professor_id,
+        })
+
+    def test_compara_tres_professores_com_notas_apenas_da_disciplina(self):
+        self._vincular(2)
+        self._vincular(3)
+        self.avaliar(1, 5)
+        self.avaliar(1, 1, disciplina_id=20)
+        self.avaliar(2, 2)
+        resposta = self.web.get('/comparar?disciplina_id=10&professor=1&professor=2'
+                                '&professor=3&comparar=1')
+        self.assertEqual(resposta.status_code, 200)
+        for texto in ('CÁLCULO 1', 'JOSÉ ÁVILA', 'MARIA LIMA', 'SEM TURMA', '5,00 / 5',
+                      '2,00 / 5', 'Sem avaliações', 'disciplina_id=10'):
+            self.assertIn(texto, resposta.text)
+        self.assertNotIn('3,00 / 5', resposta.text)
+
+    def test_adiciona_remove_e_rejeita_selecoes_invalidas(self):
+        self._vincular(2)
+        self._vincular(3)
+        base = '/comparar?disciplina_id=10'
+        adicao = self.web.get(base + '&professor=1&professor=2&adicionar=1')
+        self.assertEqual(adicao.text.count('name="professor"'), 3)
+        remocao = self.web.get(base + '&professor=1&professor=2&professor=3&remover=1')
+        self.assertEqual(remocao.text.count('name="professor"'), 2)
+        self.assertIn('value="3" selected', remocao.text)
+        self.assertNotIn('value="2" selected', remocao.text)
+        for params in ('&professor=1', '&professor=1&professor=1', '&professor=1&professor=999'):
+            with self.subTest(params=params):
+                resposta = self.web.get(base + params + '&comparar=1')
+                self.assertEqual(resposta.status_code, 400)
+                self.assertNotIn('<table', resposta.text)
 
 
 if __name__ == '__main__':
