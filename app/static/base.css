@@ -160,15 +160,15 @@ textarea:focus-visible,
 }
 
 .botao-primario {
-    background-color: var(--cor-principal);
-    border-color: var(--cor-principal);
-    color: var(--cor-superficie);
+    background-color: var(--cor-principal-fundo);
+    border-color: var(--cor-principal-fundo);
+    color: var(--cor-sobre-principal);
 }
 
 .botao-primario:hover {
-    background-color: var(--cor-principal-hover);
-    border-color: var(--cor-principal-hover);
-    box-shadow: 0 6px 16px -8px rgb(23 75 131 / 0.6);
+    background-color: var(--cor-principal-fundo-hover);
+    border-color: var(--cor-principal-fundo-hover);
+    box-shadow: 0 6px 16px -8px var(--cor-brilho);
 }
 
 .botao-secundario {
@@ -293,7 +293,7 @@ textarea:focus-visible,
 
 .mensagem-erro {
     border-left: 4px solid var(--cor-erro);
-    background-color: rgb(160 24 24 / 0.07);
+    background-color: var(--cor-erro-suave);
     color: var(--cor-erro);
     font-weight: 700;
 }
@@ -304,13 +304,13 @@ textarea:focus-visible,
     top: 0;
     z-index: 20;
     border-bottom: 1px solid var(--cor-divisor);
-    background-color: rgb(255 255 255 / 0.92);
+    background-color: var(--cor-topo-fundo);
     color: var(--cor-texto);
 }
 
 @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
     .topo {
-        background-color: rgb(255 255 255 / 0.8);
+        background-color: var(--cor-topo-fundo-blur);
         -webkit-backdrop-filter: blur(12px);
         backdrop-filter: blur(12px);
     }
@@ -379,8 +379,8 @@ textarea:focus-visible,
 }
 
 .aba[aria-current="page"] {
-    background-color: var(--cor-principal);
-    color: var(--cor-superficie);
+    background-color: var(--cor-principal-fundo);
+    color: var(--cor-sobre-principal);
 }
 
 .form-sair {
@@ -465,7 +465,7 @@ textarea:focus-visible,
 }
 
 .estrelas-fundo {
-    color: #c4c9d0;
+    color: var(--cor-borda-campo);
 }
 
 .estrelas-cheias {
