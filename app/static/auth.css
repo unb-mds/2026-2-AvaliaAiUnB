@@ -7,7 +7,7 @@
 
 .pagina-auth {
     --auth-raio: 20px;
-    --auth-sombra: 0 1px 2px rgb(16 24 40 / 0.04), 0 12px 32px -8px rgb(16 24 40 / 0.16);
+    --auth-sombra: var(--sombra-elevada);
     --auth-transicao: 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
 
     display: flex;
@@ -64,7 +64,7 @@
 }
 
 .voltar:hover {
-    background-color: rgb(23 75 131 / 0.08);
+    background-color: var(--cor-principal-suave);
     color: var(--cor-principal);
 }
 
@@ -77,7 +77,7 @@
     margin: 0 0 var(--espaco-3);
     padding: 2px var(--espaco-3);
     border-radius: 999px;
-    background-color: rgb(23 75 131 / 0.1);
+    background-color: var(--cor-principal-suave);
     color: var(--cor-principal);
     font-size: var(--texto-pequeno);
     font-weight: 700;
@@ -111,7 +111,7 @@
 }
 
 .erro-login {
-    background-color: rgb(160 24 24 / 0.08);
+    background-color: var(--cor-erro-suave);
     color: var(--cor-erro);
 }
 
