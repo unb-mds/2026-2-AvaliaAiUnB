@@ -1,7 +1,6 @@
 """Cadastro e login: validação, delegação ao Supabase Auth e mapeamento de erros para as rotas."""
 from app.repositorio import repositorios
-from app.validacoes import validar_cadastro
-
+from app.validacoes import MAXIMO_SENHA, MINIMO_SENHA, validar_cadastro
 
 def cadastrar(formulario):
     """Retorna (dados, erros, status). status 201 em sucesso, 400 validação, 409 conflito."""
@@ -37,11 +36,14 @@ def redefinir_senha(formulario):
 
     if not access_token:
         return False, "Link de recuperação inválido ou expirado. Solicite um novo e-mail."
-    
-    if not senha or len(senha) < 6:
-        return False, "A nova senha deve ter no mínimo 6 caracteres."
-    
+
+    if not senha.strip() or len(senha) < MINIMO_SENHA:
+        return False, f"A senha deve ter pelo menos {MINIMO_SENHA} caracteres."
+
+    if len(senha) > MAXIMO_SENHA:
+        return False, f"A senha deve ter no máximo {MAXIMO_SENHA} caracteres."
+
     if senha != confirmar_senha:
         return False, "As senhas não coincidem."
-        
+
     return repositorios().usuarios.atualizar_senha(access_token, senha)
