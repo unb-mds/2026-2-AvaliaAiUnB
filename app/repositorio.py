@@ -247,6 +247,22 @@ class AvaliacaoRepository:
                 consulta = consulta.eq('disciplina_id', disciplina_id)
             return consulta.order('id')
         linhas = _paginar(consulta)
+        return self._resumir_notas(linhas)
+
+    def calcular_medias_por_disciplina(self, disciplina_id, professor_ids):
+        """Resume as avaliações da disciplina em uma única consulta paginada."""
+        colunas = ','.join(('professor_id', *CRITERIOS))
+        linhas = _paginar(lambda: self.cliente.table('avaliacoes').select(colunas)
+                          .eq('disciplina_id', disciplina_id).order('id'))
+        por_professor = {professor_id: [] for professor_id in professor_ids}
+        for linha in linhas:
+            if linha['professor_id'] in por_professor:
+                por_professor[linha['professor_id']].append(linha)
+        return {professor_id: self._resumir_notas(notas)
+                for professor_id, notas in por_professor.items()}
+
+    @staticmethod
+    def _resumir_notas(linhas):
         validas = [l for l in linhas
                    if all(type(l.get(c)) is int and 1 <= l[c] <= 5 for c in CRITERIOS)]
         medias = {c: (sum(l[c] for l in validas) / len(validas) if validas else None)
