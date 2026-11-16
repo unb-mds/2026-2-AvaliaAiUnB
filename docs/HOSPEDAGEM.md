@@ -50,6 +50,35 @@ ambiente da hospedagem. Para manter os dados de teste separados dos reais,
 configure no Preview um projeto Supabase de testes; essa separação precisa ser
 confirmada no ambiente, não é criada por esta documentação.
 
+## Login com Google e URLs do Supabase Auth
+
+O login com Google usa o provedor do próprio Supabase Auth (fluxo PKCE). O
+client ID e o client secret do Google ficam **somente** no painel do Supabase
+(Authentication → Sign In / Providers → Google). A aplicação e a Vercel não
+precisam de variável nova.
+
+Em Authentication → URL Configuration, em cada projeto Supabase:
+
+| Campo | Valor |
+|---|---|
+| Site URL | `https://avaliaunb.com.br` (endereço público, nunca `localhost` em produção) |
+| Redirect URLs | `https://avaliaunb.com.br/login/google/retorno` e, para desenvolvimento, `http://127.0.0.1:5000/login/google/retorno` |
+
+Se o `redirect_to` enviado pela aplicação não estiver na lista, o Supabase usa
+a Site URL; com uma Site URL `localhost`, o usuário volta para o `localhost`.
+A aplicação monta o endereço de retorno com o host e o esquema da requisição,
+então `PROXY_HOPS` precisa estar correto na Vercel para o endereço sair com
+`https://`.
+
+O login com Google é a única forma de entrada. Em Authentication → Sign In /
+Providers → Email, desative "Allow new users to sign up" para que ninguém crie
+conta por e-mail e senha diretamente na API do Supabase.
+
+Quem tinha conta pelo antigo cadastro com senha e entra com o Google usando o
+mesmo e-mail é vinculado pelo Supabase à mesma conta, com o mesmo perfil e as mesmas
+avaliações. No primeiro acesso de uma conta nova, o perfil é criado com o nome
+do Google e um nome de usuário derivado do e-mail.
+
 ## Verificação de e-mail
 
 Aplique [`003_emails_verificados.sql`](migrations/003_emails_verificados.sql)
@@ -100,7 +129,7 @@ o endereço publicado, distinguindo-os da data inicialmente planejada.
 Antes de considerar o endereço validado, confira com dados de teste:
 
 1. Página inicial, busca, filtros e perfil do professor.
-2. Cadastro, login, perfil do usuário e logout.
+2. Login com Google (primeiro acesso e conta já existente), perfil do usuário e logout.
 3. Criação, edição e exclusão de uma avaliação própria.
 4. Médias, ranking, comparação e mensagens sem dados suficientes.
 5. Formulários, cookies e navegação em HTTPS, com debug desligado.

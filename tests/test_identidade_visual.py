@@ -14,7 +14,7 @@ class TestIdentidadeVisual(unittest.TestCase):
                 self.assertNotIn("AvaliaAi", caminho.read_text(encoding="utf-8"))
 
     def test_identidade_publica_presente_nas_telas_principais(self):
-        for nome in ("index.html", "login.html", "cadastro.html", "perfil.html"):
+        for nome in ("index.html", "login.html", "perfil.html"):
             with self.subTest(tela=nome):
                 texto = (TEMPLATES / nome).read_text(encoding="utf-8")
                 self.assertIn("AvaliaUnb", texto)

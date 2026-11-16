@@ -14,12 +14,14 @@
     --cor-principal-hover: #123c69;
     --cor-borda-campo: #767676;
     --cor-divisor: #d4d9df;
+    --cor-divisor-suave: #e4e7ec;
+    --cor-principal-suave: rgb(23 75 131 / 0.1);
     --cor-erro: #a01818;
     --cor-erro-hover: #801212;
     --cor-estrela: #b45309;
 
     /* Tipografia */
-    --fonte: Arial, sans-serif;
+    --fonte: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
     --texto-titulo-pagina: 2rem;
     --texto-titulo-secao: 1.5rem;
     --texto-titulo-card: 1.25rem;
@@ -36,8 +38,14 @@
     --espaco-7: 48px;
 
     /* Forma e dimensões */
-    --raio: 8px;
-    --raio-card: 12px;
+    --raio: 10px;
+    --raio-card: 16px;
+    --raio-pilula: 999px;
+
+    /* Profundidade e movimento */
+    --sombra-card: 0 1px 2px rgb(16 24 40 / 0.04), 0 4px 16px -6px rgb(16 24 40 / 0.1);
+    --sombra-elevada: 0 2px 4px rgb(16 24 40 / 0.06), 0 12px 28px -10px rgb(16 24 40 / 0.18);
+    --transicao: 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
     --altura-controle: 44px;
     --largura-conteudo: 720px;
     --largura-auth: 400px;
@@ -73,7 +81,7 @@ textarea:focus-visible,
     margin: 0;
     padding: var(--espaco-2) var(--espaco-4);
     border: 1px solid transparent;
-    border-radius: var(--raio);
+    border-radius: var(--raio-pilula);
     font-family: inherit;
     font-size: var(--texto-base);
     font-weight: 700;
@@ -81,6 +89,12 @@ textarea:focus-visible,
     text-align: center;
     text-decoration: none;
     cursor: pointer;
+    transition: background-color var(--transicao), border-color var(--transicao),
+                color var(--transicao), box-shadow var(--transicao);
+}
+
+.botao:active:not(:disabled) {
+    transform: translateY(1px);
 }
 
 .botao-primario {
@@ -92,6 +106,7 @@ textarea:focus-visible,
 .botao-primario:hover {
     background-color: var(--cor-principal-hover);
     border-color: var(--cor-principal-hover);
+    box-shadow: 0 6px 16px -8px rgb(23 75 131 / 0.6);
 }
 
 .botao-secundario {
@@ -101,7 +116,7 @@ textarea:focus-visible,
 }
 
 .botao-secundario:hover {
-    background-color: var(--cor-fundo-suave);
+    background-color: var(--cor-principal-suave);
 }
 
 .botao-destrutivo {
@@ -147,6 +162,15 @@ textarea:focus-visible,
     background-color: var(--cor-superficie);
     color: var(--cor-texto);
     font: inherit;
+    transition: border-color var(--transicao), box-shadow var(--transicao);
+}
+
+/* Anel de foco suave nos campos, somado ao contorno visível */
+.campo input:focus,
+.campo select:focus,
+.campo textarea:focus {
+    border-color: var(--cor-principal);
+    box-shadow: 0 0 0 4px var(--cor-principal-suave);
 }
 
 .campo input:disabled,
@@ -179,16 +203,27 @@ textarea:focus-visible,
 .card {
     box-sizing: border-box;
     padding: var(--espaco-4);
-    border: 1px solid var(--cor-divisor);
+    border: 1px solid var(--cor-divisor-suave);
     border-radius: var(--raio-card);
     background-color: var(--cor-superficie);
+    box-shadow: var(--sombra-card);
+}
+
+/* Card clicável ou com ações: sobe a sombra ao passar o mouse */
+.card-interativo {
+    transition: box-shadow var(--transicao), border-color var(--transicao);
+}
+
+.card-interativo:hover {
+    border-color: var(--cor-divisor);
+    box-shadow: var(--sombra-elevada);
 }
 
 /* Mensagens: informação, erro e estado vazio */
 .mensagem {
     margin: var(--espaco-4) 0;
     padding: var(--espaco-3) var(--espaco-4);
-    border-radius: var(--raio);
+    border-radius: 12px;
     background-color: var(--cor-fundo-suave);
     color: var(--cor-texto);
     line-height: 1.5;
@@ -196,14 +231,27 @@ textarea:focus-visible,
 
 .mensagem-erro {
     border-left: 4px solid var(--cor-erro);
+    background-color: rgb(160 24 24 / 0.07);
     color: var(--cor-erro);
     font-weight: 700;
 }
 
-/* Faixa do topo em largura total */
+/* Barra do topo: branca, presa ao alto, com marca, abas e saída */
 .topo {
-    background-color: var(--cor-principal);
-    color: var(--cor-superficie);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    border-bottom: 1px solid var(--cor-divisor);
+    background-color: rgb(255 255 255 / 0.92);
+    color: var(--cor-texto);
+}
+
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .topo {
+        background-color: rgb(255 255 255 / 0.8);
+        -webkit-backdrop-filter: blur(12px);
+        backdrop-filter: blur(12px);
+    }
 }
 
 .topo-conteudo {
@@ -211,20 +259,22 @@ textarea:focus-visible,
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: space-between;
-    gap: var(--espaco-3);
-    padding: var(--espaco-4) var(--margem-lateral);
+    gap: var(--espaco-2) var(--espaco-4);
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: var(--espaco-2) var(--margem-lateral);
 }
 
 .marca {
-    color: inherit;
-    font-size: var(--texto-titulo-card);
-    font-weight: 700;
-    text-decoration: none;
     display: inline-flex;
     align-items: center;
     gap: var(--espaco-2);
     min-height: var(--altura-controle);
+    color: var(--cor-principal);
+    font-size: var(--texto-titulo-card);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    text-decoration: none;
 }
 
 .marca-icone {
@@ -233,29 +283,92 @@ textarea:focus-visible,
     flex-shrink: 0;
 }
 
-/* O contorno azul padrão some sobre o fundo azul do topo */
-.topo :focus-visible {
-    outline-color: var(--cor-superficie);
-}
-
-/* Ações de conta no topo (login e cadastro, ou perfil e sair) */
-.topo-conta {
+/* Abas em pílula; a ativa (aria-current) fica azul */
+.abas {
     display: flex;
-    flex-wrap: wrap;
-    gap: var(--espaco-2);
+    gap: var(--espaco-1);
     min-width: 0;
     margin-left: auto;
+    overflow-x: auto;
+    scrollbar-width: none;
 }
 
-.topo-conta .botao {
-    max-width: 100%;
-    overflow-wrap: anywhere;
+.abas::-webkit-scrollbar {
+    display: none;
+}
+
+.aba {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    min-height: 40px;
+    padding: 0 var(--espaco-4);
+    border-radius: 999px;
+    color: var(--cor-texto-secundario);
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background-color 160ms ease, color 160ms ease;
+}
+
+.aba:hover {
+    background-color: var(--cor-fundo-suave);
+    color: var(--cor-principal);
+}
+
+.aba[aria-current="page"] {
+    background-color: var(--cor-principal);
+    color: var(--cor-superficie);
 }
 
 .form-sair {
     margin: 0;
 }
 
+.botao-sair {
+    min-height: 40px;
+    margin: 0;
+    padding: 0 var(--espaco-3);
+    border: 1px solid var(--cor-divisor);
+    border-radius: 999px;
+    background-color: transparent;
+    color: var(--cor-texto-secundario);
+    font: inherit;
+    font-size: var(--texto-pequeno);
+    font-weight: 700;
+    cursor: pointer;
+    transition: border-color 160ms ease, color 160ms ease;
+}
+
+.botao-sair:hover {
+    border-color: var(--cor-erro);
+    color: var(--cor-erro);
+}
+
+/* Celular: marca e "Sair" na primeira linha; abas roláveis na segunda */
+@media (max-width: 640px) {
+    .form-sair {
+        margin-left: auto;
+    }
+
+    .aba {
+        padding: 0 var(--espaco-3);
+    }
+
+    .abas {
+        order: 3;
+        flex-basis: 100%;
+        margin: 0 calc(-1 * var(--margem-lateral));
+        padding: 0 var(--margem-lateral) var(--espaco-1);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .aba,
+    .botao-sair {
+        transition: none;
+    }
+}
 
 /* Nota com estrela (média geral) */
 .estrela {
@@ -365,80 +478,6 @@ textarea:focus-visible,
     border: 0;
 }
 
-/* Menu de acesso rápido (três tracinhos) no topo */
-.topo-esquerda {
-    display: flex;
-    align-items: center;
-    gap: var(--espaco-3);
-    min-width: 0;
-}
-
-.menu {
-    position: relative;
-}
-
-.menu > summary {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: var(--altura-controle);
-    height: var(--altura-controle);
-    padding: 0;
-    border-radius: var(--raio);
-    color: var(--cor-superficie);
-    list-style: none;
-    cursor: pointer;
-}
-
-.menu > summary:hover {
-    background-color: rgba(255, 255, 255, 0.16);
-}
-
-.menu > summary::-webkit-details-marker {
-    display: none;
-}
-
-.menu-icone {
-    width: 24px;
-    height: 24px;
-}
-
-.menu-painel {
-    position: absolute;
-    top: calc(100% + var(--espaco-2));
-    left: 0;
-    z-index: 10;
-    box-sizing: border-box;
-    width: 260px;
-    max-width: calc(100vw - 2 * var(--margem-lateral));
-    padding: var(--espaco-2);
-    border: 1px solid var(--cor-divisor);
-    border-radius: var(--raio-card);
-    background-color: var(--cor-superficie);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
-}
-
-.menu-painel a {
-    display: flex;
-    align-items: center;
-    min-height: var(--altura-controle);
-    padding: 0 var(--espaco-3);
-    border-radius: var(--raio);
-    color: var(--cor-texto);
-    font-weight: 700;
-    text-decoration: none;
-}
-
-.menu-painel a:hover {
-    background-color: var(--cor-fundo-suave);
-    color: var(--cor-principal);
-}
-
-/* Dentro do painel branco o foco volta a ser azul */
-.menu-painel :focus-visible {
-    outline-color: var(--cor-principal);
-}
-
 /* O atributo hidden perde para display definido em .campo select; este vale sempre */
 [hidden] {
     display: none !important;
@@ -449,8 +488,8 @@ textarea:focus-visible,
     box-sizing: border-box;
     margin-top: var(--espaco-6);
     padding: var(--espaco-4);
-    border-top: 1px solid var(--cor-divisor);
-    background-color: var(--cor-fundo-suave);
+    border-top: 1px solid var(--cor-divisor-suave);
+    background-color: var(--cor-superficie);
     color: var(--cor-texto-secundario);
     font-size: var(--texto-pequeno);
     text-align: center;
@@ -463,4 +502,138 @@ textarea:focus-visible,
 .rodape a {
     color: var(--cor-principal);
     text-decoration: underline;
+}
+
+/* ------------------------------------------------------------------ Estética moderna
+ * Componentes compartilhados pelas telas: entrada animada do conteúdo, cabeçalho
+ * de página com selo, link de voltar em pílula e barras de nota.
+ */
+
+/* Fonte do sistema em todas as telas, inclusive nas que definem body próprio */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    font-family: var(--fonte);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* O conteúdo ocupa a sobra da altura, empurrando o rodapé para o fim da janela */
+body > main {
+    flex: 1 0 auto;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+h1 {
+    letter-spacing: -0.02em;
+}
+
+/* O conteúdo principal entra com fade e leve deslocamento */
+main {
+    animation: surgir 420ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes surgir {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* Cabeçalho de página: selo, título e subtítulo */
+.cabecalho-pagina {
+    margin-bottom: var(--espaco-5);
+}
+
+.cabecalho-pagina h1 {
+    margin: 0 0 var(--espaco-2);
+}
+
+.cabecalho-pagina .subtitulo {
+    margin: 0;
+    color: var(--cor-texto-secundario);
+}
+
+.selo {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--espaco-1);
+    margin: 0 0 var(--espaco-3);
+    padding: 2px var(--espaco-3);
+    border-radius: var(--raio-pilula);
+    background-color: var(--cor-principal-suave);
+    color: var(--cor-principal);
+    font-size: var(--texto-pequeno);
+    font-weight: 700;
+}
+
+/* Link "voltar" em pílula, alinhado ao texto */
+.voltar {
+    margin: 0 0 var(--espaco-3);
+}
+
+.voltar a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--espaco-1);
+    min-height: 36px;
+    margin-left: calc(-1 * var(--espaco-3));
+    padding: 0 var(--espaco-3);
+    border-radius: var(--raio-pilula);
+    color: var(--cor-texto-secundario);
+    font-size: var(--texto-pequeno);
+    font-weight: 700;
+    text-decoration: none;
+    transition: background-color var(--transicao), color var(--transicao);
+}
+
+.voltar a:hover {
+    background-color: var(--cor-principal-suave);
+    color: var(--cor-principal);
+    text-decoration: none;
+}
+
+/* Barra de nota (largura via .preenche-N, já que a CSP bloqueia style inline) */
+.barra {
+    position: relative;
+    display: block;
+    height: 8px;
+    overflow: hidden;
+    border-radius: var(--raio-pilula);
+    background-color: var(--cor-divisor-suave);
+}
+
+.barra-cheia {
+    position: absolute;
+    inset: 0 auto 0 0;
+    border-radius: inherit;
+    background-color: var(--cor-principal);
+}
+
+.barra-cheia.barra-dificuldade {
+    background-color: var(--cor-estrela);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    main {
+        animation: none;
+    }
+
+    .botao,
+    .card-interativo,
+    .voltar a,
+    .campo input,
+    .campo select,
+    .campo textarea {
+        transition: none;
+    }
+
+    .botao:active:not(:disabled) {
+        transform: none;
+    }
 }

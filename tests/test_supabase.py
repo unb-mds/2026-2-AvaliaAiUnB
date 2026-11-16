@@ -5,12 +5,13 @@ import unittest
 from unittest.mock import patch
 
 from httpx import ConnectError
+from flask_wtf.csrf import generate_csrf
 
 from app import create_app
 from app.controllers.session_controller import COOKIE_ACESSO, COOKIE_RENOVACAO
 from app.repositorio import AvaliacaoRepository, ProfessorRepository, UsuarioRepository
 from app.validacoes import CRITERIOS
-from tests.fake_supabase import ClienteFalso
+from tests.fake_supabase import ClienteFalso, entrar_pela_web, sessao_google
 
 NOTAS = {c: 4 for c in CRITERIOS}
 
@@ -103,37 +104,30 @@ class TestUsuarios(unittest.TestCase):
         self.cliente = ClienteFalso()
         self.usuarios = UsuarioRepository(self.cliente, lambda: self.cliente)
 
-    def criar(self, username='ana', email='ana@gmail.com'):
-        return self.usuarios.criar('Ana Souza', username, email, 'senha123')
+    def entrar(self, email='ana@gmail.com', nome='Ana Souza'):
+        return sessao_google(self.cliente, self.usuarios, email, nome)
 
-    def test_criar_grava_auth_e_perfil(self):
-        ok, usuario_id = self.criar()
-        self.assertTrue(ok)
-        self.assertEqual(self.cliente.tabelas['perfis'][0]['id'], usuario_id)
+    def test_primeiro_login_grava_perfil_e_metadata(self):
+        sessao = self.entrar()
+        usuario_id = self.cliente.auth.tokens[sessao['access_token']]
+        self.assertEqual(self.cliente.tabelas['perfis'],
+                         [{'id': usuario_id, 'username': 'ana', 'nome_completo': 'Ana Souza'}])
         self.assertEqual(self.cliente.auth.usuarios[usuario_id]['user_metadata']['username'], 'ana')
 
-    def test_conflitos(self):
-        self.criar()
-        self.assertEqual(self.criar(email='outro@gmail.com')[:2], (False, 'username'))
-        self.assertEqual(self.criar(username='outro')[:2], (False, 'email'))
+    def test_novo_login_reaproveita_conta_e_perfil(self):
+        self.entrar()
+        self.entrar()
         self.assertEqual(len(self.cliente.auth.usuarios), 1)
+        self.assertEqual(len(self.cliente.tabelas['perfis']), 1)
 
-    def test_autenticar_por_username(self):
-        self.criar()
-        self.assertIsNotNone(self.usuarios.autenticar('ANA', 'senha123'))
-        self.assertIsNone(self.usuarios.autenticar('ana', 'errada123'))
-        self.assertIsNone(self.usuarios.autenticar('naoexiste', 'senha123'))
-
-    def test_login_de_usuario_inexistente_e_senha_errada_nao_autentica(self):
-        self.criar()
-        with patch('app.repositorio.time.sleep') as atraso:
-            self.assertIsNone(self.usuarios.autenticar('inexistente', 'senha123'))
-            self.assertIsNone(self.usuarios.autenticar('ana', 'incorreta'))
-        self.assertGreaterEqual(atraso.call_count, 2)
+    def test_username_curto_ou_com_simbolos_e_normalizado(self):
+        self.entrar(email='a+b@gmail.com')
+        self.assertEqual(self.cliente.tabelas['perfis'][0]['username'], 'estudante')
+        self.entrar(email='Joao-Silva@gmail.com', nome='João')
+        self.assertEqual(self.cliente.tabelas['perfis'][1]['username'], 'joaosilva')
 
     def test_token_renovacao_e_logout(self):
-        self.criar()
-        sessao = self.usuarios.autenticar('ana', 'senha123')
+        sessao = self.entrar()
         usuario = self.usuarios.usuario_do_token(sessao['access_token'])
         self.assertEqual((usuario['username'], usuario['nome'], usuario['email']),
                          ('ana', 'Ana Souza', 'ana@gmail.com'))
@@ -146,10 +140,15 @@ class TestUsuarios(unittest.TestCase):
 class TestFluxoWeb(unittest.TestCase):
     def setUp(self):
         self.cliente = ClienteFalso()
-        self.web = create_app({'TESTING': True, 'SECRET_KEY': 'chave-exclusiva-dos-testes',
-                               'SUPABASE_CLIENT': self.cliente}).test_client()
+        app = create_app({'TESTING': True, 'SECRET_KEY': 'chave-exclusiva-dos-testes',
+                          'SUPABASE_CLIENT': self.cliente})
+        # Só nos testes: visitante anônimo não tem formulário POST (o login é um link do Google).
+        app.add_url_rule('/teste/csrf', 'teste_csrf', generate_csrf)
+        self.web = app.test_client()
 
-    def token_csrf(self, caminho='/login'):
+    def token_csrf(self, caminho=None):
+        if caminho is None:
+            return self.web.get('/teste/csrf').get_data(as_text=True)
         resposta = self.web.get(caminho, headers={'Accept': 'text/html'})
         self.assertEqual(resposta.status_code, 200)
         campo = re.search(r'name="csrf_token" value="([^"]+)"',
@@ -161,57 +160,10 @@ class TestFluxoWeb(unittest.TestCase):
         return self.web.post(caminho, data={**(data or {}), 'csrf_token': self.token_csrf()},
                              **opcoes)
 
-    def cadastrar(self, **campos):
-        dados = dict(nome='Ana', username='ana', email='ana@gmail.com',
-                     senha='senha123', confirmar_senha='senha123')
-        dados.update(campos)
-        return self.postar('/cadastro', data=dados)
-
-    def entrar(self, senha='senha123'):
-        return self.postar('/login', data={'username': 'ana', 'senha': senha, 'formato': 'html'})
-
-    def test_cadastro(self):
-        self.assertEqual(self.cadastrar().status_code, 201)
-        self.assertEqual(self.cadastrar().status_code, 409)
-        self.assertEqual(self.cadastrar(username='outra', email='b@gmail.com').status_code, 201)
-        self.assertEqual(self.cadastrar(email='ana@unb.br', username='x1y').status_code, 400)
-        resposta = self.cadastrar(username='z', email='z@gmail.com')
-        self.assertIn('username', resposta.get_json()['erros'])
-        self.assertNotIn('senha123', resposta.get_data(as_text=True))
-
-    def test_cadastro_informa_email_ou_username_ja_cadastrado(self):
-        self.assertEqual(self.cadastrar().status_code, 201)
-
-        conflito_username = self.cadastrar(email='outro@gmail.com')
-        self.assertEqual(conflito_username.status_code, 409)
-        self.assertEqual(
-            conflito_username.get_json()['erros']['username'],
-            'Este nome de usuário já está em uso.',
-        )
-
-        conflito_email = self.cadastrar(username='outro')
-        self.assertEqual(conflito_email.status_code, 409)
-        self.assertEqual(
-            conflito_email.get_json()['erros']['email'],
-            'Este e-mail já está cadastrado.',
-        )
-
-        conflito_html = self.cadastrar(
-            username='outro', formato='html'
-        )
-        self.assertEqual(conflito_html.status_code, 409)
-        self.assertIn('Este e-mail já está cadastrado.',
-                      conflito_html.get_data(as_text=True))
-
-    def test_cadastro_html_mostra_erro_de_gmail(self):
-        resposta = self.postar('/cadastro', data=dict(
-            nome='Ana', username='ana', email='ana@unb.br', senha='senha123',
-            confirmar_senha='senha123', formato='html'))
-        self.assertEqual(resposta.status_code, 400)
-        self.assertIn('@gmail.com', resposta.get_data(as_text=True))
+    def entrar(self, email='ana@gmail.com', nome='Ana'):
+        return entrar_pela_web(self.web, self.cliente, email, nome)
 
     def test_login_redireciona_para_home(self):
-        self.cadastrar()
         resposta = self.entrar()
         self.assertEqual(resposta.status_code, 303)
         self.assertTrue(resposta.headers['Location'].endswith('/'))
@@ -219,19 +171,19 @@ class TestFluxoWeb(unittest.TestCase):
         self.assertIn('Olá, Ana', home)
         self.assertNotIn('href="/login"', home)
 
-    def test_login_invalido_e_json(self):
-        self.cadastrar()
-        resposta = self.entrar('errada123')
-        self.assertEqual(resposta.status_code, 401)
-        self.assertIn('Usuário ou senha inválidos', resposta.get_data(as_text=True))
-        self.assertEqual(self.postar('/login', data={'username': 'ana', 'senha': 'errada123'}).status_code, 401)
-        self.assertEqual(self.postar('/login', data={'username': 'ana', 'senha': 'senha123'}).status_code, 200)
+    def test_login_so_com_google(self):
+        pagina = self.web.get('/login').get_data(as_text=True)
+        self.assertIn('href="/login/google"', pagina)
+        self.assertNotIn('type="password"', pagina)
+        self.assertTrue(self.web.get('/cadastro').headers['Location'].endswith('/login'))
+        for caminho in ('/recuperar-senha', '/redefinir-senha'):
+            self.assertEqual(self.web.get(caminho).status_code, 404)
+        self.assertEqual(self.web.post('/login', data={'username': 'ana', 'senha': 'x'}).status_code, 405)
 
     def test_perfil_exige_login_e_logout_revoga(self):
         json = {'Accept': 'application/json'}
         self.assertEqual(self.web.get('/perfil').status_code, 302)
         self.assertEqual(self.web.get('/perfil', headers=json).status_code, 401)
-        self.cadastrar()
         self.entrar()
         self.assertEqual(self.web.get('/perfil', headers=json).get_json()['username'], 'ana')
         self.assertEqual(self.postar('/logout', data={'formato': 'html'}).status_code, 303)
@@ -240,14 +192,12 @@ class TestFluxoWeb(unittest.TestCase):
 
     def test_sessao_expirada_e_renovada_pelo_refresh_token(self):
         json = {'Accept': 'application/json'}
-        self.cadastrar()
         self.entrar()
         self.cliente.auth.expirar_acesso()
         self.assertEqual(self.web.get('/perfil', headers=json).status_code, 200)
         self.assertEqual(self.web.get('/perfil', headers=json).status_code, 200)   # cookie novo
 
     def test_logout_com_acesso_expirado_revoga_refresh_e_limpa_cookies(self):
-        self.cadastrar()
         self.entrar()
         refresh_original = self.web.get_cookie(COOKIE_RENOVACAO).value
         self.cliente.auth.expirar_acesso()
@@ -263,7 +213,6 @@ class TestFluxoWeb(unittest.TestCase):
                          401)
 
     def test_logout_registra_falha_sem_reemitir_cookies_renovados(self):
-        self.cadastrar()
         self.entrar()
         self.cliente.auth.expirar_acesso()
         with patch.object(self.cliente.auth.admin, 'sign_out',
@@ -308,7 +257,6 @@ class TestFluxoWeb(unittest.TestCase):
         self.assertEqual(self.cliente.tabelas['avaliacoes'], [])
 
     def test_fluxo_avaliacao_e_ordem_da_listagem(self):
-        self.cadastrar()
         self.entrar()
         formulario = self.web.get('/avaliar/2?disciplina_id=20').get_data(as_text=True)
         self.assertIn('name="clareza"', formulario)
@@ -325,9 +273,8 @@ class TestFluxoWeb(unittest.TestCase):
         self.assertIn('1 avaliação<', lista)
 
     def test_csrf_rejeita_posts_sem_token_ou_com_token_invalido(self):
-        self.cadastrar()
         self.entrar()
-        for caminho in ('/cadastro', '/login', '/avaliar/1', '/logout'):
+        for caminho in ('/avaliar/1', '/logout'):
             for dados in ({}, {'csrf_token': 'token-invalido'}):
                 with self.subTest(caminho=caminho, dados=dados):
                     resposta = self.web.post(caminho, data=dados)
@@ -340,38 +287,36 @@ class TestFluxoWeb(unittest.TestCase):
     def test_csrf_rejeita_token_de_outro_cliente(self):
         token = self.token_csrf()
         outro = self.web.application.test_client()
-        outro.get('/login')
-        resposta = outro.post('/cadastro', data={'csrf_token': token})
+        entrar_pela_web(outro, self.cliente)
+        resposta = outro.post('/logout', data={'csrf_token': token})
         self.assertEqual(resposta.status_code, 400)
         self.assertIn('CSRF', resposta.get_data(as_text=True))
-        self.assertEqual(self.cliente.auth.usuarios, {})
+        self.assertNotEqual(self.cliente.auth.tokens, {})
 
     def test_csrf_rejeita_token_expirado(self):
+        self.entrar()
         token = self.token_csrf()
         with patch('time.time', return_value=time.time() + 12 * 60 * 60 + 60):
-            resposta = self.web.post('/cadastro', data={'csrf_token': token})
+            resposta = self.web.post('/avaliar/1', data={'csrf_token': token})
         self.assertEqual(resposta.status_code, 400)
         self.assertIn('CSRF', resposta.get_data(as_text=True))
-        self.assertEqual(self.cliente.auth.usuarios, {})
 
     def test_csrf_aceita_token_apos_uma_hora(self):
+        self.entrar()
         token = self.token_csrf()
         with patch('time.time', return_value=time.time() + 60 * 60 + 60):
-            resposta = self.web.post('/cadastro', data={'csrf_token': token})
+            resposta = self.web.post('/avaliar/1', data={'csrf_token': token})
         self.assertEqual(resposta.status_code, 400)
         self.assertNotIn('CSRF', resposta.get_data(as_text=True))
 
     def test_csrf_aceita_token_no_cabecalho(self):
         token = self.token_csrf()
-        resposta = self.web.post('/cadastro', data=dict(
-            nome='Ana', username='ana', email='ana@gmail.com', senha='senha123',
-            confirmar_senha='senha123'), headers={'X-CSRFToken': token})
-        self.assertEqual(resposta.status_code, 201)
+        self.entrar()
+        resposta = self.web.post('/logout', headers={'X-CSRFToken': token,
+                                                     'Accept': 'application/json'})
+        self.assertEqual(resposta.status_code, 200)
 
     def test_formularios_post_incluem_token_valido(self):
-        self.token_csrf('/cadastro')
-        self.token_csrf('/login')
-        self.cadastrar()
         self.entrar()
         token = self.token_csrf('/avaliar/1?disciplina_id=10')
         resposta = self.web.post('/avaliar/1', data={
@@ -384,16 +329,14 @@ class TestFluxoWeb(unittest.TestCase):
 
     def test_perfil_lista_edita_apaga_e_protege_avaliacoes_de_outro_usuario(self):
         # Cadastra e loga com Ana (avalia prof 1 / disc 10 com nota 5)
-        self.cadastrar(nome='Ana', username='ana', email='ana@gmail.com')
         self.entrar()
         notas_5 = {**{c: '5' for c in CRITERIOS}, 'disciplina_id': '10'}
         self.assertEqual(self.postar('/avaliar/1', data=notas_5).status_code, 303)
         id_aval_ana = self.cliente.tabelas['avaliacoes'][0]['id']
 
-        # Sai da Ana, cadastra e loga com Bruno (avalia prof 2 / disc 20 com nota 3)
+        # Sai da Ana e entra com Bruno (avalia prof 2 / disc 20 com nota 3)
         self.postar('/logout')
-        self.cadastrar(nome='Bruno', username='bruno', email='bruno@gmail.com')
-        self.postar('/login', data={'username': 'bruno', 'senha': 'senha123', 'formato': 'html'})
+        self.entrar(email='bruno@gmail.com', nome='Bruno')
         notas_3 = {**{c: '3' for c in CRITERIOS}, 'disciplina_id': '20'}
         self.assertEqual(self.postar('/avaliar/2', data=notas_3).status_code, 303)
 

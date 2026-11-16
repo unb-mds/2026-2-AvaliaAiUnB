@@ -1,95 +1,179 @@
-/* Login e cadastro. Usa os tokens de base.css. */
-* {
-    box-sizing: border-box;
-}
+/*
+ * Tela de login (entrada com Google). Usa os tokens de base.css.
+ * Estética: cartão com cantos amplos, sombras suaves em camadas e entrada com
+ * fade. O botão do Google segue o padrão de marca do Google, sem as cores do
+ * design system.
+ */
 
-body {
+.pagina-auth {
+    --auth-raio: 20px;
+    --auth-sombra: 0 1px 2px rgb(16 24 40 / 0.04), 0 12px 32px -8px rgb(16 24 40 / 0.16);
+    --auth-transicao: 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
     margin: 0;
-    padding: var(--espaco-5) var(--margem-lateral) var(--espaco-7);
     background-color: var(--cor-fundo-suave);
     color: var(--cor-texto);
-    font-family: var(--fonte);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, var(--fonte);
     font-size: var(--texto-base);
     line-height: 1.5;
 }
 
-.auth {
+/* Cartão */
+.pagina-auth .auth {
+    width: calc(100% - 2 * var(--margem-lateral));
     max-width: var(--largura-auth);
-    margin: 0 auto;
-    padding: var(--espaco-5) var(--espaco-4);
+    flex: 0 0 auto;
+    margin: auto;
+    padding: var(--espaco-6) var(--espaco-5);
+    border: 1px solid var(--cor-divisor);
+    border-radius: var(--auth-raio);
+    background-color: var(--cor-superficie);
+    box-shadow: var(--auth-sombra);
+    animation: entrar 520ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
-a {
+@keyframes entrar {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.98);
+        filter: blur(4px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+        filter: none;
+    }
+}
+
+/* Link de voltar em formato de pílula */
+.voltar {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--espaco-1);
+    margin: 0 0 var(--espaco-5) calc(-1 * var(--espaco-3));
+    padding: var(--espaco-1) var(--espaco-3);
+    border-radius: 999px;
+    color: var(--cor-texto-secundario);
+    font-size: var(--texto-pequeno);
+    text-decoration: none;
+    transition: background-color var(--auth-transicao), color var(--auth-transicao);
+}
+
+.voltar:hover {
+    background-color: rgb(23 75 131 / 0.08);
     color: var(--cor-principal);
 }
 
-.voltar {
+.auth-cabecalho {
+    margin-bottom: var(--espaco-5);
+}
+
+.selo-marca {
+    display: inline-block;
     margin: 0 0 var(--espaco-3);
-}
-
-h1 {
-    margin: 0 0 var(--espaco-4);
-    font-size: var(--texto-titulo-pagina);
-    line-height: 1.2;
-}
-
-label {
-    display: block;
-    margin-top: var(--espaco-4);
-    margin-bottom: var(--espaco-1);
+    padding: 2px var(--espaco-3);
+    border-radius: 999px;
+    background-color: rgb(23 75 131 / 0.1);
+    color: var(--cor-principal);
+    font-size: var(--texto-pequeno);
     font-weight: 700;
+    letter-spacing: 0.02em;
 }
 
-input {
-    display: block;
-    width: 100%;
-    min-height: var(--altura-controle);
-    padding: var(--espaco-2) var(--espaco-3);
-    border: 1px solid var(--cor-borda-campo);
-    border-radius: var(--raio);
-    background-color: var(--cor-superficie);
-    color: var(--cor-texto);
-    font: inherit;
+.pagina-auth h1 {
+    margin: 0 0 var(--espaco-2);
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
 }
 
-input[type="hidden"] {
-    display: none;
+.descricao-auth {
+    margin: 0;
+    color: var(--cor-texto-secundario);
 }
 
-form button {
-    width: 100%;
-    margin-top: var(--espaco-5);
-}
-
-p.link {
+.aviso-auth {
     margin: var(--espaco-4) 0 0;
+    color: var(--cor-texto-secundario);
+    font-size: var(--texto-pequeno);
     text-align: center;
 }
 
-.campo-ajuda {
-    margin-top: var(--espaco-1);
-}
-
-/* Mensagens de erro e sucesso */
-.mensagem {
+/* Mensagem de erro */
+.pagina-auth .mensagem {
     margin: 0 0 var(--espaco-4);
+    border-radius: 12px;
 }
 
-ul.mensagem {
-    padding-left: var(--espaco-6);
-}
-
-.erro-form,
 .erro-login {
+    background-color: rgb(160 24 24 / 0.08);
     color: var(--cor-erro);
 }
 
+/*
+ * Botão "Fazer login com o Google", no padrão de marca do Google:
+ * fundo branco, borda #747775, texto #1F1F1F, logotipo "G" colorido à esquerda.
+ */
+.botao-google {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: var(--altura-controle);
+    padding: 0 12px;
+    border: 1px solid #747775;
+    border-radius: 999px;
+    background-color: #ffffff;
+    color: #1f1f1f;
+    font-family: Roboto, Arial, sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.25px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color var(--auth-transicao), box-shadow var(--auth-transicao);
+}
+
+.botao-google-icone {
+    display: inline-flex;
+    flex-shrink: 0;
+}
+
+.botao-google:hover {
+    background-color: #f8f9fa;
+    box-shadow: 0 1px 2px rgb(60 64 67 / 0.3), 0 1px 3px 1px rgb(60 64 67 / 0.15);
+}
+
+.botao-google:active {
+    background-color: #eeeeee;
+}
+
+.botao-google:focus-visible {
+    outline: var(--foco-largura) solid var(--cor-principal);
+    outline-offset: var(--foco-distancia);
+}
+
 @media (min-width: 481px) {
-    body {
-        padding-top: var(--espaco-6);
+    .pagina-auth .auth {
+        padding: var(--espaco-6);
+    }
+}
+
+/* Sem animações para quem prefere menos movimento */
+@media (prefers-reduced-motion: reduce) {
+    .pagina-auth .auth {
+        animation: none;
     }
 
-    .auth {
-        padding: var(--espaco-5);
+    .botao-google,
+    .voltar {
+        transition: none;
     }
 }

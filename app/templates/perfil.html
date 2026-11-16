@@ -11,9 +11,13 @@
     {% include '_topo.html' %}
 
     <main class="conteudo">
-        <h1>Perfil</h1>
+        <header class="cabecalho-pagina">
+            <p class="selo">Sua conta</p>
+            <h1>Perfil</h1>
+        </header>
 
         <section class="card dados-usuario" aria-label="Dados da conta">
+            <span class="avatar" aria-hidden="true">{{ (usuario.nome or usuario.username or '?')[:1]|upper }}</span>
             <dl>
                 <div>
                     <dt>Nome</dt>
@@ -37,7 +41,7 @@
             </dl>
         </section>
 
-        <h2>Minhas Avaliações</h2>
+        <h2>Minhas Avaliações{% if avaliacoes %} <span class="contador">{{ avaliacoes|length }}</span>{% endif %}</h2>
         {% if avaliacoes %}
             {% for av in avaliacoes %}
             <article class="card avaliacao-card">

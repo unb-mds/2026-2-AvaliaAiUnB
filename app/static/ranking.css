@@ -15,22 +15,6 @@ main {
     padding: var(--espaco-5) var(--margem-lateral) var(--espaco-7);
 }
 
-.voltar {
-    margin: 0;
-}
-
-.voltar a {
-    display: inline-flex;
-    align-items: center;
-    min-height: var(--altura-controle);
-    font-weight: 700;
-    text-decoration: none;
-}
-
-.voltar a:hover {
-    text-decoration: underline;
-}
-
 h1 {
     margin: 0 0 var(--espaco-3);
     font-size: var(--texto-titulo-pagina);
@@ -43,7 +27,7 @@ main > .ajuda {
 }
 
 .mensagem {
-    border: 1px solid var(--cor-divisor);
+    border: 1px solid var(--cor-divisor-suave);
     background-color: var(--cor-superficie);
 }
 
@@ -51,9 +35,10 @@ main > .ajuda {
 .tabela-ranking-container {
     margin-top: var(--espaco-4);
     padding: var(--espaco-2);
-    border: 1px solid var(--cor-divisor);
+    border: 1px solid var(--cor-divisor-suave);
     border-radius: var(--raio-card);
     background-color: var(--cor-superficie);
+    box-shadow: var(--sombra-card);
 }
 
 .tabela-ranking caption {
@@ -66,8 +51,32 @@ main > .ajuda {
     padding: var(--espaco-3) var(--espaco-2);
 }
 
-.tabela-ranking tbody td:first-child {
+/* Posição em círculo; as três primeiras com ouro, prata e bronze suaves */
+.posicao {
+    display: inline-grid;
+    place-items: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 var(--espaco-1);
+    box-sizing: border-box;
+    border-radius: var(--raio-pilula);
+    background-color: var(--cor-fundo-suave);
     font-weight: 700;
+}
+
+.posicao-1 {
+    background-color: #fdf0c4;
+    color: #7a5a00;
+}
+
+.posicao-2 {
+    background-color: #e8ebef;
+    color: #3d4652;
+}
+
+.posicao-3 {
+    background-color: #f6dfcc;
+    color: #7a3f12;
 }
 
 .tabela-ranking th[scope="row"] a {

@@ -36,7 +36,7 @@ def _definir_cookies(response, sessao):
 
 
 def criar_sessao(sessao: dict, response):
-    """Anexa à resposta os cookies da sessão devolvida por UsuarioRepository.autenticar."""
+    """Anexa à resposta os cookies da sessão devolvida por UsuarioRepository.entrar_com_google."""
     return _definir_cookies(response, sessao)
 
 

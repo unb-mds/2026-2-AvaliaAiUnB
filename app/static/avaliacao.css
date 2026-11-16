@@ -6,28 +6,46 @@
 body {
     max-width: none;
     margin: 0;
-    padding: var(--espaco-5) var(--margem-lateral) var(--espaco-7);
+    padding: 0;
     background-color: var(--cor-fundo-suave);
     font-size: var(--texto-base);
     line-height: 1.5;
 }
 
-.avaliacao-container {
+.conteudo {
     max-width: var(--largura-conteudo);
     margin: 0 auto;
+    padding: var(--espaco-5) var(--margem-lateral) var(--espaco-7);
+}
+
+.avaliacao-container {
     padding: var(--espaco-5) var(--espaco-4);
 }
 
 h1 {
-    margin: 0 0 var(--espaco-3);
     font-size: var(--texto-titulo-pagina);
     line-height: 1.2;
     overflow-wrap: anywhere;
 }
 
-.avaliacao-container > p {
-    margin: 0 0 var(--espaco-3);
+.subtitulo {
     overflow-wrap: anywhere;
+}
+
+.aviso-anonimo {
+    display: flex;
+    align-items: center;
+    gap: var(--espaco-2);
+    margin: 0 0 var(--espaco-5);
+    padding: var(--espaco-2) var(--espaco-3);
+    border-radius: 12px;
+    background-color: var(--cor-fundo-suave);
+    color: var(--cor-texto-secundario);
+    font-size: var(--texto-pequeno);
+}
+
+.aviso-anonimo svg {
+    flex-shrink: 0;
 }
 
 .avaliacao-container .mensagem {
@@ -36,17 +54,26 @@ h1 {
 }
 
 /* Notas de 1 a 5 como botões de rádio */
+/* Cada critério em um bloco suave */
 .nota-grupo {
-    margin: 0 0 var(--espaco-5);
-    padding: 0;
-    border: 0;
+    margin: 0 0 var(--espaco-3);
+    padding: var(--espaco-4);
+    border: 1px solid var(--cor-divisor-suave);
+    border-radius: 14px;
+    background-color: #f8f9fb;
     min-width: 0;
 }
 
 .nota-grupo legend {
+    float: left;
+    width: 100%;
     padding: 0;
-    margin-bottom: var(--espaco-2);
+    margin-bottom: var(--espaco-3);
     font-weight: 700;
+}
+
+.nota-grupo legend + * {
+    clear: both;
 }
 
 .notas-opcoes {
@@ -69,22 +96,27 @@ h1 {
     min-height: var(--altura-controle);
     margin: 0;
     border: 1px solid var(--cor-borda-campo);
-    border-radius: var(--raio);
+    border-radius: 12px;
     background-color: var(--cor-superficie);
     color: var(--cor-texto);
     font-size: var(--texto-titulo-card);
     font-weight: 700;
     cursor: pointer;
+    transition: background-color var(--transicao), border-color var(--transicao),
+                color var(--transicao), box-shadow var(--transicao);
 }
 
 .notas-opcoes label:hover {
-    background-color: var(--cor-fundo-suave);
+    border-color: var(--cor-principal);
+    background-color: var(--cor-principal-suave);
+    color: var(--cor-principal);
 }
 
 .notas-opcoes input:checked + label {
     border-color: var(--cor-principal);
     background-color: var(--cor-principal);
     color: var(--cor-superficie);
+    box-shadow: 0 6px 16px -8px rgb(23 75 131 / 0.7);
 }
 
 .notas-opcoes input:focus-visible + label {
@@ -125,5 +157,11 @@ h1 {
 
     .acoes .botao {
         width: auto;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .notas-opcoes label {
+        transition: none;
     }
 }

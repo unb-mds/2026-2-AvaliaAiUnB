@@ -4,12 +4,16 @@ Tabelas usadas: auth.users (via Supabase Auth), perfis, professores, disciplinas
 turmas, avaliacoes e a view vw_professor_disciplina. `repositorios()` entrega as
 instâncias configuradas em create_app.
 """
+import re
+import secrets
 import time
 from collections import Counter
+from urllib.parse import urlencode
 
-from flask import current_app, has_request_context, url_for
+from flask import current_app
 from httpx import RequestError
 from supabase_auth.errors import AuthError
+from supabase_auth.helpers import generate_pkce_challenge, generate_pkce_verifier
 
 from app.supabase_db import get_supabase, novo_cliente
 from app.utils import normalizar_busca
@@ -17,6 +21,8 @@ from app.validacoes import CRITERIOS
 
 COLUNAS_AVALIACAO = ','.join(('id', 'usuario_id', 'professor_id', 'disciplina_id',
                                   'ano', 'periodo', *CRITERIOS))
+MAXIMO_NOME_PERFIL = 100      # perfis.nome_completo é VARCHAR(100)
+TENTATIVAS_USERNAME = 5
 TAMANHO_PAGINA = 1000          # limite padrão de linhas por requisição do PostgREST
 VALIDADE_CATALOGO = 300        # segundos de cache da listagem completa
 MINIMO_AVALIACOES_RANKING = 5
@@ -40,8 +46,19 @@ def _sessao_para_dict(resposta):
     return {'access_token': sessao.access_token, 'refresh_token': sessao.refresh_token}
 
 
+def _username_base(email):
+    """Parte local do e-mail no formato aceito para username (3 a 30 de [a-z0-9._])."""
+    local = re.sub(r'[^a-z0-9._]', '', (email or '').split('@')[0].lower())[:30]
+    return local if len(local) >= 3 else 'estudante'
+
+
+def _nome_do_google(meta, email):
+    nome = (meta.get('full_name') or meta.get('name') or (email or '').split('@')[0]).strip()
+    return (nome or 'Estudante')[:MAXIMO_NOME_PERFIL]
+
+
 class UsuarioRepository:
-    """Contas no Supabase Auth; nome e username ficam no user_metadata e na tabela perfis."""
+    """Contas no Supabase Auth (só login com Google); nome e username ficam no user_metadata e em perfis."""
 
     def __init__(self, cliente, fabrica_cliente=novo_cliente):
         self.cliente = cliente
@@ -58,83 +75,74 @@ class UsuarioRepository:
             'usuario_id': usuario_id, 'endereco_sha256': endereco_sha256,
         }], on_conflict='usuario_id').execute()
 
-    def criar(self, nome, username, email, senha):
-        """Retorna (True, id) ou (False, campo_com_erro, mensagem)."""
-        if self.cliente.table('perfis').select('id').eq('username', username).limit(1).execute().data:
-            return False, 'username', 'Este nome de usuário já está em uso.'
-        try:
-            resposta = self.cliente.auth.admin.create_user({
-                'email': email, 'password': senha, 'email_confirm': True,
-                'user_metadata': {'nome': nome, 'username': username}})
-        except AuthError as erro:
-            if getattr(erro, 'code', '') in ('email_exists', 'user_already_exists') \
-                    or 'already' in str(erro).lower():
-                return False, 'email', 'Este e-mail já está cadastrado.'
-            raise
-        usuario_id = str(resposta.user.id)
-        try:
-            self.cliente.table('perfis').insert(
-                {'id': usuario_id, 'username': username, 'nome_completo': nome}).execute()
-        except Exception:
-            self.cliente.auth.admin.delete_user(usuario_id)   # não deixa conta sem perfil
-            if self.cliente.table('perfis').select('id').eq('username', username).execute().data:
-                return False, 'username', 'Este nome de usuário já está em uso.'
-            raise
-        return True, usuario_id
+    def url_login_google(self, redirect_to):
+        """(url, verificador) para iniciar o login com Google no Supabase Auth.
 
-    def autenticar(self, username, senha):
-        """Autentica e reduz diferenças de tempo entre usuários existentes/inexistentes."""
-        inicio = time.monotonic()
+        Fluxo PKCE: o verificador fica com o servidor (sessão do Flask) e só ele
+        consegue trocar o código devolvido pelo Supabase por uma sessão.
+        """
+        verificador = generate_pkce_verifier()
+        parametros = urlencode({
+            'provider': 'google',
+            'redirect_to': redirect_to,
+            'code_challenge': generate_pkce_challenge(verificador),
+            'code_challenge_method': 's256',
+        })
+        return f'{self.cliente.auth_url}/authorize?{parametros}', verificador
+
+    def entrar_com_google(self, codigo, verificador):
+        """Troca o código do retorno do Google por uma sessão e garante o perfil.
+
+        Quem já tem conta com o mesmo e-mail é vinculado pelo próprio Supabase à
+        conta existente (mesmo id), então perfil e avaliações continuam os mesmos.
+        """
         try:
-            perfil = (self.cliente.table('perfis').select('id')
-                      .eq('username', username.strip().lower()).limit(1).execute().data)
-            if not perfil:
-                return None
+            resposta = self.fabrica_cliente().auth.exchange_code_for_session(
+                {'auth_code': codigo, 'code_verifier': verificador})
+        except AuthError as erro:
+            current_app.logger.warning("Falha no login com Google: %s", type(erro).__name__)
+            return None
+        sessao = _sessao_para_dict(resposta)
+        usuario = getattr(resposta, 'user', None)
+        if sessao is None or usuario is None:
+            return None
+        self._garantir_perfil(usuario)
+        return sessao
+
+    def _garantir_perfil(self, usuario):
+        """Cria o perfil de quem entrou pelo Google pela primeira vez e sincroniza o metadata."""
+        usuario_id = str(usuario.id)
+        meta = usuario.user_metadata or {}
+        perfil = (self.cliente.table('perfis').select('username,nome_completo')
+                  .eq('id', usuario_id).limit(1).execute().data)
+        if perfil:
+            username, nome = perfil[0]['username'], perfil[0]['nome_completo']
+        else:
+            nome = _nome_do_google(meta, usuario.email)
+            username = self._inserir_perfil(usuario_id, nome, usuario.email)
+        if meta.get('username') != username or not meta.get('nome'):
+            self.cliente.auth.admin.update_user_by_id(
+                usuario_id, {'user_metadata': {'nome': meta.get('nome') or nome,
+                                               'username': username}})
+
+    def _inserir_perfil(self, usuario_id, nome, email):
+        """Insere o perfil com um username livre derivado do e-mail. Retorna o username."""
+        base = _username_base(email)
+        for tentativa in range(TENTATIVAS_USERNAME):
+            username = base if tentativa == 0 else f'{base[:25]}{secrets.randbelow(10 ** 5):05d}'
+            if self.cliente.table('perfis').select('id').eq('username', username).limit(1).execute().data:
+                continue
             try:
-                email = self.cliente.auth.admin.get_user_by_id(perfil[0]['id']).user.email
-                # Cliente descartável: o login não altera a sessão principal.
-                resposta = self.fabrica_cliente().auth.sign_in_with_password(
-                    {'email': email, 'password': senha})
-            except AuthError:
-                return None
-            return _sessao_para_dict(resposta)
-        finally:
-            # Atraso mínimo, não uma garantia de tempo constante (rede e Auth variam).
-            restante = 0.15 - (time.monotonic() - inicio)
-            if restante > 0:
-                time.sleep(restante)
-
-    def enviar_email_recuperacao(self, email):
-        """Usa o Supabase Auth para enviar um link de recuperação de senha por e-mail."""
-        try:
-            opcoes = {}
-            if has_request_context():
-                opcoes["redirect_to"] = url_for("auth.redefinir_senha", _external=True)
-            self.fabrica_cliente().auth.reset_password_for_email(
-                email.strip().lower(),
-                options=opcoes,
-            )
-            return True
-        except AuthError as erro:
-            current_app.logger.warning("Falha ao pedir recuperação de senha: %s", str(erro))
-            return False
-
-    def atualizar_senha(self, access_token, nova_senha):
-        """Atualiza a senha usando o token validado da URL de recuperação."""
-        try:
-            # 1. Verifica no Supabase quem é o verdadeiro dono do token
-            resposta = self.cliente.auth.get_user(access_token)
-            if not resposta or not getattr(resposta, 'user', None):
-                return False, "Sessão de recuperação inválida."
-            
-            uid = str(resposta.user.id)
-            
-            # 2. Atualiza a senha cirurgicamente usando os privilégios do servidor
-            self.cliente.auth.admin.update_user_by_id(uid, {'password': nova_senha})
-            return True, None
-        except AuthError as erro:
-            current_app.logger.warning("Falha ao redefinir senha: %s", str(erro))
-            return False, "Sessão inválida ou expirada. Peça um novo link de recuperação."
+                self.cliente.table('perfis').insert(
+                    {'id': usuario_id, 'username': username, 'nome_completo': nome}).execute()
+                return username
+            except Exception:
+                # Corrida: outro retorno do mesmo usuário criou o perfil antes deste.
+                existente = (self.cliente.table('perfis').select('username')
+                             .eq('id', usuario_id).limit(1).execute().data)
+                if existente:
+                    return existente[0]['username']
+        raise RuntimeError('Não foi possível gerar um nome de usuário livre.')
 
     def usuario_do_token(self, access_token):
         """Dados do usuário dono do token, ou None se inválido/expirado/revogado."""
@@ -147,7 +155,8 @@ class UsuarioRepository:
             return None
         meta = usuario.user_metadata or {}
         return {'id': str(usuario.id), 'email': usuario.email,
-                'nome': meta.get('nome', ''), 'username': meta.get('username', '')}
+                'nome': meta.get('nome') or meta.get('full_name') or meta.get('name') or '',
+                'username': meta.get('username', '')}
 
     def renovar(self, refresh_token):
         try:

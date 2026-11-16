@@ -16,14 +16,8 @@ body {
 }
 
 h1 {
-    margin: 0 0 var(--espaco-2);
     font-size: var(--texto-titulo-pagina);
     line-height: 1.2;
-}
-
-.conteudo > .ajuda {
-    margin: 0 0 var(--espaco-4);
-    font-size: var(--texto-pequeno);
 }
 
 .atalhos {
@@ -65,7 +59,6 @@ h1 {
     align-items: flex-start;
     gap: var(--espaco-2);
     padding: var(--espaco-5) var(--espaco-4);
-    border: 1px solid var(--cor-divisor);
 }
 
 .lista-professores h2 {
@@ -94,7 +87,7 @@ h1 {
 
 .disciplinas li {
     padding: var(--espaco-1) var(--espaco-3);
-    border-radius: var(--raio);
+    border-radius: var(--raio-pilula);
     background-color: var(--cor-fundo-suave);
     font-size: var(--texto-pequeno);
     overflow-wrap: anywhere;
@@ -103,7 +96,7 @@ h1 {
 
 /* Estados sem dados e sem resultado */
 .mensagem {
-    border: 1px solid var(--cor-divisor);
+    border: 1px solid var(--cor-divisor-suave);
     background-color: var(--cor-superficie);
 }
 
@@ -171,7 +164,7 @@ h1 {
     width: 100%;
     margin-top: var(--espaco-2);
     padding-top: var(--espaco-4);
-    border-top: 1px solid var(--cor-divisor);
+    border-top: 1px solid var(--cor-divisor-suave);
 }
 
 @media (min-width: 481px) {

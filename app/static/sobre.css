@@ -1,0 +1,119 @@
+/* Página Sobre. Usa os tokens de base.css. */
+body {
+    margin: 0;
+    background-color: var(--cor-fundo-suave);
+    color: var(--cor-texto);
+    font-family: var(--fonte);
+    font-size: var(--texto-base);
+    line-height: 1.5;
+}
+
+.conteudo {
+    box-sizing: border-box;
+    max-width: var(--largura-conteudo);
+    margin: 0 auto;
+    padding: var(--espaco-6) var(--margem-lateral) var(--espaco-7);
+}
+
+.sobre-cabecalho {
+    margin-bottom: var(--espaco-6);
+}
+
+h1 {
+    margin: 0 0 var(--espaco-3);
+    font-size: var(--texto-titulo-pagina);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+}
+
+.apresentacao {
+    margin: 0;
+    color: var(--cor-texto-secundario);
+    font-size: 1.0625rem;
+}
+
+.sobre-secao {
+    margin-bottom: var(--espaco-4);
+    padding: var(--espaco-5);
+}
+
+.sobre-secao h2 {
+    margin: 0 0 var(--espaco-3);
+    font-size: var(--texto-titulo-card);
+}
+
+.sobre-secao p {
+    margin: 0;
+}
+
+.sobre-secao a {
+    color: var(--cor-principal);
+}
+
+/* Passos numerados em círculos */
+.passos {
+    display: grid;
+    gap: var(--espaco-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: passo;
+}
+
+.passos li {
+    position: relative;
+    padding-left: 44px;
+    counter-increment: passo;
+}
+
+.passos li::before {
+    content: counter(passo);
+    position: absolute;
+    top: -2px;
+    left: 0;
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 999px;
+    background-color: rgb(23 75 131 / 0.1);
+    color: var(--cor-principal);
+    font-weight: 700;
+}
+
+/* Critérios em grade de blocos */
+.criterios {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: var(--espaco-3);
+    margin: 0 0 var(--espaco-4);
+}
+
+.criterios div {
+    padding: var(--espaco-3) var(--espaco-4);
+    border-radius: var(--raio-card);
+    background-color: var(--cor-fundo-suave);
+}
+
+.criterios dt {
+    color: var(--cor-principal);
+    font-weight: 700;
+}
+
+.criterios dd {
+    margin: var(--espaco-1) 0 0;
+    color: var(--cor-texto-secundario);
+    font-size: var(--texto-pequeno);
+}
+
+.nota-rodape {
+    color: var(--cor-texto-secundario);
+    font-size: var(--texto-pequeno);
+}
+
+.lista-simples {
+    display: grid;
+    gap: var(--espaco-2);
+    margin: 0;
+    padding-left: var(--espaco-5);
+}

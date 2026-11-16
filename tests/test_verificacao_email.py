@@ -7,7 +7,7 @@ from urllib.parse import parse_qs, urlsplit
 from app import create_app
 from app.controllers.session_controller import COOKIE_ACESSO
 from app.repositorio import UsuarioRepository
-from tests.fake_supabase import ClienteFalso
+from tests.fake_supabase import ClienteFalso, sessao_google
 
 
 class TestVerificacaoEmail(unittest.TestCase):
@@ -24,16 +24,17 @@ class TestVerificacaoEmail(unittest.TestCase):
         self.cliente = ClienteFalso()
         self.cliente.tabelas['emails_verificados'] = []
         self.repositorio = UsuarioRepository(self.cliente, lambda: self.cliente)
-        _, self.usuario_id = self.repositorio.criar(
-            'Ana', 'ana', 'ana@example.test', 'senha-de-teste')
-        self.web = create_app({'TESTING': True, 'SECRET_KEY': 'verificacao-teste',
-                               'SUPABASE_CLIENT': self.cliente}).test_client()
+        self.app = create_app({'TESTING': True, 'SECRET_KEY': 'verificacao-teste',
+                               'SUPABASE_CLIENT': self.cliente})
+        self.web = self.app.test_client()
         self.caminho = '/perfil/verificar-email'
-        self._entrar('ana')
+        self.usuario_id = self._entrar('ana@example.test', 'Ana')
 
-    def _entrar(self, username):
-        sessao = self.repositorio.autenticar(username, 'senha-de-teste')
+    def _entrar(self, email, nome):
+        with self.app.app_context():
+            sessao = sessao_google(self.cliente, self.repositorio, email, nome)
         self.web.set_cookie(COOKIE_ACESSO, sessao['access_token'])
+        return self.cliente.auth.tokens[sessao['access_token']]
 
     def _postar(self, caminho, **dados):
         pagina = self.web.get(self.caminho)
@@ -73,8 +74,7 @@ class TestVerificacaoEmail(unittest.TestCase):
         self.assertEqual(self._postar(self.caminho, chave='invalida').status_code, 400)
         with patch('app.verificacao_email.VALIDADE_LINK', -1):
             self.assertEqual(self._postar(self.caminho, chave=chave).status_code, 400)
-        self.repositorio.criar('Bia', 'bia', 'bia@example.test', 'senha-de-teste')
-        self._entrar('bia')
+        self._entrar('bia@example.test', 'Bia')
         self.assertEqual(self._postar(self.caminho, chave=chave).status_code, 400)
         self.assertEqual(self.cliente.tabelas['emails_verificados'], [])
 

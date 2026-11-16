@@ -20,11 +20,25 @@ h1 {
     line-height: 1.2;
 }
 
+/* Formulários e tabela em cards */
+main > form.filtros,
 .selecao-comparacao {
     padding: var(--espaco-5) var(--espaco-4);
-    border: 1px solid var(--cor-divisor);
+    border: 1px solid var(--cor-divisor-suave);
     border-radius: var(--raio-card);
     background-color: var(--cor-superficie);
+    box-shadow: var(--sombra-card);
+}
+
+main > form.filtros {
+    margin-bottom: var(--espaco-4);
+}
+
+main > form.filtros .selecao-comparacao {
+    flex-basis: 100%;
+    padding: 0;
+    border: 0;
+    box-shadow: none;
 }
 
 .selecao-comparacao .campo select {
@@ -38,9 +52,10 @@ h1 {
 
 .comparacao-container {
     padding: var(--espaco-2);
-    border: 1px solid var(--cor-divisor);
+    border: 1px solid var(--cor-divisor-suave);
     border-radius: var(--raio-card);
     background-color: var(--cor-superficie);
+    box-shadow: var(--sombra-card);
     overflow-x: auto;
 }
 
@@ -56,7 +71,7 @@ h1 {
 }
 
 .mensagem {
-    border: 1px solid var(--cor-divisor);
+    border: 1px solid var(--cor-divisor-suave);
     background-color: var(--cor-superficie);
 }
 
@@ -69,22 +84,6 @@ h1 {
         width: auto;
         margin-bottom: var(--espaco-4);
     }
-}
-
-.voltar {
-    margin: 0;
-}
-
-.voltar a {
-    display: inline-flex;
-    align-items: center;
-    min-height: var(--altura-controle);
-    font-weight: 700;
-    text-decoration: none;
-}
-
-.voltar a:hover {
-    text-decoration: underline;
 }
 
 h1 {
@@ -101,8 +100,12 @@ main > .ajuda {
     left: 0;
     min-width: 8rem;
     background: var(--cor-superficie);
-    border-right: 1px solid var(--cor-divisor);
+    border-right: 1px solid var(--cor-divisor-suave);
     font-weight: 700;
+}
+
+.tabela-comparacao thead tr > :first-child {
+    background: var(--cor-fundo-suave);
 }
 
 .tabela-comparacao tr > :not(:first-child) {

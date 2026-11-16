@@ -59,12 +59,11 @@ Veja as [regras de busca, notas, comparação e ranking](docs/FUNCIONALIDADES.md
 | Perfil | Acesso | O que pode fazer |
 |---|---|---|
 | Visitante | Sem login | Consultar professores, disciplinas, médias, ranking e comparação |
-| Usuário cadastrado | Nome de usuário e senha | Consultar e registrar avaliações; listar, editar e excluir as próprias avaliações em `/perfil` |
+| Usuário cadastrado | Conta Google | Consultar e registrar avaliações; listar, editar e excluir as próprias avaliações em `/perfil` |
 
 O público principal são os estudantes da UnB. Docentes também podem consultar
-os indicadores públicos. O cadastro atual aceita e-mail `@gmail.com`; a
-confirmação do endereço está prevista na
-[issue #125](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/125).
+os indicadores públicos. A entrada é feita somente com a conta Google; a conta
+no AvaliaUnb é criada automaticamente no primeiro acesso.
 
 ## Tecnologias e arquitetura
 
