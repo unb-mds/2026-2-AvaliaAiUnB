@@ -19,17 +19,6 @@ body {
     margin-bottom: var(--espaco-6);
 }
 
-.selo {
-    display: inline-block;
-    margin: 0 0 var(--espaco-3);
-    padding: 2px var(--espaco-3);
-    border-radius: 999px;
-    background-color: rgb(23 75 131 / 0.1);
-    color: var(--cor-principal);
-    font-size: var(--texto-pequeno);
-    font-weight: 700;
-}
-
 h1 {
     margin: 0 0 var(--espaco-3);
     font-size: var(--texto-titulo-pagina);
