@@ -10,6 +10,7 @@
     --auth-sombra: var(--sombra-elevada);
     --auth-transicao: 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
 
+    position: relative;
     display: flex;
     flex-direction: column;
     min-height: 100vh;

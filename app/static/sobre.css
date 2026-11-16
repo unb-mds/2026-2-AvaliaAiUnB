@@ -1,5 +1,6 @@
 /* Página Sobre. Usa os tokens de base.css. */
 body {
+    position: relative;
     margin: 0;
     background-color: var(--cor-fundo-suave);
     color: var(--cor-texto);

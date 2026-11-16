@@ -16,15 +16,21 @@
     if (!ctx) {
         return;
     }
-    var hero = document.querySelector(".hero");
+    // Área de interação do mouse: o cabeçalho da página.
+    var hero = document.querySelector(".hero") ||
+        document.querySelector(".cabecalho-pagina") ||
+        document.querySelector("main h1") ||
+        document.querySelector("h1");
+    // "normal" (home) ou "leve" (demais telas): menos pontos, linhas e opacidade.
+    var leve = canvas.getAttribute("data-densidade") === "leve";
 
     var TOKEN_PONTOS = "--cor-principal";
     var TOKENS_MANCHAS = ["--cor-principal", "--cor-principal-fundo", "--cor-principal-hover"];
     var TOKEN_FUNDO = "--cor-fundo-suave";
 
-    var ALFA_MANCHA = 0.35;       // opacidade máxima das manchas
-    var ALFA_LINHA = 0.3;         // opacidade máxima das linhas (distância zero)
-    var ALFA_PONTO = 0.65;
+    var ALFA_MANCHA = leve ? 0.18 : 0.35;  // opacidade máxima das manchas
+    var ALFA_LINHA = leve ? 0.2 : 0.3;     // opacidade máxima das linhas (distância zero)
+    var ALFA_PONTO = leve ? 0.5 : 0.65;
     var INTERVALO_QUADRO = 1000 / 30 - 4; // ~30 quadros por segundo
     var RAIO_MOUSE = 130;         // alcance da interação, em px
     var DESLOCAMENTO_MAX = 55;    // quanto um ponto é empurrado, em px
@@ -108,9 +114,12 @@
 
     function quantidadePontos() {
         if (largura < 600) {
-            return 40;
+            return leve ? 20 : 40;
         }
-        return largura < 1000 ? 55 : 70;
+        if (largura < 1000) {
+            return leve ? 25 : 55;
+        }
+        return leve ? 30 : 70;
     }
 
     function novoPonto() {
@@ -184,7 +193,7 @@
         var rgb = corPontos.join(",");
         var limite = Math.min(150, Math.max(90, largura * 0.12));
         var limiteQuadrado = limite * limite;
-        var maxLinhas = largura < 600 ? 70 : 140;
+        var maxLinhas = largura < 600 ? (leve ? 30 : 70) : (leve ? 60 : 140);
         var linhas = 0;
 
         ctx.lineWidth = 1;
