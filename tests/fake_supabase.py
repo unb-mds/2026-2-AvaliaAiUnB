@@ -71,7 +71,8 @@ class Consulta:
                 gravadas.append(dict(existente))
             return Resposta(gravadas)
         if self.novo is not None:
-            if self.nome == 'perfis' and any(l['username'] == self.novo['username'] for l in tabela):
+            if self.nome == 'perfis' and any(l['username'] == self.novo['username']
+                                             or l['id'] == self.novo['id'] for l in tabela):
                 raise RuntimeError('duplicate key value violates unique constraint "perfis_username_key"')
             novo_id = max((l.get('id', 0) for l in tabela if isinstance(l.get('id'), int)), default=0) + 1
             registro = {'id': novo_id, **self.novo} if self.nome != 'perfis' else dict(self.novo)
@@ -117,6 +118,15 @@ class AdminFalso:
             raise AuthApiError('User not found', 404, 'user_not_found')
         return SimpleNamespace(user=self.auth._usuario(uid))
 
+    def update_user_by_id(self, uid, atributos):
+        if uid not in self.auth.usuarios:
+            raise AuthApiError('User not found', 404, 'user_not_found')
+        usuario = self.auth.usuarios[uid]
+        if 'password' in atributos:
+            usuario['senha'] = atributos['password']
+        usuario['user_metadata'].update(atributos.get('user_metadata', {}))
+        return SimpleNamespace(user=self.auth._usuario(uid))
+
     def delete_user(self, uid):
         self.auth.usuarios.pop(uid, None)
 
@@ -132,6 +142,7 @@ class AdminFalso:
 class AuthFalso:
     def __init__(self):
         self.usuarios, self.tokens, self.refresh = {}, {}, {}
+        self.codigos_google = {}
         self.contador = itertools.count(1)
         self.admin = AdminFalso(self)
 
@@ -163,6 +174,23 @@ class AuthFalso:
             raise AuthApiError('Invalid Refresh Token', 400, 'refresh_token_not_found')
         return self._nova_sessao(self.refresh[refresh_token])
 
+    def preparar_retorno_google(self, codigo, email, metadata, verificador):
+        """Simula o Google ter devolvido `codigo` para o fluxo iniciado com `verificador`."""
+        self.codigos_google[codigo] = (email, dict(metadata), verificador)
+
+    def exchange_code_for_session(self, parametros):
+        dados = self.codigos_google.pop(parametros['auth_code'], None)
+        if dados is None or dados[2] != parametros['code_verifier']:
+            raise AuthApiError('invalid flow state', 400, 'flow_state_not_found')
+        email, metadata, _ = dados
+        # Como o Supabase: mesmo e-mail verificado vira a mesma conta (vínculo automático).
+        uid = next((uid for uid, u in self.usuarios.items() if u['email'] == email), None)
+        if uid is None:
+            uid = str(uuid.uuid4())
+            self.usuarios[uid] = {'id': uid, 'email': email, 'senha': None, 'user_metadata': {}}
+        self.usuarios[uid]['user_metadata'].update(metadata)
+        return self._nova_sessao(uid)
+
     def expirar_acesso(self):
         self.tokens.clear()
 
@@ -170,6 +198,7 @@ class AuthFalso:
 class ClienteFalso:
     def __init__(self):
         self.auth = AuthFalso()
+        self.auth_url = 'https://projeto-falso.supabase.co/auth/v1'
         self.upserts = []  # (tabela, on_conflict) de cada upsert executado
         self.tabelas = {
             'professores': [

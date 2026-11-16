@@ -61,6 +61,26 @@ form button {
     margin-top: var(--espaco-5);
 }
 
+/* Entrada com Google: alternativa ao formulário, separada por "ou". */
+.separador {
+    display: flex;
+    align-items: center;
+    gap: var(--espaco-3);
+    margin: var(--espaco-5) 0 var(--espaco-4);
+    color: var(--cor-texto-secundario);
+}
+
+.separador::before,
+.separador::after {
+    content: "";
+    flex: 1;
+    border-top: 1px solid var(--cor-borda-campo);
+}
+
+.botao-google {
+    width: 100%;
+}
+
 p.link {
     margin: var(--espaco-4) 0 0;
     text-align: center;

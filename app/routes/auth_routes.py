@@ -2,7 +2,8 @@
 """Rotas de autenticação: cadastro -> login -> rota protegida -> logout."""
 from smtplib import SMTPException
 
-from flask import Blueprint, abort, jsonify, make_response, redirect, render_template, request, url_for
+from flask import (Blueprint, abort, jsonify, make_response, redirect, render_template, request,
+                   session, url_for)
 
 from app import verificacao_email
 from app.controllers import auth_controller, professor_controller
@@ -16,11 +17,15 @@ from app.seguranca import (
     chave_usuario_ou_ip,
     limiter,
     limitar_cadastro,
+    limitar_login_google,
     limitar_login_por_ip,
     limitar_recuperacao_senha,
 )
 
 auth_bp = Blueprint("auth", __name__)
+
+CHAVE_PKCE_GOOGLE = "pkce_google"
+ERRO_GOOGLE = "Não foi possível entrar com o Google. Tente novamente."
 
 
 def _quer_html():
@@ -62,6 +67,32 @@ def login():
     if _quer_html():
         return criar_sessao(sessao, make_response(redirect(url_for("main.index"), code=303)))
     return criar_sessao(sessao, make_response(jsonify({"mensagem": "Login realizado com sucesso"})))
+
+
+@auth_bp.get("/login/google")
+@limitar_login_google
+def login_google():
+    # GET simples (link): a CSP form-action bloquearia um POST redirecionado ao Supabase.
+    # O verificador PKCE amarra o retorno a este navegador, o que impede login CSRF.
+    url, verificador = auth_controller.iniciar_login_google(
+        url_for("auth.retorno_google", _external=True))
+    session[CHAVE_PKCE_GOOGLE] = verificador
+    return redirect(url, code=302)
+
+
+@auth_bp.get("/login/google/retorno")
+@limitar_login_google
+def retorno_google():
+    verificador = session.pop(CHAVE_PKCE_GOOGLE, None)
+    sessao = None
+    if not request.args.get("error"):
+        sessao = auth_controller.concluir_login_google(request.args.get("code"), verificador)
+    if sessao is None:
+        resposta = make_response(render_template("login.html", erro=ERRO_GOOGLE), 400)
+    else:
+        resposta = criar_sessao(sessao, make_response(redirect(url_for("main.index"), code=303)))
+    resposta.headers["Cache-Control"] = "no-store"
+    return resposta
 
 
 @auth_bp.route("/recuperar-senha", methods=["GET", "POST"])

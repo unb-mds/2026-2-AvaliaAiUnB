@@ -50,6 +50,31 @@ ambiente da hospedagem. Para manter os dados de teste separados dos reais,
 configure no Preview um projeto Supabase de testes; essa separação precisa ser
 confirmada no ambiente, não é criada por esta documentação.
 
+## Login com Google e URLs do Supabase Auth
+
+O login com Google usa o provedor do próprio Supabase Auth (fluxo PKCE). O
+client ID e o client secret do Google ficam **somente** no painel do Supabase
+(Authentication → Sign In / Providers → Google). A aplicação e a Vercel não
+precisam de variável nova.
+
+Em Authentication → URL Configuration, em cada projeto Supabase:
+
+| Campo | Valor |
+|---|---|
+| Site URL | `https://avaliaunb.com.br` (endereço público, nunca `localhost` em produção) |
+| Redirect URLs | `https://avaliaunb.com.br/login/google/retorno`, `https://avaliaunb.com.br/redefinir-senha` e, para desenvolvimento, `http://127.0.0.1:5000/login/google/retorno` e `http://127.0.0.1:5000/redefinir-senha` |
+
+Se o `redirect_to` enviado pela aplicação não estiver na lista, o Supabase usa
+a Site URL. Por isso uma Site URL `localhost` faz os links de recuperação de
+senha abrirem no `localhost`. A aplicação monta esses endereços com o host e o
+esquema da requisição, então `PROXY_HOPS` precisa estar correto na Vercel para
+o endereço sair com `https://`.
+
+Quem já tem conta com senha e entra com o Google usando o mesmo e-mail é
+vinculado pelo Supabase à mesma conta, com o mesmo perfil e as mesmas
+avaliações. No primeiro acesso de uma conta nova, o perfil é criado com o nome
+do Google e um nome de usuário derivado do e-mail.
+
 ## Verificação de e-mail
 
 Aplique [`003_emails_verificados.sql`](migrations/003_emails_verificados.sql)

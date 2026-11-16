@@ -21,6 +21,18 @@ def autenticar(formulario):
         formulario.get('username', ''), formulario.get('senha', ''))
 
 
+def iniciar_login_google(redirect_to):
+    """(url do Supabase para onde o navegador vai, verificador PKCE a guardar na sessão)."""
+    return repositorios().usuarios.url_login_google(redirect_to)
+
+
+def concluir_login_google(codigo, verificador):
+    """Sessão ({'access_token', 'refresh_token'}) se o retorno do Google for válido, senão None."""
+    if not codigo or not verificador:
+        return None
+    return repositorios().usuarios.entrar_com_google(codigo, verificador)
+
+
 def enviar_email_recuperacao(email):
     """Delega ao repositório a requisição para envio do e-mail de recuperação de senha."""
     if not email:
