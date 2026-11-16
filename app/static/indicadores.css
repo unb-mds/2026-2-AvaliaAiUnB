@@ -46,7 +46,7 @@ input[type="search"] { box-sizing: border-box; width: 100%; padding: 10px; font:
 .tabela-comparacao tbody tr:last-child > *,
 .tabela-ranking tbody tr:last-child > * { border-bottom: 0; }
 .tabela-ranking tbody tr { transition: background-color var(--transicao); }
-.tabela-ranking tbody tr:hover { background-color: rgb(23 75 131 / 0.04); }
+.tabela-ranking tbody tr:hover { background-color: var(--cor-hover-suave); }
 @media (max-width: 480px) {
     .tabela-comparacao th, .tabela-comparacao td { padding: 12px 6px; font-size: 0.9rem; }
 }

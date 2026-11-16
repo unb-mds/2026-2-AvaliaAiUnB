@@ -72,8 +72,8 @@ h3 {
     width: 56px;
     height: 56px;
     border-radius: var(--raio-pilula);
-    background-color: var(--cor-principal);
-    color: var(--cor-superficie);
+    background-color: var(--cor-principal-fundo);
+    color: var(--cor-sobre-principal);
     font-size: 1.5rem;
     font-weight: 700;
 }
@@ -176,7 +176,7 @@ h3 {
     padding: var(--espaco-4);
     border-left: 4px solid var(--cor-erro);
     border-radius: 12px;
-    background-color: rgb(160 24 24 / 0.05);
+    background-color: var(--cor-erro-suave);
 }
 
 .confirmacao p {

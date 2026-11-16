@@ -76,7 +76,7 @@ h1 {
     width: 30px;
     height: 30px;
     border-radius: 999px;
-    background-color: rgb(23 75 131 / 0.1);
+    background-color: var(--cor-principal-suave);
     color: var(--cor-principal);
     font-weight: 700;
 }
