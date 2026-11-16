@@ -26,6 +26,13 @@
                 <div>
                     <dt>E-mail</dt>
                     <dd>{{ usuario.email }}</dd>
+                    {% if verificacao_disponivel %}
+                        {% if email_verificado %}
+                        <p class="ajuda">E-mail verificado</p>
+                        {% else %}
+                        <p><a href="{{ url_for('auth.verificar_email') }}">Verificar e-mail para comentar</a></p>
+                        {% endif %}
+                    {% endif %}
                 </div>
             </dl>
         </section>
