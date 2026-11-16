@@ -20,13 +20,14 @@
 
     {% include '_topo.html' %}
 
-    <main>
+    <main id="conteudo">
 
         <p class="voltar"><a href="{{ url_for('professores.listar') }}">&larr; Consultar professores</a></p>
 
         <h1>Comparar professores</h1>
 
-        <p class="ajuda">Digite o nome de dois professores para consultar suas médias em todas as disciplinas e períodos.</p>
+        {% if modo_legado %}
+        <p class="ajuda">Este link compara as médias gerais dos dois professores. <a href="{{ url_for('professores.comparar') }}">Comparar por disciplina</a>.</p>
 
         {% if professores|length >= 2 %}
 
@@ -60,13 +61,66 @@
 
         </form>
 
-        <script src="{{ url_for('static', filename='campo-busca.js') }}" defer></script>
-
         {% else %}
 
         <p class="mensagem" role="status">É necessário ter pelo menos dois professores cadastrados para comparar.</p>
 
         {% endif %}
+        {% else %}
+        <p class="ajuda">Escolha uma disciplina e compare as notas dos professores que a ministram.</p>
+
+        {% if disciplinas %}
+        <form method="get" action="{{ url_for('professores.comparar') }}" class="filtros">
+            {% if selecao_previa %}<input type="hidden" name="professor_1" value="{{ selecao_previa }}">{% endif %}
+            <div class="campo campo-busca">
+                <label for="disciplina_id">Disciplina</label>
+                <select id="disciplina_id" name="disciplina_id" data-placeholder="Nome ou código da disciplina" required>
+                    <option value="">Selecione uma disciplina</option>
+                    {% for opcao in disciplinas %}
+                    <option value="{{ opcao.id }}"{% if disciplina and disciplina.id == opcao.id %} selected{% endif %}>{{ opcao.nome }} — {{ opcao.codigo }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% if erros.disciplina %}<p class="campo-erro" role="alert">{{ erros.disciplina }}</p>{% endif %}
+            <button type="submit" class="botao botao-primario">Escolher disciplina</button>
+        </form>
+        {% else %}
+        <p class="mensagem" role="status">Ainda não há disciplinas disponíveis. São necessários pelo menos dois professores na mesma disciplina.</p>
+        {% endif %}
+
+        {% if erros.professores %}<p class="campo-erro" role="alert">{{ erros.professores }}</p>{% endif %}
+        {% if disciplina and professores|length >= 2 %}
+        <form method="get" action="{{ url_for('professores.comparar') }}" class="filtros">
+            <input type="hidden" name="disciplina_id" value="{{ disciplina.id }}">
+            <div class="selecao-comparacao">
+                {% for selecionado in campos %}
+                <div class="campo">
+                    <label for="professor-{{ loop.index }}">Professor {{ loop.index }}</label>
+                    <select name="professor" id="professor-{{ loop.index }}">
+                        <option value="">Selecione um professor</option>
+                        {% for professor in professores %}
+                        <option value="{{ professor.id }}"{% if selecionado == professor.id|string %} selected{% endif %}>{{ professor.nome }}{% if professor.departamento %} — {{ professor.departamento }}{% endif %}</option>
+                        {% endfor %}
+                    </select>
+                    {% if campos|length > 2 %}
+                    <button type="submit" class="botao botao-secundario remover-professor" name="remover" value="{{ loop.index0 }}">Remover professor {{ loop.index }}</button>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            <div class="acoes-comparacao">
+                {% if campos|length < professores|length %}
+                <button type="submit" class="botao botao-secundario" name="adicionar" value="1">+ Adicionar professor</button>
+                {% endif %}
+                <button type="submit" class="botao botao-primario" name="comparar" value="1">Comparar</button>
+            </div>
+        </form>
+        {% elif disciplina %}
+        <p class="mensagem" role="status">É necessário ter pelo menos dois professores vinculados a esta disciplina para comparar.</p>
+        {% endif %}
+        {% endif %}
+
+        <script src="{{ url_for('static', filename='campo-busca.js') }}" defer></script>
 
         {% if comparacao %}
 
@@ -80,7 +134,7 @@
 
             <table class="tabela-comparacao">
 
-                <caption>Médias por critério de avaliação</caption>
+                <caption>Médias por critério{% if disciplina %} em {{ disciplina.nome }}{% endif %}</caption>
 
                 <thead>
 
@@ -90,7 +144,7 @@
 
                         {% for professor in comparacao %}
 
-                        <th scope="col"><a href="{{ url_for('professores.perfil', professor_id=professor.id) }}">{{ professor.nome }}</a></th>
+                        <th scope="col"><a href="{{ url_for('professores.perfil', professor_id=professor.id, disciplina_id=disciplina.id if disciplina else None) }}">{{ professor.nome }}</a></th>
 
                         {% endfor %}
 
