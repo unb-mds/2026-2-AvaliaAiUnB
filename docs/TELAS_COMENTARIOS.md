@@ -16,8 +16,8 @@ pessoa pode voltar ao perfil e encerrar ou escolher a outra.
 
 Visitantes leem os comentários com o nome de usuário do autor, disciplina,
 data da primeira publicação e as contagens de reações recebidas. Clicar, tocar
-ou ativar o nome pelo teclado abre o e-mail verificado que o autor autorizou
-divulgar. Ativar o botão outra vez fecha o contato. A área convida a entrar
+ou ativar o nome pelo teclado abre o e-mail de cadastro do autor para qualquer
+visitante. Ativar o botão outra vez fecha o contato. A área convida a entrar
 ou criar conta com qualquer e-mail
 verificado para escrever ou reagir.
 A pessoa logada pode usar **Escrever comentário** mesmo que já tenha
@@ -46,8 +46,8 @@ professor. O exemplo mostra um novo comentário em Cálculo 1, disciplina
 em que a pessoa já comentou.
 
 O formulário avisa que o nome de usuário fica público e que qualquer pessoa
-poderá clicar nele para consultar o e-mail. O autor confirma a divulgação
-antes de enviar o texto para verificação. O campo mostra o limite de 2 a
+poderá clicar nele para consultar o e-mail. A pessoa envia o texto para
+verificação ao clicar em **Publicar**. O campo mostra o limite de 2 a
 1.000 caracteres. Durante o envio, o botão mostra
 **Verificando**. Se o filtro bloquear o texto, a mensagem junto ao campo
 explica o que precisa ser revisto e preserva o que foi digitado. Se a análise
