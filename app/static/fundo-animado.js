@@ -18,8 +18,8 @@
     // "normal" (home) ou "leve" (demais telas): menos pontos, linhas e opacidade.
     var leve = canvas.getAttribute("data-densidade") === "leve";
 
-    var TOKEN_PONTOS = "--cor-principal";
-    var TOKENS_MANCHAS = ["--cor-principal", "--cor-principal-fundo", "--cor-principal-hover"];
+    var TOKEN_PONTOS = "--cor-rede";
+    var TOKENS_MANCHAS = ["--cor-mancha-1", "--cor-mancha-2", "--cor-mancha-3"];
     var TOKEN_FUNDO = "--cor-fundo-suave";
 
     var ALFA_MANCHA = leve ? 0.18 : 0.35;  // opacidade máxima das manchas
@@ -90,9 +90,9 @@
             return lerCor(estilo.getPropertyValue(token));
         }).filter(Boolean);
         corPontos = lerCor(estilo.getPropertyValue(TOKEN_PONTOS));
-        // Em fundo claro, reduz a intensidade para não comprometer o contraste do texto.
+        // Em fundo claro, as cores já são azuis luminosos; só um leve ajuste para ficar discreto.
         var fundo = lerCor(estilo.getPropertyValue(TOKEN_FUNDO));
-        escalaAlfa = fundo && luminancia(fundo) > 0.5 ? 0.55 : 1;
+        escalaAlfa = fundo && luminancia(fundo) > 0.5 ? 0.9 : 1;
     }
 
     function quantidadePontos() {

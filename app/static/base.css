@@ -46,6 +46,12 @@
     --cor-bronze-fundo: #3a2516;
     --cor-bronze-texto: #e9b48a;
 
+    /* Fundo animado (manchas e rede de pontos) */
+    --cor-mancha-1: #4f93e6;
+    --cor-mancha-2: #1f5fae;
+    --cor-mancha-3: #7ab3f2;
+    --cor-rede: #4f93e6;
+
     /* Tipografia */
     --fonte: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
     --texto-titulo-pagina: 2rem;
@@ -85,23 +91,23 @@
     color-scheme: light;
 
     --cor-superficie: #ffffff;
-    --cor-fundo-suave: #f2f4f7;
+    --cor-fundo-suave: #eaf1fb;
     --cor-texto: #202124;
     --cor-texto-secundario: #4f5357;
     --cor-principal: #174b83;
     --cor-principal-hover: #123c69;
     --cor-borda-campo: #767676;
-    --cor-divisor: #d4d9df;
-    --cor-divisor-suave: #e4e7ec;
+    --cor-divisor: #c5d3e6;
+    --cor-divisor-suave: #dbe5f2;
     --cor-principal-suave: rgb(23 75 131 / 0.1);
     --cor-erro: #a01818;
     --cor-erro-hover: #801212;
     --cor-estrela: #b45309;
-    --sombra-card: 0 1px 2px rgb(16 24 40 / 0.04), 0 4px 16px -6px rgb(16 24 40 / 0.1);
-    --sombra-elevada: 0 2px 4px rgb(16 24 40 / 0.06), 0 12px 28px -10px rgb(16 24 40 / 0.18);
+    --sombra-card: 0 1px 2px rgb(23 75 131 / 0.08), 0 10px 24px -12px rgb(23 75 131 / 0.28);
+    --sombra-elevada: 0 2px 4px rgb(23 75 131 / 0.1), 0 16px 32px -12px rgb(23 75 131 / 0.38);
 
-    --cor-principal-fundo: #174b83;
-    --cor-principal-fundo-hover: #123c69;
+    --cor-principal-fundo: #1f5fae;
+    --cor-principal-fundo-hover: #174b83;
     --cor-sobre-principal: #ffffff;
     --cor-hover-suave: #e6edf5;
     --cor-brilho: rgb(23 75 131 / 0.6);
@@ -114,6 +120,12 @@
     --cor-prata-texto: #3d4652;
     --cor-bronze-fundo: #f6dfcc;
     --cor-bronze-texto: #7a3f12;
+
+    /* Fundo animado: azuis claros e luminosos (brilho suave, sem névoa cinza) */
+    --cor-mancha-1: #7ab2f8;
+    --cor-mancha-2: #a8cdfa;
+    --cor-mancha-3: #5a9cf2;
+    --cor-rede: #4a86d6;
 }
 
 @media (min-width: 481px) {
@@ -408,10 +420,58 @@ textarea:focus-visible,
     color: var(--cor-erro);
 }
 
-/* Celular: marca e "Sair" na primeira linha; abas roláveis na segunda */
+/* Alternar tema: mostra o sol no escuro (ir para o claro) e a lua no claro */
+.botao-tema {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 40px;
+    height: 40px;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--cor-divisor);
+    border-radius: var(--raio-pilula);
+    background-color: transparent;
+    color: var(--cor-texto-secundario);
+    cursor: pointer;
+    transition: background-color var(--transicao), border-color var(--transicao),
+                color var(--transicao);
+}
+
+.botao-tema:hover {
+    background-color: var(--cor-hover-suave);
+    color: var(--cor-texto);
+}
+
+.botao-tema svg {
+    display: block;
+    width: 20px;
+    height: 20px;
+}
+
+.botao-tema .icone-lua,
+:root[data-theme="light"] .botao-tema .icone-sol {
+    display: none;
+}
+
+:root[data-theme="light"] .botao-tema .icone-lua {
+    display: block;
+}
+
+/* Celular: marca, tema e "Sair" na primeira linha; abas roláveis na segunda */
 @media (max-width: 640px) {
+    .botao-tema {
+        margin-left: auto;
+    }
+
     .form-sair {
         margin-left: auto;
+    }
+
+    .botao-tema + .form-sair {
+        margin-left: 0;
     }
 
     .aba {
@@ -428,7 +488,8 @@ textarea:focus-visible,
 
 @media (prefers-reduced-motion: reduce) {
     .aba,
-    .botao-sair {
+    .botao-sair,
+    .botao-tema {
         transition: none;
     }
 }
