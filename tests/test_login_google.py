@@ -63,23 +63,22 @@ class TestLoginGoogle(unittest.TestCase):
         novo = self.cliente.tabelas['perfis'][-1]['username']
         self.assertRegex(novo, r'^bia\.souza\d{5}$')
 
-    def test_conta_com_senha_continua_igual_e_entra_pelos_dois_caminhos(self):
-        self.web.post('/cadastro', data={
-            'nome': 'Ana', 'username': 'ana', 'email': 'ana@gmail.com', 'senha': 'senha123',
-            'confirmar_senha': 'senha123', 'csrf_token': self.token_csrf('/cadastro')})
-        uid = self.cliente.tabelas['perfis'][0]['id']
+    def test_conta_antiga_com_senha_e_vinculada_e_mantem_perfil_e_avaliacoes(self):
+        # Conta criada pelo cadastro com senha (sistema anterior), já com uma avaliação.
+        uid = 'conta-antiga'
+        self.cliente.auth.usuarios[uid] = {'id': uid, 'email': 'ana@gmail.com',
+                                           'user_metadata': {'nome': 'Ana', 'username': 'ana'}}
+        self.cliente.tabelas['perfis'].append({'id': uid, 'username': 'ana', 'nome_completo': 'Ana'})
+        self.cliente.tabelas['avaliacoes'].append({'id': 1, 'usuario_id': uid, 'professor_id': 2,
+                                                   'disciplina_id': 20, 'ano': 2026, 'periodo': 2,
+                                                   **{c: 4 for c in CRITERIOS}})
 
         self.assertEqual(self.entrar_com_google(email='ana@gmail.com').status_code, 303)
+        self.assertEqual(len(self.cliente.auth.usuarios), 1)
         self.assertEqual(len(self.cliente.tabelas['perfis']), 1)
         perfil = self.web.get('/perfil', headers={'Accept': 'application/json'}).get_json()
         self.assertEqual((perfil['id'], perfil['username'], perfil['nome']), (uid, 'ana', 'Ana'))
-
-        outro = self.app.test_client()
-        csrf = re.search(r'name="csrf_token" value="([^"]+)"',
-                         outro.get('/login').get_data(as_text=True)).group(1)
-        resposta = outro.post('/login', data={'username': 'ana', 'senha': 'senha123',
-                                              'formato': 'html', 'csrf_token': csrf})
-        self.assertEqual(resposta.status_code, 303)
+        self.assertEqual(len(perfil['avaliacoes']), 1)
 
     def test_usuario_do_google_avalia_professor(self):
         self.entrar_com_google()
@@ -108,10 +107,8 @@ class TestLoginGoogle(unittest.TestCase):
         self.assertEqual(self.entrar_com_google().status_code, 303)
         self.assertEqual(self.web.get('/login/google/retorno?code=codigo-1').status_code, 400)
 
-    def test_botoes_nas_telas_de_login_e_cadastro(self):
-        for caminho in ('/login', '/cadastro'):
-            pagina = self.web.get(caminho).get_data(as_text=True)
-            self.assertIn('href="/login/google"', pagina, caminho)
+    def test_botao_na_tela_de_login(self):
+        self.assertIn('href="/login/google"', self.web.get('/login').get_data(as_text=True))
 
 
 if __name__ == '__main__':

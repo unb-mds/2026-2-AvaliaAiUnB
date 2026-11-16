@@ -10,7 +10,7 @@ import time
 from collections import Counter
 from urllib.parse import urlencode
 
-from flask import current_app, has_request_context, url_for
+from flask import current_app
 from httpx import RequestError
 from supabase_auth.errors import AuthError
 from supabase_auth.helpers import generate_pkce_challenge, generate_pkce_verifier
@@ -58,7 +58,7 @@ def _nome_do_google(meta, email):
 
 
 class UsuarioRepository:
-    """Contas no Supabase Auth; nome e username ficam no user_metadata e na tabela perfis."""
+    """Contas no Supabase Auth (só login com Google); nome e username ficam no user_metadata e em perfis."""
 
     def __init__(self, cliente, fabrica_cliente=novo_cliente):
         self.cliente = cliente
@@ -74,84 +74,6 @@ class UsuarioRepository:
         self.cliente.table('emails_verificados').upsert([{
             'usuario_id': usuario_id, 'endereco_sha256': endereco_sha256,
         }], on_conflict='usuario_id').execute()
-
-    def criar(self, nome, username, email, senha):
-        """Retorna (True, id) ou (False, campo_com_erro, mensagem)."""
-        if self.cliente.table('perfis').select('id').eq('username', username).limit(1).execute().data:
-            return False, 'username', 'Este nome de usuário já está em uso.'
-        try:
-            resposta = self.cliente.auth.admin.create_user({
-                'email': email, 'password': senha, 'email_confirm': True,
-                'user_metadata': {'nome': nome, 'username': username}})
-        except AuthError as erro:
-            if getattr(erro, 'code', '') in ('email_exists', 'user_already_exists') \
-                    or 'already' in str(erro).lower():
-                return False, 'email', 'Este e-mail já está cadastrado.'
-            raise
-        usuario_id = str(resposta.user.id)
-        try:
-            self.cliente.table('perfis').insert(
-                {'id': usuario_id, 'username': username, 'nome_completo': nome}).execute()
-        except Exception:
-            self.cliente.auth.admin.delete_user(usuario_id)   # não deixa conta sem perfil
-            if self.cliente.table('perfis').select('id').eq('username', username).execute().data:
-                return False, 'username', 'Este nome de usuário já está em uso.'
-            raise
-        return True, usuario_id
-
-    def autenticar(self, username, senha):
-        """Autentica e reduz diferenças de tempo entre usuários existentes/inexistentes."""
-        inicio = time.monotonic()
-        try:
-            perfil = (self.cliente.table('perfis').select('id')
-                      .eq('username', username.strip().lower()).limit(1).execute().data)
-            if not perfil:
-                return None
-            try:
-                email = self.cliente.auth.admin.get_user_by_id(perfil[0]['id']).user.email
-                # Cliente descartável: o login não altera a sessão principal.
-                resposta = self.fabrica_cliente().auth.sign_in_with_password(
-                    {'email': email, 'password': senha})
-            except AuthError:
-                return None
-            return _sessao_para_dict(resposta)
-        finally:
-            # Atraso mínimo, não uma garantia de tempo constante (rede e Auth variam).
-            restante = 0.15 - (time.monotonic() - inicio)
-            if restante > 0:
-                time.sleep(restante)
-
-    def enviar_email_recuperacao(self, email):
-        """Usa o Supabase Auth para enviar um link de recuperação de senha por e-mail."""
-        try:
-            opcoes = {}
-            if has_request_context():
-                opcoes["redirect_to"] = url_for("auth.redefinir_senha", _external=True)
-            self.fabrica_cliente().auth.reset_password_for_email(
-                email.strip().lower(),
-                options=opcoes,
-            )
-            return True
-        except AuthError as erro:
-            current_app.logger.warning("Falha ao pedir recuperação de senha: %s", str(erro))
-            return False
-
-    def atualizar_senha(self, access_token, nova_senha):
-        """Atualiza a senha usando o token validado da URL de recuperação."""
-        try:
-            # 1. Verifica no Supabase quem é o verdadeiro dono do token
-            resposta = self.cliente.auth.get_user(access_token)
-            if not resposta or not getattr(resposta, 'user', None):
-                return False, "Sessão de recuperação inválida."
-            
-            uid = str(resposta.user.id)
-            
-            # 2. Atualiza a senha cirurgicamente usando os privilégios do servidor
-            self.cliente.auth.admin.update_user_by_id(uid, {'password': nova_senha})
-            return True, None
-        except AuthError as erro:
-            current_app.logger.warning("Falha ao redefinir senha: %s", str(erro))
-            return False, "Sessão inválida ou expirada. Peça um novo link de recuperação."
 
     def url_login_google(self, redirect_to):
         """(url, verificador) para iniciar o login com Google no Supabase Auth.

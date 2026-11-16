@@ -10,8 +10,7 @@ separado para executar essas telas.
 | Template | Conteúdo | CSS carregado |
 |---|---|---|
 | `index.html` | Início, consulta, ranking e acesso à conta | `base.css`, `index.css` |
-| `cadastro.html` | Cadastro, validações e mensagem de sucesso | `base.css`, `auth.css` |
-| `login.html` | Login e mensagem de erro | `base.css`, `auth.css` |
+| `login.html` | Botão "Entrar com Google" (login e cadastro) e mensagem de erro | `base.css`, `auth.css` |
 | `lista_professores.html` | Filtros, catálogo, média geral em estrelas e estados sem resultado | `indicadores.css` (que importa `base.css`), `lista_professores.css` |
 | `perfil_professor.html` | Disciplinas (campo digitável), indicadores, média geral, comparação e avaliação | `indicadores.css`, `perfil_professor.css` |
 | `avaliacao.html` | Criação e edição de notas (botões de 1 a 5) | `indicadores.css`, `avaliacao.css` |
@@ -49,7 +48,7 @@ O catálogo mostra mensagens diferentes para ausência de dados e ausência de
 resultados dos filtros e exibe a média
 geral em cinco estrelas ou `N/A (Não avaliado)`. O filtro de departamento é um campo
 de texto com sugestões. O perfil informa quando não há avaliações válidas e mostra a
-média geral do professor; cadastro e avaliação exibem erros de campo; a comparação
+média geral do professor; a avaliação exibe erros de campo; a comparação
 exige dois professores diferentes; e o ranking informa quando ninguém atinge o
 mínimo de avaliações. No perfil do usuário, Apagar abre uma confirmação (`<details>`,
 sem JavaScript) antes de enviar a exclusão.

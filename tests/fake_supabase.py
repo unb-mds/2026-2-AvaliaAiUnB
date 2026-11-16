@@ -103,16 +103,6 @@ class AdminFalso:
     def __init__(self, auth):
         self.auth = auth
 
-    def create_user(self, atributos):
-        if any(u['email'] == atributos['email'] for u in self.auth.usuarios.values()):
-            raise AuthApiError('A user with this email address has already been registered',
-                               422, 'email_exists')
-        uid = str(uuid.uuid4())
-        self.auth.usuarios[uid] = {'id': uid, 'email': atributos['email'],
-                                   'senha': atributos['password'],
-                                   'user_metadata': atributos.get('user_metadata', {})}
-        return SimpleNamespace(user=self.auth._usuario(uid))
-
     def get_user_by_id(self, uid):
         if uid not in self.auth.usuarios:
             raise AuthApiError('User not found', 404, 'user_not_found')
@@ -121,10 +111,7 @@ class AdminFalso:
     def update_user_by_id(self, uid, atributos):
         if uid not in self.auth.usuarios:
             raise AuthApiError('User not found', 404, 'user_not_found')
-        usuario = self.auth.usuarios[uid]
-        if 'password' in atributos:
-            usuario['senha'] = atributos['password']
-        usuario['user_metadata'].update(atributos.get('user_metadata', {}))
+        self.auth.usuarios[uid]['user_metadata'].update(atributos.get('user_metadata', {}))
         return SimpleNamespace(user=self.auth._usuario(uid))
 
     def delete_user(self, uid):
@@ -158,12 +145,6 @@ class AuthFalso:
         return SimpleNamespace(session=SimpleNamespace(access_token=acesso, refresh_token=renovacao),
                                user=self._usuario(uid))
 
-    def sign_in_with_password(self, credenciais):
-        for uid, u in self.usuarios.items():
-            if u['email'] == credenciais['email'] and u['senha'] == credenciais['password']:
-                return self._nova_sessao(uid)
-        raise AuthApiError('Invalid login credentials', 400, 'invalid_credentials')
-
     def get_user(self, token):
         if token not in self.tokens:
             raise AuthApiError('invalid JWT', 401, 'bad_jwt')
@@ -187,7 +168,7 @@ class AuthFalso:
         uid = next((uid for uid, u in self.usuarios.items() if u['email'] == email), None)
         if uid is None:
             uid = str(uuid.uuid4())
-            self.usuarios[uid] = {'id': uid, 'email': email, 'senha': None, 'user_metadata': {}}
+            self.usuarios[uid] = {'id': uid, 'email': email, 'user_metadata': {}}
         self.usuarios[uid]['user_metadata'].update(metadata)
         return self._nova_sessao(uid)
 
@@ -222,3 +203,24 @@ class ClienteFalso:
 
     def table(self, nome):
         return Consulta(self.tabelas, nome, self.upserts)
+
+
+VERIFICADOR_TESTE = 'verificador-de-teste'
+
+
+def sessao_google(cliente, repositorio, email, nome):
+    """Login com Google direto no repositório (sem HTTP). Devolve a sessão (dict)."""
+    codigo = f'codigo-{next(cliente.auth.contador)}'
+    cliente.auth.preparar_retorno_google(codigo, email, {'full_name': nome}, VERIFICADOR_TESTE)
+    return repositorio.entrar_com_google(codigo, VERIFICADOR_TESTE)
+
+
+def entrar_pela_web(web, cliente, email='ana@gmail.com', nome='Ana'):
+    """Faz o fluxo HTTP completo /login/google -> retorno no test_client `web`."""
+    from app.routes.auth_routes import CHAVE_PKCE_GOOGLE
+    web.get('/login/google')
+    with web.session_transaction() as sessao:
+        verificador = sessao[CHAVE_PKCE_GOOGLE]
+    codigo = f'codigo-{next(cliente.auth.contador)}'
+    cliente.auth.preparar_retorno_google(codigo, email, {'full_name': nome}, verificador)
+    return web.get(f'/login/google/retorno?code={codigo}')

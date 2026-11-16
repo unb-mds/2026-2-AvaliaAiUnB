@@ -16,8 +16,7 @@ from app.seguranca import (
     configurar_seguranca,
     csrf,
     limitar_avaliacao,
-    limitar_cadastro,
-    limitar_login_por_ip,
+    limitar_login_google,
     limiter,
 )
 
@@ -43,13 +42,12 @@ def criar_app(monkeypatch, *, secret=CHAVE_FORTE, debug=False, testing=False):
                                       "</form>")
 
     @app.post("/login")
-    @limitar_login_por_ip
-    def login():
+    def login():  # POST genérico só para os testes de CSRF
         return jsonify(ok=True)
 
-    @app.post("/cadastro")
-    @limitar_cadastro
-    def cadastro():
+    @app.get("/login/google")
+    @limitar_login_google
+    def login_google():
         return jsonify(ok=True)
 
     @app.post("/avaliar")
@@ -191,25 +189,17 @@ def _post(client, rota, **dados):
     return client.post(rota, data={**dados, "csrf_token": token})
 
 
-def test_login_limita_por_ip(client):
-    codigos = [_post(client, "/login", username=f"u{i}").status_code for i in range(11)]
+def test_login_google_limita_por_ip(client):
+    codigos = [client.get("/login/google").status_code for _ in range(11)]
     assert codigos[:10] == [200] * 10
     assert codigos[10] == 429
 
 
-def test_username_nao_bloqueia_uma_conta_por_ips_diferentes(client):
-    # Várias origens usando o mesmo username não devem impedir o login de outro IP.
-    for i in range(12):
-        resposta = client.post(
-            "/login", data={"username": "Alvo", "csrf_token": token_csrf(client)},
-            environ_overrides={"REMOTE_ADDR": f"10.0.0.{i}"})
-        assert resposta.status_code == 200
-
-
-
-def test_cadastro_limita_por_ip(client):
-    codigos = [_post(client, "/cadastro").status_code for _ in range(6)]
-    assert codigos == [200] * 5 + [429]
+def test_limite_do_login_google_e_separado_por_ip(client):
+    for _ in range(10):
+        client.get("/login/google")
+    assert client.get("/login/google",
+                      environ_overrides={"REMOTE_ADDR": "10.0.0.2"}).status_code == 200
 
 
 def test_avaliacao_limita_por_ip_quando_anonimo(client, monkeypatch):
@@ -235,10 +225,9 @@ def test_avaliacao_limita_por_usuario_e_nao_por_ip(client, monkeypatch):
 
 
 def test_429_responde_json_para_api(client):
-    for i in range(10):
-        _post(client, "/login", username=f"u{i}")
-    r = client.post("/login", data={"csrf_token": token_csrf(client)},
-                    headers={"Accept": "application/json"})
+    for _ in range(10):
+        client.get("/login/google")
+    r = client.get("/login/google", headers={"Accept": "application/json"})
     assert r.status_code == 429
     assert "Muitas tentativas" in r.get_json()["erro"]
 

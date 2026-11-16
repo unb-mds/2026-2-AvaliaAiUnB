@@ -57,10 +57,7 @@ def chave_usuario_ou_ip():
     usuario = obter_usuario_atual()
     return f"usuario:{usuario['id']}" if usuario else get_remote_address()
 
-limitar_login_por_ip = limiter.limit("10 per minute;50 per hour", methods=["POST"], scope="login-ip")
 limitar_login_google = limiter.limit("10 per minute;50 per hour", scope="login-google")
-limitar_cadastro = limiter.limit("5 per hour", methods=["POST"], scope="cadastro")
-limitar_recuperacao_senha = limiter.limit("5 per hour", methods=["POST"], scope="recuperacao-senha")
 limitar_avaliacao = limiter.limit("20 per hour", key_func=chave_usuario_ou_ip,
                                   methods=["POST"], scope="avaliacao")
 

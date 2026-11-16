@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - AvaliaUnb</title>
+    <title>Entrar - AvaliaUnb</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='auth.css') }}">
 </head>
@@ -16,27 +16,9 @@
     <p class="erro-login mensagem mensagem-erro" role="alert">{{ erro }}</p>
     {% endif %}
 
-    <form action="/login" method="POST">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <input type="hidden" name="formato" value="html">
-        
-        <label for="username">Nome de usuário</label>
-        <input type="text" id="username" name="username" autocomplete="username" required>
+    <p class="descricao-auth">Use sua conta Google para entrar. No primeiro acesso, sua conta no AvaliaUnb é criada automaticamente.</p>
 
-        <label for="senha">Senha</label>
-        <input type="password" id="senha" name="senha" required>
-
-        <p class="link recuperar-senha">
-            <a href="/recuperar-senha">Esqueci minha senha</a>
-        </p>
-
-        <button type="submit" class="botao botao-primario">Entrar</button>
-    </form>
-
-    <p class="separador" aria-hidden="true"><span>ou</span></p>
-    <a class="botao botao-secundario botao-google" href="{{ url_for('auth.login_google') }}">Entrar com Google</a>
-
-    <p class="link">Ainda não tem conta? <a href="/cadastro">Cadastre-se</a></p>
+    <a class="botao botao-primario botao-google" href="{{ url_for('auth.login_google') }}">Entrar com Google</a>
 </main>
 {% include '_rodape.html' %}
 </body>

@@ -1,4 +1,4 @@
-/* Login e cadastro. Usa os tokens de base.css. */
+/* Tela de login (entrada com Google). Usa os tokens de base.css. */
 * {
     box-sizing: border-box;
 }
@@ -33,61 +33,15 @@ h1 {
     line-height: 1.2;
 }
 
-label {
-    display: block;
-    margin-top: var(--espaco-4);
-    margin-bottom: var(--espaco-1);
-    font-weight: 700;
-}
-
-input {
-    display: block;
-    width: 100%;
-    min-height: var(--altura-controle);
-    padding: var(--espaco-2) var(--espaco-3);
-    border: 1px solid var(--cor-borda-campo);
-    border-radius: var(--raio);
-    background-color: var(--cor-superficie);
-    color: var(--cor-texto);
-    font: inherit;
-}
-
-input[type="hidden"] {
-    display: none;
-}
-
-form button {
-    width: 100%;
-    margin-top: var(--espaco-5);
-}
-
-/* Entrada com Google: alternativa ao formulário, separada por "ou". */
-.separador {
-    display: flex;
-    align-items: center;
-    gap: var(--espaco-3);
-    margin: var(--espaco-5) 0 var(--espaco-4);
-    color: var(--cor-texto-secundario);
-}
-
-.separador::before,
-.separador::after {
-    content: "";
-    flex: 1;
-    border-top: 1px solid var(--cor-borda-campo);
-}
-
+/* Entrada com Google: única forma de login e cadastro. */
 .botao-google {
     width: 100%;
+    margin-top: var(--espaco-4);
 }
 
-p.link {
-    margin: var(--espaco-4) 0 0;
-    text-align: center;
-}
-
-.campo-ajuda {
-    margin-top: var(--espaco-1);
+.descricao-auth {
+    margin: 0;
+    color: var(--cor-texto-secundario);
 }
 
 /* Mensagens de erro e sucesso */
@@ -95,11 +49,6 @@ p.link {
     margin: 0 0 var(--espaco-4);
 }
 
-ul.mensagem {
-    padding-left: var(--espaco-6);
-}
-
-.erro-form,
 .erro-login {
     color: var(--cor-erro);
 }
