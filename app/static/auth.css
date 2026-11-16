@@ -1,42 +1,170 @@
-/* Tela de login (entrada com Google). Usa os tokens de base.css. */
-* {
-    box-sizing: border-box;
-}
+/*
+ * Tela de login (entrada com Google). Usa os tokens de base.css.
+ * Estética: fundo com bolhas desfocadas em movimento lento, cartão translúcido
+ * com desfoque, sombras suaves em camadas e entrada com fade. O botão do Google
+ * segue o padrão de marca do Google, sem as cores do design system.
+ */
 
-body {
+.pagina-auth {
+    --auth-raio: 20px;
+    --auth-sombra: 0 1px 2px rgb(16 24 40 / 0.04), 0 12px 32px -8px rgb(16 24 40 / 0.16);
+    --auth-borda: rgb(255 255 255 / 0.7);
+    --auth-vidro: rgb(255 255 255 / 0.72);
+    --auth-transicao: 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    --cor-verde-unb: #0b8636;
+
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
     margin: 0;
-    padding: var(--espaco-5) var(--margem-lateral) var(--espaco-7);
+    overflow-x: hidden;
     background-color: var(--cor-fundo-suave);
     color: var(--cor-texto);
-    font-family: var(--fonte);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, var(--fonte);
     font-size: var(--texto-base);
     line-height: 1.5;
 }
 
-.auth {
-    max-width: var(--largura-auth);
-    margin: 0 auto;
-    padding: var(--espaco-5) var(--espaco-4);
+/* Fundo: bolhas desfocadas que flutuam devagar */
+.fundo-animado {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
 }
 
-a {
+.bolha {
+    position: absolute;
+    border-radius: 999px;
+    filter: blur(64px);
+    opacity: 0.55;
+    will-change: transform;
+    animation: flutuar 28s ease-in-out infinite alternate;
+}
+
+.bolha-azul {
+    top: -12vh;
+    left: -10vw;
+    width: 55vw;
+    height: 55vw;
+    max-width: 560px;
+    max-height: 560px;
+    background: var(--cor-principal);
+    opacity: 0.35;
+}
+
+.bolha-verde {
+    right: -12vw;
+    bottom: -14vh;
+    width: 50vw;
+    height: 50vw;
+    max-width: 520px;
+    max-height: 520px;
+    background: var(--cor-verde-unb);
+    opacity: 0.3;
+    animation-duration: 34s;
+    animation-direction: alternate-reverse;
+}
+
+.bolha-clara {
+    top: 40%;
+    left: 45%;
+    width: 30vw;
+    height: 30vw;
+    max-width: 320px;
+    max-height: 320px;
+    background: #7eb4ff;
+    opacity: 0.35;
+    animation-duration: 22s;
+}
+
+@keyframes flutuar {
+    0% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(8vw, 10vh) scale(1.15); }
+    66% { transform: translate(-5vw, 6vh) scale(0.9); }
+    100% { transform: translate(4vw, -8vh) scale(1.05); }
+}
+
+/* Cartão translúcido */
+.pagina-auth .auth {
+    position: relative;
+    z-index: 1;
+    width: calc(100% - 2 * var(--margem-lateral));
+    max-width: var(--largura-auth);
+    margin: auto;
+    padding: var(--espaco-6) var(--espaco-5);
+    border: 1px solid var(--auth-borda);
+    border-radius: var(--auth-raio);
+    background-color: var(--auth-vidro);
+    box-shadow: var(--auth-sombra);
+    -webkit-backdrop-filter: blur(18px) saturate(1.4);
+    backdrop-filter: blur(18px) saturate(1.4);
+    animation: entrar 520ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .pagina-auth .auth {
+        background-color: var(--cor-superficie);
+    }
+}
+
+@keyframes entrar {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.98);
+        filter: blur(4px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+        filter: none;
+    }
+}
+
+/* Link de voltar em formato de pílula */
+.voltar {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--espaco-1);
+    margin: 0 0 var(--espaco-5) calc(-1 * var(--espaco-3));
+    padding: var(--espaco-1) var(--espaco-3);
+    border-radius: 999px;
+    color: var(--cor-texto-secundario);
+    font-size: var(--texto-pequeno);
+    text-decoration: none;
+    transition: background-color var(--auth-transicao), color var(--auth-transicao);
+}
+
+.voltar:hover {
+    background-color: rgb(23 75 131 / 0.08);
     color: var(--cor-principal);
 }
 
-.voltar {
+.auth-cabecalho {
+    margin-bottom: var(--espaco-5);
+}
+
+.selo-marca {
+    display: inline-block;
     margin: 0 0 var(--espaco-3);
+    padding: 2px var(--espaco-3);
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgb(23 75 131 / 0.12), rgb(11 134 54 / 0.12));
+    color: var(--cor-principal);
+    font-size: var(--texto-pequeno);
+    font-weight: 700;
+    letter-spacing: 0.02em;
 }
 
-h1 {
-    margin: 0 0 var(--espaco-4);
-    font-size: var(--texto-titulo-pagina);
+.pagina-auth h1 {
+    margin: 0 0 var(--espaco-2);
+    font-size: 1.75rem;
+    font-weight: 700;
     line-height: 1.2;
-}
-
-/* Entrada com Google: única forma de login e cadastro. */
-.botao-google {
-    width: 100%;
-    margin-top: var(--espaco-4);
+    letter-spacing: -0.02em;
 }
 
 .descricao-auth {
@@ -44,21 +172,94 @@ h1 {
     color: var(--cor-texto-secundario);
 }
 
-/* Mensagens de erro e sucesso */
-.mensagem {
+.aviso-auth {
+    margin: var(--espaco-4) 0 0;
+    color: var(--cor-texto-secundario);
+    font-size: var(--texto-pequeno);
+    text-align: center;
+}
+
+/* Mensagem de erro */
+.pagina-auth .mensagem {
     margin: 0 0 var(--espaco-4);
+    border-radius: 12px;
 }
 
 .erro-login {
+    background-color: rgb(160 24 24 / 0.08);
     color: var(--cor-erro);
 }
 
+/*
+ * Botão "Fazer login com o Google", no padrão de marca do Google:
+ * fundo branco, borda #747775, texto #1F1F1F, logotipo "G" colorido à esquerda.
+ */
+.botao-google {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: var(--altura-controle);
+    padding: 0 12px;
+    border: 1px solid #747775;
+    border-radius: 999px;
+    background-color: #ffffff;
+    color: #1f1f1f;
+    font-family: Roboto, Arial, sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.25px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color var(--auth-transicao), box-shadow var(--auth-transicao);
+}
+
+.botao-google-icone {
+    display: inline-flex;
+    flex-shrink: 0;
+}
+
+.botao-google:hover {
+    background-color: #f8f9fa;
+    box-shadow: 0 1px 2px rgb(60 64 67 / 0.3), 0 1px 3px 1px rgb(60 64 67 / 0.15);
+}
+
+.botao-google:active {
+    background-color: #eeeeee;
+}
+
+.botao-google:focus-visible {
+    outline: var(--foco-largura) solid var(--cor-principal);
+    outline-offset: var(--foco-distancia);
+}
+
+/* Rodapé integrado ao fundo */
+.pagina-auth .rodape {
+    position: relative;
+    z-index: 1;
+    border-top-color: rgb(212 217 223 / 0.6);
+    background-color: rgb(255 255 255 / 0.5);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+}
+
 @media (min-width: 481px) {
-    body {
-        padding-top: var(--espaco-6);
+    .pagina-auth .auth {
+        padding: var(--espaco-6);
+    }
+}
+
+/* Sem animações para quem prefere menos movimento */
+@media (prefers-reduced-motion: reduce) {
+    .bolha,
+    .pagina-auth .auth {
+        animation: none;
     }
 
-    .auth {
-        padding: var(--espaco-5);
+    .botao-google,
+    .voltar {
+        transition: none;
     }
 }
