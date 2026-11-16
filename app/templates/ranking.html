@@ -24,6 +24,7 @@
 
         <p class="voltar"><a href="{{ url_for('professores.listar') }}">&larr; Consultar professores</a></p>
 
+        <p class="selo">Ranking</p>
         <h1>Ranking de Professores</h1>
 
         <p class="ajuda">
@@ -74,7 +75,7 @@
 
                     <tr>
 
-                        <td>{{ professor.posicao }}º</td>
+                        <td><span class="posicao{% if professor.posicao <= 3 %} posicao-{{ professor.posicao }}{% endif %}">{{ professor.posicao }}º</span></td>
 
                         <th scope="row">
 
