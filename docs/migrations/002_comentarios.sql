@@ -2,10 +2,8 @@
 -- Depende de: 001_initial_schema.sql (perfis, professores, disciplinas, turmas)
 -- Fora do escopo: reações, denúncia e moderação.
 --
--- ATENÇÃO: segue o texto da issue #166, que diverge de docs/COMENTARIOS.md:
---   * 1 comentário por usuário e professor (docs: sem limite)
---   * texto de 10 a 1000 caracteres       (docs: 2 a 1000)
---   * RLS com leitura pública e escrita pelo dono (docs: só backend, sem grants)
+-- A mesma conta pode comentar várias vezes para o mesmo professor e disciplina.
+-- A leitura pública e a escrita pelo dono seguem o escopo da issue #166.
 
 BEGIN;
 
@@ -18,10 +16,9 @@ CREATE TABLE IF NOT EXISTS comentarios (
     criado_em     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     atualizado_em TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     ocultado_em   TIMESTAMPTZ,
-    CONSTRAINT uq_comentarios_usuario_professor UNIQUE (usuario_id, professor_id),
     CONSTRAINT ck_comentarios_texto_tamanho CHECK (
         char_length(regexp_replace(texto, '^[[:space:]]+|[[:space:]]+$', '', 'g'))
-        BETWEEN 10 AND 1000
+        BETWEEN 2 AND 1000
     )
 );
 
