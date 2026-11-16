@@ -19,6 +19,14 @@ body {
 
 .hero {
     margin-bottom: var(--espaco-6);
+    text-align: center;
+}
+
+/* O selo é inline-flex, então o text-align do .hero já o centraliza */
+.hero .apresentacao {
+    max-width: 40rem;
+    margin-right: auto;
+    margin-left: auto;
 }
 
 h1 {
@@ -54,7 +62,8 @@ h1 {
     box-shadow: var(--sombra-card);
     color: var(--cor-texto);
     text-decoration: none;
-    transition: box-shadow var(--transicao), border-color var(--transicao);
+    transition: box-shadow var(--transicao), border-color var(--transicao),
+                transform var(--transicao);
 }
 
 .acao:hover {
@@ -84,6 +93,7 @@ h1 {
     border-radius: 14px;
     background-color: var(--cor-principal-suave);
     color: var(--cor-principal);
+    transition: transform var(--transicao);
 }
 
 .acao-principal .acao-icone {
@@ -107,6 +117,19 @@ h1 {
     color: rgb(255 255 255 / 0.85);
 }
 
+/* Microinteração dos cartões: só com mouse, para não "prender" em telas de toque */
+@media (hover: hover) and (pointer: fine) {
+    .acao:hover {
+        border-color: var(--cor-principal);
+        box-shadow: var(--sombra-elevada);
+        transform: translateY(-3px);
+    }
+
+    .acao:hover .acao-icone {
+        transform: scale(1.05);
+    }
+}
+
 @media (min-width: 481px) {
     .acoes {
         grid-template-columns: 1fr 1fr;
@@ -122,7 +145,41 @@ h1 {
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .acao {
+    .acao,
+    .acao-icone {
         transition: none;
+    }
+
+    .acao:hover,
+    .acao:hover .acao-icone {
+        transform: none;
+    }
+}
+
+/*
+ * Entrada ao rolar: os cartões sobem 12px e surgem com fade ao entrar na tela.
+ * Só existe com suporte a animation-timeline e sem preferência por menos
+ * movimento; fora disso nada é escondido. O preenchimento "backwards" só vale
+ * antes da entrada: depois, o cartão fica no estado normal e o hover funciona.
+ */
+@supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+        .acao {
+            animation: revelar-ao-rolar linear backwards;
+            animation-timeline: view();
+            animation-range: entry 0% entry 70%;
+        }
+
+        @keyframes revelar-ao-rolar {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
     }
 }

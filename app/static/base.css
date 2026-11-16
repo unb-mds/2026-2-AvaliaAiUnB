@@ -152,11 +152,12 @@ textarea:focus-visible,
     text-decoration: none;
     cursor: pointer;
     transition: background-color var(--transicao), border-color var(--transicao),
-                color var(--transicao), box-shadow var(--transicao);
+                color var(--transicao), box-shadow var(--transicao),
+                transform var(--transicao);
 }
 
 .botao:active:not(:disabled) {
-    transform: translateY(1px);
+    transform: scale(0.98);
 }
 
 .botao-primario {
