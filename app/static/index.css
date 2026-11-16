@@ -62,14 +62,14 @@ h1 {
 }
 
 .acao-principal {
-    border-color: var(--cor-principal);
-    background-color: var(--cor-principal);
-    color: var(--cor-superficie);
+    border-color: var(--cor-principal-fundo);
+    background-color: var(--cor-principal-fundo);
+    color: var(--cor-sobre-principal);
 }
 
 .acao-principal:hover {
-    border-color: var(--cor-principal-hover);
-    background-color: var(--cor-principal-hover);
+    border-color: var(--cor-principal-fundo-hover);
+    background-color: var(--cor-principal-fundo-hover);
 }
 
 /* Ícone em um quadrado de cantos arredondados */
