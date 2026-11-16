@@ -1,9 +1,8 @@
 /*
- * Fundo animado da home: manchas azuis suaves e uma rede de pontos ligados por
- * linhas finas, em canvas 2D, sem bibliotecas. As cores vêm das variáveis CSS do
- * tema (base.css). Respeita prefers-reduced-motion (um único quadro parado),
- * pausa quando a aba está oculta ou o canvas sai da tela, e os pontos reagem
- * ao mouse apenas dentro da área do .hero (nunca em telas de toque).
+ * Fundo animado: manchas azuis suaves e uma rede de pontos ligados por linhas
+ * finas, em canvas 2D, sem bibliotecas. As cores vêm das variáveis CSS do tema
+ * (base.css). Respeita prefers-reduced-motion (um único quadro parado) e pausa
+ * quando a aba está oculta ou o canvas sai da tela.
  */
 (function () {
     "use strict";
@@ -16,11 +15,6 @@
     if (!ctx) {
         return;
     }
-    // Área de interação do mouse: o cabeçalho da página.
-    var hero = document.querySelector(".hero") ||
-        document.querySelector(".cabecalho-pagina") ||
-        document.querySelector("main h1") ||
-        document.querySelector("h1");
     // "normal" (home) ou "leve" (demais telas): menos pontos, linhas e opacidade.
     var leve = canvas.getAttribute("data-densidade") === "leve";
 
@@ -32,9 +26,6 @@
     var ALFA_LINHA = leve ? 0.2 : 0.3;     // opacidade máxima das linhas (distância zero)
     var ALFA_PONTO = leve ? 0.5 : 0.65;
     var INTERVALO_QUADRO = 1000 / 30 - 4; // ~30 quadros por segundo
-    var RAIO_MOUSE = 130;         // alcance da interação, em px
-    var DESLOCAMENTO_MAX = 55;    // quanto um ponto é empurrado, em px
-    var SUAVIDADE = 0.12;         // quão rápido o ponto acompanha o alvo
 
     // Cada mancha: posição média (0..1), raio relativo à largura, velocidade, fase e cor.
     var MANCHAS = [
@@ -48,9 +39,6 @@
     var consultaMovimento = window.matchMedia
         ? window.matchMedia("(prefers-reduced-motion: reduce)")
         : null;
-    var consultaMouse = window.matchMedia
-        ? window.matchMedia("(hover: hover) and (pointer: fine)")
-        : null;
 
     var coresManchas = [];
     var corPontos = null;
@@ -63,14 +51,9 @@
     var ultimoQuadro = 0;
     var ultimoInstante = null;
     var tempo = 0; // segundos de animação acumulados
-    var mouse = { ativo: false, x: 0, y: 0 };
 
     function reduzirMovimento() {
         return !!(consultaMovimento && consultaMovimento.matches);
-    }
-
-    function interacaoPermitida() {
-        return !reduzirMovimento() && !!(consultaMouse && consultaMouse.matches);
     }
 
     // Converte "#rrggbb", "#rgb" ou "rgb(r g b / a)" em [r, g, b]; null se não entender.
@@ -130,8 +113,6 @@
             y: Math.random() * altura,
             vx: Math.cos(angulo) * velocidade,
             vy: Math.sin(angulo) * velocidade,
-            ox: 0,
-            oy: 0,
             r: 1.1 + Math.random() * 1.2
         };
     }
@@ -199,19 +180,17 @@
         ctx.lineWidth = 1;
         for (var i = 0; i < pontos.length && linhas < maxLinhas; i++) {
             var a = pontos[i];
-            var ax = a.x + a.ox;
-            var ay = a.y + a.oy;
             for (var j = i + 1; j < pontos.length && linhas < maxLinhas; j++) {
                 var b = pontos[j];
-                var dx = ax - (b.x + b.ox);
-                var dy = ay - (b.y + b.oy);
+                var dx = a.x - b.x;
+                var dy = a.y - b.y;
                 var d2 = dx * dx + dy * dy;
                 if (d2 < limiteQuadrado) {
                     var alfa = ALFA_LINHA * escalaAlfa * (1 - Math.sqrt(d2) / limite);
                     ctx.strokeStyle = "rgba(" + rgb + "," + alfa.toFixed(3) + ")";
                     ctx.beginPath();
-                    ctx.moveTo(ax, ay);
-                    ctx.lineTo(b.x + b.ox, b.y + b.oy);
+                    ctx.moveTo(a.x, a.y);
+                    ctx.lineTo(b.x, b.y);
                     ctx.stroke();
                     linhas++;
                 }
@@ -222,7 +201,7 @@
         for (var k = 0; k < pontos.length; k++) {
             var p = pontos[k];
             ctx.beginPath();
-            ctx.arc(p.x + p.ox, p.y + p.oy, p.r, 0, Math.PI * 2);
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
             ctx.fill();
         }
     }
@@ -237,7 +216,6 @@
     }
 
     function atualizarPontos(dt) {
-        var usaMouse = mouse.ativo && interacaoPermitida();
         for (var i = 0; i < pontos.length; i++) {
             var p = pontos[i];
             p.x += p.vx * dt;
@@ -250,22 +228,6 @@
                 p.vy = -p.vy;
                 p.y = Math.min(Math.max(p.y, 0), altura);
             }
-
-            var alvoX = 0;
-            var alvoY = 0;
-            if (usaMouse) {
-                var dx = p.x - mouse.x;
-                var dy = p.y - mouse.y;
-                var d = Math.sqrt(dx * dx + dy * dy);
-                if (d < RAIO_MOUSE && d > 0.01) {
-                    var forca = 1 - d / RAIO_MOUSE;
-                    forca = forca * forca * DESLOCAMENTO_MAX;
-                    alvoX = (dx / d) * forca;
-                    alvoY = (dy / d) * forca;
-                }
-            }
-            p.ox += (alvoX - p.ox) * SUAVIDADE;
-            p.oy += (alvoY - p.oy) * SUAVIDADE;
         }
     }
 
@@ -309,39 +271,9 @@
             iniciar();
         } else {
             parar();
-            if (reduzirMovimento()) {
-                // Quadro estático: sem deslocamento causado pelo mouse.
-                for (var i = 0; i < pontos.length; i++) {
-                    pontos[i].ox = 0;
-                    pontos[i].oy = 0;
-                }
-            }
             desenhar();
         }
     }
-
-    // Mouse: só vale dentro do .hero e só com ponteiro fino (não em telas de toque).
-    window.addEventListener("pointermove", function (evento) {
-        if (evento.pointerType !== "mouse" || !hero || !interacaoPermitida()) {
-            mouse.ativo = false;
-            return;
-        }
-        var areaHero = hero.getBoundingClientRect();
-        var dentro = evento.clientX >= areaHero.left && evento.clientX <= areaHero.right &&
-            evento.clientY >= areaHero.top && evento.clientY <= areaHero.bottom;
-        if (!dentro) {
-            mouse.ativo = false;
-            return;
-        }
-        var areaCanvas = canvas.getBoundingClientRect();
-        mouse.x = evento.clientX - areaCanvas.left;
-        mouse.y = evento.clientY - areaCanvas.top;
-        mouse.ativo = true;
-    }, { passive: true });
-
-    document.documentElement.addEventListener("mouseleave", function () {
-        mouse.ativo = false;
-    });
 
     var redimensionando = false;
     window.addEventListener("resize", function () {
