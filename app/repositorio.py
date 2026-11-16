@@ -7,7 +7,7 @@ instâncias configuradas em create_app.
 import time
 from collections import Counter
 
-from flask import current_app
+from flask import current_app, has_request_context, url_for
 from httpx import RequestError
 from supabase_auth.errors import AuthError
 
@@ -16,8 +16,7 @@ from app.utils import normalizar_busca
 from app.validacoes import CRITERIOS
 
 COLUNAS_AVALIACAO = ','.join(('id', 'usuario_id', 'professor_id', 'disciplina_id',
-                              'ano', 'periodo', *CRITERIOS))
-
+                                  'ano', 'periodo', *CRITERIOS))
 TAMANHO_PAGINA = 1000          # limite padrão de linhas por requisição do PostgREST
 VALIDADE_CATALOGO = 300        # segundos de cache da listagem completa
 MINIMO_AVALIACOES_RANKING = 5
@@ -97,7 +96,13 @@ class UsuarioRepository:
     def enviar_email_recuperacao(self, email):
         """Usa o Supabase Auth para enviar um link de recuperação de senha por e-mail."""
         try:
-            self.fabrica_cliente().auth.reset_password_for_email(email.strip().lower())
+            opcoes = {}
+            if has_request_context():
+                opcoes["redirect_to"] = url_for("auth.redefinir_senha", _external=True)
+            self.fabrica_cliente().auth.reset_password_for_email(
+                email.strip().lower(),
+                options=opcoes,
+            )
             return True
         except AuthError as erro:
             current_app.logger.warning("Falha ao pedir recuperação de senha: %s", str(erro))
@@ -206,12 +211,12 @@ class ProfessorRepository:
 
     def listar_departamentos(self):
         """Departamentos distintos (opções do filtro), em ordem alfabética sem acento."""
-        unicas = {}
+        unicos = {}
         for professor, _ in self._carregar_catalogo():
             departamento = (professor.get('departamento') or '').strip()
             if departamento:
-                unicas.setdefault(normalizar_busca(departamento), departamento)
-        return [unicas[chave] for chave in sorted(unicas)]
+                unicos.setdefault(normalizar_busca(departamento), departamento)
+        return [unicos[chave] for chave in sorted(unicos)]
 
     def catalogo(self, nome='', disciplina='', departamento=''):
         """[(professor, disciplinas)] filtrado sem distinguir acento/caixa/espaços,
