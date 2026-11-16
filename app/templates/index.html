@@ -11,8 +11,15 @@
     {% include '_topo.html' %}
 
     <main class="conteudo">
-        <h1>Bem-vindo ao AvaliaUnb</h1>
-        <p class="apresentacao">A plataforma para consulta e avaliação de professores e disciplinas da UNB.</p>
+        <header class="cabecalho-pagina hero">
+            {% if usuario %}
+            <p class="selo saudacao">Olá, {{ usuario.nome }}!</p>
+            {% else %}
+            <p class="selo">Avaliações de professores da UnB</p>
+            {% endif %}
+            <h1>Bem-vindo ao AvaliaUnb</h1>
+            <p class="apresentacao">A plataforma para consulta e avaliação de professores e disciplinas da UnB.</p>
+        </header>
 
         <nav class="acoes" aria-label="Acesso rápido">
             <a href="/professores" class="acao acao-principal">
@@ -30,6 +37,16 @@
                 </svg>
                 <span class="acao-titulo">Ranking de Professores</span>
                 <span class="acao-texto">Confira os professores mais bem avaliados.</span>
+            </a>
+            <a href="{{ url_for('professores.comparar') }}" class="acao">
+                <svg class="acao-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                    <path d="M8 3 4 7l4 4"></path>
+                    <path d="M4 7h16"></path>
+                    <path d="m16 21 4-4-4-4"></path>
+                    <path d="M20 17H4"></path>
+                </svg>
+                <span class="acao-titulo">Comparar Professores</span>
+                <span class="acao-texto">Compare as notas de professores da mesma disciplina.</span>
             </a>
         </nav>
     </main>

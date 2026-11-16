@@ -1,7 +1,7 @@
 # Design system
 
 Proposta da #112 para a aplicação AvaliaUnb. A paleta parte das telas atuais,
-com Arial, fundo branco, texto escuro e links azuis. O padrão orienta os
+com a fonte do sistema, fundo claro, texto escuro e o azul `#174b83` como cor principal. O padrão orienta os
 protótipos de comentários e os ajustes da #114. O [inventário do frontend](FRONTEND.md)
 registra os estilos que já existem no código.
 
@@ -51,12 +51,28 @@ e contorno. Combine cores com rótulos ou ícones em erros, seleção e confirma
 | Texto e controles | `1rem` | 400 e 1,5. Botões usam peso 700 |
 | Ajuda e metadados | `0.875rem` | 400 e 1,5 |
 
-Use Arial com fallback `sans-serif` e espaçamentos de 4, 8, 12, 16, 24, 32 e
+Use a fonte do sistema (`system-ui`, com Segoe UI, Roboto e Arial como fallback) e espaçamentos de 4, 8, 12, 16, 24, 32 e
 48 px. A área de conteúdo tem até 720 px e o formulário de autenticação, até
 400 px. Use 16 px de margem lateral em mobile e 24 px em desktop. Campos e
-botões têm altura mínima de 44 px e raio de 8 px. Cards e diálogos têm raio de
-12 px. Em telas estreitas, empilhe controles e ações e preserve os cabeçalhos
+botões têm altura mínima de 44 px. Campos têm raio de 10 px e botões, formato
+de pílula. Cards e diálogos têm raio de 16 px e sombra suave em camadas
+(`--sombra-card`; `--sombra-elevada` no hover de cards interativos). Em telas estreitas, empilhe controles e ações e preserve os cabeçalhos
 das tabelas com rolagem horizontal quando necessário.
+
+## Estética e movimento
+
+As telas seguem uma estética limpa: cards brancos com borda clara e sombra
+suave, botões e abas em pílula, cabeçalho de página com **selo** (`.selo`),
+título e subtítulo (`.cabecalho-pagina`), e link de voltar em pílula
+(`.voltar`). As médias por critério usam **barras** (`.barra` e
+`.barra-cheia` com `.preenche-N`; a dificuldade usa a cor da estrela). O topo
+é uma barra branca fixa com abas. Mantêm a identidade do projeto: o azul
+principal, o ícone de capelo, as estrelas laranja e o rodapé de feedback.
+
+O conteúdo principal entra com um fade curto (`surgir`, 420 ms) e os elementos
+interativos têm transições de 160 ms. Com `prefers-reduced-motion: reduce`,
+animações e transições são desligadas. Evite fundos decorativos (manchas,
+gradientes chamativos) e efeitos de vidro sem função.
 
 ## Componentes e estados
 

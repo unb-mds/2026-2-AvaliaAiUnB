@@ -1,6 +1,7 @@
 @import url("base.css");
 
-body { font-family: Arial, sans-serif; color: var(--cor-texto); max-width: 720px; margin: 48px auto; padding: 0 20px; }
+/* Estilos compartilhados das telas de consulta, comparação, ranking e avaliação. */
+body { font-family: var(--fonte); color: var(--cor-texto); max-width: 720px; margin: 48px auto; padding: 0 20px; }
 h1 { font-size: 1.6rem; overflow-wrap: anywhere; }
 h2 { font-size: 1.2rem; margin-top: 32px; }
 label { display: block; margin: 16px 0 6px; }
@@ -8,7 +9,7 @@ select { max-width: 100%; padding: 10px; font: inherit; }
 button, .btn-avaliar { display: inline-block; padding: 10px 16px; margin: 16px 8px 16px 0; cursor: pointer; font: inherit; }
 a { color: var(--cor-principal); }
 .indicadores { list-style: none; padding: 0; }
-.indicadores li { display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; border-bottom: 1px solid #ddd; padding: 16px 0; }
+.indicadores li { display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; border-bottom: 1px solid var(--cor-divisor-suave); padding: 16px 0; }
 .indicadores strong { white-space: nowrap; }
 .ajuda { color: var(--cor-texto-secundario); line-height: 1.5; }
 .erros { color: var(--cor-erro); line-height: 1.6; }
@@ -17,25 +18,40 @@ input[type="search"] { box-sizing: border-box; width: 100%; padding: 10px; font:
 .filtros > div { flex: 1 1 220px; }
 .filtros button { margin: 16px 0; }
 .lista-professores { list-style: none; padding: 0; }
-.lista-professores > li { border-bottom: 1px solid #ddd; padding: 16px 0; }
+.lista-professores > li { padding: 16px 0; }
 .lista-professores h2 { margin: 0 0 4px; overflow-wrap: anywhere; }
 .lista-professores p { margin: 4px 0; }
 .lista-professores ul { margin: 8px 0 0; padding-left: 20px; line-height: 1.5; }
 .selecao-comparacao select { width: 100%; }
+
+/* Tabelas (comparação e ranking): cabeçalho suave, linhas finas e destaque ao passar o mouse */
 .comparacao-container { overflow-x: auto; margin-top: 24px; }
-.tabela-comparacao { width: 100%; border-collapse: collapse; table-layout: fixed; }
-.tabela-comparacao caption { text-align: left; font-weight: bold; padding-bottom: 16px; }
-.tabela-comparacao th, .tabela-comparacao td { text-align: left; padding: 14px 8px; border-bottom: 1px solid #ddd; overflow-wrap: anywhere; }
-.tabela-comparacao thead { background-color: var(--cor-fundo-suave); }
+.tabela-comparacao,
+.tabela-ranking { width: 100%; border-collapse: separate; border-spacing: 0; }
+.tabela-comparacao { table-layout: fixed; }
+.tabela-comparacao caption,
+.tabela-ranking caption { text-align: left; font-weight: 700; padding: 16px 8px; }
+.tabela-comparacao th,
+.tabela-comparacao td,
+.tabela-ranking th,
+.tabela-ranking td { text-align: left; padding: 14px 12px; border-bottom: 1px solid var(--cor-divisor-suave); overflow-wrap: anywhere; }
+.tabela-comparacao thead th,
+.tabela-ranking thead th { background-color: var(--cor-fundo-suave); color: var(--cor-texto-secundario); font-size: var(--texto-pequeno); font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+.tabela-comparacao thead th:first-child,
+.tabela-ranking thead th:first-child { border-top-left-radius: 10px; border-bottom-left-radius: 10px; }
+.tabela-comparacao thead th:last-child,
+.tabela-ranking thead th:last-child { border-top-right-radius: 10px; border-bottom-right-radius: 10px; }
+.tabela-comparacao thead th,
+.tabela-ranking thead th { border-bottom: 0; }
+.tabela-comparacao tbody tr:last-child > *,
+.tabela-ranking tbody tr:last-child > * { border-bottom: 0; }
+.tabela-ranking tbody tr { transition: background-color var(--transicao); }
+.tabela-ranking tbody tr:hover { background-color: rgb(23 75 131 / 0.04); }
 @media (max-width: 480px) {
-    .tabela-comparacao th, .tabela-comparacao td { padding: 12px 4px; font-size: 0.9rem; }
+    .tabela-comparacao th, .tabela-comparacao td { padding: 12px 6px; font-size: 0.9rem; }
 }
 .navegacao-ranking { display: flex; flex-wrap: wrap; gap: 12px 24px; }
 .tabela-ranking-container { overflow-x: auto; }
-.tabela-ranking { width: 100%; border-collapse: collapse; text-align: left; }
-.tabela-ranking caption { text-align: left; font-weight: bold; padding: 16px 0; }
-.tabela-ranking th, .tabela-ranking td { border-bottom: 1px solid #ddd; padding: 16px 8px; }
-.tabela-ranking thead { background-color: var(--cor-fundo-suave); }
 .tabela-ranking th[scope="row"] { min-width: 120px; overflow-wrap: anywhere; }
-.departamento-ranking { display: block; font-size: 0.9rem; font-weight: normal; margin-top: 4px; }
-.nota-ranking { white-space: nowrap; font-weight: bold; }
+.departamento-ranking { display: block; font-size: 0.9rem; font-weight: normal; margin-top: 4px; color: var(--cor-texto-secundario); }
+.nota-ranking { white-space: nowrap; font-weight: 700; }

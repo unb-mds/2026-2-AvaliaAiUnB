@@ -11,6 +11,7 @@ separado para executar essas telas.
 |---|---|---|
 | `index.html` | Início, consulta, ranking e acesso à conta | `base.css`, `index.css` |
 | `login.html` | Botão "Entrar com Google" (login e cadastro) e mensagem de erro | `base.css`, `auth.css` |
+| `sobre.html` | Apresentação do projeto, critérios e privacidade | `base.css`, `sobre.css` |
 | `lista_professores.html` | Filtros, catálogo, média geral em estrelas e estados sem resultado | `indicadores.css` (que importa `base.css`), `lista_professores.css` |
 | `perfil_professor.html` | Disciplinas (campo digitável), indicadores, média geral, comparação e avaliação | `indicadores.css`, `perfil_professor.css` |
 | `avaliacao.html` | Criação e edição de notas (botões de 1 a 5) | `indicadores.css`, `avaliacao.css` |
@@ -32,10 +33,15 @@ O arquivo `base.css` concentra os tokens do [design system](DESIGN_SYSTEM.md)
 como variáveis em `:root` (`--cor-*`, `--espaco-*`, `--raio`, `--altura-controle`,
 larguras e margens) e os componentes reutilizáveis: `.botao` com `-primario`,
 `-secundario` e `-destrutivo`, `.campo` (com `.campo-ajuda` e `.campo-erro`),
-`.card`, `.mensagem` e `.mensagem-erro`, o topo (`.topo`, `.marca`, `.topo-conta`),
+`.card`, `.mensagem` e `.mensagem-erro`, o topo (`.topo`, `.marca`, `.abas`, `.aba`, `.botao-sair`),
 a nota em estrelas (`.estrelas` e `.preenche-0` a `.preenche-100`) e o foco visível
 de 2 px. Cada tela carrega `base.css` diretamente ou por meio de `indicadores.css`,
 que o importa com `@import`.
+
+O topo (`_topo.html`) é uma barra branca fixa ao rolar, com a marca e as abas
+**Consulta**, **Ranking**, **Sobre** e **Perfil** (ou **Entrar**, sem login). A aba
+da página atual recebe `aria-current="page"`, definido pelo `request.endpoint`.
+No celular, as abas ficam numa segunda linha com rolagem horizontal.
 
 O arquivo `indicadores.css` reúne estilos compartilhados para filtros, listas,
 indicadores, comparação e ranking. Entre as classes existentes estão `.filtros`,
@@ -63,8 +69,7 @@ variáveis de `base.css`. O ranking possui uma folha de estilos própria e segue
 qualquer alteração de escopo deve ser tratada em sua issue específica.
 
 Scripts em `app/static/` (a política de segurança só aceita scripts do próprio
-domínio): `topo.js` fecha o menu do topo ao clicar fora ou apertar Esc, e
-`campo-busca.js` transforma os `<select>` dentro de `.campo-busca` (professores na
+domínio): `campo-busca.js` transforma os `<select>` dentro de `.campo-busca` (professores na
 comparação e disciplina no perfil do professor) em campos digitáveis com sugestões.
 O `<select>` continua no formulário, então a tela funciona sem JavaScript.
 

@@ -8,7 +8,7 @@ body {
     line-height: 1.5;
 }
 
-/* O topo (.topo, .topo-conta) vem de base.css */
+/* O topo (.topo, .marca, .abas) vem de base.css */
 .conteudo {
     box-sizing: border-box;
     max-width: var(--largura-conteudo);
@@ -16,19 +16,24 @@ body {
     padding: var(--espaco-6) var(--margem-lateral) var(--espaco-7);
 }
 
+.hero {
+    margin-bottom: var(--espaco-6);
+}
+
 h1 {
     margin: 0 0 var(--espaco-3);
-    font-size: var(--texto-titulo-pagina);
-    line-height: 1.2;
+    font-size: 2.25rem;
+    line-height: 1.15;
     overflow-wrap: anywhere;
 }
 
 .apresentacao {
-    margin: 0 0 var(--espaco-6);
+    margin: 0;
     color: var(--cor-texto-secundario);
+    font-size: 1.0625rem;
 }
 
-/* Ações principais em blocos grandes */
+/* Ações principais em cards; a consulta ocupa a largura toda */
 .acoes {
     display: grid;
     grid-template-columns: 1fr;
@@ -41,34 +46,48 @@ h1 {
     flex-direction: column;
     align-items: flex-start;
     gap: var(--espaco-2);
-    min-height: 160px;
     padding: var(--espaco-5);
-    border: 2px solid var(--cor-principal);
+    border: 1px solid var(--cor-divisor-suave);
     border-radius: var(--raio-card);
     background-color: var(--cor-superficie);
-    color: var(--cor-principal);
+    box-shadow: var(--sombra-card);
+    color: var(--cor-texto);
     text-decoration: none;
+    transition: box-shadow var(--transicao), border-color var(--transicao);
 }
 
 .acao:hover {
-    background-color: #e6edf5;
+    border-color: var(--cor-divisor);
+    box-shadow: var(--sombra-elevada);
 }
 
 .acao-principal {
+    border-color: var(--cor-principal);
     background-color: var(--cor-principal);
     color: var(--cor-superficie);
 }
 
 .acao-principal:hover {
-    background-color: var(--cor-principal-hover);
     border-color: var(--cor-principal-hover);
+    background-color: var(--cor-principal-hover);
 }
 
+/* Ícone em um quadrado de cantos arredondados */
 .acao-icone {
+    box-sizing: border-box;
     width: 48px;
     height: 48px;
     margin-bottom: var(--espaco-2);
+    padding: 11px;
     flex-shrink: 0;
+    border-radius: 14px;
+    background-color: var(--cor-principal-suave);
+    color: var(--cor-principal);
+}
+
+.acao-principal .acao-icone {
+    background-color: rgb(255 255 255 / 0.16);
+    color: var(--cor-superficie);
 }
 
 .acao-titulo {
@@ -79,20 +98,30 @@ h1 {
 }
 
 .acao-texto {
-    color: inherit;
+    color: var(--cor-texto-secundario);
     font-size: var(--texto-base);
 }
 
-@media (min-width: 481px) {
-    h1 {
-        margin-top: var(--espaco-5);
-    }
+.acao-principal .acao-texto {
+    color: rgb(255 255 255 / 0.85);
+}
 
+@media (min-width: 481px) {
     .acoes {
         grid-template-columns: 1fr 1fr;
     }
 
+    .acao-principal {
+        grid-column: 1 / -1;
+    }
+
     .acao {
-        min-height: 220px;
+        min-height: 180px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .acao {
+        transition: none;
     }
 }

@@ -26,6 +26,7 @@
 .pagina-auth .auth {
     width: calc(100% - 2 * var(--margem-lateral));
     max-width: var(--largura-auth);
+    flex: 0 0 auto;
     margin: auto;
     padding: var(--espaco-6) var(--espaco-5);
     border: 1px solid var(--cor-divisor);
