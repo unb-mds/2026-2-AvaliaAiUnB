@@ -80,6 +80,42 @@
     --foco-distancia: 2px;
 }
 
+/* Tema claro (idêntico ao visual anterior do site) */
+:root[data-theme="light"] {
+    color-scheme: light;
+
+    --cor-superficie: #ffffff;
+    --cor-fundo-suave: #f2f4f7;
+    --cor-texto: #202124;
+    --cor-texto-secundario: #4f5357;
+    --cor-principal: #174b83;
+    --cor-principal-hover: #123c69;
+    --cor-borda-campo: #767676;
+    --cor-divisor: #d4d9df;
+    --cor-divisor-suave: #e4e7ec;
+    --cor-principal-suave: rgb(23 75 131 / 0.1);
+    --cor-erro: #a01818;
+    --cor-erro-hover: #801212;
+    --cor-estrela: #b45309;
+    --sombra-card: 0 1px 2px rgb(16 24 40 / 0.04), 0 4px 16px -6px rgb(16 24 40 / 0.1);
+    --sombra-elevada: 0 2px 4px rgb(16 24 40 / 0.06), 0 12px 28px -10px rgb(16 24 40 / 0.18);
+
+    --cor-principal-fundo: #174b83;
+    --cor-principal-fundo-hover: #123c69;
+    --cor-sobre-principal: #ffffff;
+    --cor-hover-suave: #e6edf5;
+    --cor-brilho: rgb(23 75 131 / 0.6);
+    --cor-erro-suave: rgb(160 24 24 / 0.07);
+    --cor-topo-fundo: rgb(255 255 255 / 0.92);
+    --cor-topo-fundo-blur: rgb(255 255 255 / 0.8);
+    --cor-ouro-fundo: #fdf0c4;
+    --cor-ouro-texto: #7a5a00;
+    --cor-prata-fundo: #e8ebef;
+    --cor-prata-texto: #3d4652;
+    --cor-bronze-fundo: #f6dfcc;
+    --cor-bronze-texto: #7a3f12;
+}
+
 @media (min-width: 481px) {
     :root {
         --margem-lateral: 24px;
