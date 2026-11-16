@@ -30,6 +30,22 @@
     --cor-erro-hover: #ffb4ad;
     --cor-estrela: #f5b94a;
 
+    /* Cores de apoio ao tema escuro (preenchimentos, topo e medalhas) */
+    --cor-principal-fundo: #1f5fae;
+    --cor-principal-fundo-hover: #2a70c8;
+    --cor-sobre-principal: #ffffff;
+    --cor-hover-suave: #14243b;
+    --cor-brilho: rgb(79 147 230 / 0.25);
+    --cor-erro-suave: rgb(242 139 130 / 0.1);
+    --cor-topo-fundo: rgb(7 13 23 / 0.92);
+    --cor-topo-fundo-blur: rgb(7 13 23 / 0.72);
+    --cor-ouro-fundo: #3a2f0b;
+    --cor-ouro-texto: #f5d77a;
+    --cor-prata-fundo: #2a3341;
+    --cor-prata-texto: #cbd5e1;
+    --cor-bronze-fundo: #3a2516;
+    --cor-bronze-texto: #e9b48a;
+
     /* Tipografia */
     --fonte: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
     --texto-titulo-pagina: 2rem;
