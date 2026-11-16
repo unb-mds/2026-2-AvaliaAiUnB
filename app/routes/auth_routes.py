@@ -12,6 +12,7 @@ from app.controllers.session_controller import (
 from app.seguranca import (
     limitar_cadastro,
     limitar_login_por_ip,
+    limitar_recuperacao_senha,
 )
 
 auth_bp = Blueprint("auth", __name__)
@@ -59,6 +60,7 @@ def login():
 
 
 @auth_bp.route("/recuperar-senha", methods=["GET", "POST"])
+@limitar_recuperacao_senha
 def recuperar_senha():
     if request.method == "GET":
         return render_template("recuperar_senha.html")
