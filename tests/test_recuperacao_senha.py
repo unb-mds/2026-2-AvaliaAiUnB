@@ -1,5 +1,4 @@
 """Testes para o fluxo de recuperação e redefinição de senha."""
-os_environ_backup = None
 import os
 import unittest
 from unittest.mock import patch
@@ -40,15 +39,15 @@ class RecuperacaoSenhaTestCase(unittest.TestCase):
         self.assertIn(b'Criar Nova Senha', response.data)
 
     def test_redefinir_senha_validacao_tamanho(self):
-        """Garante que senhas menores que 6 caracteres são rejeitadas na regra de negócio."""
+        """Garante que senhas menores que 8 caracteres são rejeitadas na regra de negócio."""
         response = self.client.post('/redefinir-senha', data={
-            'senha': '123',
-            'confirmar_senha': '123',
+            'senha': '1234567',
+            'confirmar_senha': '1234567',
             'access_token': 'token_falso',
             'formato': 'html'
         })
         self.assertEqual(response.status_code, 400)
-        self.assertIn(b'no m\xc3\xadnimo 6 caracteres', response.data)
+        self.assertIn(b'pelo menos 8 caracteres', response.data)
 
 
 if __name__ == '__main__':
