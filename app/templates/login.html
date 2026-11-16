@@ -19,11 +19,16 @@
     <form action="/login" method="POST">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <input type="hidden" name="formato" value="html">
+        
         <label for="username">Nome de usuário</label>
         <input type="text" id="username" name="username" autocomplete="username" required>
 
         <label for="senha">Senha</label>
         <input type="password" id="senha" name="senha" required>
+
+        <p class="link recuperar-senha">
+            <a href="/recuperar-senha">Esqueci minha senha</a>
+        </p>
 
         <button type="submit" class="botao botao-primario">Entrar</button>
     </form>
