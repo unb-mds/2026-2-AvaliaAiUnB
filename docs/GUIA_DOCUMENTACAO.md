@@ -56,7 +56,7 @@ evitar sobreposição de PRs.
 - **Comentários e moderação:** documentos e desenhos são propostas, não telas
   funcionais. As regras dependem de aprovação e implementação específica.
 - **Histórico:** [Release 1](https://github.com/unb-mds/2026-2-AvaliaAiUnB/blob/main/RELEASE-v1.0.0.md),
-  [Release 2](https://github.com/unb-mds/2026-2-AvaliaAiUnB/blob/main/RELEASE-v2.0.0.md) e
+  [v1.0.1](https://github.com/unb-mds/2026-2-AvaliaAiUnB/blob/main/RELEASE-v1.0.1.md) e
   [implementações antigas](https://github.com/unb-mds/2026-2-AvaliaAiUnB/blob/main/docs/IMPLEMENTACAO_26_36_37.md) registram entregas
   passadas; não devem substituir as instruções atuais.
 
