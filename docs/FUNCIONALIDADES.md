@@ -4,7 +4,7 @@ Este guia detalha as funcionalidades já disponíveis na `main`. O resumo das
 entregas e do planejamento fica no
 [README](https://github.com/unb-mds/2026-2-AvaliaAiUnB#funcionalidades-e-releases).
 
-- **Política de Privacidade e Termos de Uso (`/privacidade`)**: página pública acessível pelo rodapé que descreve em linguagem simples os dados armazenados pelo AvaliaUnB (e-mail, nome de usuário, avaliações e formulário de feedback), as regras contra ofensas e avaliações falsas, e o canal de contato para solicitar a exclusão de dados em conformidade com a LGPD. Documentação detalhada em `docs/POLITICA-DE-PRIVACIDADE.md`.
+- **Política de Privacidade e Termos de Uso (`/privacidade`)**: página pública acessível pelo rodapé que descreve em linguagem simples os dados armazenados pelo AvaliaUnB (e-mail, nome de usuário, avaliações, comentários e formulário de feedback), as regras contra ofensas e avaliações falsas, e o canal de contato para solicitar a exclusão de dados em conformidade com a LGPD. Documentação detalhada em `docs/POLITICA-DE-PRIVACIDADE.md`.
 
 ## Busca de professores e disciplinas
 
