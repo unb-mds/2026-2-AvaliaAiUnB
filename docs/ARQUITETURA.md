@@ -9,7 +9,7 @@ Os diagramas representam a arquitetura do AvaliaUnB implementada na `main`.
     ![Diagrama de contexto do AvaliaUnB](diagrama-contexto.svg)
 
     Qualquer visitante pode consultar o catálogo. O registro de notas exige
-    login com nome de usuário e senha, validados pelo Supabase Auth. O scraper
+    login com uma conta Google pelo Supabase Auth. O scraper
     importa professores, disciplinas e turmas do SIGAA.
 
 === "Componentes da aplicação"
@@ -39,9 +39,9 @@ FigJam. As rotas indicam onde conferir cada comportamento no sistema.
 | Atividade | História de usuário | Onde conferir |
 |---|---|---|
 | Consultar o catálogo | Como visitante, quero buscar professores por nome, disciplina ou departamento e abrir o perfil para ver suas disciplinas e notas. | `/professores` e `/professores/<id>` |
-| Comparar professores | Como visitante, quero selecionar dois professores e comparar as médias por critério para orientar minha escolha. | `/comparar` |
+| Comparar professores | Como visitante, quero escolher uma disciplina e comparar as médias nela de dois ou mais professores que a ministram. | `/comparar` |
 | Consultar o ranking | Como visitante, quero ver a classificação dos professores elegíveis e abrir seus perfis. | `/ranking` |
-| Acessar a conta | Como usuário, quero criar uma conta, entrar com nome de usuário e senha e encerrar a sessão. | `/cadastro`, `/login` e `/logout` |
+| Acessar a conta | Como usuário, quero entrar com a conta Google, criar meu perfil no primeiro acesso e encerrar minha sessão. | `/login`, `/login/google/retorno` e `/logout` |
 | Avaliar uma disciplina | Como usuário com conta, quero registrar notas por critério para a disciplina que cursei com o professor. | `/avaliar/<professor_id>` |
 | Gerenciar minhas avaliações | Como autor, quero consultar, editar e excluir minhas próprias notas no perfil. | `/perfil` e ações em `/avaliacoes/<id>` |
 
@@ -51,13 +51,11 @@ disciplina. Os detalhes sobre critérios e médias estão no
 
 ### Revisão final com o FigJam
 
-A sincronização final do board e dos diagramas acompanha as entregas de
-[login com Google (#162)](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/162),
-[recuperação de senha (#163)](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/163),
-[tabela de comentários (#166)](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/166)
-e [interface de comentários (#167)](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/167).
-Quando as mudanças entrarem na `main`, confira as novas rotas e integrações
-e atualize o contexto, os componentes e as histórias correspondentes.
+O [login com Google](https://github.com/unb-mds/2026-2-AvaliaAiUnB/pull/192)
+substituiu o acesso local por senha e o fluxo de recuperação de senha. A
+migração da [tabela de comentários](https://github.com/unb-mds/2026-2-AvaliaAiUnB/pull/185)
+já está no repositório. A conferência final do fluxo de comentários acompanha
+a [interface do perfil do professor (#167)](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/167).
 
 ## Aprofundamento
 
