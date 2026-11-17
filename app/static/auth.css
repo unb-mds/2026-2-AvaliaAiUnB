@@ -18,7 +18,7 @@
     margin: 0;
     background-color: var(--cor-fundo-suave);
     color: var(--cor-texto);
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, var(--fonte);
+    font-family: var(--fonte);
     font-size: var(--texto-base);
     line-height: 1.5;
 }
