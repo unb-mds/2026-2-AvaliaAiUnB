@@ -221,11 +221,12 @@ h3 {
     }
 }
 
-/* Dificuldade como barra de crescimento dentro da pílula */
+/* Dificuldade como barra estilo HP (com escala) dentro da pílula */
 .notas-lista .nota-dificuldade {
     display: inline-flex;
     align-items: center;
     gap: var(--espaco-2);
+    border-radius: 12px;
 }
 
 .notas-lista .barra-hp {
@@ -234,8 +235,4 @@ h3 {
 
 .notas-lista .barra-hp-trilho {
     height: 10px;
-}
-
-.notas-lista .barra-hp-valor {
-    color: var(--cor-texto);
 }

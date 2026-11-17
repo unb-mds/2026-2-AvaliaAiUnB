@@ -119,9 +119,3 @@ main > .ajuda {
 .tabela-comparacao caption {
     padding: var(--espaco-3) var(--espaco-2);
 }
-
-/* Dificuldade: barra abaixo do número exato */
-.celula-barra-hp {
-    display: block;
-    margin-top: var(--espaco-1);
-}

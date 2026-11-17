@@ -56,7 +56,7 @@
                     <li>Clareza: <strong>{{ av.clareza }}</strong>/5</li>
                     <li>Organização: <strong>{{ av.organizacao }}</strong>/5</li>
                     <li>Disponibilidade: <strong>{{ av.disponibilidade }}</strong>/5</li>
-                    <li class="nota-dificuldade">Dificuldade: {{ barra_dificuldade(av.dificuldade, escala=false) }}</li>
+                    <li class="nota-dificuldade">Dificuldade: {{ barra_dificuldade(av.dificuldade) }}</li>
                 </ul>
                 <div class="acoes">
                     <a class="botao botao-secundario" href="{{ url_for('professores.editar_avaliacao', avaliacao_id=av.id) }}">Editar</a>

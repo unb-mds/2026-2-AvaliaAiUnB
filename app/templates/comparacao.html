@@ -173,7 +173,7 @@
 
                         {% for professor in comparacao %}
 
-                        <td>{% if professor.indicadores.quantidade %}{{ ('%.2f'|format(professor.indicadores.medias[criterio]))|replace('.', ',') }} / 5{% if criterio == 'dificuldade' %}<span class="celula-barra-hp">{{ barra_dificuldade(professor.indicadores.medias[criterio], mostrar_valor=false) }}</span>{% endif %}{% else %}Sem avaliações{% endif %}</td>
+                        <td>{% if not professor.indicadores.quantidade %}Sem avaliações{% elif criterio == 'dificuldade' %}{{ barra_dificuldade(professor.indicadores.medias[criterio]) }}{% else %}{{ ('%.2f'|format(professor.indicadores.medias[criterio]))|replace('.', ',') }} / 5{% endif %}</td>
 
                         {% endfor %}
 

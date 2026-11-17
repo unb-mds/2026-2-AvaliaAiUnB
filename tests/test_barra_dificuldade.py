@@ -78,7 +78,7 @@ class TestVisualizacaoDificuldade(BaseDificuldade):
 
         self.assertIn(self.ROTULO.format('3,5'), html)
         self.assertEqual(self.preenchimento(html), ('70', '4'))  # 3,5/5 = 70%; arredonda p/ nível 4
-        self.assertIn('3,5 / 5</strong>', html)
+        self.assertNotIn('3,5 / 5', html)  # só a barra e a escala, sem o valor em texto
         self.assertIn('<span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>', html)
         self.assertNotIn('style=', html)
 
@@ -87,15 +87,16 @@ class TestVisualizacaoDificuldade(BaseDificuldade):
 
         self.assertIn(self.ROTULO.format('4'), html)
         self.assertEqual(self.preenchimento(html), ('80', '4'))
-        self.assertIn('4/5', html)
-        self.assertNotIn('barra-hp-escala', html)  # na pílula, sem escala
+        self.assertNotIn('4/5', html)
+        self.assertIn('barra-hp-escala', html)
 
     def test_comparacao_mostra_barra_na_linha_da_dificuldade(self):
         html = self.web.get('/comparar?professor_1=1&professor_2=2').get_data(as_text=True)
 
         self.assertEqual(html.count('class="barra-hp-trilho"'), 1)  # professor 2 não tem avaliações
         self.assertIn(self.ROTULO.format('3,5'), html)
-        self.assertIn('3,50 / 5', html)
+        self.assertNotIn('3,50 / 5', html)
+        self.assertIn('4,00 / 5', html)  # os outros critérios continuam com o número
         self.assertIn('barra-hp-escala', html)
 
 

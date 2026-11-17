@@ -762,16 +762,9 @@ main {
     min-width: 8rem;
 }
 
-.barra-hp-linha {
-    display: flex;
-    align-items: center;
-    gap: var(--espaco-2);
-}
-
 .barra-hp-trilho {
     position: relative;
     display: block;
-    flex: 1;
     height: 12px;
     overflow: hidden;
     border-radius: var(--raio-pilula);
@@ -803,13 +796,6 @@ main {
 .nivel-4 { background-color: var(--cor-dificuldade-4); }
 .nivel-5 { background-color: var(--cor-dificuldade-5); }
 
-.barra-hp-valor {
-    color: var(--cor-texto-secundario);
-    font-size: var(--texto-pequeno);
-    font-weight: 700;
-    white-space: nowrap;
-}
-
 .barra-hp-escala {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -817,11 +803,6 @@ main {
     font-size: 0.75rem;
     line-height: 1;
     text-align: right;
-}
-
-/* Com o valor ao lado, a escala acompanha só a largura do trilho */
-.barra-hp-linha:has(.barra-hp-valor) + .barra-hp-escala {
-    margin-right: 2.75rem;
 }
 
 /*

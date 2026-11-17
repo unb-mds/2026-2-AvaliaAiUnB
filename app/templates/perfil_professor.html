@@ -90,8 +90,7 @@
                 <li>
                     <span>{{ titulo }}</span>
                     {% if criterio == 'dificuldade' %}
-                    <strong>{{ nota(media) }} / 5</strong>
-                    {{ barra_dificuldade(media, mostrar_valor=false) }}
+                    {{ barra_dificuldade(media) }}
                     {% else %}
                     <strong>{{ nota(media) }} / 5 <span aria-hidden="true">★</span></strong>
                     {% if media is not none %}
