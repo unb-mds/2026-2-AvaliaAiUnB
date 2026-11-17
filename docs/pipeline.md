@@ -2,7 +2,7 @@
 
 Na `main`, os workflows ficam em `.github/workflows/`: `testes.yml`,
 `seguranca.yml` e `docs.yml`. Uma validação do MkDocs em PR foi proposta
-separadamente na [issue #171](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/171);
+separadamente na [issue #171](https://github.com/unb-mds/2026-2-AvaliaUnB/issues/171);
 ela só passa a integrar a `main` após o respectivo PR ser mesclado.
 
 <div class="grid cards" markdown>

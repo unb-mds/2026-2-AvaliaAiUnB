@@ -11,7 +11,7 @@ conta Google.
 `.env` da raiz, configura a aplicação, exige `SECRET_KEY`, configura a proteção CSRF, monta os repositórios, registra a renovação de
 sessão e os três Blueprints. A função `configurar_seguranca` também define
 headers, cookies e limites de requisições; a revisão da inicialização do
-CSRF faz parte da [#127](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/127). O Gunicorn usa a mesma aplicação pelo alvo `run:app`.
+CSRF faz parte da [#127](https://github.com/unb-mds/2026-2-AvaliaUnB/issues/127). O Gunicorn usa a mesma aplicação pelo alvo `run:app`.
 
 ```text
 Requisição HTTP
@@ -64,7 +64,7 @@ Os caminhos da tabela são relativos à raiz do repositório.
 O perfil e o formulário de avaliação recebem também `next` para manter a URL
 de retorno da busca. A validação desse parâmetro está em `app/seguranca.py`;
 o bloqueio de barra invertida foi integrado no
-[PR #133](https://github.com/unb-mds/2026-2-AvaliaAiUnB/pull/133).
+[PR #133](https://github.com/unb-mds/2026-2-AvaliaUnB/pull/133).
 
 As telas são renderizadas no servidor. Algumas rotas também retornam JSON
 conforme o cabeçalho `Accept`; o logout reconhece ainda o campo
@@ -97,7 +97,7 @@ necessário e guarda o usuário em `flask.g` durante a requisição. O hook
 `after_request` envia os cookies renovados. O logout solicita a revogação ao
 Supabase e remove os cookies. A falha de revogação com token de acesso expirado
 foi registrada na auditoria e é tratada na
-[issue #126](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/126).
+[issue #126](https://github.com/unb-mds/2026-2-AvaliaUnB/issues/126).
 
 `login_required` redireciona navegadores sem sessão para `/login`; clientes que
 aceitam apenas JSON recebem HTTP 401. Tentativas de carregar, editar ou excluir
@@ -152,10 +152,10 @@ O esquema e as políticas RLS versionadas estão em
 deve ser conferida no Supabase.
 O
 [modelo de dados e a proposta de comentários](Modelo%20de%20Dados.md)
-foram publicados na [issue #109](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/109).
+foram publicados na [issue #109](https://github.com/unb-mds/2026-2-AvaliaUnB/issues/109).
 Este guia descreve as operações do backend; as regras futuras de comentários
 serão consolidadas e revisadas na
-[issue #116](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/116).
+[issue #116](https://github.com/unb-mds/2026-2-AvaliaUnB/issues/116).
 
 ## Scraper
 

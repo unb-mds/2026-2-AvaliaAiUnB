@@ -226,7 +226,7 @@ rotina de descarte fica para a implementação após revisão do grupo.
 | C11 | Data em cada comentário. Ordenação por Mais recentes, Mais curtidos, Mais antigos ou Mais reações | Aguardando revisão |
 
 As decisões podem ser revisadas no PR ou na
-[issue #116](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/116).
+[issue #116](https://github.com/unb-mds/2026-2-AvaliaUnB/issues/116).
 Os [protótipos da #112](TELAS_COMENTARIOS.md) e a [proposta de dados da #109](Modelo%20de%20Dados.md#6-proposta-tabela-comentarios)
 acompanham estas regras.
 

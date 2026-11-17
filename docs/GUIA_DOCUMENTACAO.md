@@ -1,6 +1,6 @@
 # Mapa da documentação
 
-Este guia organiza a documentação atual do repositório. O [README](https://github.com/unb-mds/2026-2-AvaliaAiUnB/blob/main/README.md)
+Este guia organiza a documentação atual do repositório. O [README](https://github.com/unb-mds/2026-2-AvaliaUnB/blob/main/README.md)
 é a entrada para instalação e resumo do produto; as páginas abaixo concentram
 os detalhes. **Descrição do estado atual não equivale a funcionalidade planejada.**
 
@@ -55,9 +55,9 @@ evitar sobreposição de PRs.
   andamento. Não confundir a análise de 02/11 com o estado posterior.
 - **Comentários e moderação:** documentos e desenhos são propostas, não telas
   funcionais. As regras dependem de aprovação e implementação específica.
-- **Histórico:** [Release 1](https://github.com/unb-mds/2026-2-AvaliaAiUnB/blob/main/RELEASE-v1.0.0.md),
-  [Release 2](https://github.com/unb-mds/2026-2-AvaliaAiUnB/blob/main/RELEASE-v2.0.0.md) e
-  [implementações antigas](https://github.com/unb-mds/2026-2-AvaliaAiUnB/blob/main/docs/IMPLEMENTACAO_26_36_37.md) registram entregas
+- **Histórico:** [Release 1](https://github.com/unb-mds/2026-2-AvaliaUnB/blob/main/RELEASE-v1.0.0.md),
+  [Release 2](https://github.com/unb-mds/2026-2-AvaliaUnB/blob/main/RELEASE-v2.0.0.md) e
+  [implementações antigas](https://github.com/unb-mds/2026-2-AvaliaUnB/blob/main/docs/IMPLEMENTACAO_26_36_37.md) registram entregas
   passadas; não devem substituir as instruções atuais.
 
 ## Manutenção e validação
