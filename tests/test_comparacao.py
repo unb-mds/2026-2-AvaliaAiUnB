@@ -146,6 +146,19 @@ class TestComparacao(unittest.TestCase):
                 self.assertEqual(resposta.status_code, 400)
                 self.assertNotIn('<table', resposta.text)
 
+    def test_professor_1_escolhe_automaticamente_disciplina_com_pelo_menos_dois_professores(self):
+        # Professor 1 ministra disciplina 10 (sozinho) e disciplina 20 (com professor 2)
+        self.cliente.tabelas['vw_professor_disciplina'].append({
+            'professor_id': 1, 'professor_nome': 'JOSÉ ÁVILA', 'departamento': 'MAT',
+            'disciplina_id': 20, 'disciplina': 'FÍSICA 1', 'codigo_disciplina': 'IFD0171',
+            'ano': 2026, 'periodo': 2,
+        })
+        resposta = self.web.get('/comparar?professor_1=1')
+        self.assertEqual(resposta.status_code, 200)
+        self.assertIn('name="disciplina_id" value="20"', resposta.text)
+        self.assertIn('value="1" selected', resposta.text)
+        self.assertIn('MARIA LIMA', resposta.text)
 
+        
 if __name__ == '__main__':
     unittest.main()
