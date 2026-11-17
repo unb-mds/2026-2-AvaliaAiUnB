@@ -220,3 +220,18 @@ h3 {
         align-self: flex-start;
     }
 }
+
+/* Dificuldade como barra de crescimento dentro da pílula */
+.notas-lista .nota-dificuldade {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--espaco-2);
+}
+
+.notas-lista .degraus {
+    height: 14px;
+}
+
+.notas-lista .degraus-valor {
+    color: var(--cor-texto);
+}

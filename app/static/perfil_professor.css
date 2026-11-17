@@ -81,7 +81,8 @@ h2 {
     border-bottom: 1px solid var(--cor-divisor-suave);
 }
 
-.indicadores .barra {
+.indicadores .barra,
+.indicadores .degraus-leitura {
     flex-basis: 100%;
 }
 

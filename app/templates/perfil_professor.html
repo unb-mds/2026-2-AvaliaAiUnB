@@ -1,4 +1,4 @@
-{% from '_macros.html' import nota %}
+{% from '_macros.html' import nota, barra_dificuldade %}
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -89,9 +89,14 @@
                 {% set media = indicadores.medias[criterio] %}
                 <li>
                     <span>{{ titulo }}</span>
+                    {% if criterio == 'dificuldade' %}
+                    <strong>{{ nota(media) }} / 5</strong>
+                    {{ barra_dificuldade(media, mostrar_valor=false) }}
+                    {% else %}
                     <strong>{{ nota(media) }} / 5 <span aria-hidden="true">★</span></strong>
                     {% if media is not none %}
-                    <span class="barra" aria-hidden="true"><span class="barra-cheia preenche-{{ ((media * 10 + 0.5)|int) * 2 }}{% if criterio == 'dificuldade' %} barra-dificuldade{% endif %}"></span></span>
+                    <span class="barra" aria-hidden="true"><span class="barra-cheia preenche-{{ ((media * 10 + 0.5)|int) * 2 }}"></span></span>
+                    {% endif %}
                     {% endif %}
                 </li>
                 {% endfor %}

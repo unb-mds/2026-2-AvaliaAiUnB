@@ -739,10 +739,6 @@ main {
     background-color: var(--cor-principal);
 }
 
-.barra-cheia.barra-dificuldade {
-    background-color: var(--cor-estrela);
-}
-
 /* Barra de crescimento da dificuldade (degraus 1 a 5, estilo "sinal de celular").
    Degraus ativos ficam preenchidos; os inativos só com contorno, para não
    depender apenas da cor. */

@@ -119,3 +119,9 @@ main > .ajuda {
 .tabela-comparacao caption {
     padding: var(--espaco-3) var(--espaco-2);
 }
+
+/* Dificuldade: degraus abaixo do número exato */
+.celula-degraus {
+    display: block;
+    margin-top: var(--espaco-1);
+}
