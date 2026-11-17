@@ -743,6 +743,46 @@ main {
     background-color: var(--cor-estrela);
 }
 
+/* Barra de crescimento da dificuldade (degraus 1 a 5, estilo "sinal de celular").
+   Degraus ativos ficam preenchidos; os inativos só com contorno, para não
+   depender apenas da cor. */
+.degraus-leitura {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--espaco-2);
+}
+
+.degraus {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 20px;
+}
+
+.degrau {
+    display: block;
+    width: 8px;
+    border: 1px solid var(--cor-estrela);
+    border-radius: 2px;
+    background-color: transparent;
+}
+
+.degrau:nth-child(1) { height: 20%; }
+.degrau:nth-child(2) { height: 40%; }
+.degrau:nth-child(3) { height: 60%; }
+.degrau:nth-child(4) { height: 80%; }
+.degrau:nth-child(5) { height: 100%; }
+
+.degrau-ativo {
+    background-color: var(--cor-estrela);
+}
+
+.degraus-valor {
+    color: var(--cor-texto-secundario);
+    font-size: var(--texto-pequeno);
+    font-weight: 700;
+}
+
 /*
  * Fundo animado em largura total (fundo-animado.js). O canvas é filho direto
  * do <body> (que é position: relative na tela), então ocupa 100% da largura
