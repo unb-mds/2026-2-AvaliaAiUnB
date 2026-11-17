@@ -42,17 +42,30 @@ class TestComparacao(unittest.TestCase):
 
     def test_selecao_inicial_e_preenchida_pelo_perfil(self):
         self._vincular(2)
-        for caminho in ('/comparar', '/comparar?professor_1=1'):
+        resposta_vazia = self.web.get('/comparar')
+        self.assertEqual(resposta_vazia.status_code, 200)
+        self.assertIn('Escolher disciplina', resposta_vazia.text)
+        self.assertNotIn('<table', resposta_vazia.text)
+
+        for caminho in ('/comparar?professor_1=1', '/comparar?professor_1=1&disciplina_id=10'):
             resposta = self.web.get(caminho)
             self.assertEqual(resposta.status_code, 200)
-            self.assertIn('Escolher disciplina', resposta.text)
+            self.assertIn('name="professor_1" value="1"', resposta.text)
+            self.assertIn('value="1" selected', resposta.text)
+            self.assertIn('Professor 2', resposta.text)
             self.assertNotIn('<table', resposta.text)
-        self.assertIn('name="professor_1" value="1"', resposta.text)
-        self.assertIn('value="1" selected',
-                      self.web.get('/comparar?professor_1=1&disciplina_id=10').text)
+
         for caminho in ('/professores', '/professores/1', '/professores/3'):
             html = self.web.get(caminho).text
             self.assertIn('/comparar?professor_1=', html)
+
+    def test_comparar_professor_sem_disciplina_compartilhada_pre_seleciona_no_modo_geral(self):
+        resposta = self.web.get('/comparar?professor_1=3')
+        self.assertEqual(resposta.status_code, 200)
+        self.assertIn('value="3" selected', resposta.text)
+        self.assertIn('Professor 2', resposta.text)
+        self.assertNotIn('role="alert"', resposta.text)
+        self.assertNotIn('<table', resposta.text)
 
     def test_comparacao_publica_com_todos_os_criterios(self):
         self.avaliar(1, 5)
