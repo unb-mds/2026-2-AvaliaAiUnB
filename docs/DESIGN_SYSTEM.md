@@ -121,7 +121,7 @@ Estados e erro:
 | `--cor-erro` | `#f28b82` | `#a01818` | Mensagens de erro e botão de exclusão |
 | `--cor-erro-hover` | `#ffb4ad` | `#801212` | Botão de exclusão sob o ponteiro |
 | `--cor-erro-suave` | `rgb(242 139 130 / 0.1)` | `rgb(160 24 24 / 0.07)` | Fundo de mensagens de erro |
-| `--cor-estrela` | `#f5b94a` | `#b45309` | Estrelas de nota e barra de dificuldade |
+| `--cor-estrela` | `#f5b94a` | `#b45309` | Estrelas de nota e degraus da barra de dificuldade |
 
 Sombras (também definidas por tema):
 
@@ -166,6 +166,7 @@ Relações calculadas a partir dos valores de `base.css`.
 | Texto sobre preenchimento em hover | 4,94:1 | 8,86:1 |
 | Erro (`--cor-erro`) sobre superfície | 7,31:1 | 7,96:1 |
 | Borda de campo sobre superfície | 4,00:1 | 4,54:1 |
+| Número no degrau de dificuldade preenchido (`--cor-superficie` sobre `--cor-estrela`) | 9,91:1 | 5,02:1 |
 
 A escala usa 4,5:1 como mínimo para texto comum e 3:1 para sinais visuais
 necessários para identificar controles. No teclado, use um contorno de foco
@@ -218,7 +219,8 @@ As telas seguem uma estética limpa: cards com borda e sombra suave sobre a cor
 de superfície, botões e abas em pílula, cabeçalho de página com **selo**
 (`.selo`), título e subtítulo (`.cabecalho-pagina`), e link de voltar em pílula
 (`.voltar`). As médias por critério usam **barras** (`.barra` e
-`.barra-cheia` com `.preenche-N`; a dificuldade usa a cor da estrela). O topo
+`.barra-cheia` com `.preenche-N`); a dificuldade usa a
+[barra de crescimento](#barra-de-dificuldade). O topo
 é uma barra fixa, semitransparente (`--cor-topo-fundo`), com abas e o botão de
 tema. Mantêm a identidade do projeto: o azul
 principal, o ícone de capelo, as estrelas (`--cor-estrela`) e o rodapé de feedback.
@@ -326,6 +328,34 @@ suave no canto (`--cor-principal-suave`), borda `--cor-divisor` e um ícone em
 quadrado preenchido (`--cor-principal-fundo`). O acesso à Consulta fica pela
 busca e pela aba "Consulta" do topo.
 
+## Barra de dificuldade
+
+A dificuldade (1 a 5) aparece como uma **barra de crescimento**: cinco degraus
+cada vez mais altos, da esquerda para a direita, como o sinal de celular, na
+cor `--cor-estrela`. Os outros quatro critérios continuam com botões numerados
+e barras comuns. O valor salvo continua sendo um inteiro de 1 a 5; a mudança é
+só de interface.
+
+- **Leitura:** a macro `barra_dificuldade(valor, mostrar_valor=true)` de
+  `_macros.html` gera `.degraus-leitura` > `.degraus` > cinco `.degrau`; os
+  degraus de 1 até o nível recebem `.degrau-ativo` (preenchidos), os demais
+  ficam só com o contorno, então a barra não depende só da cor. Médias com
+  decimais são arredondadas para o degrau mais próximo (3,4 → 3; 3,5 → 4),
+  e o valor exato fica no `aria-label` ("Dificuldade 3,4 de 5") e em texto
+  (`.degraus-valor`, ou ao lado, com `mostrar_valor=false`). Valor `None` não
+  desenha nada. Usada no perfil do professor, no perfil do usuário e na
+  comparação.
+- **Seleção:** no formulário de avaliação, o grupo da dificuldade ganha
+  `.degraus-selecao`. Os `<input type="radio" name="dificuldade">` continuam
+  os mesmos, então o POST não muda, a tela funciona sem JavaScript e as setas
+  do teclado trocam o degrau. Os `<label>` viram degraus com o número visível;
+  ao marcar o degrau N, `:has(input:checked)` preenche todos e
+  `input:checked + label ~ label` esvazia os posteriores. Sem suporte a
+  `:has()`, só o degrau marcado é preenchido. O foco usa o mesmo contorno dos
+  outros botões de nota, e os rótulos "1 = Muito fácil" e "5 = Muito difícil"
+  ficam abaixo.
+- **CSP:** nenhum `style=""`; o nível vem de classes, como em `.preenche-N`.
+
 ## Componentes e estados
 
 | Componente | Comportamento | Estados |
@@ -340,6 +370,7 @@ busca e pela aba "Consulta" do topo.
 | Mensagem | Explica o estado e a próxima ação | Informação, sucesso, erro, vazio e carregamento |
 | Diálogo de exclusão | Identifica o item e sua consequência. Cancelar recebe o foco inicial | Aberto, confirmando e falha |
 | Tabela de indicadores | Legenda, cabeçalhos associados e valores legíveis | Com dados, sem dados e erro |
+| Barra de dificuldade | Cinco degraus crescentes na cor da estrela, com o valor em texto e no `aria-label` | Leitura (média arredondada), seleção, marcado, foco e sem dados |
 | Botão de tema | Botão de 40 px em pílula no topo, com ícones de sol e lua | Padrão, hover, foco, tema escuro e tema claro |
 
 Durante o envio, preserve o texto digitado, informe o progresso e evite envios
