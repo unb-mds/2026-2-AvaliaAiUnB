@@ -1,22 +1,14 @@
-"""Cadastro e login: validação, delegação ao Supabase Auth e mapeamento de erros para as rotas."""
+"""Login com Google: delega ao Supabase Auth (fluxo PKCE) e devolve a sessão para as rotas."""
 from app.repositorio import repositorios
-from app.validacoes import validar_cadastro
 
 
-def cadastrar(formulario):
-    """Retorna (dados, erros, status). status 201 em sucesso, 400 validação, 409 conflito."""
-    dados, erros = validar_cadastro(formulario)
-    if erros:
-        return dados, erros, 400
-    resultado = repositorios().usuarios.criar(
-        dados['nome'], dados['username'], dados['email'], dados['senha'])
-    if not resultado[0]:
-        _, campo, mensagem = resultado
-        return dados, {campo: mensagem}, 409
-    return dados, {}, 201
+def iniciar_login_google(redirect_to):
+    """(url do Supabase para onde o navegador vai, verificador PKCE a guardar na sessão)."""
+    return repositorios().usuarios.url_login_google(redirect_to)
 
 
-def autenticar(formulario):
-    """Sessão ({'access_token', 'refresh_token'}) se o par usuário/senha for válido, senão None."""
-    return repositorios().usuarios.autenticar(
-        formulario.get('username', ''), formulario.get('senha', ''))
+def concluir_login_google(codigo, verificador):
+    """Sessão ({'access_token', 'refresh_token'}) se o retorno do Google for válido, senão None."""
+    if not codigo or not verificador:
+        return None
+    return repositorios().usuarios.entrar_com_google(codigo, verificador)

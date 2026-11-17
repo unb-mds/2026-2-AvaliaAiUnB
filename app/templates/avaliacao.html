@@ -8,19 +8,31 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='indicadores.css') }}">
 
     <link rel="stylesheet" href="{{ url_for('static', filename='avaliacao.css') }}">
+    {% include '_tema.html' %}
 </head>
 <body>
-    <main class="avaliacao-container card">
-        <h1>{{ 'Editar Avaliação de' if modo_edicao else 'Avaliar' }} {{ professor.nome }}</h1>
+    {% include '_topo.html' %}
 
-        <p>
-            {{ disciplina.nome }}
-            {% if disciplina.codigo %}
-                — {{ disciplina.codigo }}
-            {% endif %}
+    <main class="conteudo">
+    <div class="avaliacao-container card">
+        <header class="cabecalho-pagina">
+            <p class="selo">{{ 'Editar avaliação' if modo_edicao else 'Nova avaliação' }}</p>
+            <h1>{{ 'Editar Avaliação de' if modo_edicao else 'Avaliar' }} {{ professor.nome }}</h1>
+            <p class="subtitulo">
+                {{ disciplina.nome }}
+                {% if disciplina.codigo %}
+                    — {{ disciplina.codigo }}
+                {% endif %}
+            </p>
+        </header>
+
+        <p class="aviso-anonimo">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                <rect x="4" y="11" width="16" height="10" rx="2"></rect>
+                <path d="M8 11V7a4 4 0 0 1 8 0v4"></path>
+            </svg>
+            Sua identidade não será exibida nas avaliações públicas.
         </p>
-
-        <p>Sua identidade não será exibida nas avaliações públicas.</p>
 
         {% if erros %}
         <ul class="erros mensagem mensagem-erro" role="alert">
@@ -46,7 +58,9 @@
             <fieldset class="nota-grupo">
                 <legend>{{ titulo }} (1 a 5)</legend>
 
-                <div class="notas-opcoes">
+                {# Dificuldade como barra de crescimento: mesmos rádios (POST e teclado
+                   inalterados), com os labels estilizados como degraus. #}
+                <div class="notas-opcoes{% if criterio == 'dificuldade' %} degraus-selecao{% endif %}">
                     {% for nota in range(1, 6) %}
                     <input
                         type="radio"
@@ -78,6 +92,8 @@
                 </a>
             </div>
         </form>
+    </div>
     </main>
+    {% include '_rodape.html' %}
 </body>
 </html>

@@ -9,13 +9,13 @@ O relatório detalhado é a referência para evidências, método e limites da r
 
 | Área | Comportamento atual | Onde consultar no código |
 |---|---|---|
-| Contas e senhas | Criação e autenticação pelo Supabase Auth; o login usa nome de usuário e senha | `UsuarioRepository`, em `app/repositorio.py` |
+| Contas | Entrada apenas com conta Google, pelo Supabase Auth com fluxo PKCE; o app não recebe nem guarda senhas | `UsuarioRepository`, em `app/repositorio.py` |
 | Segredos | Configuração por ambiente ou `.env`, fora do Git; service key usada no servidor | `app/supabase_db.py`, `.env.example` |
 | Sessão | Cookies `HttpOnly`, `SameSite=Lax` e `Secure` fora do debug; renovação pelo Supabase | `app/controllers/session_controller.py`, `app/seguranca.py` |
 | Formulários | Proteção CSRF; token inválido ou ausente resulta em HTTP 400 | `app/__init__.py`, `app/seguranca.py`, templates |
 | Autorização | Login exigido nas rotas protegidas; edição e exclusão filtradas pelo autor | Controllers, rotas e repositório de avaliações |
 | Headers | CSP, proteção contra enquadramento, tipo de conteúdo e política de referência; HSTS em HTTPS fora do debug | `app/seguranca.py` |
-| Limites | Limitação de requisições de login, cadastro e avaliação | `app/seguranca.py` |
+| Limites | Limitação de requisições do login com Google e de avaliação | `app/seguranca.py` |
 | Qualidade | Testes automatizados, pip-audit e Bandit no GitHub Actions | [Pipeline](pipeline.md) |
 
 `SECRET_KEY` é obrigatória na fábrica da aplicação. A configuração de segurança

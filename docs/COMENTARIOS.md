@@ -38,7 +38,7 @@ Uma conta de comentários não concede acesso à moderação.
 | Quantidade | Sem limite por conta, inclusive para o mesmo professor e disciplina |
 | Tamanho | De 2 a 1.000 caracteres após remover espaços, tabulações e quebras de linha das extremidades |
 | Formato | Texto simples; HTML e Markdown não são interpretados |
-| Identificação pública | Todo comentário publicado mostra o nome de usuário. Ao clicar nele, qualquer visitante pode consultar o e-mail verificado que o autor confirmou para divulgação |
+| Identificação pública | Todo comentário publicado mostra o nome de usuário. Ao clicar nele, qualquer visitante pode consultar o e-mail de cadastro do autor |
 | Ordem da lista | Mais recentes por padrão. A pessoa pode escolher Mais curtidos, Mais antigos ou Mais reações |
 | Datas | Exibir a data da primeira publicação em cada comentário e indicar quando houve edição |
 
@@ -106,9 +106,9 @@ Cada relato exibe sua disciplina. Quem já comentou pode editar os próprios
 textos e escrever outro relato para a mesma disciplina ou para outra
 ministrada pelo professor.
 
-O formulário informa que o texto e o nome de usuário serão públicos. Antes
-de publicar, a pessoa confirma que seu e-mail verificado ficará disponível
-para quem clicar no nome de usuário.
+O formulário informa antes da publicação que o texto e o nome de usuário
+serão públicos e que qualquer visitante poderá clicar no nome para ver o
+e-mail de cadastro. A publicação usa o botão **Publicar**.
 Mostra o limite, exige a escolha de uma disciplina ministrada pelo professor
 e preserva o texto em erros de validação ou moderação. Durante a
 verificação, a interface desabilita o botão de envio e só confirma a
@@ -184,11 +184,10 @@ atender a fila, a publicação de novos comentários fica pausada até haver cob
 ## Privacidade e ciclo dos dados
 
 Cada comentário publicado mostra o nome de usuário da conta. Ao clicar ou
-tocar nesse nome, o visitante pode consultar o e-mail verificado autorizado
-para divulgação. O endereço é carregado só quando solicitado e fica fora da
-resposta da listagem. O servidor entrega o endereço apenas enquanto o
-comentário estiver público e a divulgação daquele endereço estiver autorizada.
-Uma troca de e-mail exige nova confirmação antes de exibir o novo endereço.
+tocar nesse nome, qualquer visitante pode consultar o e-mail de cadastro do
+autor, mesmo sem entrar. O endereço é carregado só quando solicitado e fica
+fora da resposta da listagem. A consulta só funciona enquanto o comentário
+estiver público. Vale o endereço atual da conta.
 
 Um endereço acessível a visitantes pode ser copiado ou coletado mesmo quando
 aparece só após um clique. Antes de liberar essa consulta no site, o grupo
@@ -218,7 +217,7 @@ rotina de descarte fica para a implementação após revisão do grupo.
 | C02 | Disciplina obrigatória. A pessoa pode comentar quantas vezes quiser para o mesmo professor e disciplina | Aguardando revisão |
 | C03 | Texto simples de 2 a 1.000 caracteres após remover espaços em branco das extremidades | Aguardando revisão |
 | C04 | Estrelas e comentários são independentes e podem ser enviados em qualquer ordem. Uma avaliação por estrelas por estudante, professor e disciplina | Aguardando revisão |
-| C05 | Nome de usuário em todos os comentários. E-mail verificado disponível ao clicar no nome, após confirmação do autor | Aguardando revisão do grupo antes da publicação no site |
+| C05 | Nome de usuário em todos os comentários públicos. Qualquer visitante pode clicar no nome para ver o e-mail de cadastro. A interface avisa sobre a exibição antes de publicar | Aguardando revisão do grupo antes da publicação no site |
 | C06 | Denúncia privada e moderação por responsáveis autorizados | Aguardando revisão e projeto de dados |
 | C07 | Ocultação motivada, sem republicação automática por edição | Aguardando revisão |
 | C08 | Dois moderadores designados, primeira análise em até três dias úteis, formulário privado de contestação e retenção de até 90 dias após o encerramento | Aguardando revisão |
@@ -247,7 +246,8 @@ acompanham estas regras.
   editar ou apagar.
 - Só o autor edita ou exclui. O servidor nega tentativas de se passar por outro
   usuário e mantém os identificadores de conta fora das respostas públicas.
-- Clicar no nome de um comentário visível abre o e-mail verificado autorizado.
+- Qualquer visitante pode clicar no nome de um comentário visível para abrir
+  o e-mail de cadastro do autor.
   O endereço fica fora da resposta da listagem e a consulta deixa de funcionar
   para aquele comentário se ele for ocultado ou excluído.
 - Uma conta troca ou desfaz sua reação. Pedidos simultâneos respeitam a

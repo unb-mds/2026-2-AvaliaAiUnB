@@ -7,13 +7,18 @@
     <title>Professores - AvaliaUnb</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='indicadores.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='lista_professores.css') }}">
+    {% include '_tema.html' %}
 </head>
 <body>
     {% include '_topo.html' %}
+    <canvas class="fundo-animado" data-densidade="leve" aria-hidden="true"></canvas>
 
     <main class="conteudo">
-        <h1>Professores</h1>
-        <p class="ajuda">Ordenados pela quantidade de avaliações.</p>
+        <header class="cabecalho-pagina">
+            <p class="selo">Consulta</p>
+            <h1>Professores</h1>
+            <p class="subtitulo">Ordenados pela quantidade de avaliações.</p>
+        </header>
 
         <div class="atalhos">
             <a class="botao botao-secundario" href="{{ url_for('professores.comparar') }}">Comparar professores</a>
@@ -58,7 +63,7 @@
         {% endif %}
         <ul class="lista-professores">
             {% for professor, disciplinas in catalogo[inicio:fim] %}
-            <li class="card">
+            <li class="card card-interativo">
                 <div class="professor-cabecalho">
                     <div class="professor-identificacao">
                         <h2><a href="{{ url_for('professores.perfil', professor_id=professor.id, next=request.full_path) }}">{{ professor.nome }}</a></h2>
@@ -127,5 +132,7 @@
         <p class="mensagem" role="status">Ainda não há professores cadastrados.</p>
         {% endif %}
     </main>
+    {% include '_rodape.html' %}
+    <script src="{{ url_for('static', filename='fundo-animado.js') }}" defer></script>
 </body>
 </html>

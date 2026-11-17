@@ -1,3 +1,4 @@
+{% from '_macros.html' import barra_dificuldade %}
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -6,14 +7,19 @@
     <title>Perfil - AvaliaUnb</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='perfil.css') }}">
+    {% include '_tema.html' %}
 </head>
 <body>
     {% include '_topo.html' %}
 
     <main class="conteudo">
-        <h1>Perfil</h1>
+        <header class="cabecalho-pagina">
+            <p class="selo">Sua conta</p>
+            <h1>Perfil</h1>
+        </header>
 
         <section class="card dados-usuario" aria-label="Dados da conta">
+            <span class="avatar" aria-hidden="true">{{ (usuario.nome or usuario.username or '?')[:1]|upper }}</span>
             <dl>
                 <div>
                     <dt>Nome</dt>
@@ -26,11 +32,18 @@
                 <div>
                     <dt>E-mail</dt>
                     <dd>{{ usuario.email }}</dd>
+                    {% if verificacao_disponivel %}
+                        {% if email_verificado %}
+                        <p class="ajuda">E-mail verificado</p>
+                        {% else %}
+                        <p><a href="{{ url_for('auth.verificar_email') }}">Verificar e-mail para comentar</a></p>
+                        {% endif %}
+                    {% endif %}
                 </div>
             </dl>
         </section>
 
-        <h2>Minhas Avaliações</h2>
+        <h2>Minhas Avaliações{% if avaliacoes %} <span class="contador">{{ avaliacoes|length }}</span>{% endif %}</h2>
         {% if avaliacoes %}
             {% for av in avaliacoes %}
             <article class="card avaliacao-card">
@@ -43,7 +56,7 @@
                     <li>Clareza: <strong>{{ av.clareza }}</strong>/5</li>
                     <li>Organização: <strong>{{ av.organizacao }}</strong>/5</li>
                     <li>Disponibilidade: <strong>{{ av.disponibilidade }}</strong>/5</li>
-                    <li>Dificuldade: <strong>{{ av.dificuldade }}</strong>/5</li>
+                    <li class="nota-dificuldade">Dificuldade: {{ barra_dificuldade(av.dificuldade) }}</li>
                 </ul>
                 <div class="acoes">
                     <a class="botao botao-secundario" href="{{ url_for('professores.editar_avaliacao', avaliacao_id=av.id) }}">Editar</a>
@@ -65,5 +78,6 @@
             <a class="botao botao-primario" href="{{ url_for('professores.listar') }}">Consultar professores</a>
         {% endif %}
     </main>
+    {% include '_rodape.html' %}
 </body>
 </html>

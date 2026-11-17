@@ -20,12 +20,25 @@ h1 {
     line-height: 1.2;
 }
 
-/* Seleção dos dois professores num card */
+/* Formulários e tabela em cards */
+main > form.filtros,
 .selecao-comparacao {
     padding: var(--espaco-5) var(--espaco-4);
-    border: 1px solid var(--cor-divisor);
+    border: 1px solid var(--cor-divisor-suave);
     border-radius: var(--raio-card);
     background-color: var(--cor-superficie);
+    box-shadow: var(--sombra-card);
+}
+
+main > form.filtros {
+    margin-bottom: var(--espaco-4);
+}
+
+main > form.filtros .selecao-comparacao {
+    flex-basis: 100%;
+    padding: 0;
+    border: 0;
+    box-shadow: none;
 }
 
 .selecao-comparacao .campo select {
@@ -39,13 +52,26 @@ h1 {
 
 .comparacao-container {
     padding: var(--espaco-2);
-    border: 1px solid var(--cor-divisor);
+    border: 1px solid var(--cor-divisor-suave);
     border-radius: var(--raio-card);
     background-color: var(--cor-superficie);
+    box-shadow: var(--sombra-card);
+    overflow-x: auto;
+}
+
+.acoes-comparacao {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espaco-2);
+    margin-top: var(--espaco-3);
+}
+
+.selecao-comparacao .remover-professor {
+    margin-top: var(--espaco-2);
 }
 
 .mensagem {
-    border: 1px solid var(--cor-divisor);
+    border: 1px solid var(--cor-divisor-suave);
     background-color: var(--cor-superficie);
 }
 
@@ -60,22 +86,6 @@ h1 {
     }
 }
 
-.voltar {
-    margin: 0;
-}
-
-.voltar a {
-    display: inline-flex;
-    align-items: center;
-    min-height: var(--altura-controle);
-    font-weight: 700;
-    text-decoration: none;
-}
-
-.voltar a:hover {
-    text-decoration: underline;
-}
-
 h1 {
     margin: 0 0 var(--espaco-2);
 }
@@ -85,9 +95,21 @@ main > .ajuda {
 }
 
 /* Tabela: critério à esquerda em destaque e valores legíveis */
-.tabela-comparacao tbody th[scope="row"] {
-    width: 34%;
+.tabela-comparacao tr > :first-child {
+    position: sticky;
+    left: 0;
+    min-width: 8rem;
+    background: var(--cor-superficie);
+    border-right: 1px solid var(--cor-divisor-suave);
     font-weight: 700;
+}
+
+.tabela-comparacao thead tr > :first-child {
+    background: var(--cor-fundo-suave);
+}
+
+.tabela-comparacao tr > :not(:first-child) {
+    min-width: 8rem;
 }
 
 .tabela-comparacao thead th {

@@ -4,22 +4,71 @@
  * arquivo diretamente ou por meio de indicadores.css (@import).
  */
 
+@font-face {
+    font-family: "Inter";
+    src: url("fonts/inter-latin-wght-normal.woff2") format("woff2");
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
 :root {
+    color-scheme: dark;
+
     /* Cores */
-    --cor-superficie: #ffffff;
-    --cor-fundo-suave: #f2f4f7;
-    --cor-texto: #202124;
-    --cor-texto-secundario: #4f5357;
-    --cor-principal: #174b83;
-    --cor-principal-hover: #123c69;
-    --cor-borda-campo: #767676;
-    --cor-divisor: #d4d9df;
-    --cor-erro: #a01818;
-    --cor-erro-hover: #801212;
-    --cor-estrela: #b45309;
+    --cor-superficie: #0f1a2b;
+    --cor-fundo-suave: #070d17;
+    --cor-texto: #e8eef7;
+    --cor-texto-secundario: #a9b6c8;
+    --cor-principal: #4f93e6;
+    --cor-principal-hover: #7ab3f2;
+    --cor-borda-campo: #6b7a90;
+    --cor-divisor: #22334d;
+    --cor-divisor-suave: #1a2a42;
+    --cor-principal-suave: rgb(79 147 230 / 0.14);
+    --cor-erro: #f28b82;
+    --cor-erro-hover: #ffb4ad;
+    --cor-estrela: #f5b94a;
+
+    /* Barra de dificuldade: do verde (1, muito fácil) ao vermelho (5, muito difícil) */
+    --cor-dificuldade-1: #4ade80;
+    --cor-dificuldade-2: #a3e635;
+    --cor-dificuldade-3: #facc15;
+    --cor-dificuldade-4: #fb923c;
+    --cor-dificuldade-5: #f87171;
+
+    /* Logo (docs/logo/lockup-escuro.svg no tema escuro, lockup-claro.svg no claro) */
+    --cor-logo-texto: #ffffff;
+    --cor-logo-destaque: #ffc72c;
+    --cor-logo-capelo: #ffffff;
+    --cor-logo-base: #ffffff;
+    --cor-logo-estrela: #ffc72c;
+    --cor-logo-contorno: transparent;
+
+    /* Cores de apoio ao tema escuro (preenchimentos, topo e medalhas) */
+    --cor-principal-fundo: #1f5fae;
+    --cor-principal-fundo-hover: #2a70c8;
+    --cor-sobre-principal: #ffffff;
+    --cor-hover-suave: #14243b;
+    --cor-brilho: rgb(79 147 230 / 0.25);
+    --cor-erro-suave: rgb(242 139 130 / 0.1);
+    --cor-topo-fundo: rgb(7 13 23 / 0.92);
+    --cor-topo-fundo-blur: rgb(7 13 23 / 0.72);
+    --cor-ouro-fundo: #3a2f0b;
+    --cor-ouro-texto: #f5d77a;
+    --cor-prata-fundo: #2a3341;
+    --cor-prata-texto: #cbd5e1;
+    --cor-bronze-fundo: #3a2516;
+    --cor-bronze-texto: #e9b48a;
+
+    /* Fundo animado (manchas e rede de pontos) */
+    --cor-mancha-1: #4f93e6;
+    --cor-mancha-2: #1f5fae;
+    --cor-mancha-3: #7ab3f2;
+    --cor-rede: #4f93e6;
 
     /* Tipografia */
-    --fonte: Arial, sans-serif;
+    --fonte: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
     --texto-titulo-pagina: 2rem;
     --texto-titulo-secao: 1.5rem;
     --texto-titulo-card: 1.25rem;
@@ -36,14 +85,73 @@
     --espaco-7: 48px;
 
     /* Forma e dimensões */
-    --raio: 8px;
-    --raio-card: 12px;
+    --raio: 10px;
+    --raio-card: 16px;
+    --raio-pilula: 999px;
+
+    /* Profundidade e movimento */
+    --sombra-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -8px rgb(0 0 0 / 0.5);
+    --sombra-elevada: 0 2px 4px rgb(0 0 0 / 0.5), 0 16px 32px -10px rgb(0 0 0 / 0.6);
+    --transicao: 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
     --altura-controle: 44px;
     --largura-conteudo: 720px;
     --largura-auth: 400px;
     --margem-lateral: 16px;
     --foco-largura: 2px;
     --foco-distancia: 2px;
+}
+
+/* Tema claro (idêntico ao visual anterior do site) */
+:root[data-theme="light"] {
+    color-scheme: light;
+
+    --cor-superficie: #ffffff;
+    --cor-fundo-suave: #eaf1fb;
+    --cor-texto: #202124;
+    --cor-texto-secundario: #4f5357;
+    --cor-principal: #174b83;
+    --cor-principal-hover: #123c69;
+    --cor-borda-campo: #767676;
+    --cor-divisor: #c5d3e6;
+    --cor-divisor-suave: #dbe5f2;
+    --cor-principal-suave: rgb(23 75 131 / 0.1);
+    --cor-erro: #a01818;
+    --cor-erro-hover: #801212;
+    --cor-estrela: #b45309;
+    --cor-dificuldade-1: #15803d;
+    --cor-dificuldade-2: #4d7c0f;
+    --cor-dificuldade-3: #a16207;
+    --cor-dificuldade-4: #c2410c;
+    --cor-dificuldade-5: #b91c1c;
+    --cor-logo-texto: #111111;
+    --cor-logo-destaque: #174b83;
+    --cor-logo-capelo: #174b83;
+    --cor-logo-base: #111111;
+    --cor-logo-estrela: #ffc72c;
+    --cor-logo-contorno: #111111;
+    --sombra-card: 0 1px 2px rgb(23 75 131 / 0.08), 0 10px 24px -12px rgb(23 75 131 / 0.28);
+    --sombra-elevada: 0 2px 4px rgb(23 75 131 / 0.1), 0 16px 32px -12px rgb(23 75 131 / 0.38);
+
+    --cor-principal-fundo: #1f5fae;
+    --cor-principal-fundo-hover: #174b83;
+    --cor-sobre-principal: #ffffff;
+    --cor-hover-suave: #e6edf5;
+    --cor-brilho: rgb(23 75 131 / 0.6);
+    --cor-erro-suave: rgb(160 24 24 / 0.07);
+    --cor-topo-fundo: rgb(255 255 255 / 0.92);
+    --cor-topo-fundo-blur: rgb(255 255 255 / 0.8);
+    --cor-ouro-fundo: #fdf0c4;
+    --cor-ouro-texto: #7a5a00;
+    --cor-prata-fundo: #e8ebef;
+    --cor-prata-texto: #3d4652;
+    --cor-bronze-fundo: #f6dfcc;
+    --cor-bronze-texto: #7a3f12;
+
+    /* Fundo animado: azuis claros e luminosos (brilho suave, sem névoa cinza) */
+    --cor-mancha-1: #7ab2f8;
+    --cor-mancha-2: #a8cdfa;
+    --cor-mancha-3: #5a9cf2;
+    --cor-rede: #4a86d6;
 }
 
 @media (min-width: 481px) {
@@ -73,7 +181,7 @@ textarea:focus-visible,
     margin: 0;
     padding: var(--espaco-2) var(--espaco-4);
     border: 1px solid transparent;
-    border-radius: var(--raio);
+    border-radius: var(--raio-pilula);
     font-family: inherit;
     font-size: var(--texto-base);
     font-weight: 700;
@@ -81,17 +189,25 @@ textarea:focus-visible,
     text-align: center;
     text-decoration: none;
     cursor: pointer;
+    transition: background-color var(--transicao), border-color var(--transicao),
+                color var(--transicao), box-shadow var(--transicao),
+                transform var(--transicao);
+}
+
+.botao:active:not(:disabled) {
+    transform: scale(0.98);
 }
 
 .botao-primario {
-    background-color: var(--cor-principal);
-    border-color: var(--cor-principal);
-    color: var(--cor-superficie);
+    background-color: var(--cor-principal-fundo);
+    border-color: var(--cor-principal-fundo);
+    color: var(--cor-sobre-principal);
 }
 
 .botao-primario:hover {
-    background-color: var(--cor-principal-hover);
-    border-color: var(--cor-principal-hover);
+    background-color: var(--cor-principal-fundo-hover);
+    border-color: var(--cor-principal-fundo-hover);
+    box-shadow: 0 6px 16px -8px var(--cor-brilho);
 }
 
 .botao-secundario {
@@ -101,7 +217,7 @@ textarea:focus-visible,
 }
 
 .botao-secundario:hover {
-    background-color: var(--cor-fundo-suave);
+    background-color: var(--cor-principal-suave);
 }
 
 .botao-destrutivo {
@@ -147,6 +263,15 @@ textarea:focus-visible,
     background-color: var(--cor-superficie);
     color: var(--cor-texto);
     font: inherit;
+    transition: border-color var(--transicao), box-shadow var(--transicao);
+}
+
+/* Anel de foco suave nos campos, somado ao contorno visível */
+.campo input:focus,
+.campo select:focus,
+.campo textarea:focus {
+    border-color: var(--cor-principal);
+    box-shadow: 0 0 0 4px var(--cor-principal-suave);
 }
 
 .campo input:disabled,
@@ -179,16 +304,27 @@ textarea:focus-visible,
 .card {
     box-sizing: border-box;
     padding: var(--espaco-4);
-    border: 1px solid var(--cor-divisor);
+    border: 1px solid var(--cor-divisor-suave);
     border-radius: var(--raio-card);
     background-color: var(--cor-superficie);
+    box-shadow: var(--sombra-card);
+}
+
+/* Card clicável ou com ações: sobe a sombra ao passar o mouse */
+.card-interativo {
+    transition: box-shadow var(--transicao), border-color var(--transicao);
+}
+
+.card-interativo:hover {
+    border-color: var(--cor-divisor);
+    box-shadow: var(--sombra-elevada);
 }
 
 /* Mensagens: informação, erro e estado vazio */
 .mensagem {
     margin: var(--espaco-4) 0;
     padding: var(--espaco-3) var(--espaco-4);
-    border-radius: var(--raio);
+    border-radius: 12px;
     background-color: var(--cor-fundo-suave);
     color: var(--cor-texto);
     line-height: 1.5;
@@ -196,14 +332,27 @@ textarea:focus-visible,
 
 .mensagem-erro {
     border-left: 4px solid var(--cor-erro);
+    background-color: var(--cor-erro-suave);
     color: var(--cor-erro);
     font-weight: 700;
 }
 
-/* Faixa do topo em largura total */
+/* Barra do topo: branca, presa ao alto, com marca, abas e saída */
 .topo {
-    background-color: var(--cor-principal);
-    color: var(--cor-superficie);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    border-bottom: 1px solid var(--cor-divisor);
+    background-color: var(--cor-topo-fundo);
+    color: var(--cor-texto);
+}
+
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .topo {
+        background-color: var(--cor-topo-fundo-blur);
+        -webkit-backdrop-filter: blur(12px);
+        backdrop-filter: blur(12px);
+    }
 }
 
 .topo-conteudo {
@@ -211,51 +360,196 @@ textarea:focus-visible,
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: space-between;
-    gap: var(--espaco-3);
-    padding: var(--espaco-4) var(--margem-lateral);
+    gap: var(--espaco-2) var(--espaco-4);
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: var(--espaco-2) var(--margem-lateral);
 }
 
 .marca {
-    color: inherit;
+    min-height: var(--altura-controle);
     font-size: var(--texto-titulo-card);
-    font-weight: 700;
     text-decoration: none;
+}
+
+/* Logo: símbolo (capelo com estrela) + "Avalia" e "UnB", com cores do tema */
+.logo {
     display: inline-flex;
     align-items: center;
     gap: var(--espaco-2);
-    min-height: var(--altura-controle);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1;
 }
 
-.marca-icone {
-    width: 28px;
-    height: 28px;
+.logo-simbolo {
+    width: 44px; /* proporção do símbolo: 242 x 166 */
+    height: 30px;
     flex-shrink: 0;
 }
 
-/* O contorno azul padrão some sobre o fundo azul do topo */
-.topo :focus-visible {
-    outline-color: var(--cor-superficie);
+.logo-capelo {
+    fill: var(--cor-logo-capelo);
+    stroke: var(--cor-logo-capelo);
 }
 
-/* Ações de conta no topo (login e cadastro, ou perfil e sair) */
-.topo-conta {
+.logo-base {
+    fill: var(--cor-logo-base);
+}
+
+.logo-cordao {
+    stroke: var(--cor-logo-base);
+}
+
+.logo-estrela {
+    fill: var(--cor-logo-estrela);
+    stroke: var(--cor-logo-contorno);
+}
+
+.logo-texto {
+    color: var(--cor-logo-texto);
+}
+
+.logo-destaque {
+    color: var(--cor-logo-destaque);
+    font-weight: 800;
+}
+
+/* Abas em pílula; a ativa (aria-current) fica azul */
+.abas {
     display: flex;
-    flex-wrap: wrap;
-    gap: var(--espaco-2);
+    gap: var(--espaco-1);
     min-width: 0;
     margin-left: auto;
+    overflow-x: auto;
+    scrollbar-width: none;
 }
 
-.topo-conta .botao {
-    max-width: 100%;
-    overflow-wrap: anywhere;
+.abas::-webkit-scrollbar {
+    display: none;
+}
+
+.aba {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    min-height: 40px;
+    padding: 0 var(--espaco-4);
+    border-radius: 999px;
+    color: var(--cor-texto-secundario);
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background-color 160ms ease, color 160ms ease;
+}
+
+.aba:hover {
+    background-color: var(--cor-fundo-suave);
+    color: var(--cor-principal);
+}
+
+.aba[aria-current="page"] {
+    background-color: var(--cor-principal-fundo);
+    color: var(--cor-sobre-principal);
 }
 
 .form-sair {
     margin: 0;
 }
 
+.botao-sair {
+    min-height: 40px;
+    margin: 0;
+    padding: 0 var(--espaco-3);
+    border: 1px solid var(--cor-divisor);
+    border-radius: 999px;
+    background-color: transparent;
+    color: var(--cor-texto-secundario);
+    font: inherit;
+    font-size: var(--texto-pequeno);
+    font-weight: 700;
+    cursor: pointer;
+    transition: border-color 160ms ease, color 160ms ease;
+}
+
+.botao-sair:hover {
+    border-color: var(--cor-erro);
+    color: var(--cor-erro);
+}
+
+/* Alternar tema: mostra o sol no escuro (ir para o claro) e a lua no claro */
+.botao-tema {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 40px;
+    height: 40px;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--cor-divisor);
+    border-radius: var(--raio-pilula);
+    background-color: transparent;
+    color: var(--cor-texto-secundario);
+    cursor: pointer;
+    transition: background-color var(--transicao), border-color var(--transicao),
+                color var(--transicao);
+}
+
+.botao-tema:hover {
+    background-color: var(--cor-hover-suave);
+    color: var(--cor-texto);
+}
+
+.botao-tema svg {
+    display: block;
+    width: 20px;
+    height: 20px;
+}
+
+.botao-tema .icone-lua,
+:root[data-theme="light"] .botao-tema .icone-sol {
+    display: none;
+}
+
+:root[data-theme="light"] .botao-tema .icone-lua {
+    display: block;
+}
+
+/* Celular: marca, tema e "Sair" na primeira linha; abas roláveis na segunda */
+@media (max-width: 640px) {
+    .botao-tema {
+        margin-left: auto;
+    }
+
+    .form-sair {
+        margin-left: auto;
+    }
+
+    .botao-tema + .form-sair {
+        margin-left: 0;
+    }
+
+    .aba {
+        padding: 0 var(--espaco-3);
+    }
+
+    .abas {
+        order: 3;
+        flex-basis: 100%;
+        margin: 0 calc(-1 * var(--margem-lateral));
+        padding: 0 var(--margem-lateral) var(--espaco-1);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .aba,
+    .botao-sair,
+    .botao-tema {
+        transition: none;
+    }
+}
 
 /* Nota com estrela (média geral) */
 .estrela {
@@ -290,7 +584,7 @@ textarea:focus-visible,
 }
 
 .estrelas-fundo {
-    color: #c4c9d0;
+    color: var(--cor-borda-campo);
 }
 
 .estrelas-cheias {
@@ -365,81 +659,243 @@ textarea:focus-visible,
     border: 0;
 }
 
-/* Menu de acesso rápido (três tracinhos) no topo */
-.topo-esquerda {
-    display: flex;
-    align-items: center;
-    gap: var(--espaco-3);
-    min-width: 0;
-}
-
-.menu {
-    position: relative;
-}
-
-.menu > summary {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: var(--altura-controle);
-    height: var(--altura-controle);
-    padding: 0;
-    border-radius: var(--raio);
-    color: var(--cor-superficie);
-    list-style: none;
-    cursor: pointer;
-}
-
-.menu > summary:hover {
-    background-color: rgba(255, 255, 255, 0.16);
-}
-
-.menu > summary::-webkit-details-marker {
-    display: none;
-}
-
-.menu-icone {
-    width: 24px;
-    height: 24px;
-}
-
-.menu-painel {
-    position: absolute;
-    top: calc(100% + var(--espaco-2));
-    left: 0;
-    z-index: 10;
-    box-sizing: border-box;
-    width: 260px;
-    max-width: calc(100vw - 2 * var(--margem-lateral));
-    padding: var(--espaco-2);
-    border: 1px solid var(--cor-divisor);
-    border-radius: var(--raio-card);
-    background-color: var(--cor-superficie);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
-}
-
-.menu-painel a {
-    display: flex;
-    align-items: center;
-    min-height: var(--altura-controle);
-    padding: 0 var(--espaco-3);
-    border-radius: var(--raio);
-    color: var(--cor-texto);
-    font-weight: 700;
-    text-decoration: none;
-}
-
-.menu-painel a:hover {
-    background-color: var(--cor-fundo-suave);
-    color: var(--cor-principal);
-}
-
-/* Dentro do painel branco o foco volta a ser azul */
-.menu-painel :focus-visible {
-    outline-color: var(--cor-principal);
-}
-
 /* O atributo hidden perde para display definido em .campo select; este vale sempre */
 [hidden] {
     display: none !important;
+}
+
+/* Rodapé compartilhado */
+.rodape {
+    box-sizing: border-box;
+    margin-top: var(--espaco-6);
+    padding: var(--espaco-4);
+    border-top: 1px solid var(--cor-divisor-suave);
+    background-color: var(--cor-superficie);
+    color: var(--cor-texto-secundario);
+    font-size: var(--texto-pequeno);
+    text-align: center;
+}
+
+.rodape p {
+    margin: 0;
+}
+
+.rodape a {
+    color: var(--cor-principal);
+    text-decoration: underline;
+}
+
+/* ------------------------------------------------------------------ Estética moderna
+ * Componentes compartilhados pelas telas: entrada animada do conteúdo, cabeçalho
+ * de página com selo, link de voltar em pílula e barras de nota.
+ */
+
+/* Fonte do sistema em todas as telas, inclusive nas que definem body próprio */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    font-family: var(--fonte);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* O conteúdo ocupa a sobra da altura, empurrando o rodapé para o fim da janela */
+body > main {
+    flex: 1 0 auto;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+h1 {
+    letter-spacing: -0.02em;
+}
+
+/* O conteúdo principal entra com fade e leve deslocamento */
+main {
+    animation: surgir 420ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes surgir {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* Cabeçalho de página: selo, título e subtítulo */
+.cabecalho-pagina {
+    margin-bottom: var(--espaco-5);
+}
+
+.cabecalho-pagina h1 {
+    margin: 0 0 var(--espaco-2);
+}
+
+.cabecalho-pagina .subtitulo {
+    margin: 0;
+    color: var(--cor-texto-secundario);
+}
+
+.selo {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--espaco-1);
+    margin: 0 0 var(--espaco-3);
+    padding: 2px var(--espaco-3);
+    border-radius: var(--raio-pilula);
+    background-color: var(--cor-principal-suave);
+    color: var(--cor-principal);
+    font-size: var(--texto-pequeno);
+    font-weight: 700;
+}
+
+/* Link "voltar" em pílula, alinhado ao texto */
+.voltar {
+    margin: 0 0 var(--espaco-3);
+}
+
+.voltar a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--espaco-1);
+    min-height: 36px;
+    margin-left: calc(-1 * var(--espaco-3));
+    padding: 0 var(--espaco-3);
+    border-radius: var(--raio-pilula);
+    color: var(--cor-texto-secundario);
+    font-size: var(--texto-pequeno);
+    font-weight: 700;
+    text-decoration: none;
+    transition: background-color var(--transicao), color var(--transicao);
+}
+
+.voltar a:hover {
+    background-color: var(--cor-principal-suave);
+    color: var(--cor-principal);
+    text-decoration: none;
+}
+
+/* Barra de nota (largura via .preenche-N, já que a CSP bloqueia style inline) */
+.barra {
+    position: relative;
+    display: block;
+    height: 8px;
+    overflow: hidden;
+    border-radius: var(--raio-pilula);
+    background-color: var(--cor-divisor-suave);
+}
+
+.barra-cheia {
+    position: absolute;
+    inset: 0 auto 0 0;
+    border-radius: inherit;
+    background-color: var(--cor-principal);
+}
+
+/* Barra de dificuldade estilo "HP": trilho com divisões a cada 20% (uma por
+   ponto da escala), preenchimento com a largura da média (.preenche-N) e cor
+   do nível (.nivel-N, verde = fácil, vermelho = difícil). A escala de 1 a 5
+   fica abaixo, com cada número alinhado ao fim do seu trecho. */
+.barra-hp {
+    display: inline-flex;
+    flex-direction: column;
+    gap: var(--espaco-1);
+    min-width: 8rem;
+}
+
+.barra-hp-trilho {
+    position: relative;
+    display: block;
+    height: 12px;
+    overflow: hidden;
+    border-radius: var(--raio-pilula);
+    background-color: var(--cor-divisor-suave);
+}
+
+/* Divisões da escala por cima do preenchimento */
+.barra-hp-trilho::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+        to right,
+        transparent 0 calc(20% - 2px),
+        var(--cor-superficie) calc(20% - 2px) 20%
+    );
+    pointer-events: none;
+}
+
+.barra-hp-cheia {
+    position: absolute;
+    inset: 0 auto 0 0;
+    border-radius: inherit;
+}
+
+.nivel-1 { background-color: var(--cor-dificuldade-1); }
+.nivel-2 { background-color: var(--cor-dificuldade-2); }
+.nivel-3 { background-color: var(--cor-dificuldade-3); }
+.nivel-4 { background-color: var(--cor-dificuldade-4); }
+.nivel-5 { background-color: var(--cor-dificuldade-5); }
+
+.barra-hp-escala {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    color: var(--cor-texto-secundario);
+    font-size: 0.75rem;
+    line-height: 1;
+    text-align: right;
+}
+
+/*
+ * Fundo animado em largura total (fundo-animado.js). O canvas é filho direto
+ * do <body> (que é position: relative na tela), então ocupa 100% da largura
+ * útil da janela, sem usar 100vw e sem gerar rolagem horizontal. Fica atrás do
+ * conteúdo (z-index negativo) e as quatro bordas são esmaecidas por máscara.
+ * A altura depende da densidade: normal (home) ou leve (demais telas).
+ */
+.fundo-animado {
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    display: block;
+    width: 100%;
+    height: 28rem;
+    max-width: 100%;
+    pointer-events: none;
+    -webkit-mask-image:
+        linear-gradient(to right, transparent, #000 18%, #000 82%, transparent),
+        linear-gradient(to bottom, transparent, #000 16%, #000 62%, transparent);
+    -webkit-mask-composite: source-in;
+    mask-image:
+        linear-gradient(to right, transparent, #000 18%, #000 82%, transparent),
+        linear-gradient(to bottom, transparent, #000 16%, #000 62%, transparent);
+    mask-composite: intersect;
+}
+
+.fundo-animado[data-densidade="leve"] {
+    height: 14rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    main {
+        animation: none;
+    }
+
+    .botao,
+    .card-interativo,
+    .voltar a,
+    .campo input,
+    .campo select,
+    .campo textarea {
+        transition: none;
+    }
+
+    .botao:active:not(:disabled) {
+        transform: none;
+    }
 }
