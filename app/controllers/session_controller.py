@@ -12,6 +12,7 @@ expirou, o refresh token renova a sessão e os cookies novos seguem na resposta.
 """
 from datetime import timedelta
 from functools import wraps
+from urllib.parse import urlsplit
 
 from flask import current_app, g, jsonify, redirect, request, url_for
 
@@ -20,6 +21,48 @@ from app.repositorio import repositorios
 COOKIE_ACESSO = "avaliaai_session"
 COOKIE_RENOVACAO = "avaliaai_refresh"
 DURACAO_COOKIE = timedelta(hours=12)
+ROTAS_IGNORADAS_RETORNO = frozenset({
+    "/login",
+    "/login/google",
+    "/login/google/retorno",
+    "/cadastro",
+    "/logout",
+})
+
+
+def sanitizar_destino(destino):
+    """Retorna o destino apenas se for um caminho interno seguro (evita open redirect)."""
+    if not isinstance(destino, str) or not destino:
+        return None
+    if any(caractere in destino for caractere in ("\r", "\n", "\x00", "\\")):
+        return None
+    if not destino.startswith("/") or destino.startswith("//"):
+        return None
+
+    partes = urlsplit(destino)
+    if partes.scheme or partes.netloc:
+        return None
+    if not partes.path.startswith("/") or partes.path.startswith("//"):
+        return None
+    if partes.path in ROTAS_IGNORADAS_RETORNO:
+        return None
+
+    return destino
+
+
+def _origem_requisicao():
+    """Extrai o caminho interno de origem da requisição atual (com query string)."""
+    if request.method in ("GET", "HEAD"):
+        query = request.query_string.decode("utf-8", errors="ignore")
+        origem = f"{request.path}?{query}" if query else request.path
+        return sanitizar_destino(origem)
+
+    if request.referrer:
+        ref = urlsplit(request.referrer)
+        if not ref.netloc or ref.netloc == request.host:
+            origem = f"{ref.path}?{ref.query}" if ref.query else ref.path
+            return sanitizar_destino(origem)
+    return None
 
 
 def _definir_cookies(response, sessao):
@@ -77,6 +120,9 @@ def login_required(view_func):
         if obter_usuario_atual() is None:
             if request.accept_mimetypes.accept_json and not request.accept_mimetypes.accept_html:
                 return jsonify({"erro": "Não autenticado"}), 401
+            destino = _origem_requisicao()
+            if destino:
+                return redirect(url_for("auth.login", next=destino))
             return redirect(url_for("auth.login"))
         return view_func(*args, **kwargs)
     return wrapper
