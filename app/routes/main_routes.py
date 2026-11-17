@@ -13,6 +13,6 @@ def index():
 def privacidade():
     return render_template('privacidade.html', usuario=obter_usuario_atual())
 
-  @main_bp.get('/sobre')
+@main_bp.get('/sobre')
 def sobre():
     return render_template('sobre.html', usuario=obter_usuario_atual())
