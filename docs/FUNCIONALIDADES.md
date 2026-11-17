@@ -55,17 +55,24 @@ Tentativas de editar ou excluir uma avaliação de outra pessoa recebem HTTP 404
 
 ## Comparação de professores (RF08)
 
-A página `/comparar` permite selecionar dois professores diferentes e consultar
-lado a lado as médias de didática, clareza, organização, disponibilidade e
-dificuldade, além da quantidade de avaliações válidas. Os parâmetros da URL são
-`professor_1` e `professor_2`.
+A página `/comparar` pede uma disciplina e permite selecionar dois ou mais
+professores distintos que a ministram. Cada professor ocupa uma coluna com as
+médias de didática, clareza, organização, disponibilidade e dificuldade e o
+total de avaliações válidas na disciplina.
 
 O acesso está disponível na lista e no perfil de cada professor. Os links
-individuais já preenchem a primeira seleção.
+individuais preenchem a primeira seleção quando o professor ministra a
+disciplina escolhida. A lista de professores selecionados pode ser ajustada
+pelos botões **Adicionar professor** e **Remover professor**.
 
-As médias consideram todas as disciplinas e períodos, com o mesmo peso por
-avaliação. Os dados são consultados a cada comparação e exibidos com duas casas
-decimais. Professores sem avaliações válidas aparecem com um aviso.
+As médias consideram apenas a disciplina escolhida, com o mesmo peso por
+avaliação válida em qualquer período. Os dados são consultados a cada
+comparação e exibidos com duas casas decimais. Professores sem avaliações
+válidas aparecem com um aviso. No celular, a tabela rola na horizontal e
+mantém a coluna dos critérios visível.
+
+Links antigos com `professor_1` e `professor_2` continuam mostrando as médias
+gerais do par e oferecem acesso à comparação por disciplina.
 
 ## Ranking de professores (RF07)
 
@@ -87,11 +94,13 @@ catálogo. Se ninguém atingir o mínimo, a página informa esse estado.
 ## Funcionalidades planejadas
 
 Filtros por faixa de nota e volume de avaliações, favoritos, gráficos,
-comentários, denúncias e moderação ainda não têm fluxo implementado.
+comentários, reações, denúncias e moderação ainda não têm fluxo implementado.
 
 A [proposta de banco para comentários](Modelo%20de%20Dados.md#6-proposta-tabela-comentarios)
-já está publicada. A [especificação proposta](COMENTARIOS.md) reúne participação,
-quantidade, vínculo com avaliação, denúncia e privacidade para revisão do grupo na
+já está publicada. A [especificação proposta](COMENTARIOS.md) reúne acesso com
+e-mail de qualquer domínio, nome de usuário visível, consulta ao e-mail do
+autor, reações, filtro e denúncias.
+A proposta começou na
 [issue #116](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/116).
 
 Relacionado: [visão e requisitos](DOCUMENTO_DE_VISAO.md), [backend](BACKEND.md),

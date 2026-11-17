@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sobre - AvaliaUnb</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='sobre.css') }}">
+    {% include '_tema.html' %}
+</head>
+<body>
+    {% include '_topo.html' %}
+    <canvas class="fundo-animado" data-densidade="leve" aria-hidden="true"></canvas>
+
+    <main class="conteudo">
+        <header class="sobre-cabecalho">
+            <p class="selo">Sobre o projeto</p>
+            <h1>Escolha professores com mais informação</h1>
+            <p class="apresentacao">Na matrícula, as opiniões sobre professores ficam espalhadas em grupos de mensagens. O AvaliaUnb reúne avaliações de estudantes da UnB por professor e disciplina, com critérios objetivos.</p>
+        </header>
+
+        <section class="card sobre-secao" aria-labelledby="como-funciona">
+            <h2 id="como-funciona">Como funciona</h2>
+            <ol class="passos">
+                <li><strong>Consulte</strong> professores por nome, disciplina ou departamento e veja as médias.</li>
+                <li><strong>Compare</strong> dois professores lado a lado ou confira o ranking.</li>
+                <li><strong>Avalie</strong> quem já foi seu professor: entre com sua conta Google e dê notas de 1 a 5.</li>
+            </ol>
+        </section>
+
+        <section class="card sobre-secao" aria-labelledby="criterios">
+            <h2 id="criterios">Critérios de avaliação</h2>
+            <dl class="criterios">
+                <div><dt>Didática</dt><dd>Como o professor explica e conduz as aulas.</dd></div>
+                <div><dt>Clareza</dt><dd>Se conteúdos, regras e critérios de avaliação ficam claros.</dd></div>
+                <div><dt>Organização</dt><dd>Planejamento da disciplina, prazos e materiais.</dd></div>
+                <div><dt>Disponibilidade</dt><dd>Atenção aos alunos dentro e fora da sala.</dd></div>
+                <div><dt>Dificuldade</dt><dd>O quanto a disciplina exige: 1 é muito fácil e 5, muito difícil.</dd></div>
+            </dl>
+            <p class="nota-rodape">A média geral usa os quatro primeiros critérios; a dificuldade aparece à parte. O ranking só inclui professores com pelo menos cinco avaliações.</p>
+        </section>
+
+        <section class="card sobre-secao" aria-labelledby="privacidade">
+            <h2 id="privacidade">Sua conta e suas avaliações</h2>
+            <ul class="lista-simples">
+                <li>O login é feito com a conta Google. O AvaliaUnb usa seu nome e e-mail para criar seu perfil e não recebe sua senha.</li>
+                <li>As avaliações aparecem para outras pessoas apenas como médias, sem o seu nome.</li>
+                <li>Você pode avaliar cada professor uma vez por disciplina e editar ou excluir suas avaliações no seu perfil.</li>
+            </ul>
+        </section>
+
+        <section class="card sobre-secao" aria-labelledby="equipe">
+            <h2 id="equipe">Quem faz</h2>
+            <p>Projeto desenvolvido por estudantes na disciplina Métodos de Desenvolvimento de Software da Universidade de Brasília, no semestre 2026/2. O código é aberto e está na organização <a href="https://github.com/unb-mds" target="_blank" rel="noopener noreferrer">unb-mds no GitHub<span class="sr-only"> (abre em nova aba)</span></a>.</p>
+        </section>
+    </main>
+    {% include '_rodape.html' %}
+    <script src="{{ url_for('static', filename='fundo-animado.js') }}" defer></script>
+</body>
+</html>

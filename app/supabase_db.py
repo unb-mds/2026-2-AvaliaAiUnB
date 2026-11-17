@@ -32,7 +32,7 @@ def credenciais_configuradas() -> bool:
 
 
 def novo_cliente():
-    """Cliente independente. Usado para validar senha de um usuário sem tocar no cliente principal."""
+    """Cliente independente. Usado na troca do código do Google e na renovação, sem tocar no cliente principal."""
     if not credenciais_configuradas():
         raise RuntimeError('SUPABASE_URL e SUPABASE_SERVICE_KEY precisam estar no .env')
     from supabase import create_client

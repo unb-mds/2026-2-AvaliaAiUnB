@@ -53,10 +53,51 @@ h3 {
 }
 
 /* Dados da conta */
+.cabecalho-pagina {
+    margin-bottom: 0;
+}
+
+.dados-usuario {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--espaco-4);
+}
+
+/* Inicial do nome em um círculo azul */
+.avatar {
+    display: grid;
+    flex-shrink: 0;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: var(--raio-pilula);
+    background-color: var(--cor-principal-fundo);
+    color: var(--cor-sobre-principal);
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
 .dados-usuario dl {
     display: grid;
+    flex: 1 1 260px;
     gap: var(--espaco-3);
     margin: 0;
+}
+
+.contador {
+    display: inline-grid;
+    place-items: center;
+    min-width: 28px;
+    height: 28px;
+    margin-left: var(--espaco-1);
+    padding: 0 var(--espaco-2);
+    box-sizing: border-box;
+    border-radius: var(--raio-pilula);
+    background-color: var(--cor-principal-suave);
+    color: var(--cor-principal);
+    font-size: var(--texto-pequeno);
+    vertical-align: middle;
 }
 
 .dados-usuario dt {
@@ -88,7 +129,7 @@ h3 {
 
 .notas-lista li {
     padding: var(--espaco-1) var(--espaco-3);
-    border-radius: var(--raio);
+    border-radius: var(--raio-pilula);
     background-color: var(--cor-fundo-suave);
     font-size: var(--texto-pequeno);
 }
@@ -98,7 +139,7 @@ h3 {
     flex-direction: column;
     gap: var(--espaco-2);
     padding-top: var(--espaco-4);
-    border-top: 1px solid var(--cor-divisor);
+    border-top: 1px solid var(--cor-divisor-suave);
 }
 
 .acoes > .botao,
@@ -134,8 +175,8 @@ h3 {
     margin-top: var(--espaco-3);
     padding: var(--espaco-4);
     border-left: 4px solid var(--cor-erro);
-    border-radius: var(--raio);
-    background-color: var(--cor-fundo-suave);
+    border-radius: 12px;
+    background-color: var(--cor-erro-suave);
 }
 
 .confirmacao p {
@@ -157,7 +198,7 @@ h3 {
     }
 
     .dados-usuario dl {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
     .acoes {
@@ -178,4 +219,20 @@ h3 {
         width: auto;
         align-self: flex-start;
     }
+}
+
+/* Dificuldade como barra estilo HP (com escala) dentro da pílula */
+.notas-lista .nota-dificuldade {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--espaco-2);
+    border-radius: 12px;
+}
+
+.notas-lista .barra-hp {
+    min-width: 6rem;
+}
+
+.notas-lista .barra-hp-trilho {
+    height: 10px;
 }

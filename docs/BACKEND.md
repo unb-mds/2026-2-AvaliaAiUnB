@@ -1,8 +1,9 @@
 # Backend
 
 O AvaliaUnb usa Python e Flask para renderizar páginas Jinja2 e processar
-cadastros, sessões, consultas e avaliações. A persistência usa PostgreSQL no
-Supabase; contas e senhas são gerenciadas pelo Supabase Auth.
+logins, sessões, consultas e avaliações. A persistência usa PostgreSQL no
+Supabase; as contas são gerenciadas pelo Supabase Auth, com entrada apenas pela
+conta Google.
 
 ## Inicialização e estrutura
 
@@ -25,12 +26,12 @@ Requisição HTTP
 |---|---|
 | `app/__init__.py` | Fábrica `create_app(config=None)` e registro das dependências |
 | `app/routes/main_routes.py` | Página inicial (`main_bp`) |
-| `app/routes/auth_routes.py` | Cadastro, login, logout e perfil do usuário (`auth_bp`) |
+| `app/routes/auth_routes.py` | Login com Google, logout e perfil do usuário (`auth_bp`) |
 | `app/routes/professor_routes.py` | Busca, perfil do professor, comparação, ranking e avaliações (`professor_bp`) |
-| `app/controllers/auth_controller.py` | Validação do cadastro e autenticação por nome de usuário e senha |
+| `app/controllers/auth_controller.py` | Início e conclusão do login com Google |
 | `app/controllers/session_controller.py` | Identificação do usuário, cookies, renovação, logout e `login_required` |
 | `app/controllers/professor_controller.py` | Catálogo, seleção de professores e disciplinas, indicadores e operações de avaliação |
-| `app/validacoes.py` | Regras de cadastro e critérios das notas |
+| `app/validacoes.py` | Critérios e validação das notas |
 | `app/seguranca.py` | Configuração de segurança, headers e limites de requisições na main |
 | `app/utils.py` | Normalização de texto para buscas |
 | `app/repositorio.py` | Repositórios de usuários, professores e avaliações |
@@ -46,8 +47,10 @@ Os caminhos da tabela são relativos à raiz do repositório.
 | Método | Caminho | Acesso | Comportamento |
 |---|---|---|---|
 | GET | `/` | Público | Página inicial |
-| GET, POST | `/cadastro` | Público | Formulário e criação de conta |
-| GET, POST | `/login` | Público | Formulário e autenticação |
+| GET | `/login` | Público | Tela com o botão "Entrar com Google" |
+| GET | `/cadastro` | Público | Redireciona para `/login`; a conta é criada no primeiro login |
+| GET | `/login/google` | Público | Gera o verificador PKCE e redireciona ao Supabase Auth |
+| GET | `/login/google/retorno` | Público | Troca o código por sessão, cria o perfil no primeiro acesso e grava os cookies |
 | POST | `/logout` | Autenticado | Revoga a sessão e remove os cookies |
 | GET | `/perfil` | Autenticado | Dados e avaliações do próprio usuário |
 | GET | `/professores` | Público | Catálogo filtrado por `nome`, `disciplina` e `departamento` |
@@ -64,23 +67,27 @@ o bloqueio de barra invertida foi integrado no
 [PR #133](https://github.com/unb-mds/2026-2-AvaliaAiUnB/pull/133).
 
 As telas são renderizadas no servidor. Algumas rotas também retornam JSON
-conforme o cabeçalho `Accept`; o cadastro e o login reconhecem ainda o campo
+conforme o cabeçalho `Accept`; o logout reconhece ainda o campo
 `formato=html`. Não existe uma API REST separada com os mesmos contratos para
 todas as páginas. Todos os POSTs passam pela proteção CSRF, inclusive quando
 a resposta solicitada é JSON.
 
-## Cadastro e sessão
+## Login com Google e sessão
 
-O cadastro recebe nome, nome de usuário, e-mail, senha e confirmação de senha.
-A validação atual aceita e-mail `@gmail.com`, senha com pelo menos oito
-caracteres e nome de usuário entre três e trinta caracteres, com letras,
-números, ponto ou sublinhado. O nome de usuário é normalizado para minúsculas.
+A única forma de entrar é a conta Google, pelo provedor do Supabase Auth com
+fluxo PKCE. `/login/google` gera um verificador, guarda-o na sessão assinada
+do Flask e redireciona ao Supabase, que leva ao Google. O retorno em
+`/login/google/retorno` só é aceito com o verificador do mesmo navegador, o
+que impede login CSRF. A troca do código é feita em um cliente Supabase
+independente, sem alterar a sessão do cliente compartilhado do servidor.
 
-`UsuarioRepository` cria a conta no Supabase Auth e o registro em `perfis`.
-Se a gravação do perfil falhar, tenta remover a conta recém-criada para não
-deixá-la sem perfil. No login, resolve o nome de usuário em `perfis`, obtém o
-e-mail da conta e valida a senha em um cliente Supabase independente, evitando
-alterar a sessão do cliente compartilhado do servidor.
+No primeiro acesso, `UsuarioRepository` cria o registro em `perfis` com o nome
+vindo do Google e um nome de usuário único derivado do e-mail (minúsculas,
+letras, números, ponto ou sublinhado; um sufixo numérico resolve conflitos),
+e copia `nome` e `username` para o `user_metadata`. Contas antigas, criadas
+pelo cadastro com senha, são vinculadas pelo Supabase quando o e-mail Google
+é o mesmo: o id, o perfil e as avaliações continuam os mesmos. Não existem
+mais cadastro, login ou recuperação por senha.
 
 Os tokens são guardados nos cookies `avaliaai_session` e `avaliaai_refresh`,
 com `HttpOnly`, `SameSite=Lax` e duração de doze horas. Na `main`, `Secure`

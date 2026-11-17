@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Verificar e-mail · AvaliaUnB</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='perfil.css') }}">
+    {% include '_tema.html' %}
+</head>
+<body>
+    {% include '_topo.html' %}
+    <main class="conteudo">
+        <h1>Verificar e-mail</h1>
+        <section class="card dados-usuario" aria-label="Verificação de titularidade">
+            <p>Endereço da sua conta <strong>{{ usuario.email }}</strong></p>
+            {% if erro %}
+            <p class="mensagem mensagem-erro" role="alert">{{ erro }}</p>
+            {% endif %}
+            {% if verificado %}
+            <p class="mensagem" role="status">E-mail verificado.</p>
+            {% elif chave %}
+            <form action="{{ url_for('auth.verificar_email') }}" method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="chave" value="{{ chave }}">
+                <button type="submit" class="botao botao-primario">Verificar meu e-mail</button>
+            </form>
+            {% else %}
+            {% if enviado %}
+            <p class="mensagem" role="status">Enviamos um link válido por 30 minutos. Abra o link neste navegador enquanto estiver na conta.</p>
+            {% else %}
+            <p>Enviaremos um link para confirmar que você tem acesso a este endereço.</p>
+            {% endif %}
+            <form action="{{ url_for('auth.enviar_verificacao') }}" method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="botao botao-primario">Enviar link de verificação</button>
+            </form>
+            {% endif %}
+            <p><a href="{{ url_for('auth.perfil') }}">Voltar ao perfil</a></p>
+        </section>
+    </main>
+    {% include '_rodape.html' %}
+</body>
+</html>

@@ -1,4 +1,4 @@
-{% from '_macros.html' import nota %}
+{% from '_macros.html' import nota, barra_dificuldade %}
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='indicadores.css') }}">
 
     <link rel="stylesheet" href="{{ url_for('static', filename='perfil_professor.css') }}">
+    {% include '_tema.html' %}
 </head>
 
 <body>
@@ -18,6 +19,7 @@
         <p class="voltar"><a href="{{ next_url }}">&larr; Voltar</a></p>
 
         <section class="card cabecalho-professor" aria-labelledby="titulo-professor">
+            <p class="selo">Professor</p>
             <h1 id="titulo-professor">{{ professor.nome }}</h1>
             <p class="departamento">
                 <strong>Departamento:</strong>
@@ -84,9 +86,17 @@
             {% if indicadores.quantidade %}
             <ul class="indicadores">
                 {% for criterio, titulo in criterios.items() %}
+                {% set media = indicadores.medias[criterio] %}
                 <li>
                     <span>{{ titulo }}</span>
-                    <strong>{{ nota(indicadores.medias[criterio]) }} / 5 <span aria-hidden="true">★</span></strong>
+                    {% if criterio == 'dificuldade' %}
+                    {{ barra_dificuldade(media) }}
+                    {% else %}
+                    <strong>{{ nota(media) }} / 5 <span aria-hidden="true">★</span></strong>
+                    {% if media is not none %}
+                    <span class="barra" aria-hidden="true"><span class="barra-cheia preenche-{{ ((media * 10 + 0.5)|int) * 2 }}"></span></span>
+                    {% endif %}
+                    {% endif %}
                 </li>
                 {% endfor %}
             </ul>
@@ -109,5 +119,6 @@
         </p>
         {% endif %}
     </main>
+    {% include '_rodape.html' %}
 </body>
 </html>

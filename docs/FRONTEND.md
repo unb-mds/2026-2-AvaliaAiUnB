@@ -10,11 +10,11 @@ separado para executar essas telas.
 | Template | Conteúdo | CSS carregado |
 |---|---|---|
 | `index.html` | Início, consulta, ranking e acesso à conta | `base.css`, `index.css` |
-| `cadastro.html` | Cadastro, validações e mensagem de sucesso | `base.css`, `auth.css` |
-| `login.html` | Login e mensagem de erro | `base.css`, `auth.css` |
+| `login.html` | Botão "Entrar com Google" (login e cadastro) e mensagem de erro | `base.css`, `auth.css` |
+| `sobre.html` | Apresentação do projeto, critérios e privacidade | `base.css`, `sobre.css` |
 | `lista_professores.html` | Filtros, catálogo, média geral em estrelas e estados sem resultado | `indicadores.css` (que importa `base.css`), `lista_professores.css` |
 | `perfil_professor.html` | Disciplinas (campo digitável), indicadores, média geral, comparação e avaliação | `indicadores.css`, `perfil_professor.css` |
-| `avaliacao.html` | Criação e edição de notas (botões de 1 a 5) | `indicadores.css`, `avaliacao.css` |
+| `avaliacao.html` | Criação e edição de notas (botões de 1 a 5; dificuldade em barra de crescimento) | `indicadores.css`, `avaliacao.css` |
 | `perfil.html` | Avaliações do usuário e ações de editar e excluir | `base.css`, `perfil.css` |
 | `comparacao.html` | Escolha por nome e comparação de professores | `indicadores.css`, `comparacao.css` |
 | `ranking.html` | Classificação e estado sem professores elegíveis | `indicadores.css`, `ranking.css` |
@@ -22,7 +22,10 @@ separado para executar essas telas.
 Fragmentos reutilizados: `_topo.html` (faixa azul com o menu de acesso rápido de três
 traços, a marca, a conta e o Sair, usada na home, na busca, na comparação, no ranking
 e nos dois perfis; espera `usuario` no contexto) e `_macros.html` (macro `nota`, que formata notas com vírgula e sem
-decimal quando inteiras, como 5 em vez de 5,0).
+decimal quando inteiras, como 5 em vez de 5,0, e macro `barra_dificuldade`, que
+desenha a dificuldade como barra de crescimento, e macro `logo`, com o símbolo e o
+nome usados no topo e na tela de entrar no perfil do professor, no perfil
+do usuário e na comparação; veja o [design system](DESIGN_SYSTEM.md#barra-de-dificuldade)).
 
 As rotas preparam os dados e chamam `render_template`. Os nomes dos endpoints,
 parâmetros e regras de autorização estão no [guia do backend](BACKEND.md).
@@ -33,10 +36,15 @@ O arquivo `base.css` concentra os tokens do [design system](DESIGN_SYSTEM.md)
 como variáveis em `:root` (`--cor-*`, `--espaco-*`, `--raio`, `--altura-controle`,
 larguras e margens) e os componentes reutilizáveis: `.botao` com `-primario`,
 `-secundario` e `-destrutivo`, `.campo` (com `.campo-ajuda` e `.campo-erro`),
-`.card`, `.mensagem` e `.mensagem-erro`, o topo (`.topo`, `.marca`, `.topo-conta`),
+`.card`, `.mensagem` e `.mensagem-erro`, o topo (`.topo`, `.marca`, `.abas`, `.aba`, `.botao-sair`),
 a nota em estrelas (`.estrelas` e `.preenche-0` a `.preenche-100`) e o foco visível
 de 2 px. Cada tela carrega `base.css` diretamente ou por meio de `indicadores.css`,
 que o importa com `@import`.
+
+O topo (`_topo.html`) é uma barra branca fixa ao rolar, com a marca e as abas
+**Consulta**, **Ranking**, **Sobre** e **Perfil** (ou **Entrar**, sem login). A aba
+da página atual recebe `aria-current="page"`, definido pelo `request.endpoint`.
+No celular, as abas ficam numa segunda linha com rolagem horizontal.
 
 O arquivo `indicadores.css` reúne estilos compartilhados para filtros, listas,
 indicadores, comparação e ranking. Entre as classes existentes estão `.filtros`,
@@ -49,7 +57,7 @@ O catálogo mostra mensagens diferentes para ausência de dados e ausência de
 resultados dos filtros e exibe a média
 geral em cinco estrelas ou `N/A (Não avaliado)`. O filtro de departamento é um campo
 de texto com sugestões. O perfil informa quando não há avaliações válidas e mostra a
-média geral do professor; cadastro e avaliação exibem erros de campo; a comparação
+média geral do professor; a avaliação exibe erros de campo; a comparação
 exige dois professores diferentes; e o ranking informa quando ninguém atinge o
 mínimo de avaliações. No perfil do usuário, Apagar abre uma confirmação (`<details>`,
 sem JavaScript) antes de enviar a exclusão.
@@ -57,15 +65,15 @@ sem JavaScript) antes de enviar a exclusão.
 A média geral usa didática, clareza, organização e disponibilidade, sem a
 dificuldade, como o ranking. A política de segurança (`style-src 'self'` em
 `app/seguranca.py`) bloqueia `style=""` inline, então valores dinâmicos de estilo
-precisam virar classes de CSS.
+precisam virar classes de CSS (como `.preenche-N` nas barras e `.degrau-ativo` na
+barra de dificuldade).
 
 Cores, Arial, espaçamentos, raios e alturas seguem o design system e vêm das
 variáveis de `base.css`. O ranking possui uma folha de estilos própria e segue disponível na rota `/ranking`;
 qualquer alteração de escopo deve ser tratada em sua issue específica.
 
 Scripts em `app/static/` (a política de segurança só aceita scripts do próprio
-domínio): `topo.js` fecha o menu do topo ao clicar fora ou apertar Esc, e
-`campo-busca.js` transforma os `<select>` dentro de `.campo-busca` (professores na
+domínio): `campo-busca.js` transforma os `<select>` dentro de `.campo-busca` (professores na
 comparação e disciplina no perfil do professor) em campos digitáveis com sugestões.
 O `<select>` continua no formulário, então a tela funciona sem JavaScript.
 

@@ -76,7 +76,7 @@ def avaliar(professor_id):
             
     return render_template('avaliacao.html', professor=professor, disciplina=disciplina, 
                            criterios=controller.criterios(), erros=erros, dados=request.form, 
-                           next_url=next_url), status                      
+                           next_url=next_url, usuario=obter_usuario_atual()), status
 
 
 @professor_bp.route('/avaliacoes/<int:avaliacao_id>/editar', methods=['GET', 'POST'])
@@ -112,6 +112,7 @@ def editar_avaliacao(avaliacao_id):
         dados=dados,
         modo_edicao=True,
         acao_form=url_for('professores.editar_avaliacao', avaliacao_id=avaliacao_id),
+        usuario=usuario,
     ), status
 
 
