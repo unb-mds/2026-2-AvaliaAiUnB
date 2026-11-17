@@ -251,7 +251,11 @@ class TestFluxoWeb(unittest.TestCase):
                             resposta = self.postar(rota, headers={'Accept': accept})
                         self.assertEqual(resposta.status_code, esperado)
                         if esperado == 302:
-                            self.assertTrue(resposta.headers['Location'].endswith('/login'))
+                            from urllib.parse import parse_qs, urlsplit
+                            destino = urlsplit(resposta.headers['Location'])
+                            self.assertEqual(destino.path, '/login')
+                            if metodo == 'get':
+                                self.assertEqual(parse_qs(destino.query).get('next'), [rota])
                         else:
                             self.assertEqual(resposta.get_json()['erro'], 'Não autenticado')
         self.assertEqual(self.cliente.tabelas['avaliacoes'], [])
