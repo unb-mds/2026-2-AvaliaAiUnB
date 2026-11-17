@@ -12,6 +12,7 @@ from app.controllers.session_controller import (
     encerrar_sessao,
     login_required,
     obter_usuario_atual,
+    sanitizar_destino,
 )
 from app.seguranca import (
     chave_usuario_ou_ip,
@@ -22,6 +23,7 @@ from app.seguranca import (
 auth_bp = Blueprint("auth", __name__)
 
 CHAVE_PKCE_GOOGLE = "pkce_google"
+CHAVE_DESTINO_LOGIN = "destino_pos_login"
 ERRO_GOOGLE = "Não foi possível entrar com o Google. Tente novamente."
 
 
@@ -33,12 +35,20 @@ def _quer_html():
 
 @auth_bp.get("/login")
 def login():
-    return render_template("login.html")
+    destino = sanitizar_destino(request.args.get("next"))
+    if destino:
+        session[CHAVE_DESTINO_LOGIN] = destino
+    else:
+        session.pop(CHAVE_DESTINO_LOGIN, None)
+    return render_template("login.html", next_url=destino)
 
 
 @auth_bp.get("/cadastro")
 def cadastro():
     # O cadastro acontece no primeiro login com Google; mantém links antigos funcionando.
+    destino = sanitizar_destino(request.args.get("next"))
+    if destino:
+        return redirect(url_for("auth.login", next=destino))
     return redirect(url_for("auth.login"))
 
 
@@ -47,6 +57,12 @@ def cadastro():
 def login_google():
     # GET simples (link): a CSP form-action bloquearia um POST redirecionado ao Supabase.
     # O verificador PKCE amarra o retorno a este navegador, o que impede login CSRF.
+    destino = sanitizar_destino(request.args.get("next")) or sanitizar_destino(session.get(CHAVE_DESTINO_LOGIN))
+    if destino:
+        session[CHAVE_DESTINO_LOGIN] = destino
+    else:
+        session.pop(CHAVE_DESTINO_LOGIN, None)
+
     url, verificador = auth_controller.iniciar_login_google(
         url_for("auth.retorno_google", _external=True))
     session[CHAVE_PKCE_GOOGLE] = verificador
@@ -57,13 +73,17 @@ def login_google():
 @limitar_login_google
 def retorno_google():
     verificador = session.pop(CHAVE_PKCE_GOOGLE, None)
+    destino = sanitizar_destino(session.pop(CHAVE_DESTINO_LOGIN, None))
     sessao = None
     if not request.args.get("error"):
         sessao = auth_controller.concluir_login_google(request.args.get("code"), verificador)
     if sessao is None:
-        resposta = make_response(render_template("login.html", erro=ERRO_GOOGLE), 400)
+        if destino:
+            session[CHAVE_DESTINO_LOGIN] = destino
+        resposta = make_response(render_template("login.html", erro=ERRO_GOOGLE, next_url=destino), 400)
     else:
-        resposta = criar_sessao(sessao, make_response(redirect(url_for("main.index"), code=303)))
+        destino_final = destino or url_for("main.index")
+        resposta = criar_sessao(sessao, make_response(redirect(destino_final, code=303)))
     resposta.headers["Cache-Control"] = "no-store"
     return resposta
 
