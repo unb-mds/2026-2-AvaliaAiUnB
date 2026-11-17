@@ -9,6 +9,9 @@ main_bp = Blueprint('main', __name__)
 def index():
     return render_template('index.html', usuario=obter_usuario_atual())
 
+@main_bp.get('/privacidade')
+def privacidade():
+    return render_template('privacidade.html', usuario=obter_usuario_atual())
 
 @main_bp.get('/sobre')
 def sobre():
