@@ -8,13 +8,14 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='indicadores.css') }}">
 
     <link rel="stylesheet" href="{{ url_for('static', filename='avaliacao.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='comentarios.css') }}">
     {% include '_tema.html' %}
 </head>
 <body>
     {% include '_topo.html' %}
 
     <main class="conteudo">
-    <div class="avaliacao-container card">
+    <div class="avaliacao-container card pagina-comentario">
         <header class="cabecalho-pagina">
             <p class="selo">Excluir comentário</p>
             <h1>Excluir comentário sobre {{ professor.nome }}?</h1>

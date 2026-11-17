@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='indicadores.css') }}">
 
     <link rel="stylesheet" href="{{ url_for('static', filename='perfil_professor.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='comentarios.css') }}">
     {% include '_tema.html' %}
 </head>
 
@@ -124,7 +125,7 @@
             <h2 id="titulo-comentarios">Comentários</h2>
 
             {% if disciplinas and not usuario %}
-            <p class="mensagem" role="status">
+            <p class="mensagem convite-comentario" role="status">
                 <a href="{{ login_url }}">Entrar para comentar</a> sobre a experiência com este professor.
             </p>
             {% elif disciplinas and usuario %}
@@ -192,25 +193,24 @@
             <ul class="lista-professores">
                 {% for c in comentarios %}
                 <li class="comentario">
-                    <p class="ajuda">
+                    <p class="comentario-cabecalho">
                         <strong>{{ c.username }}</strong>
-                        · {{ c.disciplina_nome }}{% if c.disciplina_codigo %} — {{ c.disciplina_codigo }}{% endif %}
-                        {% if c.data %}· {{ c.data }}{% endif %}
-                        {% if c.editado %}(editado){% endif %}
+                        <span class="comentario-disciplina">{{ c.disciplina_nome }}{% if c.disciplina_codigo %} — {{ c.disciplina_codigo }}{% endif %}</span>
+                        {% if c.data %}<span class="comentario-data">{{ c.data }}</span>{% endif %}
+                        {% if c.editado %}<span class="comentario-editado">(editado)</span>{% endif %}
                     </p>
-                    <p>{% for linha in c.texto.splitlines() %}{{ linha }}{% if not loop.last %}<br>{% endif %}{% endfor %}</p>
+                    <p class="comentario-texto">{% for linha in c.texto.splitlines() %}{{ linha }}{% if not loop.last %}<br>{% endif %}{% endfor %}</p>
                     {% if c.e_meu %}
-                    <p class="ajuda">
+                    <p class="comentario-acoes">
                         <a href="{{ url_for('professores.editar_comentario', comentario_id=c.id, next=next_url, comentarios_disciplina=filtro_comentarios) }}">Editar</a>
-                        ·
-                        <a href="{{ url_for('professores.excluir_comentario', comentario_id=c.id, next=next_url, comentarios_disciplina=filtro_comentarios) }}">Excluir</a>
+                        <a class="acao-excluir" href="{{ url_for('professores.excluir_comentario', comentario_id=c.id, next=next_url, comentarios_disciplina=filtro_comentarios) }}">Excluir</a>
                     </p>
                     {% endif %}
                 </li>
                 {% endfor %}
             </ul>
             {% if ha_mais %}
-            <p class="ajuda">Mostrando os {{ limite_comentarios }} comentários mais recentes.</p>
+            <p class="ajuda comentarios-limite">Mostrando os {{ limite_comentarios }} comentários mais recentes.</p>
             {% endif %}
             {% else %}
             <p class="mensagem" role="status">
