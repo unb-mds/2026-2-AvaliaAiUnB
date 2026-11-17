@@ -118,31 +118,3 @@ h1 {
     margin: 0;
     padding-left: var(--espaco-5);
 }
-
-/*
- * Entrada ao rolar: as seções sobem 12px e surgem com fade ao entrar na tela.
- * Só existe com suporte a animation-timeline e sem preferência por menos
- * movimento; fora disso nada é escondido. O preenchimento "backwards" só vale
- * antes da entrada: depois, o elemento fica no estado normal.
- */
-@supports (animation-timeline: view()) {
-    @media (prefers-reduced-motion: no-preference) {
-        .sobre-secao {
-            animation: revelar-ao-rolar linear backwards;
-            animation-timeline: view();
-            animation-range: entry 0% entry 70%;
-        }
-
-        @keyframes revelar-ao-rolar {
-            from {
-                opacity: 0;
-                transform: translateY(12px);
-            }
-
-            to {
-                opacity: 1;
-                transform: none;
-            }
-        }
-    }
-}
