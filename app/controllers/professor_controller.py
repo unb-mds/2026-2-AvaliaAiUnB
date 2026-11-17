@@ -58,18 +58,38 @@ def carregar_comparacao(dados):
     catalogo = repos.professores.catalogo()
     disciplinas = {str(d['id']): d for _, vinculos in catalogo for d in vinculos}
     disciplina_id = dados.get('disciplina_id', '')
-    disciplina = disciplinas.get(disciplina_id)
     erros = {}
+
+    selecao_previa = dados.get('professor_1', '').strip()
+    professor_previo = next(
+        ((p, vinculos) for p, vinculos in catalogo if str(p['id']) == selecao_previa),
+        None,
+    )
+    if selecao_previa and not professor_previo:
+        erros['professores'] = 'Professor não encontrado.'
+        selecao_previa = ''
+
+    if not disciplina_id and professor_previo:
+        _, vinculos_previos = professor_previo
+        for d in sorted(vinculos_previos, key=lambda item: (item['nome'] or '', item['id'])):
+            d_id = str(d['id'])
+            total_na_disciplina = sum(
+                1 for _, v in catalogo if any(str( vinc['id']) == d_id for vinc in v)
+            )
+            if total_na_disciplina >= 2:
+                disciplina_id = d_id
+                break
+        if not disciplina_id:
+            return _carregar_comparacao_legada(dados)
+
+    disciplina = disciplinas.get(disciplina_id)
     if disciplina_id and not disciplina:
         erros['disciplina'] = 'Disciplina não encontrada.'
+
     professores = {
         str(p['id']): p for p, vinculos in catalogo
         if any(str(d['id']) == disciplina_id for d in vinculos)
     }
-    selecao_previa = dados.get('professor_1', '')
-    if selecao_previa and not any(str(p['id']) == selecao_previa for p, _ in catalogo):
-        erros['professores'] = 'Professor não encontrado.'
-        selecao_previa = ''
     selecionados = dados.getlist('professor')
     comparacao = []
     if disciplina:
