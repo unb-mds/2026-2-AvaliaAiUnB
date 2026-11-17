@@ -1,5 +1,5 @@
 # Política de Privacidade e Termos de Uso – AvaliaAi UnB
-
+- **(`/privacidade`)**: página pública acessível pelo rodapé que descreve em linguagem simples os dados armazenados pelo AvaliaUnB (e-mail, nome de usuário, avaliações e formulário de feedback), as regras contra ofensas e avaliações falsas, e o canal de contato para solicitar a exclusão de dados em conformidade com a LGPD. Documentação detalhada em `docs/POLITICA-DE-PRIVACIDADE.md`.
 ## 1. Apresentação e Escopo
 O **AvaliaAi UnB** é uma plataforma acadêmica desenvolvida no âmbito da disciplina de Métodos de Desenvolvimento de Software (MDS) da Universidade de Brasília (UnB). O nosso objetivo é centralizar avaliações pedagógicas e transformar relatos dispersos em informações estruturadas e úteis para apoiar os estudantes no período de matrícula.
 
