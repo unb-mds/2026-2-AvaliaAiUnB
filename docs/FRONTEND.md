@@ -16,16 +16,13 @@ separado para executar essas telas.
 | `perfil_professor.html` | Disciplinas (campo digitável), indicadores, média geral, comparação e avaliação | `indicadores.css`, `perfil_professor.css` |
 | `avaliacao.html` | Criação e edição de notas (botões de 1 a 5; dificuldade em barra de crescimento) | `indicadores.css`, `avaliacao.css` |
 | `perfil.html` | Avaliações do usuário e ações de editar e excluir | `base.css`, `perfil.css` |
-| `comparacao.html` | Escolha por nome e comparação de professores | `indicadores.css`, `comparacao.css` |
+| `comparacao.html` | Escolha da disciplina e comparação de dois ou mais professores vinculados | `indicadores.css`, `comparacao.css` |
 | `ranking.html` | Classificação e estado sem professores elegíveis | `indicadores.css`, `ranking.css` |
 
-Fragmentos reutilizados: `_topo.html` (faixa azul com o menu de acesso rápido de três
-traços, a marca, a conta e o Sair, usada na home, na busca, na comparação, no ranking
-e nos dois perfis; espera `usuario` no contexto) e `_macros.html` (macro `nota`, que formata notas com vírgula e sem
-decimal quando inteiras, como 5 em vez de 5,0, e macro `barra_dificuldade`, que
-desenha a dificuldade como barra de crescimento, e macro `logo`, com o símbolo e o
-nome usados no topo e na tela de entrar no perfil do professor, no perfil
-do usuário e na comparação; veja o [design system](DESIGN_SYSTEM.md#barra-de-dificuldade)).
+As páginas reutilizam o topo em `_topo.html`, o link de feedback em
+`_rodape.html` e os recursos de tema e favicon em `_tema.html`. O
+`_macros.html` reúne a formatação de notas, a marca usada no topo e no
+login, e a barra de dificuldade usada nos perfis e na comparação.
 
 As rotas preparam os dados e chamam `render_template`. Os nomes dos endpoints,
 parâmetros e regras de autorização estão no [guia do backend](BACKEND.md).
@@ -41,7 +38,7 @@ a nota em estrelas (`.estrelas` e `.preenche-0` a `.preenche-100`) e o foco vis�
 de 2 px. Cada tela carrega `base.css` diretamente ou por meio de `indicadores.css`,
 que o importa com `@import`.
 
-O topo (`_topo.html`) é uma barra branca fixa ao rolar, com a marca e as abas
+O topo (`_topo.html`) acompanha as cores do tema, com a marca e as abas
 **Consulta**, **Ranking**, **Sobre** e **Perfil** (ou **Entrar**, sem login). A aba
 da página atual recebe `aria-current="page"`, definido pelo `request.endpoint`.
 No celular, as abas ficam numa segunda linha com rolagem horizontal.
@@ -57,9 +54,10 @@ O catálogo mostra mensagens diferentes para ausência de dados e ausência de
 resultados dos filtros e exibe a média
 geral em cinco estrelas ou `N/A (Não avaliado)`. O filtro de departamento é um campo
 de texto com sugestões. O perfil informa quando não há avaliações válidas e mostra a
-média geral do professor; a avaliação exibe erros de campo; a comparação
-exige dois professores diferentes; e o ranking informa quando ninguém atinge o
-mínimo de avaliações. No perfil do usuário, Apagar abre uma confirmação (`<details>`,
+média geral do professor. A avaliação exibe erros de campo. A comparação
+exige ao menos dois professores diferentes que ministram a disciplina
+escolhida. O ranking informa quando ninguém atinge o mínimo de avaliações.
+No perfil do usuário, Apagar abre uma confirmação (`<details>`,
 sem JavaScript) antes de enviar a exclusão.
 
 A média geral usa didática, clareza, organização e disponibilidade, sem a
@@ -68,9 +66,10 @@ dificuldade, como o ranking. A política de segurança (`style-src 'self'` em
 precisam virar classes de CSS (como `.preenche-N` nas barras e `.degrau-ativo` na
 barra de dificuldade).
 
-Cores, Arial, espaçamentos, raios e alturas seguem o design system e vêm das
-variáveis de `base.css`. O ranking possui uma folha de estilos própria e segue disponível na rota `/ranking`;
-qualquer alteração de escopo deve ser tratada em sua issue específica.
+A interface usa Inter e os tokens de cor, espaçamento, raio e altura de
+`base.css`. O tema escuro é o padrão. O botão no topo alterna para o tema
+claro, e `tema.js` restaura a escolha salva no navegador. O ranking possui
+uma folha de estilos própria e está disponível em `/ranking`.
 
 Scripts em `app/static/` (a política de segurança só aceita scripts do próprio
 domínio): `campo-busca.js` transforma os `<select>` dentro de `.campo-busca` (professores na

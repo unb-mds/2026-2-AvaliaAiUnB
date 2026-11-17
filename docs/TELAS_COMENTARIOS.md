@@ -16,10 +16,10 @@ pessoa pode voltar ao perfil e encerrar ou escolher a outra.
 
 Visitantes leem os comentários com o nome de usuário do autor, disciplina,
 data da primeira publicação e as contagens de reações recebidas. Clicar, tocar
-ou ativar o nome pelo teclado abre o e-mail de cadastro do autor para qualquer
-visitante. Ativar o botão outra vez fecha o contato. A área convida a entrar
-ou criar conta com qualquer e-mail
-verificado para escrever ou reagir.
+ou ativar o nome pelo teclado abre o e-mail atual do autor para qualquer
+visitante quando a titularidade está verificada. Ativar o botão outra vez fecha
+o contato. A área convida a entrar com Google e a verificar o e-mail pelo
+perfil antes de escrever ou reagir.
 A pessoa logada pode usar **Escrever comentário** mesmo que já tenha
 comentado naquele perfil. Cada relato da própria conta tem as ações
 **Editar** e **Apagar**. Na lista vazia, a seção convida a escrever o primeiro

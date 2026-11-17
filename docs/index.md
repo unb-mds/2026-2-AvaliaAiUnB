@@ -54,7 +54,7 @@ Plataforma de consulta, comparação e avaliação de professores e disciplinas 
 
     ---
 
-    Coloque dois professores lado a lado antes de montar a grade.
+    Escolha uma disciplina e compare dois ou mais professores lado a lado antes de montar a grade.
 
 - :material-account-circle-outline: **Perfil do estudante**
 
@@ -186,7 +186,7 @@ Para navegar por assunto e evitar versões divergentes, consulte o
 
     Mecanismos atuais e plano de correções.
 
-- :simple-figma: **[Protótipo no Figma](https://www.figma.com/board/PgqkPopVXOiSqm9gD5RRNv/AvaliaAi---Template-MDS?node-id=0-1&p=f&t=Rxu6jVCgeVZHCyg2-0)**
+- :simple-figma: **[Board do Figma](https://www.figma.com/board/PgqkPopVXOiSqm9gD5RRNv/AvaliaAi---Template-MDS?node-id=0-1)**
 
     ---
 

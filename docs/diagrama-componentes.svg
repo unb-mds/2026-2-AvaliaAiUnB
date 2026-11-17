@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 430" role="img" aria-labelledby="titulo descricao">
+  <title id="titulo">Componentes da aplicação AvaliaUnB</title>
+  <desc id="descricao">O navegador troca requisições HTTP e páginas Jinja2 com as rotas Flask. As rotas chamam os controllers e validadores, que acessam os repositórios e o cliente Supabase. O Supabase fornece PostgreSQL e Auth.</desc>
+  <defs>
+    <marker id="seta" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto-start-reverse" markerUnits="userSpaceOnUse">
+      <path d="M0 0L10 5 0 10Z" fill="#4b6380"/>
+    </marker>
+  </defs>
+  <style>
+    text { font-family: system-ui, sans-serif; text-anchor: middle; fill: #172b4d }
+    .titulo { font-size: 28px; font-weight: 700 }
+    .rotulo { font-size: 20px; font-weight: 650 }
+    .detalhe { font-size: 16px; fill: #314763 }
+    .ligacao { font-size: 15px; fill: #314763 }
+  </style>
+  <rect width="800" height="430" rx="20" fill="#f0f5fb"/>
+  <text x="400" y="50" class="titulo">Componentes da aplicação</text>
+  <rect x="34" y="179" width="732" height="113" rx="16" fill="#dceaf9" stroke="#7f9ab8"/>
+  <text x="400" y="204" class="ligacao">Aplicação Flask</text>
+  <g fill="#fff" stroke="#a5b8ce">
+    <rect x="58" y="77" width="190" height="64" rx="10"/>
+    <rect x="58" y="219" width="190" height="56" rx="10"/>
+    <rect x="285" y="219" width="230" height="56" rx="10"/>
+    <rect x="552" y="219" width="190" height="56" rx="10"/>
+    <rect x="552" y="339" width="190" height="62" rx="10"/>
+  </g>
+  <g fill="none" stroke="#4b6380" stroke-width="2" marker-end="url(#seta)">
+    <path d="M153 146V214" marker-start="url(#seta)"/>
+    <path d="M248 247H280"/>
+    <path d="M515 247H547"/>
+    <path d="M647 275V334"/>
+  </g>
+  <text x="153" y="105" class="rotulo">Navegador</text>
+  <text x="153" y="127" class="detalhe">Interface web</text>
+  <text x="242" y="167" class="ligacao">HTTP e páginas HTML</text>
+  <text x="153" y="243" class="rotulo">Rotas</text>
+  <text x="153" y="264" class="detalhe">Blueprints e Jinja2</text>
+  <text x="400" y="243" class="rotulo">Controllers</text>
+  <text x="400" y="264" class="detalhe">Sessão e regras da aplicação</text>
+  <text x="647" y="243" class="rotulo">Repositórios</text>
+  <text x="647" y="264" class="detalhe">Cliente Supabase</text>
+  <text x="647" y="365" class="rotulo">Supabase</text>
+  <text x="647" y="387" class="detalhe">PostgreSQL e Auth</text>
+</svg>

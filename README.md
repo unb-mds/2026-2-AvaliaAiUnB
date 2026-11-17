@@ -42,7 +42,7 @@ anteriores podem conter apenas parte delas.
 | Etapa | Funcionalidades | Estado |
 |---|---|---|
 | R1 — fluxo essencial | Cadastro, login, busca de professores e disciplinas, perfil do professor, avaliação por cinco critérios e consulta de médias | Implementado |
-| R2 — consulta e gestão de avaliações | Ranking, comparação entre dois professores, filtro por departamento, busca que ignora acentos e espaços extras e perfil do usuário com edição e exclusão das próprias avaliações | Implementado |
+| R2 — consulta e gestão de avaliações | Ranking, comparação de vários professores por disciplina, filtro por departamento, busca que ignora acentos e espaços extras e perfil do usuário com edição e exclusão das próprias avaliações | Implementado |
 | Evolução dos filtros | Faixa de nota e volume de avaliações | Pendente |
 | Comentários e moderação | Comentários com nome de usuário, reações, filtro e denúncias | [Proposta para revisão](docs/COMENTARIOS.md) |
 | Outras funcionalidades planejadas | Favoritos e gráficos de desempenho | Pendente |
@@ -78,6 +78,8 @@ no AvaliaUnb é criada automaticamente no primeiro acesso.
 | Documentação | MkDocs Material e GitHub Pages |
 | Testes e qualidade | unittest, pip-audit e Bandit |
 | Deploy | Configuração para Vercel adicionada no [PR #131](https://github.com/unb-mds/2026-2-AvaliaAiUnB/pull/131) |
+
+![Diagrama de contexto do AvaliaUnB](docs/diagrama-contexto.svg)
 
 ### Backend
 
@@ -197,9 +199,10 @@ código, a situação do RLS e os resultados da auditoria com cada correção.
 Comentários e moderação têm uma [especificação proposta](docs/COMENTARIOS.md),
 baseada na #109, para revisão do grupo na
 [#116](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/116).
-Ela propõe exibir o nome de usuário e permitir consultar o e-mail pelo nome,
-além de participação com conta verificada de qualquer domínio, reações,
-filtro antes da publicação e denúncias. O recurso ainda não está implementado.
+Ela propõe participação com login pelo Google e confirmação de titularidade
+pelo perfil. Os comentários mostram o nome de usuário, com o e-mail verificado
+acessível pelo nome. Reações, filtro antes da publicação e denúncias também
+fazem parte da proposta. A interface está em desenvolvimento na #167.
 
 ## Documentação
 
@@ -217,7 +220,7 @@ filtro antes da publicação e denúncias. O recurso ainda não está implementa
 | Comentários | [Especificação para revisão do grupo](docs/COMENTARIOS.md) |
 | Automação e checks | [Pipeline do GitHub Actions](docs/pipeline.md) · [DoR e DoD](docs/PROCESSO_CONTRIBUICAO.md) |
 | Hospedagem | [Configuração de Preview, produção e lançamento](docs/HOSPEDAGEM.md) |
-| Design | [Board do Figma](https://www.figma.com/board/PgqkPopVXOiSqm9gD5RRNv/AvaliaAi---Template-MDS?node-id=0-1&p=f&t=Rxu6jVCgeVZHCyg2-0) |
+| Design | [Board do Figma](https://www.figma.com/board/PgqkPopVXOiSqm9gD5RRNv/AvaliaAi---Template-MDS?node-id=0-1) |
 | Histórico | [Release 1](RELEASE-v1.0.0.md) · [Release 2](RELEASE-v2.0.0.md) |
 
 Para abrir o site localmente, instale `mkdocs-material` no ambiente virtual e

@@ -346,9 +346,10 @@ REVOKE ALL ON comentarios_reacoes FROM PUBLIC, anon, authenticated;
    de curtidas ou a soma de curtidas e descurtidas, conforme a
    [especificação](COMENTARIOS.md).
    Uma consulta separada, por ID do comentário visível, retorna apenas o
-   e-mail de cadastro atual do autor. Qualquer visitante pode fazer essa
-   consulta ao clicar no nome de usuário. O backend mantém o endereço fora da
-   listagem e restringe a consulta a comentários públicos, conforme o
+   e-mail atual do autor quando sua titularidade estiver verificada no perfil.
+   Qualquer visitante pode fazer essa consulta ao clicar no nome de usuário.
+   O backend mantém o endereço fora da listagem e restringe a consulta a
+   comentários públicos, conforme o
    [fluxo de privacidade](COMENTARIOS.md).
 4. **Moderação.** A tabela `comentarios` guarda o texto já aprovado. Textos
    que precisam de revisão ficam em uma fila privada separada, inclusive

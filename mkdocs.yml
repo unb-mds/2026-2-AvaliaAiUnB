@@ -56,7 +56,7 @@ nav:
     - Telas de comentários: TELAS_COMENTARIOS.md
     - Documento de Visão: DOCUMENTO_DE_VISAO.md
     - Contribuição (DoR e DoD): PROCESSO_CONTRIBUICAO.md
-    - Protótipo no Figma: "https://www.figma.com/board/PgqkPopVXOiSqm9gD5RRNv/AvaliaAi---Template-MDS?node-id=0-1&p=f&t=Rxu6jVCgeVZHCyg2-0"
+    - Board do Figma: "https://www.figma.com/board/PgqkPopVXOiSqm9gD5RRNv/AvaliaAi---Template-MDS?node-id=0-1"
   - Arquitetura:
     - Diagramas de Arquitetura: ARQUITETURA.md
     - Modelo de Dados: "Modelo de Dados.md"

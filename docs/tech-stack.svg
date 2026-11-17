@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" role="img" aria-labelledby="titulo descricao">
+  <title id="titulo">Tech Stack do AvaliaUnB</title>
+  <desc id="descricao">Interface com HTML, CSS, JavaScript e Jinja2. Aplicação Python e Flask com deploy configurado na Vercel. Dados em PostgreSQL no Supabase e contas no Supabase Auth. Coleta do SIGAA com Python e Selenium.</desc>
+  <style>
+    text { font-family: system-ui, sans-serif; fill: #172b4d }
+    .titulo { font-size: 28px; font-weight: 700 }
+    .rotulo { font-size: 22px; font-weight: 650 }
+    .detalhe { font-size: 18px; fill: #314763 }
+  </style>
+  <rect width="800" height="360" rx="20" fill="#f0f5fb"/>
+  <text x="32" y="50" class="titulo">Tech Stack do AvaliaUnB</text>
+  <g fill="#fff" stroke="#a5b8ce">
+    <rect x="32" y="80" width="356" height="110" rx="12"/>
+    <rect x="412" y="80" width="356" height="110" rx="12"/>
+    <rect x="32" y="214" width="356" height="110" rx="12"/>
+    <rect x="412" y="214" width="356" height="110" rx="12"/>
+  </g>
+  <text x="54" y="116" class="rotulo">Interface web</text>
+  <text x="54" y="145" class="detalhe">HTML, CSS e JavaScript</text>
+  <text x="54" y="170" class="detalhe">Templates Jinja2</text>
+  <text x="434" y="116" class="rotulo">Aplicação</text>
+  <text x="434" y="145" class="detalhe">Python e Flask</text>
+  <text x="434" y="170" class="detalhe">Deploy configurado na Vercel</text>
+  <text x="54" y="250" class="rotulo">Dados e autenticação</text>
+  <text x="54" y="279" class="detalhe">PostgreSQL no Supabase</text>
+  <text x="54" y="304" class="detalhe">Supabase Auth</text>
+  <text x="434" y="250" class="rotulo">Coleta do SIGAA</text>
+  <text x="434" y="279" class="detalhe">Python e Selenium</text>
+  <text x="434" y="304" class="detalhe">Execução separada da aplicação</text>
+</svg>
