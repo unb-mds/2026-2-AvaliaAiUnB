@@ -1,5 +1,6 @@
 /* Busca de professores. Carregado depois de indicadores.css (só esta tela o usa). */
 body {
+    position: relative;
     max-width: none;
     margin: 0;
     padding: 0;

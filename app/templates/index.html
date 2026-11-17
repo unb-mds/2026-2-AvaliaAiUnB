@@ -6,9 +6,11 @@
     <title>AvaliaUnb - Início</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+    {% include '_tema.html' %}
 </head>
 <body>
     {% include '_topo.html' %}
+    <canvas class="fundo-animado" data-densidade="normal" aria-hidden="true"></canvas>
 
     <main class="conteudo">
         <header class="cabecalho-pagina hero">
@@ -19,17 +21,15 @@
             {% endif %}
             <h1>Bem-vindo ao AvaliaUnb</h1>
             <p class="apresentacao">A plataforma para consulta e avaliação de professores e disciplinas da UnB.</p>
+
+            <form class="busca-home" method="get" action="{{ url_for('professores.listar') }}" role="search">
+                <label class="sr-only" for="busca-nome">Nome do professor</label>
+                <input type="search" id="busca-nome" name="nome" placeholder="Digite o nome do professor">
+                <button type="submit" class="botao botao-primario">Buscar</button>
+            </form>
         </header>
 
         <nav class="acoes" aria-label="Acesso rápido">
-            <a href="/professores" class="acao acao-principal">
-                <svg class="acao-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-                    <circle cx="11" cy="11" r="7"></circle>
-                    <path d="m20 20-3.5-3.5"></path>
-                </svg>
-                <span class="acao-titulo">Consulta de Professores</span>
-                <span class="acao-texto">Busque por nome, disciplina ou departamento e veja as médias.</span>
-            </a>
             <a href="{{ url_for('professores.ranking') }}" class="acao">
                 <svg class="acao-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
                     <path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4Z"></path>
@@ -51,5 +51,6 @@
         </nav>
     </main>
     {% include '_rodape.html' %}
+    <script src="{{ url_for('static', filename='fundo-animado.js') }}" defer></script>
 </body>
 </html>

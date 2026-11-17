@@ -14,11 +14,13 @@
 
     <link rel="stylesheet" href="{{ url_for('static', filename='ranking.css') }}">
 
+    {% include '_tema.html' %}
 </head>
 
 <body>
 
     {% include '_topo.html' %}
+    <canvas class="fundo-animado" data-densidade="leve" aria-hidden="true"></canvas>
 
     <main>
 
@@ -109,6 +111,7 @@
 
     </main>
     {% include '_rodape.html' %}
+    <script src="{{ url_for('static', filename='fundo-animado.js') }}" defer></script>
 
 </body>
 

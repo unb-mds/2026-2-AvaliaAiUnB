@@ -60,7 +60,7 @@ h1 {
     padding: var(--espaco-4);
     border: 1px solid var(--cor-divisor-suave);
     border-radius: 14px;
-    background-color: #f8f9fb;
+    background-color: var(--cor-fundo-suave);
     min-width: 0;
 }
 
@@ -113,10 +113,10 @@ h1 {
 }
 
 .notas-opcoes input:checked + label {
-    border-color: var(--cor-principal);
-    background-color: var(--cor-principal);
-    color: var(--cor-superficie);
-    box-shadow: 0 6px 16px -8px rgb(23 75 131 / 0.7);
+    border-color: var(--cor-principal-fundo);
+    background-color: var(--cor-principal-fundo);
+    color: var(--cor-sobre-principal);
+    box-shadow: 0 6px 16px -8px var(--cor-brilho);
 }
 
 .notas-opcoes input:focus-visible + label {

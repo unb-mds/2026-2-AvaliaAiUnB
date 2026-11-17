@@ -6,8 +6,10 @@
     <title>Entrar - AvaliaUnb</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='auth.css') }}">
+    {% include '_tema.html' %}
 </head>
 <body class="pagina-auth">
+<canvas class="fundo-animado" data-densidade="leve" aria-hidden="true"></canvas>
 <main class="auth card">
     <a class="voltar" href="{{ url_for('main.index') }}">
         <span aria-hidden="true">&larr;</span> Início
@@ -39,5 +41,6 @@
     <p class="aviso-auth">Usamos seu nome e e-mail do Google para criar seu perfil. Sua senha do Google nunca passa pelo AvaliaUnb.</p>
 </main>
 {% include '_rodape.html' %}
+<script src="{{ url_for('static', filename='fundo-animado.js') }}" defer></script>
 </body>
 </html>

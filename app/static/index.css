@@ -1,5 +1,6 @@
 /* Home. Usa os tokens de base.css. */
 body {
+    position: relative;
     margin: 0;
     background-color: var(--cor-fundo-suave);
     color: var(--cor-texto);
@@ -18,12 +19,22 @@ body {
 
 .hero {
     margin-bottom: var(--espaco-6);
+    text-align: center;
+}
+
+/* O selo é inline-flex, então o text-align do .hero já o centraliza */
+.hero .apresentacao {
+    max-width: 40rem;
+    margin-right: auto;
+    margin-left: auto;
 }
 
 h1 {
     margin: 0 0 var(--espaco-3);
-    font-size: 2.25rem;
-    line-height: 1.15;
+    font-size: clamp(2.25rem, 1.6rem + 3.2vw, 3.25rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
     overflow-wrap: anywhere;
 }
 
@@ -33,7 +44,51 @@ h1 {
     font-size: 1.0625rem;
 }
 
-/* Ações principais em cards; a consulta ocupa a largura toda */
+/* Busca por nome no cabeçalho: campo em pílula com o botão ao lado */
+.busca-home {
+    display: flex;
+    gap: var(--espaco-2);
+    max-width: 36rem;
+    margin: var(--espaco-5) auto 0;
+}
+
+.busca-home input[type="search"] {
+    flex: 1 1 auto;
+    min-width: 0;
+    box-sizing: border-box;
+    min-height: var(--altura-controle);
+    padding: var(--espaco-2) var(--espaco-5);
+    border: 1px solid var(--cor-borda-campo);
+    border-radius: var(--raio-pilula);
+    background-color: var(--cor-superficie);
+    color: var(--cor-texto);
+    font: inherit;
+    text-align: start;
+    transition: border-color var(--transicao), box-shadow var(--transicao);
+}
+
+.busca-home input[type="search"]::placeholder {
+    color: var(--cor-texto-secundario);
+    opacity: 1;
+}
+
+/* Anel de foco suave, somado ao contorno visível de base.css */
+.busca-home input[type="search"]:focus {
+    border-color: var(--cor-principal);
+    box-shadow: 0 0 0 4px var(--cor-principal-suave);
+}
+
+.busca-home .botao {
+    flex-shrink: 0;
+}
+
+@media (max-width: 480px) {
+    .busca-home {
+        flex-direction: column;
+    }
+}
+
+/* Ações principais em cards: empilhados no celular, lado a lado a partir de 481px */
 .acoes {
     display: grid;
     grid-template-columns: 1fr;
@@ -47,29 +102,20 @@ h1 {
     align-items: flex-start;
     gap: var(--espaco-2);
     padding: var(--espaco-5);
-    border: 1px solid var(--cor-divisor-suave);
+    border: 1px solid var(--cor-divisor);
     border-radius: var(--raio-card);
     background-color: var(--cor-superficie);
+    background-image: linear-gradient(160deg, var(--cor-principal-suave), transparent 55%);
     box-shadow: var(--sombra-card);
     color: var(--cor-texto);
     text-decoration: none;
-    transition: box-shadow var(--transicao), border-color var(--transicao);
+    transition: box-shadow var(--transicao), border-color var(--transicao),
+                transform var(--transicao);
 }
 
 .acao:hover {
     border-color: var(--cor-divisor);
     box-shadow: var(--sombra-elevada);
-}
-
-.acao-principal {
-    border-color: var(--cor-principal);
-    background-color: var(--cor-principal);
-    color: var(--cor-superficie);
-}
-
-.acao-principal:hover {
-    border-color: var(--cor-principal-hover);
-    background-color: var(--cor-principal-hover);
 }
 
 /* Ícone em um quadrado de cantos arredondados */
@@ -81,13 +127,9 @@ h1 {
     padding: 11px;
     flex-shrink: 0;
     border-radius: 14px;
-    background-color: var(--cor-principal-suave);
-    color: var(--cor-principal);
-}
-
-.acao-principal .acao-icone {
-    background-color: rgb(255 255 255 / 0.16);
-    color: var(--cor-superficie);
+    background-color: var(--cor-principal-fundo);
+    color: var(--cor-sobre-principal);
+    transition: transform var(--transicao);
 }
 
 .acao-titulo {
@@ -102,17 +144,24 @@ h1 {
     font-size: var(--texto-base);
 }
 
-.acao-principal .acao-texto {
-    color: rgb(255 255 255 / 0.85);
+/* Microinteração dos cartões: só com mouse, para não "prender" em telas de toque */
+@media (hover: hover) and (pointer: fine) {
+    .acao:hover {
+        border-color: var(--cor-principal);
+        box-shadow: var(--sombra-elevada),
+                    0 0 0 1px var(--cor-brilho),
+                    0 12px 32px -12px var(--cor-brilho);
+        transform: translateY(-3px);
+    }
+
+    .acao:hover .acao-icone {
+        transform: scale(1.05);
+    }
 }
 
 @media (min-width: 481px) {
     .acoes {
         grid-template-columns: 1fr 1fr;
-    }
-
-    .acao-principal {
-        grid-column: 1 / -1;
     }
 
     .acao {
@@ -121,7 +170,17 @@ h1 {
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .acao {
+    .acao,
+    .acao-icone {
+        transition: none;
+    }
+
+    .acao:hover,
+    .acao:hover .acao-icone {
+        transform: none;
+    }
+
+    .busca-home input[type="search"] {
         transition: none;
     }
 }

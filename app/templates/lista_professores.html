@@ -7,9 +7,11 @@
     <title>Professores - AvaliaUnb</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='indicadores.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='lista_professores.css') }}">
+    {% include '_tema.html' %}
 </head>
 <body>
     {% include '_topo.html' %}
+    <canvas class="fundo-animado" data-densidade="leve" aria-hidden="true"></canvas>
 
     <main class="conteudo">
         <header class="cabecalho-pagina">
@@ -131,5 +133,6 @@
         {% endif %}
     </main>
     {% include '_rodape.html' %}
+    <script src="{{ url_for('static', filename='fundo-animado.js') }}" defer></script>
 </body>
 </html>

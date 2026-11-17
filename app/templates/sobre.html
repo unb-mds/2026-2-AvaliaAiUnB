@@ -6,9 +6,11 @@
     <title>Sobre - AvaliaUnb</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='sobre.css') }}">
+    {% include '_tema.html' %}
 </head>
 <body>
     {% include '_topo.html' %}
+    <canvas class="fundo-animado" data-densidade="leve" aria-hidden="true"></canvas>
 
     <main class="conteudo">
         <header class="sobre-cabecalho">
@@ -53,5 +55,6 @@
         </section>
     </main>
     {% include '_rodape.html' %}
+    <script src="{{ url_for('static', filename='fundo-animado.js') }}" defer></script>
 </body>
 </html>

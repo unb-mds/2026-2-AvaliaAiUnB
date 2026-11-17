@@ -1,5 +1,6 @@
 /* Ranking de professores. Carregado depois de indicadores.css (só esta tela o usa). */
 body {
+    position: relative;
     max-width: none;
     margin: 0;
     padding: 0;
@@ -51,6 +52,26 @@ main > .ajuda {
     padding: var(--espaco-3) var(--espaco-2);
 }
 
+/*
+ * Cabeçalhos nunca quebram no meio da palavra. indicadores.css aplica
+ * overflow-wrap: anywhere nas células, o que zera a largura mínima das colunas:
+ * a tabela encolhe até caber e corta "POSIÇÃO" e "AVALIAÇÕES". Com nowrap, a
+ * tabela mantém a largura necessária e rola na horizontal só dentro do
+ * .tabela-ranking-container (overflow-x: auto), sem afetar a página.
+ */
+.tabela-ranking thead th {
+    white-space: nowrap;
+    overflow-wrap: normal;
+    word-break: normal;
+}
+
+@media (max-width: 480px) {
+    .tabela-ranking th,
+    .tabela-ranking td {
+        padding: var(--espaco-3) var(--espaco-1);
+    }
+}
+
 /* Posição em círculo; as três primeiras com ouro, prata e bronze suaves */
 .posicao {
     display: inline-grid;
@@ -65,18 +86,18 @@ main > .ajuda {
 }
 
 .posicao-1 {
-    background-color: #fdf0c4;
-    color: #7a5a00;
+    background-color: var(--cor-ouro-fundo);
+    color: var(--cor-ouro-texto);
 }
 
 .posicao-2 {
-    background-color: #e8ebef;
-    color: #3d4652;
+    background-color: var(--cor-prata-fundo);
+    color: var(--cor-prata-texto);
 }
 
 .posicao-3 {
-    background-color: #f6dfcc;
-    color: #7a3f12;
+    background-color: var(--cor-bronze-fundo);
+    color: var(--cor-bronze-texto);
 }
 
 .tabela-ranking th[scope="row"] a {
