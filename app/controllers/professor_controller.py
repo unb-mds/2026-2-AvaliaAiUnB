@@ -3,7 +3,7 @@ from flask import abort, current_app, request
 
 from app.repositorio import (LIMITE_COMENTARIOS, MINIMO_AVALIACOES_RANKING,
                              ComentarioRepository, repositorios)
-from app.validacoes import CRITERIOS, validar_avaliacao
+from app.validacoes import CRITERIOS, validar_avaliacao, validar_comentario
 
 
 def criterios():
@@ -150,19 +150,60 @@ def carregar_perfil(professor_id):
     return professor, disciplinas, disciplina
 
 
-def _filtro_de_comentarios(bruto, disciplinas):
-    """id da disciplina do filtro, ou None (= todas) se vazio, ilegível ou de outro professor."""
+def _inteiro_ou_none(bruto):
     try:
-        disciplina_id = int(bruto)
+        return int(bruto)
     except (TypeError, ValueError):
         return None
+
+
+def filtro_de_comentarios(bruto, disciplinas):
+    """id da disciplina do filtro, ou None (= todas) se vazio, ilegível ou de outro professor."""
+    disciplina_id = _inteiro_ou_none(bruto)
     return disciplina_id if any(d['id'] == disciplina_id for d in disciplinas) else None
+
+
+def disciplina_das_medias(disciplinas, bruto):
+    """Disciplina das médias a mostrar depois de um POST: a informada se for do professor,
+    senão a primeira (sem 404, ao contrário de carregar_perfil)."""
+    disciplina_id = _inteiro_ou_none(bruto)
+    return next((d for d in disciplinas if d['id'] == disciplina_id),
+                disciplinas[0] if disciplinas else None)
+
+
+def carregar_professor(professor_id):
+    professor = repositorios().professores.buscar_por_id(professor_id)
+    if professor is None:
+        abort(404)
+    return professor
+
+
+def listar_disciplinas(professor_id):
+    return repositorios().professores.listar_disciplinas(professor_id)
+
+
+def validar_novo_comentario(disciplinas, disciplina_bruta, texto):
+    """(disciplina_id ou None, erros): a disciplina precisa ser uma das do professor."""
+    erros = {}
+    disciplina_id = _inteiro_ou_none(disciplina_bruta)
+    if not any(d['id'] == disciplina_id for d in disciplinas):
+        disciplina_id = None
+        erros['disciplina'] = 'Escolha a disciplina.'
+    _, erro = validar_comentario(texto)
+    if erro:
+        erros['texto'] = erro
+    return disciplina_id, erros
+
+
+def publicar_comentario(usuario, professor_id, disciplina_id, texto):
+    """Grava o comentário do usuário logado. ValueError se o repositório recusar."""
+    return repositorios().comentarios.criar(usuario['id'], professor_id, disciplina_id, texto)
 
 
 def carregar_comentarios(professor_id, disciplinas, filtro_bruto, usuario):
     """Contexto da seção de comentários do perfil. Nunca levanta: se a consulta falhar,
     registra o erro e devolve erro_comentarios=True para o resto do perfil continuar."""
-    filtro = _filtro_de_comentarios(filtro_bruto, disciplinas)
+    filtro = filtro_de_comentarios(filtro_bruto, disciplinas)
     contexto = dict(comentarios=[], ha_mais=False, filtro_comentarios=filtro,
                     erro_comentarios=False, limite_comentarios=LIMITE_COMENTARIOS)
     try:

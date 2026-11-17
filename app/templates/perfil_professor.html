@@ -123,6 +123,50 @@
         <section class="card comentarios" id="comentarios" aria-labelledby="titulo-comentarios">
             <h2 id="titulo-comentarios">Comentários</h2>
 
+            {% if disciplinas and not usuario %}
+            <p class="mensagem" role="status">
+                <a href="{{ login_url }}">Entrar para comentar</a> sobre a experiência com este professor.
+            </p>
+            {% elif disciplinas and usuario %}
+            <form method="post" class="formulario-comentario" action="{{ url_for('professores.comentar', professor_id=professor.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="next" value="{{ next_url }}">
+                {% if disciplina %}<input type="hidden" name="disciplina_medias" value="{{ disciplina.id }}">{% endif %}
+                {% if filtro_comentarios %}<input type="hidden" name="comentarios_disciplina" value="{{ filtro_comentarios }}">{% endif %}
+
+                <h3>Escrever um comentário</h3>
+
+                <div class="campo">
+                    <label for="disciplina_comentario">Disciplina do comentário</label>
+                    <select name="disciplina_id" id="disciplina_comentario" required
+                            {% if erros_comentario.disciplina %}aria-invalid="true" aria-describedby="erro-disciplina-comentario"{% endif %}>
+                        <option value="" {% if not disciplina_form %}selected{% endif %}>Escolha a disciplina</option>
+                        {% for item in disciplinas %}
+                        <option value="{{ item.id }}" {% if item.id == disciplina_form %}selected{% endif %}>
+                            {{ item.nome }}{% if item.codigo %} — {{ item.codigo }}{% endif %}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    {% if erros_comentario.disciplina %}
+                    <p class="campo-erro" id="erro-disciplina-comentario" role="alert">{{ erros_comentario.disciplina }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="campo">
+                    <label for="texto_comentario">Seu comentário</label>
+                    <textarea name="texto" id="texto_comentario" rows="5" maxlength="1000" required
+                              aria-describedby="ajuda-texto-comentario{% if erros_comentario.texto %} erro-texto-comentario{% endif %}"
+                              {% if erros_comentario.texto %}aria-invalid="true"{% endif %}>{{ texto_form }}</textarea>
+                    <p class="campo-ajuda" id="ajuda-texto-comentario">2 a 1.000 caracteres. Seu nome de usuário aparece junto do comentário.</p>
+                    {% if erros_comentario.texto %}
+                    <p class="campo-erro" id="erro-texto-comentario" role="alert">{{ erros_comentario.texto }}</p>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="botao botao-primario">Publicar</button>
+            </form>
+            {% endif %}
+
             {% if disciplinas %}
             <form method="get" class="filtros" action="{{ url_for('professores.perfil', professor_id=professor.id) }}#comentarios">
                 <input type="hidden" name="next" value="{{ next_url }}">
@@ -163,7 +207,7 @@
             {% endif %}
             {% else %}
             <p class="mensagem" role="status">
-                {% if filtro_comentarios %}Não há comentários para este professor nesta disciplina.{% else %}Ainda não há comentários para este professor.{% endif %}
+                {% if filtro_comentarios %}Não há comentários para este professor nesta disciplina.{% elif usuario and disciplinas %}Ainda não há comentários para este professor. Escreva o primeiro.{% else %}Ainda não há comentários para este professor.{% endif %}
             </p>
             {% endif %}
         </section>

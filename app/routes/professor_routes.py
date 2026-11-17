@@ -2,8 +2,9 @@
 from flask import Blueprint, abort, jsonify, redirect, render_template, request, url_for
 
 from app.controllers import professor_controller as controller
-from app.controllers.session_controller import login_required, obter_usuario_atual
-from app.seguranca import limitar_avaliacao, is_safe_url
+from app.controllers.session_controller import (login_required, obter_usuario_atual,
+                                                sanitizar_destino)
+from app.seguranca import limitar_avaliacao, limitar_comentario, is_safe_url
 
 professor_bp = Blueprint('professores', __name__)
 
@@ -31,25 +32,79 @@ def listar():
                            usuario=obter_usuario_atual())
 
 
+def _next_seguro(valor):
+    """Destino do "Voltar": o informado se for seguro, senão a consulta."""
+    return valor if is_safe_url(valor) else url_for('professores.listar')
+
+
+def _url_perfil(professor_id, next_url, disciplina, filtro):
+    """URL do perfil (com #comentarios) preservando next, a disciplina das médias e o filtro."""
+    return url_for('professores.perfil', professor_id=professor_id, next=next_url,
+                   disciplina_id=disciplina['id'] if disciplina else None,
+                   comentarios_disciplina=filtro, _anchor='comentarios')
+
+
+def _renderizar_perfil(professor, disciplinas, disciplina, next_url, filtro_bruto,
+                       status=200, **extra):
+    """Monta a página do perfil. `extra` traz o estado do formulário de comentário em caso de erro."""
+    professor_id = professor['id']
+    usuario = obter_usuario_atual()
+    comentarios = controller.carregar_comentarios(professor_id, disciplinas, filtro_bruto, usuario)
+    login_url = None
+    if usuario is None:
+        destino = sanitizar_destino(_url_perfil(professor_id, next_url, disciplina,
+                                                comentarios['filtro_comentarios']))
+        login_url = url_for('auth.login', next=destino) if destino else url_for('auth.login')
+    contexto = dict(erros_comentario={}, texto_form='', disciplina_form=None)
+    contexto.update(extra)
+    pagina = render_template(
+        'perfil_professor.html', professor=professor, disciplinas=disciplinas,
+        disciplina=disciplina,
+        indicadores=controller.indicadores(professor_id, disciplina['id']) if disciplina else None,
+        criterios=controller.criterios(), next_url=next_url,
+        geral=controller.indicadores(professor_id, None),
+        usuario=usuario, login_url=login_url, **comentarios, **contexto)
+    return pagina, status
+
+
 @professor_bp.get('/professores/<int:professor_id>')
 def perfil(professor_id):
     professor, disciplinas, disciplina = controller.carregar_perfil(professor_id)
-    indicadores = controller.indicadores(professor_id, disciplina['id']) if disciplina else None
-    
-    # Validação do parâmetro de retorno
-    next_url = request.args.get('next')
-    if not is_safe_url(next_url):
-        next_url = url_for('professores.listar')
+    return _renderizar_perfil(professor, disciplinas, disciplina,
+                              _next_seguro(request.args.get('next')),
+                              request.args.get('comentarios_disciplina'))
 
+
+@professor_bp.post('/professores/<int:professor_id>/comentarios')
+@login_required
+@limitar_comentario
+def comentar(professor_id):
+    # Sem carregar_perfil: ele lê request.form['disciplina_id'] (aqui é a disciplina do
+    # comentário, não a das médias) e aborta com 400 se faltar.
     usuario = obter_usuario_atual()
-    comentarios = controller.carregar_comentarios(
-        professor_id, disciplinas, request.args.get('comentarios_disciplina'), usuario)
+    professor = controller.carregar_professor(professor_id)
+    disciplinas = controller.listar_disciplinas(professor_id)
+    texto = request.form.get('texto', '')
+    disciplina_id, erros = controller.validar_novo_comentario(
+        disciplinas, request.form.get('disciplina_id'), texto)
+    if not erros:
+        try:
+            # O autor vem só da sessão; um usuario_id enviado no formulário é ignorado.
+            controller.publicar_comentario(usuario, professor_id, disciplina_id, texto)
+        except ValueError as erro:
+            erros['texto'] = str(erro)
 
-    return render_template('perfil_professor.html', professor=professor, disciplinas=disciplinas,
-                           disciplina=disciplina, indicadores=indicadores,
-                           criterios=controller.criterios(), next_url=next_url,
-                           geral=controller.indicadores(professor_id, None),
-                           usuario=usuario, **comentarios)
+    next_url = _next_seguro(request.form.get('next'))
+    disciplina_medias = controller.disciplina_das_medias(
+        disciplinas, request.form.get('disciplina_medias'))
+    filtro_bruto = request.form.get('comentarios_disciplina')
+    if not erros:
+        filtro = controller.filtro_de_comentarios(filtro_bruto, disciplinas)
+        return redirect(_url_perfil(professor_id, next_url, disciplina_medias, filtro), code=303)
+    return _renderizar_perfil(professor, disciplinas, disciplina_medias, next_url, filtro_bruto,
+                              status=400, erros_comentario=erros, texto_form=texto,
+                              disciplina_form=disciplina_id)
+
 
 @professor_bp.route('/avaliar/<int:professor_id>', methods=['GET', 'POST'])
 @login_required
