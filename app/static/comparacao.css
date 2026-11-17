@@ -120,8 +120,8 @@ main > .ajuda {
     padding: var(--espaco-3) var(--espaco-2);
 }
 
-/* Dificuldade: degraus abaixo do número exato */
-.celula-degraus {
+/* Dificuldade: barra abaixo do número exato */
+.celula-barra-hp {
     display: block;
     margin-top: var(--espaco-1);
 }

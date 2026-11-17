@@ -82,7 +82,7 @@ h2 {
 }
 
 .indicadores .barra,
-.indicadores .degraus-leitura {
+.indicadores .barra-hp {
     flex-basis: 100%;
 }
 

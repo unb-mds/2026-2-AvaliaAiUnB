@@ -228,10 +228,14 @@ h3 {
     gap: var(--espaco-2);
 }
 
-.notas-lista .degraus {
-    height: 14px;
+.notas-lista .barra-hp {
+    min-width: 6rem;
 }
 
-.notas-lista .degraus-valor {
+.notas-lista .barra-hp-trilho {
+    height: 10px;
+}
+
+.notas-lista .barra-hp-valor {
     color: var(--cor-texto);
 }

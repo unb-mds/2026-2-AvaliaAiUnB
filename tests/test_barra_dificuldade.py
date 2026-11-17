@@ -55,7 +55,9 @@ class TestFormularioDificuldade(BaseDificuldade):
 
 
 class TestVisualizacaoDificuldade(BaseDificuldade):
-    """Perfil do professor, perfil do usuário e comparação exibem os degraus."""
+    """Perfil do professor, perfil do usuário e comparação exibem a barra estilo HP."""
+
+    ROTULO = 'aria-label="Dificuldade {} de 5 (1 = muito fácil, 5 = muito difícil)"'
 
     def setUp(self):
         super().setUp()
@@ -67,35 +69,50 @@ class TestVisualizacaoDificuldade(BaseDificuldade):
         self.assertEqual(self.postar('/avaliar/1', {**notas, 'dificuldade': '4'}).status_code, 303)
 
     @staticmethod
-    def degraus_ativos(html):
-        """Quantos dos 5 degraus da primeira barra estão preenchidos."""
-        bloco = html[html.index('class="degraus"'):]
-        degraus = re.findall(r'class="degrau( degrau-ativo)?"', bloco)[:5]
-        return sum(1 for ativo in degraus if ativo)
+    def preenchimento(html):
+        """Classes (largura, nível) do preenchimento da primeira barra de dificuldade."""
+        return re.search(r'class="barra-hp-cheia preenche-(\d+) nivel-(\d)"', html).groups()
 
-    def test_perfil_do_professor_arredonda_media_e_mostra_valor_exato(self):
+    def test_perfil_do_professor_usa_media_exata_e_cor_do_nivel(self):
         html = self.web.get('/professores/1?disciplina_id=10').get_data(as_text=True)
 
-        self.assertIn('aria-label="Dificuldade 3,5 de 5"', html)
-        self.assertEqual(self.degraus_ativos(html), 4)  # 3,5 arredonda para o degrau 4
+        self.assertIn(self.ROTULO.format('3,5'), html)
+        self.assertEqual(self.preenchimento(html), ('70', '4'))  # 3,5/5 = 70%; arredonda p/ nível 4
         self.assertIn('3,5 / 5</strong>', html)
-        self.assertNotIn('barra-dificuldade', html)
+        self.assertIn('<span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>', html)
         self.assertNotIn('style=', html)
 
-    def test_perfil_do_usuario_mostra_degraus_da_propria_nota(self):
+    def test_perfil_do_usuario_mostra_barra_da_propria_nota(self):
         html = self.web.get('/perfil', headers={'Accept': 'text/html'}).get_data(as_text=True)
 
-        self.assertIn('aria-label="Dificuldade 4 de 5"', html)
-        self.assertEqual(self.degraus_ativos(html), 4)
+        self.assertIn(self.ROTULO.format('4'), html)
+        self.assertEqual(self.preenchimento(html), ('80', '4'))
         self.assertIn('4/5', html)
+        self.assertNotIn('barra-hp-escala', html)  # na pílula, sem escala
 
-    def test_comparacao_mostra_degraus_na_linha_da_dificuldade(self):
+    def test_comparacao_mostra_barra_na_linha_da_dificuldade(self):
         html = self.web.get('/comparar?professor_1=1&professor_2=2').get_data(as_text=True)
 
-        self.assertEqual(html.count('class="degraus"'), 1)  # professor 2 não tem avaliações
-        self.assertIn('aria-label="Dificuldade 3,5 de 5"', html)
+        self.assertEqual(html.count('class="barra-hp-trilho"'), 1)  # professor 2 não tem avaliações
+        self.assertIn(self.ROTULO.format('3,5'), html)
         self.assertIn('3,50 / 5', html)
+        self.assertIn('barra-hp-escala', html)
 
+
+class TestMacroBarraDificuldade(unittest.TestCase):
+    """Cor e largura nos extremos da escala."""
+
+    def setUp(self):
+        app = create_app({'TESTING': True, 'SECRET_KEY': 'chave-exclusiva-dos-testes',
+                          'SUPABASE_CLIENT': ClienteFalso()})
+        with app.app_context():
+            self.macro = app.jinja_env.get_template('_macros.html').module.barra_dificuldade
+
+    def test_verde_no_facil_vermelho_no_dificil_e_nada_sem_valor(self):
+        self.assertIn('preenche-20 nivel-1', str(self.macro(1)))
+        self.assertIn('preenche-100 nivel-5', str(self.macro(5)))
+        self.assertIn('preenche-48 nivel-2', str(self.macro(2.4)))
+        self.assertEqual(str(self.macro(None)).strip(), '')
 
 if __name__ == '__main__':
     unittest.main()

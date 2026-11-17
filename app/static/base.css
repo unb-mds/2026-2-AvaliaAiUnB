@@ -30,6 +30,13 @@
     --cor-erro-hover: #ffb4ad;
     --cor-estrela: #f5b94a;
 
+    /* Barra de dificuldade: do verde (1, muito fácil) ao vermelho (5, muito difícil) */
+    --cor-dificuldade-1: #4ade80;
+    --cor-dificuldade-2: #a3e635;
+    --cor-dificuldade-3: #facc15;
+    --cor-dificuldade-4: #fb923c;
+    --cor-dificuldade-5: #f87171;
+
     /* Cores de apoio ao tema escuro (preenchimentos, topo e medalhas) */
     --cor-principal-fundo: #1f5fae;
     --cor-principal-fundo-hover: #2a70c8;
@@ -103,6 +110,11 @@
     --cor-erro: #a01818;
     --cor-erro-hover: #801212;
     --cor-estrela: #b45309;
+    --cor-dificuldade-1: #15803d;
+    --cor-dificuldade-2: #4d7c0f;
+    --cor-dificuldade-3: #a16207;
+    --cor-dificuldade-4: #c2410c;
+    --cor-dificuldade-5: #b91c1c;
     --sombra-card: 0 1px 2px rgb(23 75 131 / 0.08), 0 10px 24px -12px rgb(23 75 131 / 0.28);
     --sombra-elevada: 0 2px 4px rgb(23 75 131 / 0.1), 0 16px 32px -12px rgb(23 75 131 / 0.38);
 
@@ -739,44 +751,77 @@ main {
     background-color: var(--cor-principal);
 }
 
-/* Barra de crescimento da dificuldade (degraus 1 a 5, estilo "sinal de celular").
-   Degraus ativos ficam preenchidos; os inativos só com contorno, para não
-   depender apenas da cor. */
-.degraus-leitura {
+/* Barra de dificuldade estilo "HP": trilho com divisões a cada 20% (uma por
+   ponto da escala), preenchimento com a largura da média (.preenche-N) e cor
+   do nível (.nivel-N, verde = fácil, vermelho = difícil). A escala de 1 a 5
+   fica abaixo, com cada número alinhado ao fim do seu trecho. */
+.barra-hp {
     display: inline-flex;
+    flex-direction: column;
+    gap: var(--espaco-1);
+    min-width: 8rem;
+}
+
+.barra-hp-linha {
+    display: flex;
     align-items: center;
     gap: var(--espaco-2);
 }
 
-.degraus {
-    display: inline-flex;
-    align-items: flex-end;
-    gap: 3px;
-    height: 20px;
-}
-
-.degrau {
+.barra-hp-trilho {
+    position: relative;
     display: block;
-    width: 8px;
-    border: 1px solid var(--cor-estrela);
-    border-radius: 2px;
-    background-color: transparent;
+    flex: 1;
+    height: 12px;
+    overflow: hidden;
+    border-radius: var(--raio-pilula);
+    background-color: var(--cor-divisor-suave);
 }
 
-.degrau:nth-child(1) { height: 20%; }
-.degrau:nth-child(2) { height: 40%; }
-.degrau:nth-child(3) { height: 60%; }
-.degrau:nth-child(4) { height: 80%; }
-.degrau:nth-child(5) { height: 100%; }
-
-.degrau-ativo {
-    background-color: var(--cor-estrela);
+/* Divisões da escala por cima do preenchimento */
+.barra-hp-trilho::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+        to right,
+        transparent 0 calc(20% - 2px),
+        var(--cor-superficie) calc(20% - 2px) 20%
+    );
+    pointer-events: none;
 }
 
-.degraus-valor {
+.barra-hp-cheia {
+    position: absolute;
+    inset: 0 auto 0 0;
+    border-radius: inherit;
+}
+
+.nivel-1 { background-color: var(--cor-dificuldade-1); }
+.nivel-2 { background-color: var(--cor-dificuldade-2); }
+.nivel-3 { background-color: var(--cor-dificuldade-3); }
+.nivel-4 { background-color: var(--cor-dificuldade-4); }
+.nivel-5 { background-color: var(--cor-dificuldade-5); }
+
+.barra-hp-valor {
     color: var(--cor-texto-secundario);
     font-size: var(--texto-pequeno);
     font-weight: 700;
+    white-space: nowrap;
+}
+
+.barra-hp-escala {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    color: var(--cor-texto-secundario);
+    font-size: 0.75rem;
+    line-height: 1;
+    text-align: right;
+}
+
+/* Com o valor ao lado, a escala acompanha só a largura do trilho */
+.barra-hp-linha:has(.barra-hp-valor) + .barra-hp-escala {
+    margin-right: 2.75rem;
 }
 
 /*

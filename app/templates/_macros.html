@@ -4,20 +4,28 @@
 {%- if decimos % 10 == 0 -%}{{ decimos // 10 }}{%- else -%}{{ (decimos / 10)|string|replace('.', ',') }}{%- endif -%}
 {%- endmacro %}
 
-{# Barra de crescimento da dificuldade (modo leitura). Médias são arredondadas
-   para o degrau mais próximo; o valor exato fica no aria-label e, com
-   mostrar_valor, em texto ao lado. Sem style inline (CSP): degraus via classe. #}
-{% macro barra_dificuldade(valor, mostrar_valor=true) -%}
+{# Barra de dificuldade estilo "HP" (modo leitura). A largura segue a média
+   exata (.preenche-N, em passos de 2%) e a cor vai do verde (1, fácil) ao
+   vermelho (5, difícil) conforme o nível arredondado (.nivel-N). O valor exato
+   fica no aria-label e, com mostrar_valor, em texto ao lado; com escala, mostra
+   a referência de 1 a 5 abaixo. Sem style inline (CSP): tudo via classes. #}
+{% macro barra_dificuldade(valor, mostrar_valor=true, escala=true) -%}
 {%- if valor is not none -%}
 {%- set nivel = [[(valor + 0.5)|int, 1]|max, 5]|min -%}
-<span class="degraus-leitura">
-    <span class="degraus" role="img" aria-label="Dificuldade {{ nota(valor) }} de 5">
-        {%- for n in range(1, 6) %}
-        <span class="degrau{% if n <= nivel %} degrau-ativo{% endif %}"></span>
-        {%- endfor %}
+{%- set preenche = [[((valor * 10 + 0.5)|int) * 2, 0]|max, 100]|min -%}
+<span class="barra-hp">
+    <span class="barra-hp-linha">
+        <span class="barra-hp-trilho" role="img" aria-label="Dificuldade {{ nota(valor) }} de 5 (1 = muito fácil, 5 = muito difícil)">
+            <span class="barra-hp-cheia preenche-{{ preenche }} nivel-{{ nivel }}"></span>
+        </span>
+        {%- if mostrar_valor %}
+        <span class="barra-hp-valor" aria-hidden="true">{{ nota(valor) }}/5</span>
+        {%- endif %}
     </span>
-    {%- if mostrar_valor %}
-    <span class="degraus-valor" aria-hidden="true">{{ nota(valor) }}/5</span>
+    {%- if escala %}
+    <span class="barra-hp-escala" aria-hidden="true">
+        {%- for n in range(1, 6) %}<span>{{ n }}</span>{% endfor -%}
+    </span>
     {%- endif %}
 </span>
 {%- endif -%}
