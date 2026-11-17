@@ -58,7 +58,9 @@
             <fieldset class="nota-grupo">
                 <legend>{{ titulo }} (1 a 5)</legend>
 
-                <div class="notas-opcoes">
+                {# Dificuldade como barra de crescimento: mesmos rádios (POST e teclado
+                   inalterados), com os labels estilizados como degraus. #}
+                <div class="notas-opcoes{% if criterio == 'dificuldade' %} degraus-selecao{% endif %}">
                     {% for nota in range(1, 6) %}
                     <input
                         type="radio"
