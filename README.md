@@ -42,7 +42,7 @@ anteriores podem conter apenas parte delas.
 | Etapa | Funcionalidades | Estado |
 |---|---|---|
 | R1 — fluxo essencial | Cadastro, login, busca de professores e disciplinas, perfil do professor, avaliação por cinco critérios e consulta de médias | Implementado |
-| R2 — consulta e gestão de avaliações | Ranking, comparação entre dois professores, filtro por departamento, busca que ignora acentos e espaços extras e perfil do usuário com edição e exclusão das próprias avaliações | Implementado |
+| R2 — consulta e gestão de avaliações | Ranking, comparação de vários professores por disciplina, filtro por departamento, busca que ignora acentos e espaços extras e perfil do usuário com edição e exclusão das próprias avaliações | Implementado |
 | Evolução dos filtros | Faixa de nota e volume de avaliações | Pendente |
 | Comentários e moderação | Comentários com nome de usuário, reações, filtro e denúncias | [Proposta para revisão](docs/COMENTARIOS.md) |
 | Outras funcionalidades planejadas | Favoritos e gráficos de desempenho | Pendente |
@@ -197,9 +197,10 @@ código, a situação do RLS e os resultados da auditoria com cada correção.
 Comentários e moderação têm uma [especificação proposta](docs/COMENTARIOS.md),
 baseada na #109, para revisão do grupo na
 [#116](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/116).
-Ela propõe exibir o nome de usuário e permitir consultar o e-mail pelo nome,
-além de participação com conta verificada de qualquer domínio, reações,
-filtro antes da publicação e denúncias. O recurso ainda não está implementado.
+Ela propõe participação com login pelo Google e confirmação de titularidade
+pelo perfil. Os comentários mostram o nome de usuário, com o e-mail verificado
+acessível pelo nome. Reações, filtro antes da publicação e denúncias também
+fazem parte da proposta. A interface está em desenvolvimento na #167.
 
 ## Documentação
 

@@ -54,7 +54,7 @@ Plataforma de consulta, comparação e avaliação de professores e disciplinas 
 
     ---
 
-    Coloque dois professores lado a lado antes de montar a grade.
+    Escolha uma disciplina e compare dois ou mais professores lado a lado antes de montar a grade.
 
 - :material-account-circle-outline: **Perfil do estudante**
 
