@@ -172,6 +172,8 @@ Preview, produção e a validação dos fluxos no ambiente publicado.
 
 ## Segurança e correções em andamento
 
+- página pública de **Política de Privacidade e Termos de Uso** (`/privacidade`), acessível pelo rodapé, detalhando em linguagem simples os dados coletados (cadastro, avaliações e formulário de feedback), as regras contra ofensas e avaliações falsas e o canal de contato para solicitação de exclusão de dados (LGPD).
+
 A versão da `main` inclui autenticação com Supabase Auth, proteção CSRF,
 cookies de autenticação com `HttpOnly`, `SameSite=Lax` e `Secure` fora do debug,
 headers de segurança e limites de requisições. A autorização de edição e
