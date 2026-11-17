@@ -18,15 +18,16 @@ avaliação e disponibilidade, com contexto útil para outros estudantes.
 | Pessoa | Comportamento proposto |
 |---|---|
 | Visitante | Lê comentários publicados no perfil do professor |
-| Usuário autenticado | Usa uma conta comum com e-mail verificado de qualquer domínio para comentar, reagir e denunciar |
+| Usuário autenticado | Entra com Google e verifica no perfil o e-mail atual da conta para comentar, reagir e denunciar |
 | Autor | Edita ou exclui seu próprio comentário e acompanha sua análise em privado |
 | Moderador autorizado | Analisa textos sinalizados e denúncias, com decisão e justificativa registradas |
 
 O perfil do professor tem uma área de comentários sobre a experiência pedagógica.
-A participação usa a mesma conta comum para todos, sem perfil docente, espaço
-de resposta oficial ou selo de professor. O cadastro atual aceita Gmail. Para
-liberar a área de comentários, o fluxo de cadastro e verificação deve aceitar
-outros domínios e preservar as permissões das demais áreas, como o envio de notas.
+A participação usa a mesma conta Google usada para acessar o AvaliaUnB. O
+perfil é criado no primeiro acesso. A verificação de titularidade pelo perfil
+confirma o endereço que poderá ser exibido com o comentário. Ela deve ser
+repetida se o endereço mudar. A plataforma usa o mesmo perfil para qualquer
+usuário, sem espaço de resposta oficial ou selo de professor.
 Uma conta de comentários não concede acesso à moderação.
 
 ## Texto, quantidade e vínculo
@@ -38,7 +39,7 @@ Uma conta de comentários não concede acesso à moderação.
 | Quantidade | Sem limite por conta, inclusive para o mesmo professor e disciplina |
 | Tamanho | De 2 a 1.000 caracteres após remover espaços, tabulações e quebras de linha das extremidades |
 | Formato | Texto simples; HTML e Markdown não são interpretados |
-| Identificação pública | Todo comentário publicado mostra o nome de usuário. Ao clicar nele, qualquer visitante pode consultar o e-mail de cadastro do autor |
+| Identificação pública | Todo comentário publicado mostra o nome de usuário. Ao clicar nele, qualquer visitante pode consultar o e-mail atual do autor com titularidade verificada |
 | Ordem da lista | Mais recentes por padrão. A pessoa pode escolher Mais curtidos, Mais antigos ou Mais reações |
 | Datas | Exibir a data da primeira publicação em cada comentário e indicar quando houve edição |
 
@@ -101,14 +102,14 @@ e comentar depois. Cada ação tem seu próprio formulário e envio.
 
 O perfil do professor apresenta os comentários publicados em uma seção
 separada das notas. A lista vazia convida a escrever o primeiro comentário.
-Visitantes veem a opção de entrar ou criar conta para escrever ou reagir.
+Visitantes veem a opção de entrar com Google para escrever ou reagir.
 Cada relato exibe sua disciplina. Quem já comentou pode editar os próprios
 textos e escrever outro relato para a mesma disciplina ou para outra
 ministrada pelo professor.
 
 O formulário informa antes da publicação que o texto e o nome de usuário
 serão públicos e que qualquer visitante poderá clicar no nome para ver o
-e-mail de cadastro. A publicação usa o botão **Publicar**.
+e-mail atual, desde que sua titularidade esteja verificada. A publicação usa o botão **Publicar**.
 Mostra o limite, exige a escolha de uma disciplina ministrada pelo professor
 e preserva o texto em erros de validação ou moderação. Durante a
 verificação, a interface desabilita o botão de envio e só confirma a
@@ -184,10 +185,11 @@ atender a fila, a publicação de novos comentários fica pausada até haver cob
 ## Privacidade e ciclo dos dados
 
 Cada comentário publicado mostra o nome de usuário da conta. Ao clicar ou
-tocar nesse nome, qualquer visitante pode consultar o e-mail de cadastro do
-autor, mesmo sem entrar. O endereço é carregado só quando solicitado e fica
-fora da resposta da listagem. A consulta só funciona enquanto o comentário
-estiver público. Vale o endereço atual da conta.
+tocar nesse nome, qualquer visitante pode consultar o e-mail atual do autor
+com titularidade verificada. O endereço é carregado só quando solicitado e
+fica fora da resposta da listagem. A consulta exige um comentário público e
+usa a verificação do endereço atual registrada pelo
+[fluxo no perfil](HOSPEDAGEM.md#verificacao-de-e-mail).
 
 Um endereço acessível a visitantes pode ser copiado ou coletado mesmo quando
 aparece só após um clique. Antes de liberar essa consulta no site, o grupo
@@ -213,11 +215,11 @@ rotina de descarte fica para a implementação após revisão do grupo.
 
 | ID | Decisão proposta | Situação |
 |---|---|---|
-| C01 | Leitura pública e participação com conta comum e e-mail verificado de qualquer domínio. Sem espaço ou perfil exclusivo para professores | Aguardando revisão |
+| C01 | Leitura pública. Participação com conta Google e titularidade do e-mail atual verificada pelo perfil. Sem espaço ou perfil exclusivo para professores | Aguardando implementação na #167 |
 | C02 | Disciplina obrigatória. A pessoa pode comentar quantas vezes quiser para o mesmo professor e disciplina | Aguardando revisão |
 | C03 | Texto simples de 2 a 1.000 caracteres após remover espaços em branco das extremidades | Aguardando revisão |
 | C04 | Estrelas e comentários são independentes e podem ser enviados em qualquer ordem. Uma avaliação por estrelas por estudante, professor e disciplina | Aguardando revisão |
-| C05 | Nome de usuário em todos os comentários públicos. Qualquer visitante pode clicar no nome para ver o e-mail de cadastro. A interface avisa sobre a exibição antes de publicar | Aguardando revisão do grupo antes da publicação no site |
+| C05 | Nome de usuário em todos os comentários públicos. Qualquer visitante pode clicar no nome para ver o e-mail atual com titularidade verificada. A interface avisa antes de publicar | Aguardando implementação na #167 |
 | C06 | Denúncia privada e moderação por responsáveis autorizados | Aguardando revisão e projeto de dados |
 | C07 | Ocultação motivada, sem republicação automática por edição | Aguardando revisão |
 | C08 | Dois moderadores designados, primeira análise em até três dias úteis, formulário privado de contestação e retenção de até 90 dias após o encerramento | Aguardando revisão |
@@ -233,9 +235,8 @@ acompanham estas regras.
 ## Critérios para a futura implementação
 
 - Visitantes consultam comentários com nome de usuário e contagens de
-  reações. Entrar com conta verificada é obrigatório para comentar, reagir
-  ou denunciar. O fluxo aceita, por exemplo, um e-mail Outlook ou de domínio
-  próprio.
+  reações. Comentar, reagir ou denunciar exige login com Google e verificação
+  da titularidade do e-mail atual pelo perfil.
 - «ok» passa pela validação de tamanho. Campo vazio, texto com menos de
   dois caracteres após retirar os espaços em branco das extremidades e
   texto acima de 1.000 caracteres recebem erro claro.
@@ -247,7 +248,8 @@ acompanham estas regras.
 - Só o autor edita ou exclui. O servidor nega tentativas de se passar por outro
   usuário e mantém os identificadores de conta fora das respostas públicas.
 - Qualquer visitante pode clicar no nome de um comentário visível para abrir
-  o e-mail de cadastro do autor.
+  o e-mail atual do autor com titularidade verificada. Uma mudança de endereço
+  oculta o e-mail até a nova verificação.
   O endereço fica fora da resposta da listagem e a consulta deixa de funcionar
   para aquele comentário se ele for ocultado ou excluído.
 - Uma conta troca ou desfaz sua reação. Pedidos simultâneos respeitam a
