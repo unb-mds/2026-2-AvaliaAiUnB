@@ -223,13 +223,39 @@ de superfície, botões e abas em pílula, cabeçalho de página com **selo**
 [barra de crescimento](#barra-de-dificuldade). O topo
 é uma barra fixa, semitransparente (`--cor-topo-fundo`), com abas e o botão de
 tema. Mantêm a identidade do projeto: o azul
-principal, o ícone de capelo, as estrelas (`--cor-estrela`) e o rodapé de feedback.
+principal, a [logo](#logo), as estrelas (`--cor-estrela`) e o rodapé de feedback.
 
 O conteúdo principal entra com um fade curto (`surgir`, 420 ms) e os elementos
 interativos têm transições de 160 ms (`--transicao`). Com
 `prefers-reduced-motion: reduce`, animações e transições são desligadas.
 Evite gradientes chamativos e efeitos de vidro sem função. O único fundo
 decorativo é o fundo animado descrito a seguir, restrito às telas listadas.
+
+## Logo
+
+Os arquivos-fonte ficam em `docs/logo/` (`lockup-*` com nome, `simbolo-*` só o
+capelo com estrela, e `teste-fundos` com o teste em vários fundos). No site, a
+logo é a macro `logo()` de `_macros.html`: o símbolo em SVG inline mais o texto
+"Avalia" + "UnB" (`.logo-texto` e `.logo-destaque`, em Inter 700/800). Ela é
+usada na marca do topo (`.marca.logo`, símbolo de 44 × 30 px) e no cartão de
+entrar (`.auth-logo`, símbolo de 64 × 44 px, com `aria-label="AvaliaUnb"`).
+
+As cores vêm dos tokens `--cor-logo-*`, então a logo acompanha o tema sem
+trocar de arquivo:
+
+| Token | Escuro | Claro | Parte |
+|---|---|---|---|
+| `--cor-logo-texto` | `#ffffff` | `#111111` | "Avalia" |
+| `--cor-logo-destaque` | `#ffc72c` | `#174b83` | "UnB" |
+| `--cor-logo-capelo` | `#ffffff` | `#174b83` | Topo do capelo |
+| `--cor-logo-base` | `#ffffff` | `#111111` | Base do capelo e cordão |
+| `--cor-logo-estrela` | `#ffc72c` | `#ffc72c` | Estrela da borla |
+| `--cor-logo-contorno` | `transparent` | `#111111` | Contorno da estrela |
+
+O favicon (`app/static/favicon.svg`, ligado em `_tema.html`) usa a versão
+branca com estrela amarela sobre um quadrado azul (`#174B83`) de cantos
+arredondados, legível em abas claras e escuras. Não altere a proporção do
+símbolo (242 × 166 no `viewBox`) nem use a logo sobre fundos sem contraste.
 
 ## Fundo animado
 

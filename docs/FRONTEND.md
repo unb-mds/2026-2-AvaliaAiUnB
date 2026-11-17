@@ -23,7 +23,8 @@ Fragmentos reutilizados: `_topo.html` (faixa azul com o menu de acesso rápido d
 traços, a marca, a conta e o Sair, usada na home, na busca, na comparação, no ranking
 e nos dois perfis; espera `usuario` no contexto) e `_macros.html` (macro `nota`, que formata notas com vírgula e sem
 decimal quando inteiras, como 5 em vez de 5,0, e macro `barra_dificuldade`, que
-desenha a dificuldade como barra de crescimento no perfil do professor, no perfil
+desenha a dificuldade como barra de crescimento, e macro `logo`, com o símbolo e o
+nome usados no topo e na tela de entrar no perfil do professor, no perfil
 do usuário e na comparação; veja o [design system](DESIGN_SYSTEM.md#barra-de-dificuldade)).
 
 As rotas preparam os dados e chamam `render_template`. Os nomes dos endpoints,
