@@ -60,8 +60,9 @@ class TestComparacao(unittest.TestCase):
         self.avaliar(2, 2)
         resposta = self.web.get('/comparar?professor_1=1&professor_2=2')
         self.assertEqual(resposta.status_code, 200)
+        # A dificuldade (média 3) aparece como barra, com o valor no aria-label
         for texto in (*CRITERIOS.values(), 'JOSÉ ÁVILA', 'MARIA LIMA', '4,50 / 5',
-                      '3,00 / 5', '2,00 / 5', '<td>2</td>', '<td>1</td>'):
+                      'aria-label="Dificuldade 3 de 5', '2,00 / 5', '<td>2</td>', '<td>1</td>'):
             self.assertIn(texto, resposta.text)
         self.avaliar(1, 3)
         self.assertIn('4,00 / 5', self.web.get('/comparar?professor_1=1&professor_2=2').text)

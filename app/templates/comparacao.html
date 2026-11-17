@@ -1,3 +1,4 @@
+{% from '_macros.html' import barra_dificuldade %}
 <!DOCTYPE html>
 
 <html lang="pt-BR">
@@ -172,7 +173,7 @@
 
                         {% for professor in comparacao %}
 
-                        <td>{% if professor.indicadores.quantidade %}{{ ('%.2f'|format(professor.indicadores.medias[criterio]))|replace('.', ',') }} / 5{% else %}Sem avaliações{% endif %}</td>
+                        <td>{% if not professor.indicadores.quantidade %}Sem avaliações{% elif criterio == 'dificuldade' %}{{ barra_dificuldade(professor.indicadores.medias[criterio]) }}{% else %}{{ ('%.2f'|format(professor.indicadores.medias[criterio]))|replace('.', ',') }} / 5{% endif %}</td>
 
                         {% endfor %}
 

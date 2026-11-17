@@ -1,3 +1,4 @@
+{% from '_macros.html' import logo %}
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -16,7 +17,7 @@
     </a>
 
     <div class="auth-cabecalho">
-        <p class="selo-marca">AvaliaUnb</p>
+        <p class="auth-logo logo" role="img" aria-label="AvaliaUnb">{{ logo() }}</p>
         <h1>Entre na sua conta</h1>
         <p class="descricao-auth">Avalie professores e consulte a opinião de outros estudantes da UnB. No primeiro acesso, sua conta é criada automaticamente.</p>
     </div>

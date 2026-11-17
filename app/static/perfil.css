@@ -220,3 +220,19 @@ h3 {
         align-self: flex-start;
     }
 }
+
+/* Dificuldade como barra estilo HP (com escala) dentro da pílula */
+.notas-lista .nota-dificuldade {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--espaco-2);
+    border-radius: 12px;
+}
+
+.notas-lista .barra-hp {
+    min-width: 6rem;
+}
+
+.notas-lista .barra-hp-trilho {
+    height: 10px;
+}

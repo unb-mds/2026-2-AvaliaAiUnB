@@ -124,6 +124,50 @@ h1 {
     outline-offset: var(--foco-distancia);
 }
 
+/* Dificuldade: labels viram degraus crescentes (estilo "sinal de celular").
+   Ao marcar o degrau N, os degraus 1..N ficam preenchidos via :has(); sem
+   suporte a :has(), só o degrau marcado é preenchido. O número continua
+   visível em cada degrau, então não depende só da cor. */
+.degraus-selecao {
+    grid-template-rows: 5rem;
+    align-items: end;
+}
+
+.degraus-selecao label {
+    align-items: flex-end;
+    min-height: 0;
+    padding-bottom: var(--espaco-1);
+    border-color: var(--cor-estrela);
+    border-radius: 8px 8px 4px 4px;
+}
+
+.degraus-selecao label:nth-of-type(1) { height: 40%; }
+.degraus-selecao label:nth-of-type(2) { height: 55%; }
+.degraus-selecao label:nth-of-type(3) { height: 70%; }
+.degraus-selecao label:nth-of-type(4) { height: 85%; }
+.degraus-selecao label:nth-of-type(5) { height: 100%; }
+
+.degraus-selecao label:hover {
+    border-color: var(--cor-estrela);
+    background-color: var(--cor-fundo-suave);
+    color: var(--cor-estrela);
+}
+
+/* Preenche todos os degraus quando há um marcado e esvazia os posteriores */
+.degraus-selecao:has(input:checked) label,
+.degraus-selecao input:checked + label {
+    border-color: var(--cor-estrela);
+    background-color: var(--cor-estrela);
+    color: var(--cor-superficie);
+    box-shadow: none;
+}
+
+.degraus-selecao input:checked + label ~ label {
+    border-color: var(--cor-estrela);
+    background-color: var(--cor-superficie);
+    color: var(--cor-texto);
+}
+
 .notas-escala {
     display: flex;
     justify-content: space-between;

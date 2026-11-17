@@ -14,7 +14,7 @@ separado para executar essas telas.
 | `sobre.html` | Apresentação do projeto, critérios e privacidade | `base.css`, `sobre.css` |
 | `lista_professores.html` | Filtros, catálogo, média geral em estrelas e estados sem resultado | `indicadores.css` (que importa `base.css`), `lista_professores.css` |
 | `perfil_professor.html` | Disciplinas (campo digitável), indicadores, média geral, comparação e avaliação | `indicadores.css`, `perfil_professor.css` |
-| `avaliacao.html` | Criação e edição de notas (botões de 1 a 5) | `indicadores.css`, `avaliacao.css` |
+| `avaliacao.html` | Criação e edição de notas (botões de 1 a 5; dificuldade em barra de crescimento) | `indicadores.css`, `avaliacao.css` |
 | `perfil.html` | Avaliações do usuário e ações de editar e excluir | `base.css`, `perfil.css` |
 | `comparacao.html` | Escolha por nome e comparação de professores | `indicadores.css`, `comparacao.css` |
 | `ranking.html` | Classificação e estado sem professores elegíveis | `indicadores.css`, `ranking.css` |
@@ -22,7 +22,10 @@ separado para executar essas telas.
 Fragmentos reutilizados: `_topo.html` (faixa azul com o menu de acesso rápido de três
 traços, a marca, a conta e o Sair, usada na home, na busca, na comparação, no ranking
 e nos dois perfis; espera `usuario` no contexto) e `_macros.html` (macro `nota`, que formata notas com vírgula e sem
-decimal quando inteiras, como 5 em vez de 5,0).
+decimal quando inteiras, como 5 em vez de 5,0, e macro `barra_dificuldade`, que
+desenha a dificuldade como barra de crescimento, e macro `logo`, com o símbolo e o
+nome usados no topo e na tela de entrar no perfil do professor, no perfil
+do usuário e na comparação; veja o [design system](DESIGN_SYSTEM.md#barra-de-dificuldade)).
 
 As rotas preparam os dados e chamam `render_template`. Os nomes dos endpoints,
 parâmetros e regras de autorização estão no [guia do backend](BACKEND.md).
@@ -62,7 +65,8 @@ sem JavaScript) antes de enviar a exclusão.
 A média geral usa didática, clareza, organização e disponibilidade, sem a
 dificuldade, como o ranking. A política de segurança (`style-src 'self'` em
 `app/seguranca.py`) bloqueia `style=""` inline, então valores dinâmicos de estilo
-precisam virar classes de CSS.
+precisam virar classes de CSS (como `.preenche-N` nas barras e `.degrau-ativo` na
+barra de dificuldade).
 
 Cores, Arial, espaçamentos, raios e alturas seguem o design system e vêm das
 variáveis de `base.css`. O ranking possui uma folha de estilos própria e segue disponível na rota `/ranking`;

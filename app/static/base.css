@@ -30,6 +30,21 @@
     --cor-erro-hover: #ffb4ad;
     --cor-estrela: #f5b94a;
 
+    /* Barra de dificuldade: do verde (1, muito fácil) ao vermelho (5, muito difícil) */
+    --cor-dificuldade-1: #4ade80;
+    --cor-dificuldade-2: #a3e635;
+    --cor-dificuldade-3: #facc15;
+    --cor-dificuldade-4: #fb923c;
+    --cor-dificuldade-5: #f87171;
+
+    /* Logo (docs/logo/lockup-escuro.svg no tema escuro, lockup-claro.svg no claro) */
+    --cor-logo-texto: #ffffff;
+    --cor-logo-destaque: #ffc72c;
+    --cor-logo-capelo: #ffffff;
+    --cor-logo-base: #ffffff;
+    --cor-logo-estrela: #ffc72c;
+    --cor-logo-contorno: transparent;
+
     /* Cores de apoio ao tema escuro (preenchimentos, topo e medalhas) */
     --cor-principal-fundo: #1f5fae;
     --cor-principal-fundo-hover: #2a70c8;
@@ -103,6 +118,17 @@
     --cor-erro: #a01818;
     --cor-erro-hover: #801212;
     --cor-estrela: #b45309;
+    --cor-dificuldade-1: #15803d;
+    --cor-dificuldade-2: #4d7c0f;
+    --cor-dificuldade-3: #a16207;
+    --cor-dificuldade-4: #c2410c;
+    --cor-dificuldade-5: #b91c1c;
+    --cor-logo-texto: #111111;
+    --cor-logo-destaque: #174b83;
+    --cor-logo-capelo: #174b83;
+    --cor-logo-base: #111111;
+    --cor-logo-estrela: #ffc72c;
+    --cor-logo-contorno: #111111;
     --sombra-card: 0 1px 2px rgb(23 75 131 / 0.08), 0 10px 24px -12px rgb(23 75 131 / 0.28);
     --sombra-elevada: 0 2px 4px rgb(23 75 131 / 0.1), 0 16px 32px -12px rgb(23 75 131 / 0.38);
 
@@ -341,21 +367,52 @@ textarea:focus-visible,
 }
 
 .marca {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--espaco-2);
     min-height: var(--altura-controle);
-    color: var(--cor-principal);
     font-size: var(--texto-titulo-card);
-    font-weight: 700;
-    letter-spacing: -0.01em;
     text-decoration: none;
 }
 
-.marca-icone {
-    width: 28px;
-    height: 28px;
+/* Logo: símbolo (capelo com estrela) + "Avalia" e "UnB", com cores do tema */
+.logo {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--espaco-2);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1;
+}
+
+.logo-simbolo {
+    width: 44px; /* proporção do símbolo: 242 x 166 */
+    height: 30px;
     flex-shrink: 0;
+}
+
+.logo-capelo {
+    fill: var(--cor-logo-capelo);
+    stroke: var(--cor-logo-capelo);
+}
+
+.logo-base {
+    fill: var(--cor-logo-base);
+}
+
+.logo-cordao {
+    stroke: var(--cor-logo-base);
+}
+
+.logo-estrela {
+    fill: var(--cor-logo-estrela);
+    stroke: var(--cor-logo-contorno);
+}
+
+.logo-texto {
+    color: var(--cor-logo-texto);
+}
+
+.logo-destaque {
+    color: var(--cor-logo-destaque);
+    font-weight: 800;
 }
 
 /* Abas em pílula; a ativa (aria-current) fica azul */
@@ -739,8 +796,58 @@ main {
     background-color: var(--cor-principal);
 }
 
-.barra-cheia.barra-dificuldade {
-    background-color: var(--cor-estrela);
+/* Barra de dificuldade estilo "HP": trilho com divisões a cada 20% (uma por
+   ponto da escala), preenchimento com a largura da média (.preenche-N) e cor
+   do nível (.nivel-N, verde = fácil, vermelho = difícil). A escala de 1 a 5
+   fica abaixo, com cada número alinhado ao fim do seu trecho. */
+.barra-hp {
+    display: inline-flex;
+    flex-direction: column;
+    gap: var(--espaco-1);
+    min-width: 8rem;
+}
+
+.barra-hp-trilho {
+    position: relative;
+    display: block;
+    height: 12px;
+    overflow: hidden;
+    border-radius: var(--raio-pilula);
+    background-color: var(--cor-divisor-suave);
+}
+
+/* Divisões da escala por cima do preenchimento */
+.barra-hp-trilho::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+        to right,
+        transparent 0 calc(20% - 2px),
+        var(--cor-superficie) calc(20% - 2px) 20%
+    );
+    pointer-events: none;
+}
+
+.barra-hp-cheia {
+    position: absolute;
+    inset: 0 auto 0 0;
+    border-radius: inherit;
+}
+
+.nivel-1 { background-color: var(--cor-dificuldade-1); }
+.nivel-2 { background-color: var(--cor-dificuldade-2); }
+.nivel-3 { background-color: var(--cor-dificuldade-3); }
+.nivel-4 { background-color: var(--cor-dificuldade-4); }
+.nivel-5 { background-color: var(--cor-dificuldade-5); }
+
+.barra-hp-escala {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    color: var(--cor-texto-secundario);
+    font-size: 0.75rem;
+    line-height: 1;
+    text-align: right;
 }
 
 /*
