@@ -200,6 +200,27 @@ def publicar_comentario(usuario, professor_id, disciplina_id, texto):
     return repositorios().comentarios.criar(usuario['id'], professor_id, disciplina_id, texto)
 
 
+def carregar_comentario_do_usuario(comentario_id, usuario):
+    """Comentário do usuário logado; 404 se não existir ou for de outra pessoa (nunca 403)."""
+    comentario = repositorios().comentarios.buscar_do_usuario(comentario_id, usuario['id'])
+    if comentario is None:
+        abort(404, description='Comentário não encontrado.')
+    return comentario
+
+
+def editar_comentario(comentario_id, usuario, disciplina_id, texto):
+    """Muda só texto e disciplina. 404 se o comentário não for do usuário; ValueError se recusado."""
+    if not repositorios().comentarios.atualizar(comentario_id, usuario['id'], disciplina_id, texto):
+        abort(404, description='Comentário não encontrado.')
+    return True
+
+
+def excluir_comentario(comentario_id, usuario):
+    if not repositorios().comentarios.excluir(comentario_id, usuario['id']):
+        abort(404, description='Comentário não encontrado.')
+    return True
+
+
 def carregar_comentarios(professor_id, disciplinas, filtro_bruto, usuario):
     """Contexto da seção de comentários do perfil. Nunca levanta: se a consulta falhar,
     registra o erro e devolve erro_comentarios=True para o resto do perfil continuar."""

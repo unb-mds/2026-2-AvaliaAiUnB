@@ -199,6 +199,13 @@
                         {% if c.editado %}(editado){% endif %}
                     </p>
                     <p>{% for linha in c.texto.splitlines() %}{{ linha }}{% if not loop.last %}<br>{% endif %}{% endfor %}</p>
+                    {% if c.e_meu %}
+                    <p class="ajuda">
+                        <a href="{{ url_for('professores.editar_comentario', comentario_id=c.id, next=next_url, comentarios_disciplina=filtro_comentarios) }}">Editar</a>
+                        ·
+                        <a href="{{ url_for('professores.excluir_comentario', comentario_id=c.id, next=next_url, comentarios_disciplina=filtro_comentarios) }}">Excluir</a>
+                    </p>
+                    {% endif %}
                 </li>
                 {% endfor %}
             </ul>

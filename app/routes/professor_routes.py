@@ -106,6 +106,62 @@ def comentar(professor_id):
                               disciplina_form=disciplina_id)
 
 
+def _contexto_do_comentario(comentario_id, usuario, origem):
+    """(comentario, professor, disciplinas, next_url, filtro, url_voltar) de um comentário do
+    usuário logado. 404 se não for dele. `origem` é request.args (GET) ou request.form (POST)."""
+    comentario = controller.carregar_comentario_do_usuario(comentario_id, usuario)
+    professor = controller.carregar_professor(comentario['professor_id'])
+    disciplinas = controller.listar_disciplinas(professor['id'])
+    next_url = _next_seguro(origem.get('next'))
+    filtro = controller.filtro_de_comentarios(origem.get('comentarios_disciplina'), disciplinas)
+    return (comentario, professor, disciplinas, next_url, filtro,
+            _url_perfil(professor['id'], next_url, None, filtro))
+
+
+@professor_bp.route('/comentarios/<int:comentario_id>/editar', methods=['GET', 'POST'])
+@login_required
+def editar_comentario(comentario_id):
+    usuario = obter_usuario_atual()
+    origem = request.form if request.method == 'POST' else request.args
+    comentario, professor, disciplinas, next_url, filtro, url_voltar = _contexto_do_comentario(
+        comentario_id, usuario, origem)
+    texto, disciplina_form, erros, status = comentario['texto'], comentario['disciplina_id'], {}, 200
+    if request.method == 'POST':
+        # Só texto e disciplina mudam; professor_id e usuario_id do formulário são ignorados.
+        texto = request.form.get('texto', '')
+        disciplina_form, erros = controller.validar_novo_comentario(
+            disciplinas, request.form.get('disciplina_id'), texto)
+        if not erros:
+            try:
+                controller.editar_comentario(comentario_id, usuario, disciplina_form, texto)
+            except ValueError as erro:
+                erros['texto'] = str(erro)
+            else:
+                return redirect(url_voltar, code=303)
+        status = 400
+    return render_template('editar_comentario.html', professor=professor, disciplinas=disciplinas,
+                           comentario=comentario, texto_form=texto, disciplina_form=disciplina_form,
+                           erros_comentario=erros, next_url=next_url, filtro_comentarios=filtro,
+                           url_voltar=url_voltar, usuario=usuario), status
+
+
+@professor_bp.route('/comentarios/<int:comentario_id>/excluir', methods=['GET', 'POST'])
+@login_required
+def excluir_comentario(comentario_id):
+    usuario = obter_usuario_atual()
+    origem = request.form if request.method == 'POST' else request.args
+    comentario, professor, _, next_url, filtro, url_voltar = _contexto_do_comentario(
+        comentario_id, usuario, origem)
+    if request.method == 'POST':
+        controller.excluir_comentario(comentario_id, usuario)
+        if request.accept_mimetypes.best == 'application/json':
+            return jsonify({'mensagem': 'Comentário excluído com sucesso.'}), 200
+        return redirect(url_voltar, code=303)
+    return render_template('excluir_comentario.html', professor=professor, comentario=comentario,
+                           next_url=next_url, filtro_comentarios=filtro, url_voltar=url_voltar,
+                           usuario=usuario)
+
+
 @professor_bp.route('/avaliar/<int:professor_id>', methods=['GET', 'POST'])
 @login_required
 @limitar_avaliacao
