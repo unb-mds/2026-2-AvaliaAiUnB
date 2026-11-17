@@ -8,7 +8,7 @@ import re
 import secrets
 import time
 from collections import Counter
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from urllib.parse import urlencode
 
 from flask import current_app
@@ -460,6 +460,16 @@ class ComentarioRepository:
             return datetime.fromisoformat(texto)
         except ValueError:
             return None
+
+    @classmethod
+    def formatar_data(cls, valor):
+        """dd/mm/aaaa no horário de Brasília (UTC-3, sem horário de verão); '' se ilegível."""
+        data = cls._ler_data(valor)
+        if data is None:
+            return ''
+        if data.tzinfo is None:
+            data = data.replace(tzinfo=timezone.utc)
+        return data.astimezone(timezone(timedelta(hours=-3))).strftime('%d/%m/%Y')
 
     @classmethod
     def _foi_editado(cls, linha):

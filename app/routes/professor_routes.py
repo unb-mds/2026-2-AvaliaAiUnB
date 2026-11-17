@@ -41,11 +41,15 @@ def perfil(professor_id):
     if not is_safe_url(next_url):
         next_url = url_for('professores.listar')
 
+    usuario = obter_usuario_atual()
+    comentarios = controller.carregar_comentarios(
+        professor_id, disciplinas, request.args.get('comentarios_disciplina'), usuario)
+
     return render_template('perfil_professor.html', professor=professor, disciplinas=disciplinas,
                            disciplina=disciplina, indicadores=indicadores,
                            criterios=controller.criterios(), next_url=next_url,
                            geral=controller.indicadores(professor_id, None),
-                           usuario=obter_usuario_atual())
+                           usuario=usuario, **comentarios)
 
 @professor_bp.route('/avaliar/<int:professor_id>', methods=['GET', 'POST'])
 @login_required

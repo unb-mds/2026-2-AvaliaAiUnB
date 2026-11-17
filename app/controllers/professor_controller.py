@@ -1,7 +1,8 @@
 """Lógica de professores e avaliações: resolve o que as rotas exibem e registra avaliações."""
-from flask import abort, request
+from flask import abort, current_app, request
 
-from app.repositorio import MINIMO_AVALIACOES_RANKING, repositorios
+from app.repositorio import (LIMITE_COMENTARIOS, MINIMO_AVALIACOES_RANKING,
+                             ComentarioRepository, repositorios)
 from app.validacoes import CRITERIOS, validar_avaliacao
 
 
@@ -147,6 +148,34 @@ def carregar_perfil(professor_id):
         if disciplina is None:
             abort(404, description='Disciplina não vinculada ao professor.')
     return professor, disciplinas, disciplina
+
+
+def _filtro_de_comentarios(bruto, disciplinas):
+    """id da disciplina do filtro, ou None (= todas) se vazio, ilegível ou de outro professor."""
+    try:
+        disciplina_id = int(bruto)
+    except (TypeError, ValueError):
+        return None
+    return disciplina_id if any(d['id'] == disciplina_id for d in disciplinas) else None
+
+
+def carregar_comentarios(professor_id, disciplinas, filtro_bruto, usuario):
+    """Contexto da seção de comentários do perfil. Nunca levanta: se a consulta falhar,
+    registra o erro e devolve erro_comentarios=True para o resto do perfil continuar."""
+    filtro = _filtro_de_comentarios(filtro_bruto, disciplinas)
+    contexto = dict(comentarios=[], ha_mais=False, filtro_comentarios=filtro,
+                    erro_comentarios=False, limite_comentarios=LIMITE_COMENTARIOS)
+    try:
+        comentarios, ha_mais = repositorios().comentarios.listar_por_professor(
+            professor_id, filtro, usuario['id'] if usuario else None)
+        for comentario in comentarios:
+            comentario['data'] = ComentarioRepository.formatar_data(comentario['criado_em'])
+    except Exception:
+        current_app.logger.exception('Falha ao carregar os comentários do professor %s', professor_id)
+        contexto['erro_comentarios'] = True
+    else:
+        contexto.update(comentarios=comentarios, ha_mais=ha_mais)
+    return contexto
 
 
 def indicadores(professor_id, disciplina_id):
