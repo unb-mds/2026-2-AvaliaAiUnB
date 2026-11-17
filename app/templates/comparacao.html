@@ -95,6 +95,7 @@
         {% if disciplina and professores|length >= 2 %}
         <form method="get" action="{{ url_for('professores.comparar') }}" class="filtros">
             <input type="hidden" name="disciplina_id" value="{{ disciplina.id }}">
+            {% if selecao_previa %}<input type="hidden" name="professor_1" value="{{ selecao_previa }}">{% endif %}
             <div class="selecao-comparacao">
                 {% for selecionado in campos %}
                 <div class="campo">
