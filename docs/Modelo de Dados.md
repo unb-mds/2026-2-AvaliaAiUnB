@@ -1,11 +1,11 @@
 # Modelo de dados do AvaliaUnB (Supabase / PostgreSQL)
 
 > Issue #109. Depende da #90 (esquema versionado em `docs/migrations/`).
-> O esquema e as políticas estão versionados em SQL; sua aplicação em cada ambiente deve ser conferida. A tabela de comentários é **apenas proposta**, sem migração aplicada.
+> O esquema e as políticas estão versionados em SQL; sua aplicação em cada ambiente deve ser conferida. A tabela `comentarios` está versionada em `docs/migrations/002_comentarios.sql`, existe no banco e é usada pelo perfil do professor; as reações continuam **apenas proposta**, sem migração.
 
 ## 1. Visão geral
 
-O banco tem cinco tabelas e uma view. Três são alimentadas pelo scraper do SIGAA (`professores`, `disciplinas`, `turmas`) e duas pelos usuários autenticados (`perfis`, `avaliacoes`).
+O banco tem cinco tabelas e uma view. Três são alimentadas pelo scraper do SIGAA (`professores`, `disciplinas`, `turmas`) e duas pelos usuários autenticados (`perfis`, `avaliacoes`). A tabela `comentarios` (seção 6) foi acrescentada depois e não aparece no diagrama.
 
 ```mermaid
 erDiagram
@@ -261,7 +261,12 @@ do conteúdo atual da migração.
 
 ## 6. Proposta: tabela `comentarios`
 
-> **Status: proposta para revisão do grupo. SQL não aplicado.**
+> **Status: a tabela `comentarios` está implementada** pela migração
+> [`002_comentarios.sql`](migrations/002_comentarios.sql), que é a fonte de
+> verdade da tabela (inclui RLS e permissões por coluna, além do que o bloco
+> abaixo mostra) e é usada pelo perfil do professor. O restante desta seção,
+> em especial as reações (`comentarios_reacoes`), continua **proposta para
+> revisão do grupo, sem migração**.
 
 ### 6.1 Decisões de projeto
 
@@ -345,11 +350,8 @@ REVOKE ALL ON comentarios_reacoes FROM PUBLIC, anon, authenticated;
    A ordenação usa a data da primeira publicação (`criado_em`), a contagem
    de curtidas ou a soma de curtidas e descurtidas, conforme a
    [especificação](COMENTARIOS.md).
-   Uma consulta separada, por ID do comentário visível, retorna apenas o
-   e-mail de cadastro atual do autor. Qualquer visitante pode fazer essa
-   consulta ao clicar no nome de usuário. O backend mantém o endereço fora da
-   listagem e restringe a consulta a comentários públicos, conforme o
-   [fluxo de privacidade](COMENTARIOS.md).
+   O e-mail de cadastro do autor não é consultado nem exibido: a listagem usa
+   só `perfis.username`, conforme o [fluxo de privacidade](COMENTARIOS.md).
 4. **Moderação.** A tabela `comentarios` guarda o texto já aprovado. Textos
    que precisam de revisão ficam em uma fila privada separada, inclusive
    revisões de comentários publicados. O modelo de fila, denúncias e decisões
@@ -369,13 +371,13 @@ REVOKE ALL ON comentarios_reacoes FROM PUBLIC, anon, authenticated;
 ## 7. Como recriar o banco
 
 1. Criar um projeto Supabase vazio.
-2. No **SQL Editor**, executar o script versionado em `docs/migrations/001_initial_schema.sql` e verificar tabelas e políticas. Não executar blocos de proposta de comentários.
+2. No **SQL Editor**, executar o script versionado em `docs/migrations/001_initial_schema.sql` e verificar tabelas e políticas. Não executar os blocos de proposta da seção 6: a tabela `comentarios` vem do passo 5.
 3. Copiar `.env.example` para `.env` e preencher:
    - `SECRET_KEY`: gerar com `python -c "import secrets; print(secrets.token_hex(32))"`.
    - `SUPABASE_URL`: URL do projeto (o código remove sufixos como `/rest/v1`).
    - `SUPABASE_SERVICE_KEY`: chave `service_role` em *Project Settings → API*. É secreta: não commitar e não expor em templates.
    - `FLASK_DEBUG`: `0`, ou `1` somente em desenvolvimento local.
 4. Executar o scraper do SIGAA para popular `professores`, `disciplinas` e `turmas`.
-5. A tabela `comentarios` só entra depois da aprovação da proposta da seção 6.
+5. Executar `docs/migrations/002_comentarios.sql`, que depende do esquema inicial, para criar a tabela `comentarios`. Reações, denúncias e moderação ainda não têm migração (seção 6).
 
 Veja também: [guia do backend](BACKEND.md), [guia do scraper](COMO_USAR_SCRAPER.md) e [mapa da documentação](GUIA_DOCUMENTACAO.md).
