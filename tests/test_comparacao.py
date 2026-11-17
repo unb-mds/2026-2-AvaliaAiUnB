@@ -159,6 +159,11 @@ class TestComparacao(unittest.TestCase):
         self.assertIn('value="1" selected', resposta.text)
         self.assertIn('MARIA LIMA', resposta.text)
 
-        
+        comparado = self.web.get('/comparar?disciplina_id=20&professor=1&professor=2&comparar=1')
+        self.assertEqual(comparado.status_code, 200)
+        self.assertIn('<table class="tabela-comparacao">', comparado.text)
+        self.assertIn('JOSÉ ÁVILA', comparado.text)
+        self.assertIn('MARIA LIMA', comparado.text)
+
 if __name__ == '__main__':
     unittest.main()
