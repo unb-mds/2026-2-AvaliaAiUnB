@@ -45,7 +45,7 @@ def ranking():
 def listar():
     filtros = {campo: request.args.get(campo, '').strip() for campo in CAMPOS_FILTRO}
     return render_template('lista_professores.html', catalogo=controller.catalogo(**filtros),
-                           filtros=filtros, departamentos=controller.departamentos(),
+                           filtros=filtros,
                            usuario=obter_usuario_atual())
 
 

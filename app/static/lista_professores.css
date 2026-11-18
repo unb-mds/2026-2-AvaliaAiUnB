@@ -46,23 +46,10 @@ h1 {
     width: 100%;
 }
 
-/* Filtros: um card, campos empilhados no mobile e em duas colunas no desktop */
-.filtros-busca {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 0 var(--espaco-4);
-    padding: var(--espaco-5) var(--espaco-4);
-    margin-bottom: var(--espaco-5);
-}
-
-.filtros-busca .campo input,
-.filtros-busca .campo select {
-    padding: var(--espaco-2) var(--espaco-3);
-}
-
-.filtros-busca button {
-    margin: 0;
-    width: 100%;
+/* Filtros ativos (vindos da home ou de uma sugestão) */
+.filtros-ativos {
+    margin: 0 0 var(--espaco-5);
+    color: var(--cor-texto-secundario);
 }
 
 /* Catálogo */
@@ -141,16 +128,6 @@ h1 {
         margin-top: calc(1.5em + var(--espaco-2));
     }
 
-    .filtros-busca {
-        grid-template-columns: 1fr 1fr;
-        padding: var(--espaco-5);
-    }
-
-    .filtros-busca button {
-        grid-column: 1 / -1;
-        width: auto;
-        justify-self: start;
-    }
 
     .lista-professores > li.card {
         padding: var(--espaco-5);

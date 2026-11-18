@@ -50,11 +50,6 @@ def sugestoes(termo, limite_bruto=None, contexto_bruto=None):
             for s in encontradas]
 
 
-def departamentos():
-    """Opções do filtro de departamento, vindas dos dados."""
-    return repositorios().professores.listar_departamentos()
-
-
 def _carregar_comparacao_legada(dados):
     repos = repositorios()
     professores = sorted((p for p, _ in repos.professores.catalogo()),

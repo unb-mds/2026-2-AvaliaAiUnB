@@ -151,6 +151,19 @@ class TestCampoBuscaUnificada(unittest.TestCase):
         self.assertNotIn('<script>alert(1)', html)
         self.assertIn('&lt;script&gt;', html)
 
+    def test_consulta_tem_um_unico_campo_de_busca(self):
+        html = self.web.get('/professores').get_data(as_text=True)
+        self.assertEqual(len(re.findall(r'<input\b[^>]*type="search"', html)), 1)
+        self.assertNotIn('name="departamento"', html)
+        self.assertNotIn('filtros-ativos', html)
+
+    def test_filtro_vindo_de_sugestao_aparece_com_limpar(self):
+        html = self.web.get('/professores?departamento=FCTE').get_data(as_text=True)
+        self.assertIn('Filtrando por departamento “FCTE”.', html)
+        self.assertIn('href="/professores">Limpar filtros</a>', html)
+        html = self.web.get('/professores?disciplina=FGA0001&q=jose').get_data(as_text=True)
+        self.assertIn('Filtrando por disciplina “FGA0001” e pela busca “jose”.', html)
+
     def test_sem_javascript_inline(self):
         for caminho in ('/professores', '/comparar', '/comparar?busca=calculo'):
             resposta = self.web.get(caminho)

@@ -252,15 +252,6 @@ class ProfessorRepository:
         self._catalogo_em = time.monotonic()
         return self._catalogo
 
-    def listar_departamentos(self):
-        """Departamentos distintos (opções do filtro), em ordem alfabética sem acento."""
-        unicos = {}
-        for professor, _ in self._carregar_catalogo():
-            departamento = (professor.get('departamento') or '').strip()
-            if departamento:
-                unicos.setdefault(normalizar_busca(departamento), departamento)
-        return [unicos[chave] for chave in sorted(unicos)]
-
     def catalogo(self, nome='', disciplina='', departamento='', termo=''):
         """[(professor, disciplinas)] filtrado sem distinguir acento/caixa/espaços,
         ordenado do mais avaliado para o menos avaliado (desempate: nome).

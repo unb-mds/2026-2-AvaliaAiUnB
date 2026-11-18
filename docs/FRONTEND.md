@@ -67,8 +67,9 @@ própria, sem JavaScript.
 
 O catálogo mostra mensagens diferentes para ausência de dados e ausência de
 resultados dos filtros e exibe a média
-geral em cinco estrelas ou `N/A (Não avaliado)`. O filtro de departamento é um campo
-de texto com sugestões. O perfil informa quando não há avaliações válidas e mostra a
+geral em cinco estrelas ou `N/A (Não avaliado)`. A busca é um campo único
+(professor, disciplina ou departamento) com sugestões; filtros vindos da home ou de uma
+sugestão aparecem numa linha com o link "Limpar filtros". O perfil informa quando não há avaliações válidas e mostra a
 média geral do professor; a avaliação exibe erros de campo; a comparação
 exige dois professores diferentes; e o ranking informa quando ninguém atinge o
 mínimo de avaliações. No perfil do usuário, Apagar abre uma confirmação (`<details>`,
