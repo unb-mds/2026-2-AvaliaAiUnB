@@ -164,6 +164,45 @@ class TestComparacao(unittest.TestCase):
         self.assertIn('<table class="tabela-comparacao">', comparado.text)
         self.assertIn('JOSÉ ÁVILA', comparado.text)
         self.assertIn('MARIA LIMA', comparado.text)
+    def test_compara_professores_de_disciplinas_diferentes_no_modo_livre(self):
+        # Professor 1 ministra Cálculo 1 (id=10) e Professor 2 ministra Física 1 (id=20)
+        self.cliente.tabelas['vw_professor_disciplina'].append({
+            'professor_id': 2, 'professor_nome': 'MARIA LIMA', 'departamento': 'FIS',
+            'disciplina_id': 20, 'disciplina': 'FÍSICA 1', 'codigo_disciplina': 'IFD0171',
+            'ano': 2026, 'periodo': 2,
+        })
+        self.avaliar(1, 5, disciplina_id=10, dificuldade=2)
+        self.avaliar(2, 3, disciplina_id=20, dificuldade=4)
+
+        resposta = self.web.get('/comparar?modo=livre&professor=1&professor=2&comparar=1')
+        self.assertEqual(resposta.status_code, 200)
+        html = resposta.text
+        for texto in ('ministram disciplinas diferentes', 'CÁLCULO 1', 'FÍSICA 1',
+                      'JOSÉ ÁVILA', 'MARIA LIMA', 'Média geral', '5,00 / 5', '3,00 / 5'):
+            self.assertIn(texto, html)
+
+    def test_modo_livre_adiciona_remove_e_pre_seleciona_professor(self):
+        pre = self.web.get('/comparar?modo=livre&professor_1=1')
+        self.assertEqual(pre.status_code, 200)
+        self.assertIn('value="1" selected', pre.text)
+
+        adicao = self.web.get('/comparar?modo=livre&professor=1&professor=2&adicionar=1')
+        self.assertEqual(adicao.status_code, 200)
+        self.assertEqual(adicao.text.count('name="professor"'), 3)
+
+        remocao = self.web.get('/comparar?modo=livre&professor=1&professor=2&professor=3&remover=1')
+        self.assertEqual(remocao.status_code, 200)
+        self.assertEqual(remocao.text.count('name="professor"'), 2)
+        self.assertIn('value="3" selected', remocao.text)
+        self.assertNotIn('value="2" selected', remocao.text)
+
+    def test_modo_livre_rejeita_selecoes_invalidas(self):
+        for params in ('&professor=1', '&professor=1&professor=1', '&professor=1&professor=999'):
+            with self.subTest(params=params):
+                resposta = self.web.get('/comparar?modo=livre' + params + '&comparar=1')
+                self.assertEqual(resposta.status_code, 400)
+                self.assertNotIn('<table', resposta.text)
+                self.assertIn('role="alert"', resposta.text)
 
     def test_destaque_melhor_desempenho_e_regra_inversa_dificuldade(self):
         self._vincular(2)
@@ -204,6 +243,22 @@ class TestComparacao(unittest.TestCase):
         self.assertEqual(html.count('Melhor desempenho'), 2)
         self.assertEqual(html.count('Menor dificuldade'), 2)
         self.assertEqual(html.count('>Melhor<'), 8)
+
+    def test_destaque_tambem_no_modo_livre(self):
+        self.cliente.tabelas['vw_professor_disciplina'].append({
+            'professor_id': 2, 'professor_nome': 'MARIA LIMA', 'departamento': 'FIS',
+            'disciplina_id': 20, 'disciplina': 'FÍSICA 1', 'codigo_disciplina': 'IFD0171',
+            'ano': 2026, 'periodo': 2,
+        })
+        for _ in range(5):
+            self.avaliar(1, 5, disciplina_id=10, dificuldade=2)
+            self.avaliar(2, 3, disciplina_id=20, dificuldade=4)
+        resposta = self.web.get('/comparar?modo=livre&professor=1&professor=2&comparar=1')
+        self.assertEqual(resposta.status_code, 200)
+        tabela = resposta.text[resposta.text.index('<table class="tabela-comparacao">'):]
+        self.assertEqual(tabela.count('Melhor desempenho'), 1)
+        self.assertLess(tabela.index('JOSÉ ÁVILA'), tabela.index('Melhor desempenho'))
+        self.assertLess(tabela.index('Melhor desempenho'), tabela.index('MARIA LIMA'))
 
 if __name__ == '__main__':
     unittest.main()

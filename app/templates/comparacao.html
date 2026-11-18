@@ -29,6 +29,11 @@
         <p class="selo">Consulta</p>
         <h1>Comparar professores</h1>
 
+        <nav class="modos-comparacao" aria-label="Modo de comparação">
+            <a href="{{ url_for('professores.comparar', professor_1=selecao_previa or None) }}" class="modo-link"{% if not modo_livre and not modo_legado %} aria-current="page"{% endif %}>Por mesma disciplina</a>
+            <a href="{{ url_for('professores.comparar', modo='livre', professor_1=selecao_previa or None) }}" class="modo-link"{% if modo_livre or modo_legado %} aria-current="page"{% endif %}>Disciplinas diferentes (seleção livre)</a>
+        </nav>
+
         {% if modo_legado %}
         <p class="ajuda">Este link compara as médias gerais dos dois professores. <a href="{{ url_for('professores.comparar') }}">Comparar por disciplina</a>.</p>
 
@@ -68,6 +73,40 @@
 
         <p class="mensagem" role="status">É necessário ter pelo menos dois professores cadastrados para comparar.</p>
 
+        {% endif %}
+        {% elif modo_livre %}
+        <p class="ajuda">Selecione dois ou mais professores de qualquer disciplina para comparar suas médias gerais e por critério.</p>
+
+        {% if erros.professores %}<p class="campo-erro" role="alert">{{ erros.professores }}</p>{% endif %}
+        {% if professores|length >= 2 %}
+        <form method="get" action="{{ url_for('professores.comparar') }}" class="filtros">
+            <input type="hidden" name="modo" value="livre">
+            {% if selecao_previa %}<input type="hidden" name="professor_1" value="{{ selecao_previa }}">{% endif %}
+            <div class="selecao-comparacao">
+                {% for selecionado in campos %}
+                <div class="campo">
+                    <label for="professor-{{ loop.index }}">Professor {{ loop.index }}</label>
+                    <select name="professor" id="professor-{{ loop.index }}">
+                        <option value="">Selecione um professor</option>
+                        {% for professor in professores %}
+                        <option value="{{ professor.id }}"{% if selecionado == professor.id|string %} selected{% endif %}>{{ professor.nome }}{% if professor.departamento %} — {{ professor.departamento }}{% endif %}</option>
+                        {% endfor %}
+                    </select>
+                    {% if campos|length > 2 %}
+                    <button type="submit" class="botao botao-secundario remover-professor" name="remover" value="{{ loop.index0 }}">Remover professor {{ loop.index }}</button>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            <div class="acoes-comparacao">
+                {% if campos|length < professores|length %}
+                <button type="submit" class="botao botao-secundario" name="adicionar" value="1">+ Adicionar professor</button>
+                {% endif %}
+                <button type="submit" class="botao botao-primario" name="comparar" value="1">Comparar</button>
+            </div>
+        </form>
+        {% else %}
+        <p class="mensagem" role="status">É necessário ter pelo menos dois professores cadastrados para comparar.</p>
         {% endif %}
         {% else %}
         <p class="ajuda">Escolha uma disciplina e compare as notas dos professores que a ministram.</p>
@@ -128,6 +167,12 @@
 
         {% if comparacao %}
 
+        {% if disciplinas_diferentes %}
+        <p class="mensagem aviso-disciplinas" role="note">Atenção: os professores selecionados ministram disciplinas diferentes. A comparação considera a média geral de todas as avaliações válidas de cada professor.</p>
+        {% elif not disciplina %}
+        <p class="mensagem aviso-disciplinas" role="note">Comparação pela média geral: considera todas as avaliações válidas de cada professor em suas disciplinas.</p>
+        {% endif %}
+
         {% for professor in comparacao if not professor.indicadores.quantidade %}
 
         <p class="mensagem" role="status">{{ professor.nome }}: ainda não há avaliações válidas.</p>
@@ -138,7 +183,7 @@
 
             <table class="tabela-comparacao">
 
-                <caption>Médias por critério{% if disciplina %} em {{ disciplina.nome }}{% endif %}</caption>
+                <caption>Médias por critério{% if disciplina %} em {{ disciplina.nome }}{% else %} (média geral){% endif %}</caption>
 
                 <thead>
 
@@ -160,6 +205,28 @@
                 </thead>
 
                 <tbody>
+
+                    {% if not disciplina %}
+                    <tr>
+
+                        <th scope="row">Disciplinas</th>
+
+                        {% for professor in comparacao %}
+                        <td>
+                            {% if professor.disciplinas %}
+                            <ul class="lista-disciplinas-comparacao">
+                                {% for disc in professor.disciplinas %}
+                                <li>{{ disc.nome }}{% if disc.codigo %} ({{ disc.codigo }}){% endif %}</li>
+                                {% endfor %}
+                            </ul>
+                            {% else %}
+                            Sem disciplinas vinculadas
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+
+                    </tr>
+                    {% endif %}
 
                     <tr>
 
