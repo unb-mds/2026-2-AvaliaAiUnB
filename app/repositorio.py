@@ -256,7 +256,7 @@ class ProfessorRepository:
             resultado.append((professor, disciplinas))
         return sorted(resultado, key=lambda i: (-i[0]['total_avaliacoes'], i[0]['nome'] or '', i[0]['id']))
 
-    def ranking(self):
+    def ranking(self, departamento=''):
         colunas = ','.join(('professor_id', *CRITERIOS))
         avaliacoes = _paginar(lambda: self.cliente.table('avaliacoes')
                              .select(colunas).order('id'))
@@ -274,8 +274,11 @@ class ProfessorRepository:
             return []
         professores = _paginar(lambda: self.cliente.table('professores')
                                .select('id,nome,departamento').order('id'))
+        departamento_n = normalizar_busca(departamento)
         resultado = []
         for professor in professores:
+            if departamento_n and normalizar_busca(professor.get('departamento')) != departamento_n:
+                continue
             total = elegiveis.get(professor['id'])
             if total:
                 resultado.append({**professor, 'quantidade': total['quantidade'],
@@ -284,7 +287,6 @@ class ProfessorRepository:
                                       normalizar_busca(p['nome']), p['id']))
         return [{**professor, 'posicao': posicao}
                 for posicao, professor in enumerate(resultado, start=1)]
-
 
 class AvaliacaoRepository:
     def __init__(self, cliente):
