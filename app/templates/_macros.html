@@ -14,7 +14,8 @@
 {%- set nivel = [[(valor + 0.5)|int, 1]|max, 5]|min -%}
 {%- set preenche = [[((valor * 10 + 0.5)|int) * 2, 0]|max, 100]|min -%}
 <span class="barra-hp{% if compacta %} barra-hp-compacta{% endif %}">
-    <span class="barra-hp-trilho" role="img" aria-label="Dificuldade {{ nota(valor) }} de 5 (1 = muito fácil, 5 = muito difícil)">
+    {#- Compacta é decorativa: o texto "Dificuldade X/5" ao lado já diz o valor. #}
+    <span class="barra-hp-trilho"{% if compacta %} aria-hidden="true"{% else %} role="img" aria-label="Dificuldade {{ nota(valor) }} de 5 (1 = muito fácil, 5 = muito difícil)"{% endif %}>
         <span class="barra-hp-cheia preenche-{{ preenche }} nivel-{{ nivel }}"></span>
     </span>
     {%- if not compacta %}

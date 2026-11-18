@@ -45,7 +45,10 @@ class TestDificuldadeNoCartao(BaseLista):
         self.assertIn('CÁLCULO 1 — FGA0001', item)
         self.assertIn('barra-hp-compacta', item)
         self.assertIn('barra-hp-cheia preenche-44 nivel-2', item)
-        self.assertIn('aria-label="Dificuldade 2,2 de 5', item)
+        # decorativa: o texto ao lado já diz o valor, então o leitor de tela não repete
+        self.assertIn('class="barra-hp-trilho" aria-hidden="true"', item)
+        self.assertNotIn('role="img"', item)
+        self.assertNotIn('aria-label', item)
         self.assertIn('Dificuldade 2,2/5', item)
         self.assertIn('5 avaliações', item)
         self.assertNotIn('barra-hp-escala', item)

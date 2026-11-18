@@ -83,22 +83,152 @@ h1 {
 
 .lista-professores ul.disciplinas {
     display: flex;
-    flex-wrap: wrap;
-    gap: var(--espaco-2);
-    margin: var(--espaco-2) 0;
+    flex-direction: column;
+    width: 100%;
+    margin: var(--espaco-2) 0 0;
     padding: 0;
     list-style: none;
     line-height: 1.5;
 }
 
-.disciplinas li {
-    padding: var(--espaco-1) var(--espaco-3);
-    border-radius: var(--raio-pilula);
-    background-color: var(--cor-fundo-suave);
+/* Disciplina: nome à esquerda e métricas à direita, em colunas fixas para as
+   barras ficarem alinhadas de cima para baixo. Todas as linhas têm a mesma largura. */
+.disciplina-item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--espaco-1) var(--espaco-4);
+    box-sizing: border-box;
+    width: 100%;
+    padding: var(--espaco-2) 0;
+    border-bottom: 1px solid var(--cor-divisor-suave);
     font-size: var(--texto-pequeno);
+}
+
+.disciplina-titulo {
+    min-width: 0;
     overflow-wrap: anywhere;
 }
 
+.disciplina-metricas {
+    display: grid;
+    grid-template-columns: 6rem 9rem 6.5rem;
+    align-items: center;
+    column-gap: var(--espaco-3);
+}
+
+/* Barra e texto ocupam as duas primeiras colunas; a quantidade fica sempre na terceira */
+.dificuldade-mini {
+    display: contents;
+}
+
+.dificuldade-mini-texto {
+    grid-column: 2;
+    white-space: nowrap;
+}
+
+.disciplina-avaliacoes {
+    grid-column: 3;
+    justify-self: end;
+    color: var(--cor-texto-secundario);
+    white-space: nowrap;
+}
+
+.disciplina-sem-avaliacoes {
+    grid-column: 1 / -1;
+    justify-self: end;
+    font-style: italic;
+}
+
+/* Barra compacta: mesmos tokens da barra do perfil, em tamanho fixo pequeno */
+.disciplina-item .barra-hp-compacta {
+    grid-column: 1;
+    width: 6rem;
+    min-width: 0;
+}
+
+.barra-hp-compacta .barra-hp-trilho {
+    height: 8px;
+}
+
+/* "Ver mais N disciplinas": controle discreto, sem JavaScript */
+.disciplinas-extras {
+    width: 100%;
+}
+
+.disciplinas-extras > summary {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--espaco-2);
+    min-height: 44px;
+    box-sizing: border-box;
+    padding: var(--espaco-2) var(--espaco-3);
+    border-radius: var(--raio-pilula);
+    color: var(--cor-principal);
+    font-size: var(--texto-pequeno);
+    font-weight: 700;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+    transition: background-color var(--transicao);
+}
+
+.disciplinas-extras > summary::-webkit-details-marker {
+    display: none;
+}
+
+/* Indicador de aberto/fechado feito só com CSS */
+.disciplinas-extras > summary::before {
+    content: "";
+    flex-shrink: 0;
+    width: 0.5rem;
+    height: 0.5rem;
+    margin-top: -0.25rem;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg);
+    transition: transform var(--transicao);
+}
+
+.disciplinas-extras[open] > summary::before {
+    margin-top: 0.25rem;
+    transform: rotate(-135deg);
+}
+
+.disciplinas-extras > summary:hover {
+    background-color: var(--cor-principal-suave);
+}
+
+.disciplinas-extras > summary:focus-visible {
+    outline: 2px solid var(--cor-principal);
+    outline-offset: 2px;
+}
+
+.lista-professores .disciplinas-extras ul.disciplinas {
+    margin-top: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .disciplinas-extras > summary,
+    .disciplinas-extras > summary::before {
+        transition: none;
+    }
+}
+
+/* Celular: as métricas descem para baixo do nome */
+@media (max-width: 600px) {
+    .disciplina-item {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .disciplina-metricas {
+        grid-template-columns: 6rem auto 1fr;
+    }
+
+    .disciplina-sem-avaliacoes {
+        justify-self: start;
+    }
+}
 
 /* Estados sem dados e sem resultado */
 .mensagem {
@@ -182,7 +312,13 @@ h1 {
 @media (min-width: 481px) {
     .professor-acoes {
         flex-direction: row;
-        justify-content: space-between;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+    }
+
+    /* Comparar fica à direita; se a linha quebrar, vai para a linha de baixo */
+    .professor-acoes .botao:last-child {
+        margin-left: auto;
     }
 }
 
