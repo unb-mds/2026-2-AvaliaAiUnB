@@ -101,6 +101,23 @@ class TestRanking(unittest.TestCase):
         self.assertNotIn('<script>', html)
         self.assertIn('&lt;script&gt;', html)
 
+    def test_ranking_filtra_por_departamento_e_mantem_minimo(self):
+        self.cliente.tabelas['professores'] = [
+            {'id': 1, 'nome': 'JOSÉ ÁVILA', 'departamento': 'MAT'},
+            {'id': 2, 'nome': 'MARIA LIMA', 'departamento': 'CIC'},
+            {'id': 3, 'nome': 'CARLOS SOUZA', 'departamento': 'CIC'},
+            {'id': 4, 'nome': 'ANA COSTA', 'departamento': 'CIC'},
+        ]
+        self.avaliar(1, nota=5)
+        self.avaliar(2, nota=3)
+        self.avaliar(3, nota=4)
+        self.avaliar(4, quantidade=MINIMO_AVALIACOES_RANKING - 1, nota=5)
 
+        ranking_cic = self.professores.ranking('cic')
+        self.assertEqual(
+            [(p['id'], p['posicao'], p['media']) for p in ranking_cic],
+            [(3, 1, 4), (2, 2, 3)],
+        )
+        self.assertEqual([p['id'] for p in self.professores.ranking()], [1, 3, 2])
 if __name__ == '__main__':
     unittest.main()
