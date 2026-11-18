@@ -92,6 +92,11 @@
                 </a>
             </div>
         </form>
+
+        {% if not modo_edicao %}
+        {# Link comum, fora do formulário de notas: não altera o envio da avaliação #}
+        <p class="convite-comentario">Quer explicar sua nota? <a href="{{ url_for('professores.perfil', professor_id=professor.id, disciplina_id=disciplina.id, next=next_url, _anchor='comentarios') }}">Escreva um comentário</a></p>
+        {% endif %}
     </div>
     </main>
     {% include '_rodape.html' %}
