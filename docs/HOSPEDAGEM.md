@@ -19,7 +19,7 @@ de Brasília. O histórico no painel é a referência para a data efetiva.
 
 ## Configuração do projeto
 
-No projeto Vercel vinculado a `unb-mds/2026-2-AvaliaAiUnB`, confira a raiz do
+No projeto Vercel vinculado a `unb-mds/2026-2-AvaliaUnB`, confira a raiz do
 repositório e a detecção do backend Flask. O ponto de entrada configurado é
 `run:app`; não é necessário iniciar `python run.py` como servidor da hospedagem.
 A integração pode usar esse ponto de entrada de módulo, conforme o
@@ -92,7 +92,7 @@ confira a entrega do link e a confirmação com uma conta de teste.
 
 A titularidade é registrada pelo fluxo do perfil e vale para o endereço
 atual da conta. Os comentários implementados na
-[#167](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/167) não usam essa
+[#167](https://github.com/unb-mds/2026-2-AvaliaUnB/issues/167) não usam essa
 verificação: para comentar basta estar logado, porque o login é só pelo Google,
 e o e-mail do autor nunca é exibido. O fluxo de verificação continua no projeto
 (`app.verificacao_email.email_verificado(usuario)`), disponível para uma

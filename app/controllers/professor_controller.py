@@ -1,9 +1,59 @@
 """Lógica de professores e avaliações: resolve o que as rotas exibem e registra avaliações."""
+import math
+
 from flask import abort, current_app, request, url_for
 
-from app.repositorio import (LIMITE_COMENTARIOS, LIMITE_SUGESTOES, MAXIMO_SUGESTOES,
-                             MINIMO_AVALIACOES_RANKING, ComentarioRepository, repositorios)
+from app.repositorio import (CRITERIOS_RANKING, LIMITE_COMENTARIOS, LIMITE_SUGESTOES,
+                             MAXIMO_SUGESTOES, MINIMO_AVALIACOES_RANKING,
+                             ComentarioRepository, repositorios)
+from app.utils import normalizar_busca
 from app.validacoes import CRITERIOS, validar_avaliacao, validar_comentario
+
+MINIMO_AVALIACOES_COMPARACAO = MINIMO_AVALIACOES_RANKING
+
+
+def _aplicar_destaques_comparacao(comparacao):
+    """Marca quem lidera no geral e por critério entre professores com mínimo de avaliações."""
+    for item in comparacao:
+        qtd = item['indicadores']['quantidade']
+        item['elegivel_destaque'] = qtd >= MINIMO_AVALIACOES_COMPARACAO
+        item['media_geral'] = _calcular_media_geral(item['indicadores'])
+        item['melhor_geral'] = False
+        item['melhores_criterios'] = {c: False for c in CRITERIOS}
+
+    elegiveis = [item for item in comparacao if item['elegivel_destaque']]
+    if not elegiveis:
+        return comparacao
+
+    maior_geral = max(item['media_geral'] for item in elegiveis)
+    for item in elegiveis:
+        if math.isclose(item['media_geral'], maior_geral, rel_tol=1e-9, abs_tol=1e-9):
+            item['melhor_geral'] = True
+
+    for criterio in CRITERIOS:
+        valores = [item['indicadores']['medias'][criterio] for item in elegiveis]
+        alvo = min(valores) if criterio == 'dificuldade' else max(valores)
+        for item in elegiveis:
+            if math.isclose(item['indicadores']['medias'][criterio], alvo, rel_tol=1e-9, abs_tol=1e-9):
+                item['melhores_criterios'][criterio] = True
+
+    return comparacao
+
+
+def _calcular_media_geral(indicadores):
+    """Média dos critérios positivos (exclui dificuldade, igual ao ranking)."""
+    if not indicadores['quantidade']:
+        return None
+    medias = indicadores['medias']
+    return sum(medias[c] for c in CRITERIOS_RANKING) / len(CRITERIOS_RANKING)
+
+
+def _possui_disciplinas_diferentes(comparacao):
+    """Verdadeiro quando os professores comparados não compartilham nenhuma disciplina."""
+    if len(comparacao) < 2:
+        return False
+    conjuntos = [{d['id'] for d in prof.get('disciplinas', [])} for prof in comparacao]
+    return len(set.intersection(*conjuntos)) == 0
 
 
 def criterios():
@@ -52,9 +102,11 @@ def sugestoes(termo, limite_bruto=None, contexto_bruto=None):
 
 def _carregar_comparacao_legada(dados):
     repos = repositorios()
-    professores = sorted((p for p, _ in repos.professores.catalogo()),
+    catalogo_completo = repos.professores.catalogo()
+    professores = sorted((p for p, _ in catalogo_completo),
                          key=lambda p: (p['nome'] or '', p['id']))
     por_id = {p['id']: p for p in professores}
+    disciplinas_por_id = {p['id']: vinculos for p, vinculos in catalogo_completo}
     selecionados, erros = {}, {}
     for campo in ('professor_1', 'professor_2'):
         valor = dados.get(campo, '').strip()
@@ -75,10 +127,16 @@ def _carregar_comparacao_legada(dados):
         erros['professor_2'] = 'Selecione dois professores diferentes.'
     comparacao = []
     if len(selecionados) == 2 and not erros:
-        comparacao = [{**por_id[p], 'indicadores': repos.avaliacoes.calcular_medias(p)}
-                      for p in selecionados.values()]
+        comparacao = _aplicar_destaques_comparacao([
+            {**por_id[p], 'disciplinas': disciplinas_por_id.get(p, []),
+             'indicadores': repos.avaliacoes.calcular_medias(p)}
+            for p in selecionados.values()
+        ])
     return dict(professores=professores, selecionados=selecionados,
-                erros=erros, comparacao=comparacao, criterios=CRITERIOS, modo_legado=True)
+                erros=erros, comparacao=comparacao, criterios=CRITERIOS,
+                disciplinas_diferentes=_possui_disciplinas_diferentes(comparacao),
+                minimo_avaliacoes_destaque=MINIMO_AVALIACOES_COMPARACAO,
+                modo_legado=True, modo_livre=False)
 
 
 def carregar_comparacao(dados):
@@ -86,26 +144,34 @@ def carregar_comparacao(dados):
         return _carregar_comparacao_legada(dados)
 
     repos = repositorios()
-    catalogo = repos.professores.catalogo()
-    disciplinas = {str(d['id']): d for _, vinculos in catalogo for d in vinculos}
-    disciplina_id = dados.get('disciplina_id', '')
+    catalogo_completo = repos.professores.catalogo()
+    todos_professores_lista = sorted(
+        (p for p, _ in catalogo_completo),
+        key=lambda p: (p['nome'] or '', p['id']),
+    )
+    todos_professores = {str(p['id']): p for p in todos_professores_lista}
+    disciplinas_por_professor = {str(p['id']): vinculos for p, vinculos in catalogo_completo}
+    disciplinas = {str(d['id']): d for _, vinculos in catalogo_completo for d in vinculos}
+
+    modo = dados.get('modo', '').strip()
+    disciplina_id = dados.get('disciplina_id', '').strip()
     erros = {}
 
     selecao_previa = dados.get('professor_1', '').strip()
     professor_previo = next(
-        ((p, vinculos) for p, vinculos in catalogo if str(p['id']) == selecao_previa),
+        ((p, vinculos) for p, vinculos in catalogo_completo if str(p['id']) == selecao_previa),
         None,
     )
     if selecao_previa and not professor_previo:
         erros['professores'] = 'Professor não encontrado.'
         selecao_previa = ''
 
-    if not disciplina_id and professor_previo:
+    if modo != 'livre' and not disciplina_id and professor_previo:
         _, vinculos_previos = professor_previo
         for d in sorted(vinculos_previos, key=lambda item: (item['nome'] or '', item['id'])):
             d_id = str(d['id'])
             total_na_disciplina = sum(
-                1 for _, v in catalogo if any(str( vinc['id']) == d_id for vinc in v)
+                1 for _, v in catalogo_completo if any(str(vinc['id']) == d_id for vinc in v)
             )
             if total_na_disciplina >= 2:
                 disciplina_id = d_id
@@ -113,12 +179,56 @@ def carregar_comparacao(dados):
         if not disciplina_id:
             return _carregar_comparacao_legada(dados)
 
+    if modo == 'livre':
+        selecionados = dados.getlist('professor')
+        if not selecionados and selecao_previa in todos_professores:
+            selecionados = [selecao_previa]
+        campos = (selecionados + ['', ''])[:max(2, len(selecionados))]
+        if 'remover' in dados:
+            indice = dados.get('remover', type=int)
+            if indice is not None and 0 <= indice < len(campos) and len(campos) > 2:
+                campos.pop(indice)
+        if 'adicionar' in dados and len(campos) < len(todos_professores):
+            campos.append('')
+
+        comparacao = []
+        if 'comparar' in dados:
+            ids = [p for p in campos if p]
+            if len(ids) < 2:
+                erros['professores'] = 'Selecione pelo menos dois professores.'
+            elif len(set(ids)) != len(ids):
+                erros['professores'] = 'Selecione professores diferentes.'
+            elif any(p not in todos_professores for p in ids):
+                erros['professores'] = 'Professor não encontrado.'
+            else:
+                comparacao = _aplicar_destaques_comparacao([
+                    {**todos_professores[p],
+                     'disciplinas': disciplinas_por_professor.get(p, []),
+                     'indicadores': repos.avaliacoes.calcular_medias(todos_professores[p]['id'])}
+                    for p in ids
+                ])
+
+        return dict(
+            disciplinas=sorted(disciplinas.values(), key=lambda d: (d['nome'] or '', d['id'])),
+            disciplina=None,
+            professores=todos_professores_lista,
+            selecao_previa=selecao_previa,
+            campos=campos,
+            erros=erros,
+            comparacao=comparacao,
+            criterios=CRITERIOS,
+            disciplinas_diferentes=_possui_disciplinas_diferentes(comparacao),
+            minimo_avaliacoes_destaque=MINIMO_AVALIACOES_COMPARACAO,
+            modo_livre=True,
+            modo_legado=False,
+        )
+
     disciplina = disciplinas.get(disciplina_id)
     if disciplina_id and not disciplina:
         erros['disciplina'] = 'Disciplina não encontrada.'
 
     professores = {
-        str(p['id']): p for p, vinculos in catalogo
+        str(p['id']): p for p, vinculos in catalogo_completo
         if any(str(d['id']) == disciplina_id for d in vinculos)
     }
     selecionados = dados.getlist('professor')
@@ -143,19 +253,35 @@ def carregar_comparacao(dados):
             else:
                 medias = repos.avaliacoes.calcular_medias_por_disciplina(
                     disciplina['id'], [professores[p]['id'] for p in ids])
-                comparacao = [{**professores[p], 'indicadores': medias[professores[p]['id']]}
-                              for p in ids]
+                comparacao = _aplicar_destaques_comparacao([
+                    {**professores[p], 'disciplinas': [disciplina],
+                     'indicadores': medias[professores[p]['id']]}
+                    for p in ids
+                ])
 
     return dict(disciplinas=sorted(disciplinas.values(), key=lambda d: (d['nome'] or '', d['id'])),
                 disciplina=disciplina, professores=sorted(professores.values(),
                     key=lambda p: (p['nome'] or '', p['id'])),
                 selecao_previa=selecao_previa, campos=(selecionados + ['', ''])[:max(2, len(selecionados))],
-                erros=erros, comparacao=comparacao, criterios=CRITERIOS)
+                erros=erros, comparacao=comparacao, criterios=CRITERIOS,
+                disciplinas_diferentes=False, modo_livre=False, modo_legado=False,
+                minimo_avaliacoes_destaque=MINIMO_AVALIACOES_COMPARACAO)
 
 
-def carregar_ranking():
-    return repositorios().professores.ranking(), MINIMO_AVALIACOES_RANKING
-
+def carregar_ranking(departamento=''):
+    repos = repositorios()
+    lista_departamentos = repos.professores.listar_departamentos()
+    chave = normalizar_busca(departamento)
+    departamento_ativo = next(
+        (dep for dep in lista_departamentos if normalizar_busca(dep) == chave),
+        departamento.strip(),
+    ) if chave else ''
+    return (
+        repos.professores.ranking(departamento_ativo),
+        MINIMO_AVALIACOES_RANKING,
+        lista_departamentos,
+        departamento_ativo,
+    )
 
 def carregar_perfil(professor_id):
     professores = repositorios().professores

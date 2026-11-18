@@ -2,7 +2,7 @@
 
 Esta página resume os mecanismos existentes e o plano de correção da
 [auditoria de segurança](AUDITORIA_SEGURANCA.md), realizada em 02/11/2026 na
-[issue #111](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/111).
+[issue #111](https://github.com/unb-mds/2026-2-AvaliaUnB/issues/111).
 O relatório detalhado é a referência para evidências, método e limites da revisão.
 
 ## Mecanismos implementados
@@ -42,7 +42,7 @@ usa a service key, que ignora RLS; a autorização do caminho atual depende do
 backend. A view `vw_professor_disciplina` expõe dados públicos de professores,
 disciplinas e turmas, com as permissões descritas no modelo.
 
-O [PR #139](https://github.com/unb-mds/2026-2-AvaliaAiUnB/pull/139) incluiu RLS e
+O [PR #139](https://github.com/unb-mds/2026-2-AvaliaUnB/pull/139) incluiu RLS e
 políticas no esquema inicial. O SQL versionado contém leitura pública para
 catálogo, perfis e avaliações e regras de escrita vinculadas ao usuário em
 perfis e avaliações. A adoção da chave pública pela aplicação é tratada em
@@ -56,13 +56,13 @@ implantada apenas porque existe uma branch ou PR.
 
 | Issue | Prioridade na auditoria | Entrega esperada |
 |---|---|---|
-| [#123](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/123) | Alta | RLS e políticas versionados no esquema inicial pelo PR #139 |
-| [#124](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/124) | Média | Cliente de chave pública e leitura pública com RLS |
-| [#129](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/129) | Desdobramento da #124 | Avaliações com sessão do usuário e autorização também no banco |
-| [#130](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/130) | Desdobramento da #124 | Perfil do usuário com chave pública e RLS |
-| [#125](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/125) | Média | Confirmação do e-mail antes de ativar a conta |
-| [#126](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/126) | Média | Revogação da sessão no logout com token de acesso expirado |
-| [#127](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/127) | Baixa | Ajustes de CSRF, limites, mensagens, consultas, validações, logs e testes |
+| [#123](https://github.com/unb-mds/2026-2-AvaliaUnB/issues/123) | Alta | RLS e políticas versionados no esquema inicial pelo PR #139 |
+| [#124](https://github.com/unb-mds/2026-2-AvaliaUnB/issues/124) | Média | Cliente de chave pública e leitura pública com RLS |
+| [#129](https://github.com/unb-mds/2026-2-AvaliaUnB/issues/129) | Desdobramento da #124 | Avaliações com sessão do usuário e autorização também no banco |
+| [#130](https://github.com/unb-mds/2026-2-AvaliaUnB/issues/130) | Desdobramento da #124 | Perfil do usuário com chave pública e RLS |
+| [#125](https://github.com/unb-mds/2026-2-AvaliaUnB/issues/125) | Média | Confirmação do e-mail antes de ativar a conta |
+| [#126](https://github.com/unb-mds/2026-2-AvaliaUnB/issues/126) | Média | Revogação da sessão no logout com token de acesso expirado |
+| [#127](https://github.com/unb-mds/2026-2-AvaliaUnB/issues/127) | Baixa | Ajustes de CSRF, limites, mensagens, consultas, validações, logs e testes |
 
 Concluir a auditoria significa ter o relatório e o plano de correção. Cada
 correção deve atualizar o comportamento documentado quando for entregue.

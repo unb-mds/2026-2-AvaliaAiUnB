@@ -252,6 +252,15 @@ class ProfessorRepository:
         self._catalogo_em = time.monotonic()
         return self._catalogo
 
+    def listar_departamentos(self):
+        """Departamentos distintos (opções do filtro do ranking), em ordem alfabética sem acento."""
+        unicos = {}
+        for professor, _ in self._carregar_catalogo():
+            departamento = (professor.get('departamento') or '').strip()
+            if departamento:
+                unicos.setdefault(normalizar_busca(departamento), departamento)
+        return [unicos[chave] for chave in sorted(unicos)]
+
     def catalogo(self, nome='', disciplina='', departamento='', termo=''):
         """[(professor, disciplinas)] filtrado sem distinguir acento/caixa/espaços,
         ordenado do mais avaliado para o menos avaliado (desempate: nome).
@@ -319,7 +328,7 @@ class ProfessorRepository:
         candidatos.sort(key=lambda c: c[0])
         return [sugestao for _, sugestao in candidatos[:limite]]
 
-    def ranking(self):
+    def ranking(self, departamento=''):
         colunas = ','.join(('professor_id', *CRITERIOS))
         avaliacoes = _paginar(lambda: self.cliente.table('avaliacoes')
                              .select(colunas).order('id'))
@@ -337,8 +346,11 @@ class ProfessorRepository:
             return []
         professores = _paginar(lambda: self.cliente.table('professores')
                                .select('id,nome,departamento').order('id'))
+        departamento_n = normalizar_busca(departamento)
         resultado = []
         for professor in professores:
+            if departamento_n and normalizar_busca(professor.get('departamento')) != departamento_n:
+                continue
             total = elegiveis.get(professor['id'])
             if total:
                 resultado.append({**professor, 'quantidade': total['quantidade'],
@@ -347,7 +359,6 @@ class ProfessorRepository:
                                       normalizar_busca(p['nome']), p['id']))
         return [{**professor, 'posicao': posicao}
                 for posicao, professor in enumerate(resultado, start=1)]
-
 
 class AvaliacaoRepository:
     def __init__(self, cliente):

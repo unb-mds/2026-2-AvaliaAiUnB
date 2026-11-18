@@ -24,8 +24,8 @@ class TestIdentidadeVisual(unittest.TestCase):
 
     def test_urls_e_identificadores_tecnicos_permanecem_originais(self):
         readme = (RAIZ / "README.md").read_text(encoding="utf-8")
-        self.assertIn("https://github.com/unb-mds/2026-2-AvaliaAiUnB", readme)
-        self.assertIn("cd 2026-2-AvaliaAiUnB", readme)
+        self.assertIn("https://github.com/unb-mds/2026-2-AvaliaUnB", readme)
+        self.assertIn("cd 2026-2-AvaliaUnB", readme)
 
 
 class TestLogo(unittest.TestCase):

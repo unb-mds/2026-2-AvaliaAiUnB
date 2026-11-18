@@ -171,3 +171,88 @@ main > form.busca-unificada {
         margin-top: calc(1.5em + var(--espaco-2));
     }
 }
+
+/* Alternador de modo (mesma disciplina vs. disciplinas diferentes) */
+.modos-comparacao {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espaco-2);
+    margin: 0 0 var(--espaco-4);
+}
+
+.modo-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    padding: var(--espaco-2) var(--espaco-4);
+    border: 1px solid var(--cor-divisor);
+    border-radius: var(--raio-pilula);
+    background-color: var(--cor-superficie);
+    color: var(--cor-texto-secundario);
+    font-size: var(--texto-pequeno);
+    font-weight: 700;
+    text-decoration: none;
+    transition: background-color var(--transicao), border-color var(--transicao), color var(--transicao);
+}
+
+.modo-link:hover {
+    border-color: var(--cor-principal);
+    color: var(--cor-principal);
+}
+
+.modo-link[aria-current="page"] {
+    border-color: var(--cor-principal-fundo);
+    background-color: var(--cor-principal-fundo);
+    color: var(--cor-sobre-principal);
+}
+
+/* Aviso de disciplinas diferentes e lista de disciplinas na tabela */
+.aviso-disciplinas {
+    border-left: 4px solid var(--cor-principal);
+    background-color: var(--cor-principal-suave);
+}
+
+.lista-disciplinas-comparacao {
+    margin: 0;
+    padding-left: 1.1rem;
+    font-size: var(--texto-pequeno);
+    line-height: 1.4;
+}
+
+.lista-disciplinas-comparacao li + li {
+    margin-top: var(--espaco-1);
+}
+
+/* Destaque visual para melhor desempenho geral e por critério */
+.tabela-comparacao thead th.coluna-destaque {
+    background-color: var(--cor-principal-suave);
+    color: var(--cor-texto);
+}
+
+.tabela-comparacao td.celula-destaque {
+    background-color: var(--cor-principal-suave);
+    font-weight: 700;
+}
+
+.selo-destaque {
+    display: inline-flex;
+    align-items: center;
+    margin-top: var(--espaco-1);
+    padding: 2px var(--espaco-2);
+    border-radius: var(--raio-pilula);
+    background-color: var(--cor-principal-fundo);
+    color: var(--cor-sobre-principal);
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1.3;
+    text-transform: none;
+    letter-spacing: normal;
+    white-space: nowrap;
+}
+
+.selo-destaque-geral {
+    display: inline-flex;
+    margin-top: var(--espaco-2);
+    background-color: var(--cor-ouro-fundo);
+    color: var(--cor-ouro-texto);
+}

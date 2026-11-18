@@ -2,7 +2,7 @@
 
 Este guia detalha as funcionalidades já disponíveis na `main`. O resumo das
 entregas e do planejamento fica no
-[README](https://github.com/unb-mds/2026-2-AvaliaAiUnB#funcionalidades-e-releases).
+[README](https://github.com/unb-mds/2026-2-AvaliaUnB#funcionalidades-e-releases).
 
 - **Política de Privacidade e Termos de Uso (`/privacidade`)**: página pública acessível pelo rodapé que descreve em linguagem simples os dados armazenados pelo AvaliaUnB (e-mail, nome de usuário, avaliações, comentários e formulário de feedback), as regras contra ofensas e avaliações falsas, e o canal de contato para solicitar a exclusão de dados em conformidade com a LGPD. Documentação detalhada em `docs/POLITICA-DE-PRIVACIDADE.md`.
 
@@ -93,30 +93,49 @@ Tentativas de editar ou excluir uma avaliação de outra pessoa recebem HTTP 404
 
 ## Comparação de professores (RF08)
 
-A página `/comparar` pede uma disciplina e permite selecionar dois ou mais
-professores distintos que a ministram. Cada professor ocupa uma coluna com as
-médias de didática, clareza, organização, disponibilidade e dificuldade e o
-total de avaliações válidas na disciplina.
+A página `/comparar` oferece dois modos de comparação:
+
+- **Por mesma disciplina (padrão):** pede uma disciplina e permite selecionar
+  dois ou mais professores distintos que a ministram, exibindo as médias
+  restritas àquela disciplina.
+- **Disciplinas diferentes (`modo=livre`):** permite selecionar livremente
+  dois ou mais professores de qualquer disciplina para comparar a média geral
+  (média de didática, clareza, organização e disponibilidade) e cada critério
+  individual. Quando os professores não possuem disciplina em comum, a tela
+  lista as disciplinas de cada docente e exibe um aviso indicando que as
+  disciplinas são diferentes.
 
 O acesso está disponível na lista e no perfil de cada professor. Os links
-individuais preenchem a primeira seleção quando o professor ministra a
-disciplina escolhida. A lista de professores selecionados pode ser ajustada
-pelos botões **Adicionar professor** e **Remover professor**.
+individuais preenchem a primeira seleção automaticamente e direcionam para a
+comparação por disciplina (quando há outro docente na mesma matéria) ou para a
+seleção livre. A lista de professores selecionados pode ser ajustada pelos
+botões **Adicionar professor** e **Remover professor**.
 
 As médias consideram apenas a disciplina escolhida, com o mesmo peso por
 avaliação válida em qualquer período. Os dados são consultados a cada
 comparação e exibidos com duas casas decimais. Professores sem avaliações
 válidas aparecem com um aviso. No celular, a tabela rola na horizontal e
 mantém a coluna dos critérios visível.
+Para evitar distorções por amostras pequenas, apenas professores com pelo menos
+cinco avaliações válidas são elegíveis ao destaque visual na comparação. Entre
+os elegíveis, o sistema destaca o melhor desempenho geral (média de didática,
+clareza, organização e disponibilidade) e o melhor resultado em cada critério:
+nos quatro primeiros critérios vence a maior média, enquanto em **Dificuldade**
+aplica-se a regra inversa (vence a menor média). Em caso de empate na liderança,
+todos os professores empatados recebem o destaque.
 
 Links antigos com `professor_1` e `professor_2` continuam mostrando as médias
 gerais do par e oferecem acesso à comparação por disciplina.
 
 ## Ranking de professores (RF07)
 
+## Ranking de professores (RF07)
+
 A página `/ranking` mostra posição, média geral, quantidade de avaliações e
-acesso ao perfil. Participam professores com pelo menos cinco avaliações válidas,
-considerando todas as disciplinas e períodos.
+acesso ao perfil. Por padrão exibe o ranking geral, mas aceita o parâmetro
+`departamento` (via seletor na tela ou pela URL) para filtrar a classificação
+por unidade acadêmica, mantendo a exigência de pelo menos cinco avaliações
+válidas.
 
 A média geral é a soma das notas de didática, clareza, organização e
 disponibilidade, dividida pelo número de avaliações válidas vezes quatro.
@@ -139,7 +158,7 @@ A [proposta de banco para comentários](Modelo%20de%20Dados.md#6-proposta-tabela
 já está publicada. A [especificação](COMENTARIOS.md) reúne nome de usuário
 visível, reações, filtro e denúncias; o que ainda é proposta está indicado nela.
 A proposta começou na
-[issue #116](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/116).
+[issue #116](https://github.com/unb-mds/2026-2-AvaliaUnB/issues/116).
 
 Relacionado: [visão e requisitos](DOCUMENTO_DE_VISAO.md), [backend](BACKEND.md),
 [frontend](FRONTEND.md) e [mapa da documentação](GUIA_DOCUMENTACAO.md).
