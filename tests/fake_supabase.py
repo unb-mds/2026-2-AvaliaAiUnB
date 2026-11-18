@@ -116,6 +116,14 @@ class Consulta:
                 raise RuntimeError('duplicate key value violates unique constraint "perfis_username_key"')
             novo_id = max((l.get('id', 0) for l in tabela if isinstance(l.get('id'), int)), default=0) + 1
             registro = {'id': novo_id, **self.novo} if self.nome != 'perfis' else dict(self.novo)
+            if self.nome == 'denuncias_comentarios':
+                # índice único parcial: uma denúncia ativa por usuário e comentário
+                if any(l['comentario_id'] == self.novo['comentario_id']
+                       and l['usuario_id'] == self.novo['usuario_id']
+                       and l.get('resolvida_em') is None for l in tabela):
+                    raise RuntimeError('duplicate key value violates unique constraint '
+                                       '"uq_denuncias_ativa_usuario_comentario" (23505)')
+                registro = {'criado_em': _agora_comentarios(), 'resolvida_em': None, **registro}
             if self.nome == 'comentarios':   # defaults do banco
                 agora = _agora_comentarios()
                 registro = {'criado_em': agora, 'atualizado_em': agora, 'ocultado_em': None, **registro}
@@ -246,6 +254,7 @@ class ClienteFalso:
             'avaliacoes': [],
             'perfis': [],
             'comentarios': [],
+            'denuncias_comentarios': [],
         }
 
     def table(self, nome):

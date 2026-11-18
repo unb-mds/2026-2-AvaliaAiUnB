@@ -1,7 +1,7 @@
 """Repositórios sobre o Supabase: usuários (Auth + perfis), professores e avaliações.
 
 Tabelas usadas: auth.users (via Supabase Auth), perfis, professores, disciplinas,
-turmas, avaliacoes e a view vw_professor_disciplina. `repositorios()` entrega as
+turmas, avaliacoes, comentarios, denuncias_comentarios e a view vw_professor_disciplina. `repositorios()` entrega as
 instâncias configuradas em create_app.
 """
 import re
@@ -18,7 +18,7 @@ from supabase_auth.helpers import generate_pkce_challenge, generate_pkce_verifie
 
 from app.supabase_db import get_supabase, novo_cliente
 from app.utils import normalizar_busca
-from app.validacoes import CRITERIOS, validar_comentario
+from app.validacoes import CRITERIOS, validar_comentario, validar_denuncia
 
 LIMITE_COMENTARIOS = 50        # comentários por listagem; o "ver mais" fica para depois
 COLUNAS_AVALIACAO = ','.join(('id', 'usuario_id', 'professor_id', 'disciplina_id',
@@ -676,6 +676,23 @@ class ComentarioRepository:
                 'disciplina_id': linha['disciplina_id'], 'texto': linha['texto'],
                 'disciplina_nome': nome, 'disciplina_codigo': codigo}
 
+    def buscar_visivel(self, comentario_id):
+        """Comentário publicado (não ocultado) de qualquer autor, ou None.
+
+        `usuario_id` volta só para o servidor conferir a autoria; não vai para a tela.
+        """
+        dados = (self.cliente.table('comentarios')
+                 .select('id,usuario_id,professor_id,disciplina_id,texto')
+                 .eq('id', comentario_id).is_('ocultado_em', 'null').limit(1).execute().data)
+        if not dados:
+            return None
+        linha = dados[0]
+        nome, codigo = self._disciplinas_do_professor(linha['professor_id']).get(
+            linha['disciplina_id'], ('', ''))
+        return {**{c: linha[c] for c in ('id', 'usuario_id', 'professor_id',
+                                         'disciplina_id', 'texto')},
+                'disciplina_nome': nome, 'disciplina_codigo': codigo}
+
     def criar(self, usuario_id, professor_id, disciplina_id, texto):
         """Grava o comentário do usuário e devolve o id novo.
 
@@ -718,12 +735,52 @@ class ComentarioRepository:
         return bool(apagadas)
 
 
+class DenunciaRepository:
+    """Denúncias de comentários (tabela denuncias_comentarios, issue #215).
+
+    A tabela é privada: o RLS não libera nada para anon/authenticated e só o backend
+    (service_role) grava. Nenhum método devolve quem denunciou para a tela.
+    """
+
+    def __init__(self, cliente):
+        self.cliente = cliente
+
+    def tem_denuncia_ativa(self, comentario_id, usuario_id):
+        """True se o usuário já tem uma denúncia em aberto para o comentário."""
+        return bool(self.cliente.table('denuncias_comentarios').select('id')
+                    .eq('comentario_id', comentario_id).eq('usuario_id', usuario_id)
+                    .is_('resolvida_em', 'null').limit(1).execute().data)
+
+    def criar(self, comentario_id, usuario_id, motivo, explicacao=None):
+        """Registra a denúncia. False se já houver uma ativa do mesmo usuário.
+
+        ValueError se motivo ou explicação forem inválidos.
+        """
+        motivo, explicacao, erros = validar_denuncia(motivo, explicacao)
+        if erros:
+            raise ValueError(next(iter(erros.values())))
+        if self.tem_denuncia_ativa(comentario_id, usuario_id):
+            return False
+        try:
+            self.cliente.table('denuncias_comentarios').insert({
+                'comentario_id': comentario_id, 'usuario_id': usuario_id,
+                'motivo': motivo, 'explicacao': explicacao,
+            }).execute()
+        except Exception as erro:
+            # Duas requisições simultâneas: o índice único parcial recusa a segunda.
+            if '23505' in str(erro) or 'duplicate key' in str(erro):
+                return False
+            raise
+        return True
+
+
 class Repositorios:
-    def __init__(self, usuarios, professores, avaliacoes, comentarios=None):
+    def __init__(self, usuarios, professores, avaliacoes, comentarios=None, denuncias=None):
         self.usuarios = usuarios
         self.professores = professores
         self.avaliacoes = avaliacoes
         self.comentarios = comentarios
+        self.denuncias = denuncias
 
 
 def configurar_repositorios(app):
@@ -733,7 +790,8 @@ def configurar_repositorios(app):
     fabrica = (lambda: injetado) if injetado else novo_cliente
     app.extensions['repositorios'] = Repositorios(
         UsuarioRepository(cliente, fabrica), ProfessorRepository(cliente),
-        AvaliacaoRepository(cliente), ComentarioRepository(cliente))
+        AvaliacaoRepository(cliente), ComentarioRepository(cliente),
+        DenunciaRepository(cliente))
 
 
 def repositorios() -> Repositorios:

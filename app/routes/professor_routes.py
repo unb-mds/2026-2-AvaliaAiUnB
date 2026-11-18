@@ -5,7 +5,7 @@ from app.controllers import professor_controller as controller
 from app.controllers.session_controller import (login_required, obter_usuario_atual,
                                                 sanitizar_destino)
 from app.seguranca import (is_safe_url, limitar_avaliacao, limitar_comentario,
-                           limitar_sugestoes)
+                           limitar_denuncia, limitar_sugestoes)
 
 professor_bp = Blueprint('professores', __name__)
 
@@ -196,6 +196,49 @@ def excluir_comentario(comentario_id):
     return render_template('excluir_comentario.html', professor=professor, comentario=comentario,
                            next_url=next_url, filtro_comentarios=filtro, url_voltar=url_voltar,
                            usuario=usuario)
+
+
+@professor_bp.route('/comentarios/<int:comentario_id>/denunciar', methods=['GET', 'POST'])
+@login_required
+@limitar_denuncia
+def denunciar_comentario(comentario_id):
+    """Denúncia privada de um comentário (issue #215). O autor e os visitantes nunca
+    veem quem denunciou; depois de enviada, a página só confirma o recebimento."""
+    usuario = obter_usuario_atual()
+    origem = request.form if request.method == 'POST' else request.args
+    comentario = controller.carregar_comentario_denunciavel(comentario_id, usuario)
+    professor = controller.carregar_professor(comentario['professor_id'])
+    disciplinas = controller.listar_disciplinas(professor['id'])
+    next_url = _next_seguro(origem.get('next'))
+    filtro = controller.filtro_de_comentarios(origem.get('comentarios_disciplina'), disciplinas)
+    url_voltar = _url_perfil(professor['id'], next_url, None, filtro)
+    quer_json = request.accept_mimetypes.best == 'application/json'
+
+    erros, status, dados = {}, 200, {}
+    ja_denunciou = controller.ja_denunciou(comentario_id, usuario)
+    if request.method == 'POST' and not ja_denunciou:
+        dados = request.form
+        motivo, explicacao, erros = controller.validar_dados_denuncia(request.form)
+        if erros:
+            status = 400
+        elif controller.denunciar_comentario(comentario_id, usuario, motivo, explicacao):
+            if quer_json:
+                return jsonify({'mensagem': 'Denúncia recebida.'}), 201
+            return redirect(url_for('professores.denunciar_comentario', comentario_id=comentario_id,
+                                    next=next_url, comentarios_disciplina=filtro), code=303)
+        else:
+            ja_denunciou = True
+    if request.method == 'POST' and ja_denunciou:
+        status = 409
+    if quer_json and request.method == 'POST':
+        if status == 409:
+            return jsonify({'erros': {'denuncia': 'Você já denunciou este comentário.'}}), 409
+        return jsonify({'erros': erros}), status
+    return render_template('denunciar_comentario.html', professor=professor, comentario=comentario,
+                           motivos=controller.motivos_denuncia(), ja_denunciou=ja_denunciou,
+                           erros=erros, dados=dados, next_url=next_url,
+                           filtro_comentarios=filtro, url_voltar=url_voltar,
+                           usuario=usuario), status
 
 
 @professor_bp.route('/avaliar/<int:professor_id>', methods=['GET', 'POST'])

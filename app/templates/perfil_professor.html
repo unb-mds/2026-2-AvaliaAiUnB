@@ -206,6 +206,10 @@
                         <a href="{{ url_for('professores.editar_comentario', comentario_id=c.id, next=next_url, comentarios_disciplina=filtro_comentarios) }}">Editar</a>
                         <a class="acao-excluir" href="{{ url_for('professores.excluir_comentario', comentario_id=c.id, next=next_url, comentarios_disciplina=filtro_comentarios) }}">Excluir</a>
                     </p>
+                    {% elif usuario %}
+                    <p class="comentario-acoes">
+                        <a class="acao-denunciar" href="{{ url_for('professores.denunciar_comentario', comentario_id=c.id, next=next_url, comentarios_disciplina=filtro_comentarios) }}">Denunciar</a>
+                    </p>
                     {% endif %}
                 </li>
                 {% endfor %}
