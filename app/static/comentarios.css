@@ -1,0 +1,279 @@
+/*
+ * Comentários do perfil do professor e páginas de editar e excluir comentário.
+ * Só tokens de base.css (docs/DESIGN_SYSTEM.md), então vale nos dois temas.
+ * Mobile primeiro: coluna única e botões em largura total até 600 px.
+ * Carregado depois de indicadores.css e do CSS da própria tela.
+ */
+
+/* ---------- Seção no perfil ---------- */
+.comentarios {
+    min-width: 0;
+}
+
+.comentarios .mensagem {
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+/* Filtro "Disciplina" */
+.comentarios .filtros {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--espaco-3);
+    margin: 0 0 var(--espaco-5);
+}
+
+/* indicadores.css dá flex-basis de 220px aos filhos: em coluna isso viraria altura. */
+.comentarios .filtros > .campo {
+    flex: 0 0 auto;
+    min-width: 0;
+    margin: 0;
+}
+
+.comentarios .filtros .botao {
+    width: 100%;
+    margin: 0;
+}
+
+/* Lista e cartão de cada comentário */
+.comentarios .lista-professores {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espaco-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.comentarios .lista-professores > .comentario {
+    min-width: 0;
+    padding: var(--espaco-4);
+    border: 1px solid var(--cor-divisor-suave);
+    border-radius: var(--raio-card);
+    background-color: var(--cor-fundo-suave);
+    transition: border-color var(--transicao), box-shadow var(--transicao);
+}
+
+.comentario-cabecalho {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--espaco-1) var(--espaco-2);
+    margin: 0;
+    font-size: var(--texto-pequeno);
+    line-height: 1.5;
+}
+
+.comentario-cabecalho strong {
+    color: var(--cor-texto);
+    font-size: var(--texto-base);
+    overflow-wrap: anywhere;
+}
+
+/* Disciplina em etiqueta */
+.comentario-disciplina {
+    display: inline-block;
+    max-width: 100%;
+    padding: 0 var(--espaco-3);
+    border-radius: var(--raio-pilula);
+    background-color: var(--cor-principal-suave);
+    color: var(--cor-principal);
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.comentario-data,
+.comentario-editado {
+    color: var(--cor-texto-secundario);
+}
+
+.comentario-editado {
+    font-style: italic;
+}
+
+.comentario-texto {
+    margin: var(--espaco-3) 0 0;
+    color: var(--cor-texto);
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+/* Editar e Excluir, discretos */
+.comentario-acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espaco-1);
+    margin: var(--espaco-3) 0 0;
+    font-size: var(--texto-pequeno);
+}
+
+.comentario-acoes a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    padding: 0 var(--espaco-3);
+    border-radius: var(--raio-pilula);
+    color: var(--cor-texto-secundario);
+    font-weight: 700;
+    text-decoration: none;
+    transition: background-color var(--transicao), color var(--transicao);
+}
+
+.comentario-acoes a:hover {
+    background-color: var(--cor-principal-suave);
+    color: var(--cor-principal);
+}
+
+.comentario-acoes a.acao-excluir:hover {
+    background-color: var(--cor-erro-suave);
+    color: var(--cor-erro);
+}
+
+.comentarios-limite {
+    margin: var(--espaco-4) 0 0;
+    color: var(--cor-texto-secundario);
+    font-size: var(--texto-pequeno);
+    text-align: center;
+}
+
+/* Convite para visitantes */
+.comentarios .convite-comentario {
+    margin-bottom: var(--espaco-5);
+    border-left: 4px solid var(--cor-principal);
+    background-color: var(--cor-principal-suave);
+}
+
+.convite-comentario a {
+    font-weight: 700;
+}
+
+/* Aviso de erro e estado vazio, abaixo do formulário ou do filtro */
+.comentarios .mensagem-erro {
+    border-left-width: 4px;
+}
+
+/* ---------- Formulário (perfil e página de editar) ---------- */
+.formulario-comentario {
+    margin: 0 0 var(--espaco-5);
+    padding: var(--espaco-4);
+    border: 1px solid var(--cor-divisor-suave);
+    border-radius: var(--raio-card);
+    background-color: var(--cor-fundo-suave);
+}
+
+.pagina-comentario .formulario-comentario,
+.pagina-comentario form {
+    margin: 0;
+}
+
+.formulario-comentario h3 {
+    margin: 0 0 var(--espaco-4);
+    font-size: var(--texto-titulo-card);
+    line-height: 1.3;
+}
+
+.formulario-comentario .campo:last-of-type {
+    margin-bottom: var(--espaco-4);
+}
+
+.formulario-comentario .campo,
+.pagina-comentario .campo {
+    min-width: 0;
+}
+
+.formulario-comentario textarea,
+.pagina-comentario textarea {
+    min-height: 8rem;
+    line-height: 1.5;
+    resize: vertical;
+}
+
+.formulario-comentario .campo select:hover,
+.formulario-comentario .campo textarea:hover,
+.pagina-comentario .campo select:hover,
+.pagina-comentario .campo textarea:hover {
+    border-color: var(--cor-principal);
+}
+
+/* Erro: borda e mensagem junto do campo (a cor não é o único sinal) */
+.formulario-comentario .campo-erro,
+.pagina-comentario .campo-erro {
+    display: flex;
+    gap: var(--espaco-2);
+    padding: var(--espaco-2) var(--espaco-3);
+    border-left: 4px solid var(--cor-erro);
+    border-radius: var(--raio);
+    background-color: var(--cor-erro-suave);
+}
+
+.formulario-comentario > .botao {
+    width: 100%;
+    margin: 0;
+}
+
+/* ---------- Páginas de editar e excluir ---------- */
+.pagina-comentario .mensagem {
+    margin: 0 0 var(--espaco-4);
+    padding-left: var(--espaco-4);
+}
+
+.pagina-comentario blockquote {
+    margin: 0 0 var(--espaco-4);
+    padding: var(--espaco-3) var(--espaco-4);
+    border-left: 4px solid var(--cor-divisor);
+    border-radius: 0 var(--raio) var(--raio) 0;
+    background-color: var(--cor-fundo-suave);
+    color: var(--cor-texto);
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+    white-space: pre-line;
+}
+
+.pagina-comentario .botao-destrutivo:hover {
+    box-shadow: 0 6px 16px -8px var(--cor-erro);
+}
+
+.pagina-comentario .botao-destrutivo:focus-visible {
+    outline-color: var(--cor-erro);
+}
+
+/* ---------- A partir de 601 px ---------- */
+@media (min-width: 601px) {
+    .comentarios .filtros {
+        flex-direction: row;
+        align-items: flex-end;
+    }
+
+    .comentarios .filtros > .campo {
+        flex: 1 1 220px;
+    }
+
+    .comentarios .filtros .botao {
+        width: auto;
+        flex: 0 0 auto;
+    }
+
+    .formulario-comentario {
+        padding: var(--espaco-5);
+    }
+
+    .formulario-comentario > .botao {
+        width: auto;
+    }
+}
+
+/* Só onde há ponteiro de verdade, para não "prender" o hover no toque */
+@media (hover: hover) and (pointer: fine) {
+    .comentarios .lista-professores > .comentario:hover {
+        border-color: var(--cor-divisor);
+        box-shadow: var(--sombra-card);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .comentarios .lista-professores > .comentario,
+    .comentario-acoes a {
+        transition: none;
+    }
+}

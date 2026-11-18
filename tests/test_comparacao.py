@@ -203,5 +203,62 @@ class TestComparacao(unittest.TestCase):
                 self.assertEqual(resposta.status_code, 400)
                 self.assertNotIn('<table', resposta.text)
                 self.assertIn('role="alert"', resposta.text)
+
+    def test_destaque_melhor_desempenho_e_regra_inversa_dificuldade(self):
+        self._vincular(2)
+        for _ in range(5):
+            self.avaliar(1, 4, dificuldade=4)
+            self.avaliar(2, 5, dificuldade=2)
+        resposta = self.web.get('/comparar?disciplina_id=10&professor=1&professor=2&comparar=1')
+        self.assertEqual(resposta.status_code, 200)
+        html = resposta.text
+        self.assertEqual(html.count('Melhor desempenho'), 1)
+        self.assertEqual(html.count('Menor dificuldade'), 1)
+        self.assertEqual(html.count('>Melhor<'), 5)
+        self.assertIn('pelo menos 5 avaliações válidas', html)
+
+    def test_destaque_exige_minimo_de_avaliacoes(self):
+        self._vincular(2)
+        for _ in range(5):
+            self.avaliar(1, 3, dificuldade=3)
+        for _ in range(4):
+            self.avaliar(2, 5, dificuldade=1)
+        resposta = self.web.get('/comparar?disciplina_id=10&professor=1&professor=2&comparar=1')
+        self.assertEqual(resposta.status_code, 200)
+        tabela = resposta.text[resposta.text.index('<table class="tabela-comparacao">'):]
+        self.assertEqual(tabela.count('Melhor desempenho'), 1)
+        pos_prof_1 = tabela.index('JOSÉ ÁVILA')
+        pos_prof_2 = tabela.index('MARIA LIMA')
+        pos_selo = tabela.index('Melhor desempenho')
+        self.assertTrue(pos_prof_1 < pos_selo < pos_prof_2)
+
+    def test_destaque_em_caso_de_empate(self):
+        self._vincular(2)
+        for _ in range(5):
+            self.avaliar(1, 4, didatica=5, clareza=3, dificuldade=2)
+            self.avaliar(2, 4, didatica=3, clareza=5, dificuldade=2)
+        resposta = self.web.get('/comparar?disciplina_id=10&professor=1&professor=2&comparar=1')
+        self.assertEqual(resposta.status_code, 200)
+        html = resposta.text
+        self.assertEqual(html.count('Melhor desempenho'), 2)
+        self.assertEqual(html.count('Menor dificuldade'), 2)
+        self.assertEqual(html.count('>Melhor<'), 8)
+
+    def test_destaque_tambem_no_modo_livre(self):
+        self.cliente.tabelas['vw_professor_disciplina'].append({
+            'professor_id': 2, 'professor_nome': 'MARIA LIMA', 'departamento': 'FIS',
+            'disciplina_id': 20, 'disciplina': 'FÍSICA 1', 'codigo_disciplina': 'IFD0171',
+            'ano': 2026, 'periodo': 2,
+        })
+        for _ in range(5):
+            self.avaliar(1, 5, disciplina_id=10, dificuldade=2)
+            self.avaliar(2, 3, disciplina_id=20, dificuldade=4)
+        resposta = self.web.get('/comparar?modo=livre&professor=1&professor=2&comparar=1')
+        self.assertEqual(resposta.status_code, 200)
+        tabela = resposta.text[resposta.text.index('<table class="tabela-comparacao">'):]
+        self.assertEqual(tabela.count('Melhor desempenho'), 1)
+        self.assertLess(tabela.index('JOSÉ ÁVILA'), tabela.index('Melhor desempenho'))
+        self.assertLess(tabela.index('Melhor desempenho'), tabela.index('MARIA LIMA'))
+
 if __name__ == '__main__':
     unittest.main()

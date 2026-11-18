@@ -51,6 +51,20 @@ class TestNavegacao(unittest.TestCase):
                        'Envie seu feedback'):
             self.assertIn(trecho, html)
 
+    def test_pagina_sobre(self):
+        html = self.html('/sobre')
+        for trecho in ('Critérios de avaliação', 'Didática', 'Dificuldade', 'conta Google',
+                       'Envie seu feedback'):
+            self.assertIn(trecho, html)
+
+    def test_pagina_sobre_link_repositorio(self):
+        html = self.html('/sobre')
+        self.assertRegex(
+            html,
+            r'<a[^>]*href="https://github\.com/unb-mds/2026-2-AvaliaUnB"[^>]*target="_blank"[^>]*rel="noopener noreferrer"[^>]*>',
+        )
+
 
 if __name__ == '__main__':
     unittest.main()
+

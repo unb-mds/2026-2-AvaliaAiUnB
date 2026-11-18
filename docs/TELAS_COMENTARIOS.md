@@ -1,6 +1,10 @@
 # Telas de comentários
 
-**Protótipos, não telas implementadas na aplicação.**
+**Protótipos da #112. As telas de listar, escrever, editar e apagar já existem
+no perfil do professor (issue #167), com as diferenças indicadas abaixo.**
+Reações, seletor de ordenação, denúncia e ocultação continuam sendo
+protótipos, assim como o filtro automático e os estados **Verificando** e
+**Em revisão** dos desenhos de escrever e editar.
 
 Protótipos da #112 para revisar a experiência em uma tela estreita. Os fluxos
 seguem a [especificação da #116](COMENTARIOS.md) e os componentes do
@@ -15,11 +19,10 @@ pessoa pode voltar ao perfil e encerrar ou escolher a outra.
 ![Perfil com seletor de ordenação, datas, curtidas e descurtidas e um e-mail expandido](mockups/comentarios/listar.svg)
 
 Visitantes leem os comentários com o nome de usuário do autor, disciplina,
-data da primeira publicação e as contagens de reações recebidas. Clicar, tocar
-ou ativar o nome pelo teclado abre o e-mail de cadastro do autor para qualquer
-visitante. Ativar o botão outra vez fecha o contato. A área convida a entrar
-ou criar conta com qualquer e-mail
-verificado para escrever ou reagir.
+data da primeira publicação e as contagens de reações recebidas. O nome de
+usuário é só texto: o e-mail de cadastro do autor nunca é exibido, então o
+e-mail expandido do desenho não faz parte da implementação. A área convida a
+entrar com o Google (**Entrar para comentar**) para escrever ou reagir.
 A pessoa logada pode usar **Escrever comentário** mesmo que já tenha
 comentado naquele perfil. Cada relato da própria conta tem as ações
 **Editar** e **Apagar**. Na lista vazia, a seção convida a escrever o primeiro
@@ -28,6 +31,14 @@ relato.
 O seletor **Ordenar por** abre em **Mais recentes**. Também oferece
 **Mais curtidos**, **Mais antigos** e **Mais reações**, que soma curtidas
 e descurtidas.
+
+Na implementação, a lista tem ordem fixa, dos mais recentes para os mais
+antigos, e o seletor fica para a issue #213. No lugar dele há o filtro
+**Disciplina**, com "Todas as disciplinas" por padrão. A lista mostra os 50
+comentários mais recentes e, quando há mais, a frase "Mostrando os 50
+comentários mais recentes." A data aparece em dd/mm/aaaa, no horário de
+Brasília, com "(editado)" nos comentários alterados, e a ação da própria conta
+se chama **Excluir**.
 
 Os ícones **👍** e **👎** aparecem direto em todos os comentários, mesmo
 com o e-mail recolhido e sem login. Cada ícone mostra um número apenas
@@ -45,8 +56,8 @@ Para publicar, a pessoa precisa escolher uma disciplina ministrada pelo
 professor. O exemplo mostra um novo comentário em Cálculo 1, disciplina
 em que a pessoa já comentou.
 
-O formulário avisa que o nome de usuário fica público e que qualquer pessoa
-poderá clicar nele para consultar o e-mail. A pessoa envia o texto para
+O formulário avisa que o nome de usuário fica público: "Seu nome de usuário
+aparece junto do comentário." O e-mail não é exibido. A pessoa envia o texto para
 verificação ao clicar em **Publicar**. O campo mostra o limite de 2 a
 1.000 caracteres. Durante o envio, o botão mostra
 **Verificando**. Se o filtro bloquear o texto, a mensagem junto ao campo
@@ -72,6 +83,12 @@ O diálogo identifica a disciplina, avisa que o texto e as reações serão
 apagados e oferece Cancelar antes de Apagar comentário. Após confirmar, a
 lista é atualizada e o foco retorna a uma ação visível. Em falha, o diálogo
 mantém o contexto e permite tentar novamente.
+
+Na implementação, a confirmação é uma página própria, sem JavaScript, que
+identifica o professor e a disciplina, mostra um trecho do comentário e avisa
+que a ação não pode ser desfeita. **Cancelar** fica em destaque e **Excluir
+comentário** é a ação destrutiva. Só o autor chega a ela; para o comentário de
+outra pessoa a resposta é 404.
 
 ## Denúncia e ocultação
 

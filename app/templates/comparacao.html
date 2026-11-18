@@ -193,7 +193,10 @@
 
                         {% for professor in comparacao %}
 
-                        <th scope="col"><a href="{{ url_for('professores.perfil', professor_id=professor.id, disciplina_id=disciplina.id if disciplina else None) }}">{{ professor.nome }}</a></th>
+                        <th scope="col"{% if professor.melhor_geral %} class="coluna-destaque"{% endif %}>
+                            <a href="{{ url_for('professores.perfil', professor_id=professor.id, disciplina_id=disciplina.id if disciplina else None) }}">{{ professor.nome }}</a>
+                            {% if professor.melhor_geral %}<span class="selo-destaque selo-destaque-geral">Melhor desempenho</span>{% endif %}
+                        </th>
 
                         {% endfor %}
 
@@ -238,7 +241,9 @@
                         <th scope="row">Média geral</th>
 
                         {% for professor in comparacao %}
-                        <td>{% if professor.media_geral is none %}Sem avaliações{% else %}{{ ('%.2f'|format(professor.media_geral))|replace('.', ',') }} / 5{% endif %}</td>
+                        <td{% if professor.melhor_geral %} class="celula-destaque"{% endif %}>
+                            {% if professor.media_geral is none %}Sem avaliações{% else %}{{ ('%.2f'|format(professor.media_geral))|replace('.', ',') }} / 5{% if professor.melhor_geral %} <span class="selo-destaque">Melhor</span>{% endif %}{% endif %}
+                        </td>
                         {% endfor %}
 
                     </tr>
@@ -251,7 +256,7 @@
 
                         {% for professor in comparacao %}
 
-                        <td>{% if not professor.indicadores.quantidade %}Sem avaliações{% elif criterio == 'dificuldade' %}{{ barra_dificuldade(professor.indicadores.medias[criterio]) }}{% else %}{{ ('%.2f'|format(professor.indicadores.medias[criterio]))|replace('.', ',') }} / 5{% endif %}</td>
+                        <td{% if professor.melhores_criterios[criterio] %} class="celula-destaque"{% endif %}>{% if not professor.indicadores.quantidade %}Sem avaliações{% elif criterio == 'dificuldade' %}{{ barra_dificuldade(professor.indicadores.medias[criterio]) }}{% if professor.melhores_criterios[criterio] %} <span class="selo-destaque">Menor dificuldade</span>{% endif %}{% else %}{{ ('%.2f'|format(professor.indicadores.medias[criterio]))|replace('.', ',') }} / 5{% if professor.melhores_criterios[criterio] %} <span class="selo-destaque">Melhor</span>{% endif %}{% endif %}</td>
 
                         {% endfor %}
 
@@ -266,7 +271,7 @@
         </div>
 
         <p class="ajuda">Cada avaliação válida tem o mesmo peso. Dificuldade: 1 = muito fácil; 5 = muito difícil. Nos demais critérios, 5 = excelente.</p>
-
+        <p class="ajuda">Destaque de desempenho: considera professores com pelo menos {{ minimo_avaliacoes_destaque }} avaliações válidas. No geral (média dos quatro primeiros critérios) e em Didática, Clareza, Organização e Disponibilidade, vence a maior média; em Dificuldade, vence a menor média. Empates na liderança destacam todos os empatados.</p>
         {% endif %}
 
     </main>

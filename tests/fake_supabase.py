@@ -1,6 +1,7 @@
 """Cliente Supabase falso em memória (tabelas + Auth), para testar sem rede nem banco real."""
 import itertools
 import uuid
+from datetime import datetime, timedelta, timezone
 from types import SimpleNamespace
 
 from supabase_auth.errors import AuthApiError
@@ -11,6 +12,27 @@ class Resposta:
         self.data = data
 
 
+class _Predicado:
+    """Valor de filtro que decide a igualdade (usado por .in_ e .is_ sem mexer nos demais filtros)."""
+
+    def __init__(self, funcao):
+        self.funcao = funcao
+
+    def __eq__(self, outro):
+        return self.funcao(outro)
+
+    __hash__ = None
+
+
+_relogio_comentarios = itertools.count(1)
+
+
+def _agora_comentarios():
+    """Instante determinístico e crescente (ISO 8601), no lugar do NOW() do banco."""
+    return (datetime(2027, 1, 1, tzinfo=timezone.utc)
+            + timedelta(seconds=next(_relogio_comentarios))).isoformat()
+
+
 class Consulta:
     def __init__(self, tabelas, nome, registro_upserts=None):
         self.tabelas, self.nome = tabelas, nome
@@ -18,6 +40,7 @@ class Consulta:
         self.linhas_upsert, self.conflito = None, None
         self.filtros, self.ordem, self.faixa, self.limite = [], [], None, None
         self.novo, self.atualizacao, self.apagar = None, None, False
+        self.ordem_decrescente = set()
 
     def select(self, _colunas):
         return self
@@ -26,8 +49,22 @@ class Consulta:
         self.filtros.append((coluna, valor))
         return self
 
-    def order(self, coluna):
+    def in_(self, coluna, valores):
+        valores = list(valores)
+        self.filtros.append((coluna, _Predicado(lambda v: v in valores)))
+        return self
+
+    def is_(self, coluna, valor):
+        """Como o PostgREST: is_(col, 'null') filtra IS NULL."""
+        if valor != 'null':
+            raise NotImplementedError('O fake só suporta is_(coluna, "null").')
+        self.filtros.append((coluna, _Predicado(lambda v: v is None)))
+        return self
+
+    def order(self, coluna, desc=False):
         self.ordem.append(coluna)
+        if desc:
+            self.ordem_decrescente.add(coluna)
         return self
 
     def range(self, inicio, fim):
@@ -76,9 +113,15 @@ class Consulta:
                 raise RuntimeError('duplicate key value violates unique constraint "perfis_username_key"')
             novo_id = max((l.get('id', 0) for l in tabela if isinstance(l.get('id'), int)), default=0) + 1
             registro = {'id': novo_id, **self.novo} if self.nome != 'perfis' else dict(self.novo)
+            if self.nome == 'comentarios':   # defaults do banco
+                agora = _agora_comentarios()
+                registro = {'criado_em': agora, 'atualizado_em': agora, 'ocultado_em': None, **registro}
             tabela.append(registro)
             return Resposta([dict(registro)])
         if self.atualizacao is not None:
+            if self.nome == 'comentarios' and {'texto', 'disciplina_id'} & set(self.atualizacao):
+                # trigger set_atualizado_em
+                self.atualizacao = {**self.atualizacao, 'atualizado_em': _agora_comentarios()}
             atualizadas = []
             for l in tabela:
                 if all(l.get(c) == v for c, v in self.filtros):
@@ -91,7 +134,7 @@ class Consulta:
             return Resposta(apagadas)
         linhas = [dict(l) for l in tabela if all(l.get(c) == v for c, v in self.filtros)]
         for coluna in reversed(self.ordem):
-            linhas.sort(key=lambda l: l[coluna])
+            linhas.sort(key=lambda l: l[coluna], reverse=coluna in self.ordem_decrescente)
         if self.faixa:
             linhas = linhas[self.faixa[0]:self.faixa[1] + 1]
         if self.limite is not None:
@@ -199,6 +242,7 @@ class ClienteFalso:
             'turmas': [],
             'avaliacoes': [],
             'perfis': [],
+            'comentarios': [],
         }
 
     def table(self, nome):
