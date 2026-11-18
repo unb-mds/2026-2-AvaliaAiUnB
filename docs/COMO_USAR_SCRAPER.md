@@ -42,9 +42,23 @@ Para configurar um projeto Supabase do zero (ou recriar o ambiente), execute a m
 
 ## 3. Executando o scraper
 
-> **Atualize o Chrome antes de rodar.** O `undetected_chromedriver` usa o driver
-> compatível com o Chrome instalado; com o navegador desatualizado o scraper falha
-> ao abrir (erro de versão do ChromeDriver).
+> **Atualize o Chrome antes de rodar.** Por padrão, o `undetected_chromedriver` baixa
+> o driver mais novo. Com o navegador desatualizado, o scraper falha ao abrir, com o erro
+> `SessionNotCreatedException: This version of ChromeDriver only supports Chrome version N`.
+> Se não puder atualizar, informe a versão principal do seu Chrome (em
+> `chrome://version`) e, se quiser, o caminho do navegador:
+>
+> ```bash
+> # Git Bash / Linux / macOS
+> CHROME_VERSION_MAIN=157 python scraper/scraper_sigaa.py --dry-run
+> # PowerShell
+> $env:CHROME_VERSION_MAIN = "157"; python scraper/scraper_sigaa.py --dry-run
+> ```
+>
+> | Variável | O que faz |
+> |---|---|
+> | `CHROME_VERSION_MAIN` | Baixa o driver dessa versão principal do Chrome (ex.: `157`). |
+> | `CHROME_BINARY` | Caminho do navegador a abrir. Útil quando há mais de um Chrome/Chromium instalado. |
 
 Rode a partir da raiz do projeto, com o ambiente virtual ativado:
 
@@ -246,7 +260,7 @@ reabra o PR para dispará-los.
 | Sintoma | O que fazer |
 |---|---|
 | Execução vermelha com "unidades puladas por erro" | As unidades lidas **já foram gravadas**. Rode `gravar` de novo só com as unidades que falharam. |
-| `SessionNotCreatedException` / versão do ChromeDriver | O workflow já instala o Chrome estável mais recente. Rode de novo; se persistir, abra uma issue com o log. |
+| `SessionNotCreatedException` / versão do ChromeDriver | O workflow já define `CHROME_BINARY` e `CHROME_VERSION_MAIN` com o Google Chrome do runner (que também tem Chromium). Confira no passo "Apontar o scraper para o Google Chrome do runner" qual versão foi detectada e abra uma issue com o log. |
 | Nenhuma turma em nenhuma unidade | Confira `ano`/`periodo`. O SIGAA pode ainda não ter publicado o período, ou o layout mudou (veja os HTMLs em `debug/` no artifact). |
 | Passo "Abrir PR com o backup" falha | Falta a permissão do item 3 da [configuração única](#configuracao-unica-administrador-do-repositorio). Os dados já estão no banco. Rode o backup localmente (seção 4) ou ajuste a permissão e rode `gravar` de novo. |
 | Aviso de duplicatas | Siga [Verificar duplicatas](#verificar-duplicatas). |

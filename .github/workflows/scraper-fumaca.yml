@@ -35,13 +35,16 @@ jobs:
           python-version: "3.14"
           cache: pip
       - run: pip install -r requirements-scraper.txt
-      # O undetected-chromedriver baixa o driver da versão estável mais nova;
-      # o Chrome que vem no runner pode estar uma versão atrás.
-      - name: Atualizar o Chrome para a versão estável
+      # O runner tem Google Chrome e Chromium. Sem isto, o undetected-chromedriver
+      # pode abrir o Chromium e baixar um driver de outra versão
+      # (SessionNotCreatedException). As variáveis são lidas em scraper/cli_sigaa.py.
+      - name: Apontar o scraper para o Google Chrome do runner
         run: |
-          wget -q -O /tmp/chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-          sudo apt-get install -y -qq /tmp/chrome.deb
-          google-chrome --version
+          binario=$(command -v google-chrome-stable || command -v google-chrome)
+          versao=$("$binario" --version | grep -oE '[0-9]+' | head -n 1)
+          echo "Usando $("$binario" --version) em $binario"
+          echo "CHROME_BINARY=$binario" >> "$GITHUB_ENV"
+          echo "CHROME_VERSION_MAIN=$versao" >> "$GITHUB_ENV"
 
       # Ano e período ficam nos padrões do scraper (scraper/cli_sigaa.py).
       - name: Rodar o scraper em dry-run

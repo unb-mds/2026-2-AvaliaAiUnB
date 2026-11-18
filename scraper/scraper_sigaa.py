@@ -18,7 +18,7 @@ from selenium.common.exceptions import (
     WebDriverException,
 )
 
-from cli_sigaa import montar_parser
+from cli_sigaa import montar_parser, opcoes_chrome
 from persistencia_sigaa import (
     salvar_disciplinas,
     salvar_professores,
@@ -84,7 +84,7 @@ class SigaaScraper:
         options.add_argument("--disable-application-cache")
         options.add_argument("--disk-cache-size=0")
 
-        self.driver = uc.Chrome(options=options)
+        self.driver = uc.Chrome(options=options, **opcoes_chrome())
         self.wait = WebDriverWait(self.driver, 30)
 
     # ---------- utilidades ----------

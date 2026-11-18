@@ -6,7 +6,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scraper"))
 
-from cli_sigaa import montar_parser
+from cli_sigaa import montar_parser, opcoes_chrome
 
 
 class TestMontarParser(unittest.TestCase):
@@ -33,6 +33,25 @@ class TestMontarParser(unittest.TestCase):
             with contextlib.redirect_stderr(io.StringIO()):
                 with self.assertRaises(SystemExit):
                     montar_parser().parse_args(argv)
+
+
+class TestOpcoesChrome(unittest.TestCase):
+    def test_sem_variaveis_deixa_o_driver_escolher(self):
+        self.assertEqual(opcoes_chrome({}), {})
+        self.assertEqual(opcoes_chrome({"CHROME_BINARY": " ", "CHROME_VERSION_MAIN": ""}), {})
+
+    def test_binario_e_versao(self):
+        opcoes = opcoes_chrome(
+            {"CHROME_BINARY": "/usr/bin/google-chrome", "CHROME_VERSION_MAIN": " 158 "}
+        )
+        self.assertEqual(
+            opcoes,
+            {"browser_executable_path": "/usr/bin/google-chrome", "version_main": 158},
+        )
+
+    def test_versao_invalida(self):
+        with self.assertRaises(ValueError):
+            opcoes_chrome({"CHROME_VERSION_MAIN": "158.0.1"})
 
 
 if __name__ == "__main__":
