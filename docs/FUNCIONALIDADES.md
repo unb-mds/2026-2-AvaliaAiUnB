@@ -98,6 +98,13 @@ avaliação válida em qualquer período. Os dados são consultados a cada
 comparação e exibidos com duas casas decimais. Professores sem avaliações
 válidas aparecem com um aviso. No celular, a tabela rola na horizontal e
 mantém a coluna dos critérios visível.
+Para evitar distorções por amostras pequenas, apenas professores com pelo menos
+cinco avaliações válidas são elegíveis ao destaque visual na comparação. Entre
+os elegíveis, o sistema destaca o melhor desempenho geral (média de didática,
+clareza, organização e disponibilidade) e o melhor resultado em cada critério:
+nos quatro primeiros critérios vence a maior média, enquanto em **Dificuldade**
+aplica-se a regra inversa (vence a menor média). Em caso de empate na liderança,
+todos os professores empatados recebem o destaque.
 
 Links antigos com `professor_1` e `professor_2` continuam mostrando as médias
 gerais do par e oferecem acesso à comparação por disciplina.

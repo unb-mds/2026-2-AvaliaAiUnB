@@ -1,10 +1,47 @@
 """Lógica de professores e avaliações: resolve o que as rotas exibem e registra avaliações."""
+import math
+
 from flask import abort, current_app, request
 
-from app.repositorio import (LIMITE_COMENTARIOS, MINIMO_AVALIACOES_RANKING,
-                             ComentarioRepository, repositorios)
+from app.repositorio import (CRITERIOS_RANKING, LIMITE_COMENTARIOS,
+                             MINIMO_AVALIACOES_RANKING, ComentarioRepository,
+                             repositorios)
 from app.utils import normalizar_busca
 from app.validacoes import CRITERIOS, validar_avaliacao, validar_comentario
+
+MINIMO_AVALIACOES_COMPARACAO = MINIMO_AVALIACOES_RANKING
+
+
+def _aplicar_destaques_comparacao(comparacao):
+    """Marca quem lidera no geral e por critério entre professores com mínimo de avaliações."""
+    for item in comparacao:
+        qtd = item['indicadores']['quantidade']
+        medias = item['indicadores']['medias']
+        item['elegivel_destaque'] = qtd >= MINIMO_AVALIACOES_COMPARACAO
+        item['media_geral'] = (
+            sum(medias[c] for c in CRITERIOS_RANKING) / len(CRITERIOS_RANKING)
+            if qtd > 0 else None
+        )
+        item['melhor_geral'] = False
+        item['melhores_criterios'] = {c: False for c in CRITERIOS}
+
+    elegiveis = [item for item in comparacao if item['elegivel_destaque']]
+    if not elegiveis:
+        return comparacao
+
+    maior_geral = max(item['media_geral'] for item in elegiveis)
+    for item in elegiveis:
+        if math.isclose(item['media_geral'], maior_geral, rel_tol=1e-9, abs_tol=1e-9):
+            item['melhor_geral'] = True
+
+    for criterio in CRITERIOS:
+        valores = [item['indicadores']['medias'][criterio] for item in elegiveis]
+        alvo = min(valores) if criterio == 'dificuldade' else max(valores)
+        for item in elegiveis:
+            if math.isclose(item['indicadores']['medias'][criterio], alvo, rel_tol=1e-9, abs_tol=1e-9):
+                item['melhores_criterios'][criterio] = True
+
+    return comparacao
 
 
 def criterios():
@@ -46,10 +83,13 @@ def _carregar_comparacao_legada(dados):
         erros['professor_2'] = 'Selecione dois professores diferentes.'
     comparacao = []
     if len(selecionados) == 2 and not erros:
-        comparacao = [{**por_id[p], 'indicadores': repos.avaliacoes.calcular_medias(p)}
-                      for p in selecionados.values()]
+        comparacao = _aplicar_destaques_comparacao([
+            {**por_id[p], 'indicadores': repos.avaliacoes.calcular_medias(p)}
+            for p in selecionados.values()
+        ])
     return dict(professores=professores, selecionados=selecionados,
-                erros=erros, comparacao=comparacao, criterios=CRITERIOS, modo_legado=True)
+                erros=erros, comparacao=comparacao, criterios=CRITERIOS,
+                minimo_avaliacoes_destaque=MINIMO_AVALIACOES_COMPARACAO, modo_legado=True)
 
 
 def carregar_comparacao(dados):
@@ -76,7 +116,7 @@ def carregar_comparacao(dados):
         for d in sorted(vinculos_previos, key=lambda item: (item['nome'] or '', item['id'])):
             d_id = str(d['id'])
             total_na_disciplina = sum(
-                1 for _, v in catalogo if any(str( vinc['id']) == d_id for vinc in v)
+                1 for _, v in catalogo if any(str(vinc['id']) == d_id for vinc in v)
             )
             if total_na_disciplina >= 2:
                 disciplina_id = d_id
@@ -114,14 +154,17 @@ def carregar_comparacao(dados):
             else:
                 medias = repos.avaliacoes.calcular_medias_por_disciplina(
                     disciplina['id'], [professores[p]['id'] for p in ids])
-                comparacao = [{**professores[p], 'indicadores': medias[professores[p]['id']]}
-                              for p in ids]
+                comparacao = _aplicar_destaques_comparacao([
+                    {**professores[p], 'indicadores': medias[professores[p]['id']]}
+                    for p in ids
+                ])
 
     return dict(disciplinas=sorted(disciplinas.values(), key=lambda d: (d['nome'] or '', d['id'])),
                 disciplina=disciplina, professores=sorted(professores.values(),
                     key=lambda p: (p['nome'] or '', p['id'])),
                 selecao_previa=selecao_previa, campos=(selecionados + ['', ''])[:max(2, len(selecionados))],
-                erros=erros, comparacao=comparacao, criterios=CRITERIOS)
+                erros=erros, comparacao=comparacao, criterios=CRITERIOS,
+                minimo_avaliacoes_destaque=MINIMO_AVALIACOES_COMPARACAO)
 
 
 def carregar_ranking(departamento=''):
