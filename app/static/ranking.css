@@ -112,3 +112,28 @@ main > .ajuda {
 .nota-ranking {
     color: var(--cor-principal);
 }
+/* Filtro por departamento */
+.filtro-ranking {
+    margin: var(--espaco-4) 0;
+    align-items: flex-end;
+    gap: var(--espaco-3);
+}
+
+.filtro-ranking .campo {
+    flex: 1 1 260px;
+    margin-bottom: 0;
+}
+
+.filtro-ranking .campo select {
+    width: 100%;
+}
+
+.acoes-filtro-ranking {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espaco-2);
+}
+
+.filtro-ranking button {
+    margin: 0;
+}
