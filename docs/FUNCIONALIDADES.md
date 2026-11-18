@@ -78,9 +78,13 @@ gerais do par e oferecem acesso à comparação por disciplina.
 
 ## Ranking de professores (RF07)
 
+## Ranking de professores (RF07)
+
 A página `/ranking` mostra posição, média geral, quantidade de avaliações e
-acesso ao perfil. Participam professores com pelo menos cinco avaliações válidas,
-considerando todas as disciplinas e períodos.
+acesso ao perfil. Por padrão exibe o ranking geral, mas aceita o parâmetro
+`departamento` (via seletor na tela ou pela URL) para filtrar a classificação
+por unidade acadêmica, mantendo a exigência de pelo menos cinco avaliações
+válidas.
 
 A média geral é a soma das notas de didática, clareza, organização e
 disponibilidade, dividida pelo número de avaliações válidas vezes quatro.
