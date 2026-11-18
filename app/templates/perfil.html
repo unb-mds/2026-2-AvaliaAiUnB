@@ -48,7 +48,7 @@
             {% for av in avaliacoes %}
             <article class="card avaliacao-card">
                 <div class="avaliacao-cabecalho">
-                    <h3>{{ av.professor_nome }}</h3>
+                    <h3><a href="{{ url_for('professores.perfil', professor_id=av.professor_id, disciplina_id=av.disciplina_id, next=url_for('auth.perfil')) }}">{{ av.professor_nome }}</a></h3>
                     <p class="ajuda">{{ av.codigo_disciplina }} — {{ av.disciplina_nome }} ({{ av.ano }}/{{ av.periodo }})</p>
                 </div>
                 <ul class="notas-lista">

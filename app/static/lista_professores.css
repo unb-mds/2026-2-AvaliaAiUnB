@@ -28,23 +28,28 @@ h1 {
     margin-bottom: var(--espaco-5);
 }
 
-/* Filtros: um card, campos empilhados no mobile e em duas colunas no desktop */
-.filtros-busca {
+/* Busca unificada: campo largo e botão; empilha no mobile */
+.busca-unificada {
     display: grid;
     grid-template-columns: 1fr;
     gap: 0 var(--espaco-4);
     padding: var(--espaco-5) var(--espaco-4);
-    margin-bottom: var(--espaco-5);
+    margin-bottom: var(--espaco-4);
 }
 
-.filtros-busca .campo input,
-.filtros-busca .campo select {
-    padding: var(--espaco-2) var(--espaco-3);
+.busca-unificada .campo {
+    margin-bottom: var(--espaco-4);
 }
 
-.filtros-busca button {
+.busca-unificada button {
     margin: 0;
     width: 100%;
+}
+
+/* Filtros ativos (vindos da home ou de uma sugestão) */
+.filtros-ativos {
+    margin: 0 0 var(--espaco-5);
+    color: var(--cor-texto-secundario);
 }
 
 /* Catálogo */
@@ -107,16 +112,22 @@ h1 {
         flex-wrap: wrap;
     }
 
-    .filtros-busca {
-        grid-template-columns: 1fr 1fr;
+    .busca-unificada {
+        grid-template-columns: 1fr auto;
+        align-items: start;
         padding: var(--espaco-5);
     }
 
-    .filtros-busca button {
-        grid-column: 1 / -1;
-        width: auto;
-        justify-self: start;
+    .busca-unificada .campo {
+        margin-bottom: 0;
     }
+
+    /* Alinha o botão com o campo (abaixo do rótulo) */
+    .busca-unificada button {
+        width: auto;
+        margin-top: calc(1.5em + var(--espaco-2));
+    }
+
 
     .lista-professores > li.card {
         padding: var(--espaco-5);

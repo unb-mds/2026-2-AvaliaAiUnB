@@ -29,6 +29,34 @@
         <p class="selo">Consulta</p>
         <h1>Comparar professores</h1>
 
+        <form method="get" action="{{ url_for('professores.comparar') }}" class="filtros busca-unificada" role="search">
+            <div class="campo campo-sugestoes" data-sugestoes="{{ url_for('professores.sugestoes') }}" data-contexto="comparacao">
+                <label for="busca-unificada">Buscar professor ou disciplina</label>
+                <input type="search" id="busca-unificada" name="busca" value="{{ busca }}" autocomplete="off" aria-describedby="busca-unificada-ajuda">
+                <p class="campo-ajuda" id="busca-unificada-ajuda">Escolha um professor para compará-lo ou uma disciplina para comparar quem a ministra.</p>
+            </div>
+            <button type="submit" class="botao botao-primario">Buscar</button>
+        </form>
+
+        {% if resultados_busca is not none %}
+        <section class="resultados-busca" aria-labelledby="titulo-resultados-busca">
+            <h2 id="titulo-resultados-busca">Resultados para “{{ busca }}”</h2>
+            {% if resultados_busca %}
+            <ul class="lista-resultados-busca">
+                {% for resultado in resultados_busca %}
+                <li class="sugestao">
+                    <span class="sugestao-tipo sugestao-tipo-{{ resultado.tipo }}">{{ resultado.tipo_rotulo }}</span>
+                    <a class="sugestao-texto" href="{{ resultado.url }}">{{ resultado.texto }}</a>
+                    {% if resultado.detalhe %}<span class="sugestao-detalhe">{{ resultado.detalhe }}</span>{% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="mensagem" role="status">Nenhum professor ou disciplina encontrado para “{{ busca }}”.</p>
+            {% endif %}
+        </section>
+        {% endif %}
+
         <nav class="modos-comparacao" aria-label="Modo de comparação">
             <a href="{{ url_for('professores.comparar', professor_1=selecao_previa or None) }}" class="modo-link"{% if not modo_livre and not modo_legado %} aria-current="page"{% endif %}>Por mesma disciplina</a>
             <a href="{{ url_for('professores.comparar', modo='livre', professor_1=selecao_previa or None) }}" class="modo-link"{% if modo_livre or modo_legado %} aria-current="page"{% endif %}>Disciplinas diferentes (seleção livre)</a>

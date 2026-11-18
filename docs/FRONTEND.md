@@ -67,8 +67,9 @@ própria, sem JavaScript.
 
 O catálogo mostra mensagens diferentes para ausência de dados e ausência de
 resultados dos filtros e exibe a média
-geral em cinco estrelas ou `N/A (Não avaliado)`. O filtro de departamento é um campo
-de texto com sugestões. O perfil informa quando não há avaliações válidas e mostra a
+geral em cinco estrelas ou `N/A (Não avaliado)`. A busca é um campo único
+(professor, disciplina ou departamento) com sugestões; filtros vindos da home ou de uma
+sugestão aparecem numa linha com o link "Limpar filtros". O perfil informa quando não há avaliações válidas e mostra a
 média geral do professor; a avaliação exibe erros de campo; a comparação
 exige dois professores diferentes; e o ranking informa quando ninguém atinge o
 mínimo de avaliações. No perfil do usuário, Apagar abre uma confirmação (`<details>`,
@@ -88,6 +89,11 @@ Scripts em `app/static/` (a política de segurança só aceita scripts do própr
 domínio): `campo-busca.js` transforma os `<select>` dentro de `.campo-busca` (professores na
 comparação e disciplina no perfil do professor) em campos digitáveis com sugestões.
 O `<select>` continua no formulário, então a tela funciona sem JavaScript.
+O mesmo arquivo liga a busca unificada aos campos `.campo-sugestoes` (Consulta e
+Comparação): consulta `data-sugestoes` com o `data-contexto` do campo e mostra as
+sugestões no padrão *combobox* da WAI-ARIA (setas, Enter, Esc, `aria-activedescendant`
+e uma região `status` que anuncia a quantidade). Sem JavaScript, o formulário envia o
+termo (`q` na Consulta, `busca` na Comparação, que lista os resultados como links).
 
 ## Design system e visual final
 

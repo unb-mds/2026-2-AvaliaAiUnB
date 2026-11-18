@@ -349,6 +349,13 @@ class TestFluxoWeb(unittest.TestCase):
         self.assertIn('MARIA LIMA', html_perfil_bruno)
         self.assertIn('FÍSICA 1', html_perfil_bruno)
         self.assertNotIn('JOSÉ ÁVILA', html_perfil_bruno)
+        # O nome do professor leva ao perfil dele, na disciplina avaliada, com volta para /perfil
+        self.assertIn('<h3><a href="/professores/2?disciplina_id=20&amp;next=/perfil">MARIA LIMA</a></h3>',
+                      html_perfil_bruno)
+        perfil_professor = self.web.get('/professores/2?disciplina_id=20&next=/perfil',
+                                        headers={'Accept': 'text/html'})
+        self.assertEqual(perfil_professor.status_code, 200)
+        self.assertIn('href="/perfil"', perfil_professor.get_data(as_text=True))
 
         # Bruno tenta editar ou excluir a avaliação da Ana -> recebe 404/proibido e não altera nada
         self.assertEqual(
