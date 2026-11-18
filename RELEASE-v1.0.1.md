@@ -1,6 +1,6 @@
-# Release Notes – v2.0.0 | AvaliaAi UnB
+# Release Notes - v1.0.1 | AvaliaUnB
 
-Nesta segunda versão do AvaliaAi, entregamos novas funcionalidades de consulta, comparação e gestão de avaliações para os usuários, além de evoluirmos a persistência de dados para a nuvem, a automação de testes e deploy, a segurança da aplicação e a documentação do projeto.
+Nesta atualização da Release 1 do AvaliaAi, entregamos novas funcionalidades de consulta, comparação e gestão de avaliações para os usuários, além de evoluirmos a persistência de dados para a nuvem, a automação de testes e deploy, a segurança da aplicação e a documentação do projeto.
 
 ## Novidades e Funcionalidades
 - **Ranking de Professores:** Nova visualização com os docentes mais bem avaliados da plataforma a partir das notas registradas.
