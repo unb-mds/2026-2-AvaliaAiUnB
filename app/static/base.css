@@ -899,3 +899,79 @@ main {
         transform: none;
     }
 }
+
+/* Busca unificada: lista de sugestões (campo-busca.js) abaixo do campo */
+.campo-sugestoes {
+    position: relative;
+}
+
+.lista-sugestoes {
+    position: absolute;
+    z-index: 20;
+    left: 0;
+    right: 0;
+    max-height: 22rem;
+    margin: var(--espaco-1) 0 0;
+    padding: var(--espaco-1);
+    overflow-y: auto;
+    list-style: none;
+    border: 1px solid var(--cor-divisor);
+    border-radius: var(--raio);
+    background-color: var(--cor-superficie);
+    box-shadow: var(--sombra-elevada);
+}
+
+.sugestao {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--espaco-1) var(--espaco-2);
+    padding: var(--espaco-2) var(--espaco-3);
+    border-radius: calc(var(--raio) - 4px);
+    cursor: pointer;
+}
+
+.sugestao:hover,
+.sugestao[aria-selected="true"] {
+    background-color: var(--cor-hover-suave);
+}
+
+/* A ativa também tem contorno: não depende só da cor de fundo */
+.sugestao[aria-selected="true"] {
+    outline: 2px solid var(--cor-principal);
+    outline-offset: -2px;
+}
+
+.sugestao-texto {
+    flex: 1 1 12rem;
+    min-width: 0;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.sugestao-detalhe {
+    flex-basis: 100%;
+    order: 3;
+    color: var(--cor-texto-secundario);
+    font-size: var(--texto-pequeno);
+    overflow-wrap: anywhere;
+}
+
+.sugestao-tipo {
+    flex: none;
+    order: 2;
+    padding: 0 var(--espaco-2);
+    border: 1px solid currentColor;
+    border-radius: var(--raio-pilula);
+    color: var(--cor-principal);
+    font-size: var(--texto-pequeno);
+    font-weight: 700;
+}
+
+.sugestao-tipo-disciplina {
+    color: var(--cor-texto);
+}
+
+.sugestao-tipo-departamento {
+    color: var(--cor-texto-secundario);
+}

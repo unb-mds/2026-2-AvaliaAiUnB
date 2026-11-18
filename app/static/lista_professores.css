@@ -28,6 +28,24 @@ h1 {
     margin-bottom: var(--espaco-5);
 }
 
+/* Busca unificada: campo largo e botão; empilha no mobile */
+.busca-unificada {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0 var(--espaco-4);
+    padding: var(--espaco-5) var(--espaco-4);
+    margin-bottom: var(--espaco-4);
+}
+
+.busca-unificada .campo {
+    margin-bottom: var(--espaco-4);
+}
+
+.busca-unificada button {
+    margin: 0;
+    width: 100%;
+}
+
 /* Filtros: um card, campos empilhados no mobile e em duas colunas no desktop */
 .filtros-busca {
     display: grid;
@@ -105,6 +123,22 @@ h1 {
     .atalhos {
         flex-direction: row;
         flex-wrap: wrap;
+    }
+
+    .busca-unificada {
+        grid-template-columns: 1fr auto;
+        align-items: start;
+        padding: var(--espaco-5);
+    }
+
+    .busca-unificada .campo {
+        margin-bottom: 0;
+    }
+
+    /* Alinha o botão com o campo (abaixo do rótulo) */
+    .busca-unificada button {
+        width: auto;
+        margin-top: calc(1.5em + var(--espaco-2));
     }
 
     .filtros-busca {

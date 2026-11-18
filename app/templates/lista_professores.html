@@ -25,6 +25,15 @@
             <a class="botao botao-secundario" href="{{ url_for('professores.ranking') }}">Ver ranking de professores</a>
         </div>
 
+        <form method="get" action="{{ url_for('professores.listar') }}" class="busca-unificada card" role="search">
+            <div class="campo campo-sugestoes" data-sugestoes="{{ url_for('professores.sugestoes') }}" data-contexto="consulta">
+                <label for="busca-unificada">Buscar professor, disciplina ou departamento</label>
+                <input type="search" id="busca-unificada" name="q" value="{{ filtros.q }}" autocomplete="off" aria-describedby="busca-unificada-ajuda">
+                <p class="campo-ajuda" id="busca-unificada-ajuda">Ex.: nome do professor, “Cálculo 1”, “FGA0001” ou “FCTE”.</p>
+            </div>
+            <button type="submit" class="botao botao-primario">Buscar</button>
+        </form>
+
         <form method="get" action="{{ url_for('professores.listar') }}" class="filtros filtros-busca card">
             <div class="campo">
                 <label for="nome">Nome do professor</label>
@@ -134,5 +143,6 @@
     </main>
     {% include '_rodape.html' %}
     <script src="{{ url_for('static', filename='fundo-animado.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='campo-busca.js') }}" defer></script>
 </body>
 </html>

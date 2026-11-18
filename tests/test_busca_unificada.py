@@ -1,5 +1,7 @@
 """Busca unificada (#220): sugestões em JSON e filtro `q` da Consulta."""
+import re
 import unittest
+from pathlib import Path
 
 from app import create_app
 from app.repositorio import MAXIMO_SUGESTOES
@@ -91,6 +93,55 @@ class TestBuscaUnificada(unittest.TestCase):
         self.assertEqual(nomes('FGA0002'), {'MARIA LIMA'})                # código
         self.assertEqual(nomes('matematica'), {'ANA CALDAS'})             # departamento
         self.assertIn('Nenhum professor encontrado', self.web.get('/professores?q=zzz').text)
+
+    def test_paginacao_preserva_o_termo(self):
+        for i in range(120):
+            self.cliente.tabelas['professores'].append(
+                {'id': 100 + i, 'nome': f'PROFESSOR {i}', 'departamento': 'FCTE'})
+        self.assertIn('q=professor', self.web.get('/professores?q=professor').text)
+
+
+class TestCampoBuscaUnificada(unittest.TestCase):
+    """O campo da Consulta funciona sem JavaScript e o script respeita a CSP."""
+
+    def setUp(self):
+        self.web = create_app({'TESTING': True, 'SECRET_KEY': 'chave-exclusiva-dos-testes',
+                               'SUPABASE_CLIENT': ClienteFalso()}).test_client()
+
+    def formulario(self, caminho):
+        html = self.web.get(caminho).get_data(as_text=True)
+        achado = re.search(r'<form\b[^>]*class="busca-unificada[^"]*"[^>]*>(.*?)</form>', html, re.S)
+        self.assertIsNotNone(achado, f'{caminho} não tem o formulário da busca unificada')
+        return html, achado.group(0)
+
+    def test_consulta_tem_formulario_get_com_rotulo(self):
+        html, formulario = self.formulario('/professores?q=Ávila')
+        self.assertIn('method="get"', formulario)
+        self.assertIn('action="/professores"', formulario)
+        self.assertRegex(formulario, r'<label\b[^>]*for="busca-unificada"')
+        self.assertRegex(formulario, r'<input\b[^>]*id="busca-unificada"[^>]*name="q"')
+        self.assertIn('value="Ávila"', formulario)
+        self.assertIn('data-sugestoes="/busca/sugestoes"', formulario)
+        self.assertIn('<button type="submit"', formulario)
+        self.assertIn('src="/static/campo-busca.js"', html)
+
+    def test_sem_javascript_inline(self):
+        html = self.web.get('/professores').get_data(as_text=True)
+        for script in re.findall(r'<script\b[^>]*>(.*?)</script>', html, re.S):
+            self.assertEqual(script.strip(), '', 'Script inline seria bloqueado pela CSP')
+        self.assertNotRegex(html, r'\son[a-z]+="', 'Atributos on* seriam bloqueados pela CSP')
+        csp = self.web.get('/professores').headers['Content-Security-Policy']
+        self.assertIn("script-src 'self'", csp)
+        self.assertIn("connect-src 'self'", csp)
+
+    def test_script_segue_o_padrao_combobox(self):
+        script = (Path(__file__).resolve().parent.parent / 'app' / 'static'
+                  / 'campo-busca.js').read_text(encoding='utf-8')
+        for trecho in ("'combobox'", "'listbox'", "'option'", 'aria-expanded',
+                       'aria-activedescendant', 'aria-controls', "'status'",
+                       'ArrowDown', 'ArrowUp', 'Escape', 'tipo_rotulo'):
+            self.assertIn(trecho, script)
+        self.assertNotIn('innerHTML', script, 'Sugestões devem ser inseridas como texto')
 
 
 if __name__ == '__main__':
