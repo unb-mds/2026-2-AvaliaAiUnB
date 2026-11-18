@@ -1,0 +1,73 @@
+# Teste de fumaça do scraper do SIGAA (issue #225).
+#
+# Roda um --dry-run de UMA unidade no Chrome headless do runner, sem nenhuma
+# chave. Serve para saber, antes do merge, se o scraper ainda consegue abrir o
+# SIGAA e extrair turmas no GitHub Actions (mudança de layout do SIGAA,
+# atualização do Chrome/Selenium, dependências quebradas).
+name: Scraper (teste de fumaça)
+
+on:
+  pull_request:
+    paths:
+      - "scraper/**"
+      - "requirements-scraper.txt"
+      - ".github/workflows/scraper-fumaca.yml"
+      - ".github/workflows/atualizar-dados-sigaa.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONUNBUFFERED: "1"
+  PYTHONIOENCODING: utf-8
+  # Unidade usada no teste: 673 = FGA (Gama), value do <option> no SIGAA.
+  UNIDADE_TESTE: "673"
+
+jobs:
+  dry-run-uma-unidade:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+          cache: pip
+      - run: pip install -r requirements-scraper.txt
+      # O runner tem Google Chrome e Chromium. Sem isto, o undetected-chromedriver
+      # pode abrir o Chromium e baixar um driver de outra versão
+      # (SessionNotCreatedException). As variáveis são lidas em scraper/cli_sigaa.py.
+      - name: Apontar o scraper para o Google Chrome do runner
+        run: |
+          binario=$(command -v google-chrome-stable || command -v google-chrome)
+          versao=$("$binario" --version | grep -oE '[0-9]+' | head -n 1)
+          echo "Usando $("$binario" --version) em $binario"
+          echo "CHROME_BINARY=$binario" >> "$GITHUB_ENV"
+          echo "CHROME_VERSION_MAIN=$versao" >> "$GITHUB_ENV"
+
+      # Ano e período ficam nos padrões do scraper (scraper/cli_sigaa.py).
+      - name: Rodar o scraper em dry-run
+        run: |
+          set -o pipefail
+          python scraper/scraper_sigaa.py --headless --dry-run --unidade "$UNIDADE_TESTE" 2>&1 | tee scraper.log
+
+      - name: Conferir se alguma turma foi extraída
+        run: |
+          turmas=$(sed -n 's/^Turmas únicas: \([0-9]\+\).*/\1/p' scraper.log | tail -n 1)
+          echo "Turmas extraídas: ${turmas:-nenhuma}"
+          if [ -z "$turmas" ] || [ "$turmas" -eq 0 ]; then
+            echo "::error::O dry-run terminou sem turmas para a unidade $UNIDADE_TESTE. O SIGAA pode ter mudado ou o período padrão não tem turmas; veja o artifact scraper-fumaca."
+            exit 1
+          fi
+
+      - name: Guardar log e pasta debug/
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scraper-fumaca
+          path: |
+            scraper.log
+            debug/
+          if-no-files-found: ignore
+          retention-days: 7

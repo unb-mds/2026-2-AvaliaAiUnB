@@ -1,7 +1,29 @@
 """Argumentos de linha de comando do scraper (sem selenium nem Supabase)."""
 import argparse
+import os
 
 from texto_sigaa import validar_ano, validar_periodo
+
+
+def opcoes_chrome(ambiente=None) -> dict:
+    """Argumentos extras do uc.Chrome lidos de variáveis de ambiente.
+
+    - CHROME_BINARY: caminho do navegador. Sem ele, o undetected_chromedriver
+      escolhe sozinho e pode abrir o Chromium no lugar do Google Chrome.
+    - CHROME_VERSION_MAIN: versão principal do navegador (ex.: 157). Sem ela, é
+      baixado o driver mais novo, que pode não servir num Chrome desatualizado.
+    """
+    ambiente = os.environ if ambiente is None else ambiente
+    opcoes = {}
+    binario = (ambiente.get("CHROME_BINARY") or "").strip()
+    if binario:
+        opcoes["browser_executable_path"] = binario
+    versao = (ambiente.get("CHROME_VERSION_MAIN") or "").strip()
+    if versao:
+        if not versao.isdigit():
+            raise ValueError(f"CHROME_VERSION_MAIN inválido: {versao!r} (use só o número, ex.: 157)")
+        opcoes["version_main"] = int(versao)
+    return opcoes
 
 
 def _como_argumento(validador):

@@ -159,7 +159,8 @@ docker compose up --build
 ```
 
 A aplicação será servida pelo Gunicorn em `http://localhost:8000`.
-O scraper é executado separadamente.
+O scraper é executado separadamente. A cada semestre, ele roda pelo workflow manual
+*Atualizar dados do SIGAA* no GitHub Actions; veja o [guia do scraper](docs/COMO_USAR_SCRAPER.md).
 
 ### Hospedagem
 

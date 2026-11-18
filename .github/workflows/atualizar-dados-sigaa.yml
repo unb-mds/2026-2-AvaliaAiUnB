@@ -1,0 +1,238 @@
+# Atualiza professores, disciplinas e turmas a partir do SIGAA (issue #225).
+#
+# Disparo manual: aba Actions > "Atualizar dados do SIGAA" > Run workflow.
+# Passo a passo completo em docs/COMO_USAR_SCRAPER.md.
+#
+# - modo "dry-run": coleta e mostra o que seria gravado. Não usa nenhuma chave.
+# - modo "gravar": exige aprovação no environment "producao" (onde ficam os
+#   segredos SUPABASE_URL e SUPABASE_SERVICE_KEY), grava no Supabase e abre um
+#   PR com os CSVs de docs/backup atualizados.
+name: Atualizar dados do SIGAA
+
+on:
+  workflow_dispatch:
+    inputs:
+      ano:
+        description: "Ano das turmas (4 dígitos, ex.: 2027)"
+        required: true
+        type: string
+      periodo:
+        description: "Período das turmas"
+        required: true
+        type: choice
+        options: ["1", "2", "3", "4"]
+      modo:
+        description: "dry-run só mostra os dados; gravar escreve no Supabase (pede aprovação)"
+        required: true
+        type: choice
+        default: dry-run
+        options: [dry-run, gravar]
+      unidades:
+        description: "Opcional: values das unidades separados por espaço ou vírgula (ex.: 673 12). Vazio = todas"
+        required: false
+        type: string
+        default: ""
+
+# Nunca rodar duas coletas ao mesmo tempo (evita gravações concorrentes).
+concurrency:
+  group: atualizar-dados-sigaa
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  PYTHONUNBUFFERED: "1"
+  PYTHONIOENCODING: utf-8
+
+jobs:
+  dry-run:
+    if: inputs.modo == 'dry-run'
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+          cache: pip
+      - run: pip install -r requirements-scraper.txt
+      # O runner tem Google Chrome e Chromium. Sem isto, o undetected-chromedriver
+      # pode abrir o Chromium e baixar um driver de outra versão
+      # (SessionNotCreatedException). As variáveis são lidas em scraper/cli_sigaa.py.
+      - name: Apontar o scraper para o Google Chrome do runner
+        run: |
+          binario=$(command -v google-chrome-stable || command -v google-chrome)
+          versao=$("$binario" --version | grep -oE '[0-9]+' | head -n 1)
+          echo "Usando $("$binario" --version) em $binario"
+          echo "CHROME_BINARY=$binario" >> "$GITHUB_ENV"
+          echo "CHROME_VERSION_MAIN=$versao" >> "$GITHUB_ENV"
+
+      - name: Rodar o scraper (dry-run, sem chaves)
+        id: scraper
+        env:
+          ANO: ${{ inputs.ano }}
+          PERIODO: ${{ inputs.periodo }}
+          UNIDADES: ${{ inputs.unidades }}
+        run: |
+          args=(--headless --dry-run --ano "$ANO" --periodo "$PERIODO")
+          for u in ${UNIDADES//,/ }; do
+            if [[ ! "$u" =~ ^[0-9]+$ ]]; then
+              echo "::error::Unidade inválida: '$u' (use só o value numérico)"
+              exit 2
+            fi
+            args+=(--unidade "$u")
+          done
+          set +e
+          python scraper/scraper_sigaa.py "${args[@]}" 2>&1 | tee scraper.log
+          codigo=${PIPESTATUS[0]}
+          set -e
+          echo "codigo=$codigo" >> "$GITHUB_OUTPUT"
+          {
+            echo "## Dry-run $ANO/$PERIODO (código de saída $codigo)"
+            echo '```'
+            tail -n 40 scraper.log
+            echo '```'
+            echo "O log completo está no artifact **scraper-log**."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Guardar log e pasta debug/
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scraper-log
+          path: |
+            scraper.log
+            debug/
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Falhar se alguma unidade deu erro
+        if: steps.scraper.outputs.codigo != '0'
+        run: |
+          echo "::error::O scraper saiu com código ${{ steps.scraper.outputs.codigo }}. Veja o resumo e o artifact scraper-log."
+          exit 1
+
+  gravar:
+    if: inputs.modo == 'gravar'
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    # Os segredos ficam neste environment, com aprovação obrigatória.
+    environment: producao
+    permissions:
+      contents: write        # enviar a branch com o backup
+      pull-requests: write   # abrir o PR do backup
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+          cache: pip
+      - run: pip install -r requirements-scraper.txt
+      # O runner tem Google Chrome e Chromium. Sem isto, o undetected-chromedriver
+      # pode abrir o Chromium e baixar um driver de outra versão
+      # (SessionNotCreatedException). As variáveis são lidas em scraper/cli_sigaa.py.
+      - name: Apontar o scraper para o Google Chrome do runner
+        run: |
+          binario=$(command -v google-chrome-stable || command -v google-chrome)
+          versao=$("$binario" --version | grep -oE '[0-9]+' | head -n 1)
+          echo "Usando $("$binario" --version) em $binario"
+          echo "CHROME_BINARY=$binario" >> "$GITHUB_ENV"
+          echo "CHROME_VERSION_MAIN=$versao" >> "$GITHUB_ENV"
+
+      - name: Rodar o scraper e gravar no Supabase
+        id: scraper
+        env:
+          ANO: ${{ inputs.ano }}
+          PERIODO: ${{ inputs.periodo }}
+          UNIDADES: ${{ inputs.unidades }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          args=(--headless --ano "$ANO" --periodo "$PERIODO")
+          for u in ${UNIDADES//,/ }; do
+            if [[ ! "$u" =~ ^[0-9]+$ ]]; then
+              echo "::error::Unidade inválida: '$u' (use só o value numérico)"
+              exit 2
+            fi
+            args+=(--unidade "$u")
+          done
+          set +e
+          python scraper/scraper_sigaa.py "${args[@]}" 2>&1 | tee scraper.log
+          codigo=${PIPESTATUS[0]}
+          set -e
+          echo "codigo=$codigo" >> "$GITHUB_OUTPUT"
+          {
+            echo "## Gravação $ANO/$PERIODO (código de saída $codigo)"
+            echo '```'
+            tail -n 40 scraper.log
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # Roda mesmo se alguma unidade falhou: o que foi coletado já está no banco.
+      - name: Verificar duplicatas
+        id: duplicatas
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          set +e
+          python scraper/manutencao_banco.py duplicatas 2>&1 | tee duplicatas.log
+          codigo=${PIPESTATUS[0]}
+          set -e
+          echo "codigo=$codigo" >> "$GITHUB_OUTPUT"
+          if [ "$codigo" != "0" ]; then
+            echo "::warning::Foram encontradas duplicatas no catálogo. Veja o artifact scraper-log."
+          fi
+
+      - name: Atualizar o backup em docs/backup
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python scraper/manutencao_banco.py backup --destino docs/backup
+
+      - name: Abrir PR com o backup atualizado
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ANO: ${{ inputs.ano }}
+          PERIODO: ${{ inputs.periodo }}
+          CODIGO: ${{ steps.scraper.outputs.codigo }}
+        run: |
+          if git diff --quiet -- docs/backup; then
+            echo "Backup sem mudanças; nenhum PR aberto." | tee -a "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          branch="dados/sigaa-$ANO-$PERIODO-$GITHUB_RUN_ID"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$branch"
+          git add docs/backup
+          git commit -m "dados: atualiza backup do catálogo ($ANO/$PERIODO)"
+          git push origin "$branch"
+          gh pr create --base "${{ github.event.repository.default_branch }}" --head "$branch" \
+            --title "dados: backup do catálogo após coleta do SIGAA $ANO/$PERIODO" \
+            --body "Backup gerado automaticamente pelo workflow **Atualizar dados do SIGAA** ([execução]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)).
+
+          - Período coletado: $ANO/$PERIODO
+          - Código de saída do scraper: $CODIGO (0 = todas as unidades lidas)
+
+          Os dados já estão no Supabase; este PR só versiona os CSVs de \`docs/backup\`. Relacionado à #225." \
+            | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Guardar logs e pasta debug/
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scraper-log
+          path: |
+            scraper.log
+            duplicatas.log
+            debug/
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Falhar se alguma unidade deu erro
+        if: steps.scraper.outputs.codigo != '0'
+        run: |
+          echo "::error::O scraper saiu com código ${{ steps.scraper.outputs.codigo }}. Os dados das unidades lidas já foram gravados; rode de novo só as unidades que falharam."
+          exit 1
