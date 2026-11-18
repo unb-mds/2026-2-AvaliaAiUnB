@@ -57,15 +57,25 @@ Tentativas de editar ou excluir uma avaliação de outra pessoa recebem HTTP 404
 
 ## Comparação de professores (RF08)
 
-A página `/comparar` pede uma disciplina e permite selecionar dois ou mais
-professores distintos que a ministram. Cada professor ocupa uma coluna com as
-médias de didática, clareza, organização, disponibilidade e dificuldade e o
-total de avaliações válidas na disciplina.
+## Comparação de professores (RF08)
+
+A página `/comparar` oferece dois modos de comparação:
+
+- **Por mesma disciplina (padrão):** pede uma disciplina e permite selecionar
+  dois ou mais professores distintos que a ministram, exibindo as médias
+  restritas àquela disciplina.
+- **Disciplinas diferentes (`modo=livre`):** permite selecionar livremente
+  dois ou mais professores de qualquer disciplina para comparar a média geral
+  (média de didática, clareza, organização e disponibilidade) e cada critério
+  individual. Quando os professores não possuem disciplina em comum, a tela
+  lista as disciplinas de cada docente e exibe um aviso indicando que as
+  disciplinas são diferentes.
 
 O acesso está disponível na lista e no perfil de cada professor. Os links
-individuais preenchem a primeira seleção quando o professor ministra a
-disciplina escolhida. A lista de professores selecionados pode ser ajustada
-pelos botões **Adicionar professor** e **Remover professor**.
+individuais preenchem a primeira seleção automaticamente e direcionam para a
+comparação por disciplina (quando há outro docente na mesma matéria) ou para a
+seleção livre. A lista de professores selecionados pode ser ajustada pelos
+botões **Adicionar professor** e **Remover professor**.
 
 As médias consideram apenas a disciplina escolhida, com o mesmo peso por
 avaliação válida em qualquer período. Os dados são consultados a cada
