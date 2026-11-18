@@ -8,6 +8,7 @@ import re
 import secrets
 import time
 from collections import Counter
+from datetime import datetime, timedelta, timezone
 from urllib.parse import urlencode
 
 from flask import current_app
@@ -17,8 +18,9 @@ from supabase_auth.helpers import generate_pkce_challenge, generate_pkce_verifie
 
 from app.supabase_db import get_supabase, novo_cliente
 from app.utils import normalizar_busca
-from app.validacoes import CRITERIOS
+from app.validacoes import CRITERIOS, validar_comentario
 
+LIMITE_COMENTARIOS = 50        # comentários por listagem; o "ver mais" fica para depois
 COLUNAS_AVALIACAO = ','.join(('id', 'usuario_id', 'professor_id', 'disciplina_id',
                                   'ano', 'periodo', *CRITERIOS))
 MAXIMO_NOME_PERFIL = 100      # perfis.nome_completo é VARCHAR(100)
@@ -423,11 +425,164 @@ class AvaliacaoRepository:
         )
         return True
 
+class ComentarioRepository:
+    """Comentários no perfil do professor (tabela comentarios).
+
+    O backend usa a service key, que ignora RLS: toda regra de autoria e de vínculo
+    entre professor e disciplina é conferida aqui. O e-mail e o id da conta do autor
+    nunca saem deste repositório; só o username público.
+    """
+
+    def __init__(self, cliente):
+        self.cliente = cliente
+
+    def _disciplinas_do_professor(self, professor_id):
+        """{disciplina_id: (nome, codigo)} das disciplinas ministradas pelo professor."""
+        linhas = (self.cliente.table('vw_professor_disciplina')
+                  .select('disciplina_id,codigo_disciplina,disciplina')
+                  .eq('professor_id', professor_id).execute().data)
+        return {l['disciplina_id']: (l['disciplina'], l['codigo_disciplina']) for l in linhas}
+
+    @staticmethod
+    def _ler_data(valor):
+        """datetime de uma data ISO 8601 do PostgREST, ou None se não der para ler.
+
+        Aceita 1 a 6 casas decimais nos segundos e o sufixo Z (o PostgREST corta zeros
+        à direita das frações, e o fromisoformat de versões antigas exige 3 ou 6 casas).
+        """
+        if not isinstance(valor, str):
+            return None
+        texto = valor.strip()
+        if texto[-1:] in ('Z', 'z'):
+            texto = texto[:-1] + '+00:00'
+        texto = re.sub(r'(\.\d{1,6})\d*', lambda m: m.group(1).ljust(7, '0'), texto, count=1)
+        try:
+            return datetime.fromisoformat(texto)
+        except ValueError:
+            return None
+
+    @classmethod
+    def formatar_data(cls, valor):
+        """dd/mm/aaaa no horário de Brasília (UTC-3, sem horário de verão); '' se ilegível."""
+        data = cls._ler_data(valor)
+        if data is None:
+            return ''
+        if data.tzinfo is None:
+            data = data.replace(tzinfo=timezone.utc)
+        return data.astimezone(timezone(timedelta(hours=-3))).strftime('%d/%m/%Y')
+
+    @classmethod
+    def _foi_editado(cls, linha):
+        """True se atualizado_em for depois de criado_em. Data ilegível: False, sem exceção."""
+        criado = cls._ler_data(linha.get('criado_em'))
+        atualizado = cls._ler_data(linha.get('atualizado_em'))
+        if criado is None or atualizado is None:
+            return False
+        try:
+            return atualizado > criado
+        except TypeError:      # uma com fuso e outra sem
+            return False
+
+    def listar_por_professor(self, professor_id, disciplina_id=None, usuario_atual_id=None):
+        """(comentarios, ha_mais): os LIMITE_COMENTARIOS mais recentes não ocultados.
+
+        disciplina_id=None lista todas as disciplinas. `ha_mais` é True quando existem
+        comentários além do limite (busca-se um a mais só para saber isso).
+        """
+        consulta = (self.cliente.table('comentarios')
+                    .select('id,usuario_id,disciplina_id,texto,criado_em,atualizado_em')
+                    .eq('professor_id', professor_id).is_('ocultado_em', 'null'))
+        if disciplina_id is not None:
+            consulta = consulta.eq('disciplina_id', disciplina_id)
+        linhas = (consulta.order('criado_em', desc=True).order('id', desc=True)
+                  .limit(LIMITE_COMENTARIOS + 1).execute().data)
+        ha_mais = len(linhas) > LIMITE_COMENTARIOS
+        linhas = linhas[:LIMITE_COMENTARIOS]
+        if not linhas:
+            return [], False
+
+        ids_autores = sorted({l['usuario_id'] for l in linhas})
+        autores = {p['id']: p['username'] for p in
+                   self.cliente.table('perfis').select('id,username')
+                   .in_('id', ids_autores).execute().data}
+        disciplinas = self._disciplinas_do_professor(professor_id)
+        comentarios = []
+        for l in linhas:
+            nome, codigo = disciplinas.get(l['disciplina_id'], ('', ''))
+            comentarios.append({
+                'id': l['id'],
+                'texto': l['texto'],
+                'username': autores.get(l['usuario_id'], ''),
+                'disciplina_nome': nome,
+                'disciplina_codigo': codigo,
+                'criado_em': l['criado_em'],
+                'editado': self._foi_editado(l),
+                'e_meu': usuario_atual_id is not None and l['usuario_id'] == usuario_atual_id,
+            })
+        return comentarios, ha_mais
+
+    def buscar_do_usuario(self, comentario_id, usuario_id):
+        """Comentário se pertencer ao usuário, senão None (a rota responde 404)."""
+        dados = (self.cliente.table('comentarios')
+                 .select('id,professor_id,disciplina_id,texto')
+                 .eq('id', comentario_id).eq('usuario_id', usuario_id).limit(1).execute().data)
+        if not dados:
+            return None
+        linha = dados[0]
+        nome, codigo = self._disciplinas_do_professor(linha['professor_id']).get(
+            linha['disciplina_id'], ('', ''))
+        return {'id': linha['id'], 'professor_id': linha['professor_id'],
+                'disciplina_id': linha['disciplina_id'], 'texto': linha['texto'],
+                'disciplina_nome': nome, 'disciplina_codigo': codigo}
+
+    def criar(self, usuario_id, professor_id, disciplina_id, texto):
+        """Grava o comentário do usuário e devolve o id novo.
+
+        ValueError se o texto for inválido ou a disciplina não for do professor.
+        """
+        texto, erro = validar_comentario(texto)
+        if erro:
+            raise ValueError(erro)
+        if disciplina_id not in self._disciplinas_do_professor(professor_id):
+            raise ValueError('Disciplina não vinculada ao professor.')
+        criado = self.cliente.table('comentarios').insert({
+            'usuario_id': usuario_id, 'professor_id': professor_id,
+            'disciplina_id': disciplina_id, 'texto': texto,
+        }).execute().data
+        return criado[0]['id']
+
+    def atualizar(self, comentario_id, usuario_id, disciplina_id, texto):
+        """Muda só texto e disciplina. False se o comentário não é do usuário.
+
+        ValueError se o texto for inválido ou a disciplina não for do professor
+        do comentário (o professor nunca muda).
+        """
+        texto, erro = validar_comentario(texto)
+        if erro:
+            raise ValueError(erro)
+        existente = self.buscar_do_usuario(comentario_id, usuario_id)
+        if not existente:
+            return False
+        if disciplina_id not in self._disciplinas_do_professor(existente['professor_id']):
+            raise ValueError('Disciplina não vinculada ao professor.')
+        atualizadas = (self.cliente.table('comentarios')
+                       .update({'texto': texto, 'disciplina_id': disciplina_id})
+                       .eq('id', comentario_id).eq('usuario_id', usuario_id).execute().data)
+        return bool(atualizadas)
+
+    def excluir(self, comentario_id, usuario_id):
+        """Apaga o comentário se for do usuário. False se nada foi afetado."""
+        apagadas = (self.cliente.table('comentarios').delete()
+                    .eq('id', comentario_id).eq('usuario_id', usuario_id).execute().data)
+        return bool(apagadas)
+
+
 class Repositorios:
-    def __init__(self, usuarios, professores, avaliacoes):
+    def __init__(self, usuarios, professores, avaliacoes, comentarios=None):
         self.usuarios = usuarios
         self.professores = professores
         self.avaliacoes = avaliacoes
+        self.comentarios = comentarios
 
 
 def configurar_repositorios(app):
@@ -436,7 +591,8 @@ def configurar_repositorios(app):
     cliente = injetado or get_supabase()
     fabrica = (lambda: injetado) if injetado else novo_cliente
     app.extensions['repositorios'] = Repositorios(
-        UsuarioRepository(cliente, fabrica), ProfessorRepository(cliente), AvaliacaoRepository(cliente))
+        UsuarioRepository(cliente, fabrica), ProfessorRepository(cliente),
+        AvaliacaoRepository(cliente), ComentarioRepository(cliente))
 
 
 def repositorios() -> Repositorios:

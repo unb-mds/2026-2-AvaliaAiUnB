@@ -1,4 +1,4 @@
-> **Nota Histórica:** Este documento refere-se à Release 1. Atualmente, o sistema já não utiliza SQLite, tendo migrado para PostgreSQL (Supabase).
+>> **Documento Histórico (Arquivado — Release 1):** Este registro refere-se ao protótipo inicial em SQLite da Release 1 e não representa a arquitetura atual do **AvaliaUnB**, que utiliza **PostgreSQL (Supabase)** (consulte `docs/BACKEND.md` e `docs/Modelo de Dados.md`).
 # Implementação de #26, #36 e #37
 
 Base revisada: `main` em `85f6281`, issues abertas e fechadas, seus comentários,

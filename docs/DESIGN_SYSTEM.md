@@ -8,7 +8,9 @@ protótipos de comentários e os ajustes da #114. O [inventário do frontend](FR
 registra os estilos que já existem no código.
 
 Os tokens e os componentes compartilhados ficam em `app/static/base.css`. As
-telas o carregam diretamente ou por meio de `indicadores.css` (`@import`).
+telas o carregam diretamente ou por meio de `indicadores.css` (`@import`). Os
+comentários têm folha própria, `app/static/comentarios.css`, que usa só esses
+tokens.
 
 ## Temas
 
@@ -388,10 +390,10 @@ só de interface.
 |---|---|---|
 | Botão principal | Fundo `--cor-principal-fundo`, texto `--cor-sobre-principal` e uma ação principal por formulário | Padrão, hover, clique, foco, desabilitado e envio |
 | Botão secundário | Fundo de superfície, borda e texto na cor principal e rótulo Voltar ou Cancelar | Padrão, hover, clique, foco e desabilitado |
-| Botão destrutivo | Cor de erro, com texto na cor de superfície, na confirmação de exclusão | Padrão, foco e envio |
+| Botão destrutivo | Cor de erro (`--cor-erro`), com texto na cor de superfície, na confirmação de exclusão, inclusive a de comentário | Padrão, foco e envio |
 | Campo, seletor e área de texto | Rótulo visível, borda, ajuda e erro junto ao campo | Vazio, preenchido, foco, erro e desabilitado |
 | Card de professor | Nome, departamento, disciplinas e ações | Padrão e resultado de filtro |
-| Card de comentário | Texto, nome de usuário, data, disciplina e ações permitidas. O nome é um botão que abre ou fecha o e-mail do autor | Publicado, contato aberto, em edição e ocultado para o autor |
+| Card de comentário | Texto, nome de usuário, data, disciplina (em etiqueta) e ações permitidas. O nome é só texto: o e-mail do autor nunca é exibido | Publicado, em edição e ocultado para o autor |
 | Reação a comentário | Ícones de polegar sempre visíveis. Cada número aparece só com reações recebidas. Os botões têm nomes acessíveis Curtir e Descurtir e usam `aria-pressed` para indicar a seleção | Neutro, selecionado com marca e cor, foco, envio e leitura no próprio comentário |
 | Mensagem | Explica o estado e a próxima ação | Informação, sucesso, erro, vazio e carregamento |
 | Diálogo de exclusão | Identifica o item e sua consequência. Cancelar recebe o foco inicial | Aberto, confirmando e falha |
