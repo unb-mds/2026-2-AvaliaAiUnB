@@ -47,7 +47,10 @@ def ranking():
 @professor_bp.get('/professores')
 def listar():
     filtros = {campo: request.args.get(campo, '').strip() for campo in CAMPOS_FILTRO}
-    return render_template('lista_professores.html', catalogo=controller.catalogo(**filtros),
+    catalogo = controller.catalogo(**filtros)
+    return render_template('lista_professores.html', catalogo=catalogo,
+                           dificuldades=controller.dificuldades_da_pagina(
+                               catalogo, request.args.get('pagina')),
                            filtros=filtros,
                            usuario=obter_usuario_atual())
 
