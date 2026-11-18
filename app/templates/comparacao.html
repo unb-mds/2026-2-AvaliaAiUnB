@@ -106,29 +106,46 @@
         <p class="ajuda">Selecione dois ou mais professores de qualquer disciplina para comparar suas médias gerais e por critério.</p>
 
         {% if erros.professores %}<p class="campo-erro" role="alert">{{ erros.professores }}</p>{% endif %}
-        {% if professores|length >= 2 %}
+        {% if total_professores >= 2 %}
         <form method="get" action="{{ url_for('professores.comparar') }}" class="filtros">
             <input type="hidden" name="modo" value="livre">
             {% if selecao_previa %}<input type="hidden" name="professor_1" value="{{ selecao_previa }}">{% endif %}
+            {% if departamentos %}
+            <div class="filtro-departamento">
+                <div class="campo">
+                    <label for="departamento">Filtrar a lista por departamento</label>
+                    <select id="departamento" name="departamento" aria-describedby="departamento-ajuda">
+                        <option value="">Todos os departamentos</option>
+                        {% for opcao in departamentos %}
+                        <option value="{{ opcao }}"{% if opcao == departamento %} selected{% endif %}>{{ opcao }}</option>
+                        {% endfor %}
+                    </select>
+                    <p class="campo-ajuda" id="departamento-ajuda">Os professores já escolhidos continuam na lista.</p>
+                </div>
+                <button type="submit" class="botao botao-secundario" name="filtrar" value="1" formnovalidate>Filtrar</button>
+            </div>
+            {% endif %}
+            {# campo-busca.js troca cada <select> por um campo digitável que busca em /busca/professores; sem JS, o <select> continua valendo. #}
             <div class="selecao-comparacao">
                 {% for selecionado in campos %}
-                <div class="campo">
+                <div class="campo campo-professor" data-busca="{{ url_for('professores.sugestoes_professores') }}">
                     <label for="professor-{{ loop.index }}">Professor {{ loop.index }}</label>
-                    <select name="professor" id="professor-{{ loop.index }}">
+                    <select name="professor" id="professor-{{ loop.index }}" aria-describedby="professor-{{ loop.index }}-detalhe" data-placeholder="Nome do professor ou de uma disciplina">
                         <option value="">Selecione um professor</option>
                         {% for professor in professores %}
                         <option value="{{ professor.id }}"{% if selecionado == professor.id|string %} selected{% endif %}>{{ professor.nome }}{% if professor.departamento %} — {{ professor.departamento }}{% endif %}</option>
                         {% endfor %}
                     </select>
+                    <p class="campo-ajuda professor-escolhido" id="professor-{{ loop.index }}-detalhe">{{ escolhidos.get(selecionado, '') }}</p>
                     {% if campos|length > 2 %}
-                    <button type="submit" class="botao botao-secundario remover-professor" name="remover" value="{{ loop.index0 }}">Remover professor {{ loop.index }}</button>
+                    <button type="submit" class="botao botao-secundario remover-professor" name="remover" value="{{ loop.index0 }}" formnovalidate>Remover professor {{ loop.index }}</button>
                     {% endif %}
                 </div>
                 {% endfor %}
             </div>
             <div class="acoes-comparacao">
-                {% if campos|length < professores|length %}
-                <button type="submit" class="botao botao-secundario" name="adicionar" value="1">+ Adicionar professor</button>
+                {% if campos|length < total_professores %}
+                <button type="submit" class="botao botao-secundario" name="adicionar" value="1" formnovalidate>+ Adicionar professor</button>
                 {% endif %}
                 <button type="submit" class="botao botao-primario" name="comparar" value="1">Comparar</button>
             </div>
