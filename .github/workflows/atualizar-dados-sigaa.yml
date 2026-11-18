@@ -57,6 +57,13 @@ jobs:
           python-version: "3.14"
           cache: pip
       - run: pip install -r requirements-scraper.txt
+      # O undetected-chromedriver baixa o driver da versão estável mais nova;
+      # o Chrome que vem no runner pode estar uma versão atrás.
+      - name: Atualizar o Chrome para a versão estável
+        run: |
+          wget -q -O /tmp/chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+          sudo apt-get install -y -qq /tmp/chrome.deb
+          google-chrome --version
 
       - name: Rodar o scraper (dry-run, sem chaves)
         id: scraper
@@ -119,6 +126,13 @@ jobs:
           python-version: "3.14"
           cache: pip
       - run: pip install -r requirements-scraper.txt
+      # O undetected-chromedriver baixa o driver da versão estável mais nova;
+      # o Chrome que vem no runner pode estar uma versão atrás.
+      - name: Atualizar o Chrome para a versão estável
+        run: |
+          wget -q -O /tmp/chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+          sudo apt-get install -y -qq /tmp/chrome.deb
+          google-chrome --version
 
       - name: Rodar o scraper e gravar no Supabase
         id: scraper
