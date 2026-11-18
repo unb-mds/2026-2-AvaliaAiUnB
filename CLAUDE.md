@@ -40,10 +40,11 @@ Layered: routes → controllers → repositories → Supabase (PostgreSQL).
 - `001_initial_schema.sql` — initial PostgreSQL schema (`perfis`, `professores`, `disciplinas`, `turmas`, `avaliacoes`, view `vw_professor_disciplina`, and RLS policies).
 - `002_comentarios.sql` — dedicated `comentarios` table (FKs to `perfis`, `professores`, `disciplinas`; text length 2–1000 chars; soft-hide via `ocultado_em`; trigger `set_atualizado_em`; RLS policies restricting public reads to non-hidden rows and writes to the author for disciplines taught by that professor).
 - `003_emails_verificados.sql` — `emails_verificados` table (`usuario_id` PK/FK to `perfis`, `endereco_sha256`, RLS restricted to `service_role`).
+- `004_professores_unicos.sql` — merges professors duplicated across units (moves `turmas`, `avaliacoes`, `comentarios` to the kept row) and replaces `UNIQUE (nome, departamento)` with `UNIQUE (nome)` (issue #235).
 
 ## Gotchas
 
 - Comments are modeled in their own `comentarios` table (`docs/migrations/002_comentarios.sql`), **not** in `avaliacoes.comentario`.
 - Session cookie names (`avaliaai_session`, `avaliaai_refresh`) intentionally keep the `avaliaai_` prefix for compatibility; do not rename them casually.
-- `scraper/` is separate: it has its own `supabase_client.py` and populates `professores`, `disciplinas`, and `turmas`.
+- `scraper/` is separate: it has its own `supabase_client.py` and populates `professores`, `disciplinas`, and `turmas`. A professor is unique by `nome` (upsert with `ignore_duplicates`, so `departamento` keeps the first unit seen). `scraper/manutencao_banco.py duplicatas|backup` reports duplicates and regenerates the CSVs in `docs/backup/`.
 - `docs/IMPLEMENTACAO_26_36_37.md` is an archived Release 1 historical record (from the initial SQLite prototype) and does not reflect the current Supabase/PostgreSQL architecture.

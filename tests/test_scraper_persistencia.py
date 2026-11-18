@@ -28,21 +28,20 @@ DISCIPLINAS = [
 ]
 
 
-def turma(prof, depto, disc):
+def turma(prof, disc):
     return {
         "disciplina_codigo": disc,
         "professor_nome": prof,
-        "professor_departamento": depto,
         "ano": 2026,
         "periodo": 2,
     }
 
 
 TURMAS = [
-    turma("ANA NOVA", FCTE, "FGA0100"),
-    turma("ANA NOVA", FCTE, "FGA0100"),  # duplicada na origem
-    turma("BRUNO NOVO", FCTE, "FGA0200"),
-    turma("ANA NOVA", FGA, "FGA0200"),
+    turma("ANA NOVA", "FGA0100"),
+    turma("ANA NOVA", "FGA0100"),  # duplicada na origem
+    turma("BRUNO NOVO", "FGA0200"),
+    turma("ANA NOVA", "FGA0200"),
 ]
 
 
@@ -65,7 +64,7 @@ class TestPersistenciaIdempotente(unittest.TestCase):
         cliente = ClienteFalso()
         antes = len(cliente.tabelas["professores"])
         gravar(cliente)
-        self.assertEqual(len(cliente.tabelas["professores"]), antes + 3)
+        self.assertEqual(len(cliente.tabelas["professores"]), antes + 2)
         self.assertEqual(len(cliente.tabelas["disciplinas"]), 2)
         self.assertEqual(len(cliente.tabelas["turmas"]), 3)
 
@@ -90,9 +89,37 @@ class TestPersistenciaIdempotente(unittest.TestCase):
                 ("turmas", CONFLITO_TURMAS),
             ],
         )
-        self.assertEqual(CONFLITO_PROFESSORES, "nome,departamento")
+        self.assertEqual(CONFLITO_PROFESSORES, "nome")
         self.assertEqual(CONFLITO_DISCIPLINAS, "codigo")
         self.assertEqual(CONFLITO_TURMAS, "professor_id,disciplina_id,ano,periodo")
+
+    def test_mesmo_nome_em_outra_unidade_vira_um_professor(self):
+        """Issue #235: o docente de várias unidades tem um só registro."""
+        cliente = ClienteFalso()
+        mapa_prof, _ = gravar(cliente)
+        anas = [p for p in cliente.tabelas["professores"] if p["nome"] == "ANA NOVA"]
+        self.assertEqual(len(anas), 1)
+        self.assertEqual(anas[0]["departamento"], FCTE)  # primeira unidade vista
+        self.assertEqual(mapa_prof["ANA NOVA"], anas[0]["id"])
+        turmas_ana = [t for t in cliente.tabelas["turmas"] if t["professor_id"] == anas[0]["id"]]
+        self.assertEqual(len(turmas_ana), 2)
+
+    def test_professor_existente_mantem_departamento_e_id(self):
+        cliente = ClienteFalso()
+        existente = {"id": 50, "nome": "ANA NOVA", "departamento": "OUTRA UNIDADE"}
+        cliente.tabelas["professores"].append(dict(existente))
+
+        mapa_prof = salvar_professores(PROFESSORES, cliente)
+
+        self.assertEqual(mapa_prof["ANA NOVA"], 50)
+        anas = [p for p in cliente.tabelas["professores"] if p["nome"] == "ANA NOVA"]
+        self.assertEqual(anas, [existente])
+
+    def test_busca_ids_em_lotes(self):
+        cliente = ClienteFalso()
+        muitos = [{"nome": f"DOCENTE {i}", "departamento": FCTE} for i in range(250)]
+        mapa_prof = salvar_professores(muitos, cliente)
+        self.assertEqual(len(mapa_prof), 250)
 
     def test_listas_vazias_nao_gravam(self):
         cliente = ClienteFalso()

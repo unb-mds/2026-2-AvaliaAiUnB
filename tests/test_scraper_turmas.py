@@ -7,18 +7,17 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scraper"))
 from turmas_sigaa import montar_payload_turmas
 
 
-def turma(prof, disc, depto="FCTE - GAMA", ano=2026, periodo=2):
+def turma(prof, disc, ano=2026, periodo=2):
     return {
         "disciplina_codigo": disc,
         "professor_nome": prof,
-        "professor_departamento": depto,
         "ano": ano,
         "periodo": periodo,
     }
 
 
 class TestMontarPayloadTurmas(unittest.TestCase):
-    mapa_prof = {("ANA", "FCTE - GAMA"): 1, ("JOAO", "FCTE - GAMA"): 2}
+    mapa_prof = {"ANA": 1, "JOAO": 2}
     mapa_disc = {"FGA0001": 10, "FGA0002": 20}
 
     def test_monta_ids_ano_periodo(self):

@@ -438,7 +438,6 @@ class SigaaScraper:
                             {
                                 "disciplina_codigo": disciplina_atual["codigo"],
                                 "professor_nome": nome_prof,
-                                "professor_departamento": departamento,
                                 "ano": int(ano),
                                 "periodo": int(periodo),
                                 "docentes_brutos": docentes_brutos,
@@ -469,9 +468,9 @@ class SigaaScraper:
 
 def imprimir_dry_run(professores, disciplinas, turmas, a_definir_ignorados):
     """Mostra o que seria gravado, sem tocar no banco (ids simulados)."""
-    mapa_prof = {
-        (p["nome"], p["departamento"]): i for i, p in enumerate(professores, 1)
-    }
+    mapa_prof = {}  # um id por nome, como no banco (issue #235)
+    for p in professores:
+        mapa_prof.setdefault(p["nome"], len(mapa_prof) + 1)
     mapa_disc = {d["codigo"]: i for i, d in enumerate(disciplinas, 1)}
     payload = montar_payload_turmas(turmas, mapa_prof, mapa_disc)
 
@@ -489,7 +488,7 @@ def imprimir_dry_run(professores, disciplinas, turmas, a_definir_ignorados):
     print("[DRY-RUN] Nada será gravado no banco.")
     print("=" * 55)
     print(f"Unidade/departamento: {', '.join(departamentos) or '(nenhum)'}")
-    print(f"Professores: {len(professores)}")
+    print(f"Professores: {len(mapa_prof)}")
     print(f"Disciplinas: {len(disciplinas)}")
     print(f"Turmas únicas: {len(payload)} (de {len(turmas)} extraídas)")
     print(f"'A DEFINIR DOCENTE' ignorados: {a_definir_ignorados}")
@@ -513,7 +512,7 @@ def imprimir_dry_run(professores, disciplinas, turmas, a_definir_ignorados):
 
     print("\n--- TURMAS (disciplina | ano/periodo | professor | célula bruta) ---")
     for t in payload:
-        nome, _ = nome_por_id[t["professor_id"]]
+        nome = nome_por_id[t["professor_id"]]
         codigo = codigo_por_id[t["disciplina_id"]]
         bruto = bruto_por_turma.get((nome, codigo), "")
         print(
