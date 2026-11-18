@@ -114,6 +114,30 @@ def dificuldades_da_pagina(itens, pagina_bruta):
     return resultado
 
 
+MAXIMO_DISCIPLINAS_SEM_EXTRAS = 5   # até aqui o cartão mostra todas as disciplinas
+DISCIPLINAS_COM_EXTRAS = 4          # acima disso, só estas aparecem; o resto vai no <details>
+
+
+def organizar_disciplinas(itens, dificuldades):
+    """{professor_id: {'visiveis': [...], 'extras': [...]}} para os cartões da Consulta.
+
+    Nenhuma disciplina some. Ordem: mais avaliações primeiro, depois as sem avaliações;
+    empate por nome. Até MAXIMO_DISCIPLINAS_SEM_EXTRAS ficam todas visíveis; com mais,
+    só as DISCIPLINAS_COM_EXTRAS primeiras e as demais em `extras`."""
+    resultado = {}
+    for professor, disciplinas in itens:
+        do_professor = dificuldades.get(professor['id'], {})
+        ordenadas = sorted(disciplinas, key=lambda d: (
+            -(do_professor.get(d['id']) or {}).get('quantidade', 0),
+            normalizar_busca(d['nome']), d['id']))
+        if len(ordenadas) <= MAXIMO_DISCIPLINAS_SEM_EXTRAS:
+            resultado[professor['id']] = {'visiveis': ordenadas, 'extras': []}
+        else:
+            resultado[professor['id']] = {'visiveis': ordenadas[:DISCIPLINAS_COM_EXTRAS],
+                                          'extras': ordenadas[DISCIPLINAS_COM_EXTRAS:]}
+    return resultado
+
+
 ROTULOS_TIPO = {'professor': 'Professor', 'disciplina': 'Disciplina',
                 'departamento': 'Departamento'}
 # Contextos da busca unificada: tipos sugeridos e para onde cada sugestão leva.

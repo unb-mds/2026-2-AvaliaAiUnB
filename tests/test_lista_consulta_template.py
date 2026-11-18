@@ -102,9 +102,13 @@ class TestAvaliacoesSemDificuldade(BaseLista):
     def renderizar(self, dados):
         with self.app.test_request_context('/professores'):
             catalogo = controller.catalogo()
+            paginacao = controller.paginar_catalogo(catalogo, None)
+            dificuldades = {1: {10: dados}}
             return render_template('lista_professores.html', catalogo=catalogo,
-                                   paginacao=controller.paginar_catalogo(catalogo, None),
-                                   dificuldades={1: {10: dados}}, filtros={
+                                   paginacao=paginacao, dificuldades=dificuldades,
+                                   disciplinas_cartao=controller.organizar_disciplinas(
+                                       paginacao['itens'], dificuldades),
+                                   filtros={
                                        'nome': '', 'disciplina': '', 'departamento': '', 'q': ''},
                                    usuario=None)
 

@@ -48,11 +48,13 @@ def ranking():
 def listar():
     filtros = {campo: request.args.get(campo, '').strip() for campo in CAMPOS_FILTRO}
     catalogo = controller.catalogo(**filtros)
+    pagina = request.args.get('pagina')
+    paginacao = controller.paginar_catalogo(catalogo, pagina)
+    dificuldades = controller.dificuldades_da_pagina(catalogo, pagina)
     return render_template('lista_professores.html', catalogo=catalogo,
-                           paginacao=controller.paginar_catalogo(
-                               catalogo, request.args.get('pagina')),
-                           dificuldades=controller.dificuldades_da_pagina(
-                               catalogo, request.args.get('pagina')),
+                           paginacao=paginacao, dificuldades=dificuldades,
+                           disciplinas_cartao=controller.organizar_disciplinas(
+                               paginacao['itens'], dificuldades),
                            filtros=filtros,
                            usuario=obter_usuario_atual())
 
