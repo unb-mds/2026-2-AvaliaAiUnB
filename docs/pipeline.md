@@ -1,7 +1,7 @@
 # Pipeline (GitHub Actions)
 
 Na `main`, os workflows ficam em `.github/workflows/`: `testes.yml`,
-`seguranca.yml` e `docs.yml`. Uma validação do MkDocs em PR foi proposta
+`seguranca.yml`, `docs.yml`, `scraper-fumaca.yml` e `atualizar-dados-sigaa.yml`. Uma validação do MkDocs em PR foi proposta
 separadamente na [issue #171](https://github.com/unb-mds/2026-2-AvaliaUnB/issues/171);
 ela só passa a integrar a `main` após o respectivo PR ser mesclado.
 
@@ -25,6 +25,18 @@ e as correções são acompanhadas em [Cibersegurança](CIBERSEGURANCA.md).
     ---
 
     Quando alguém altera a pasta `docs/` ou o `mkdocs.yml` na main, o site da documentação é publicado automaticamente. Não precisa mais rodar `mkdocs gh-deploy` na mão.
+
+- :material-spider-web: **Scraper (teste de fumaça)**
+
+    ---
+
+    `scraper-fumaca.yml`: em PRs que alteram o `scraper/`, roda o scraper em `--dry-run` para uma unidade, sem chaves, e falha se nenhuma turma for extraída.
+
+- :material-database-sync-outline: **Atualizar dados do SIGAA**
+
+    ---
+
+    `atualizar-dados-sigaa.yml`: só roda quando alguém dispara pela aba Actions. Faz o dry-run ou, com aprovação no environment `producao`, grava o semestre no Supabase e abre um PR com o backup. Veja o [passo a passo](COMO_USAR_SCRAPER.md#5-atualizar-os-dados-a-cada-semestre-github-actions).
 
 </div>
 
