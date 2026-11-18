@@ -3,6 +3,7 @@ from flask import abort, current_app, request
 
 from app.repositorio import (LIMITE_COMENTARIOS, MINIMO_AVALIACOES_RANKING,
                              ComentarioRepository, repositorios)
+from app.utils import normalizar_busca
 from app.validacoes import CRITERIOS, validar_avaliacao, validar_comentario
 
 
@@ -123,9 +124,20 @@ def carregar_comparacao(dados):
                 erros=erros, comparacao=comparacao, criterios=CRITERIOS)
 
 
-def carregar_ranking():
-    return repositorios().professores.ranking(), MINIMO_AVALIACOES_RANKING
-
+def carregar_ranking(departamento=''):
+    repos = repositorios()
+    lista_departamentos = repos.professores.listar_departamentos()
+    chave = normalizar_busca(departamento)
+    departamento_ativo = next(
+        (dep for dep in lista_departamentos if normalizar_busca(dep) == chave),
+        departamento.strip(),
+    ) if chave else ''
+    return (
+        repos.professores.ranking(departamento_ativo),
+        MINIMO_AVALIACOES_RANKING,
+        lista_departamentos,
+        departamento_ativo,
+    )
 
 def carregar_perfil(professor_id):
     professores = repositorios().professores

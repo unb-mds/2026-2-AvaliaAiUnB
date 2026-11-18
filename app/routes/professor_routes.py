@@ -18,9 +18,12 @@ def comparar():
                            usuario=obter_usuario_atual()), 400 if contexto['erros'] else 200
 @professor_bp.get('/ranking')
 def ranking():
-    professores, minimo_avaliacoes = controller.carregar_ranking()
+    departamento = request.args.get('departamento', '').strip()
+    professores, minimo_avaliacoes, departamentos, departamento_ativo = controller.carregar_ranking(departamento)
     return render_template('ranking.html', ranking=professores,
                            minimo_avaliacoes=minimo_avaliacoes,
+                           departamentos=departamentos,
+                           departamento_selecionado=departamento_ativo,
                            usuario=obter_usuario_atual())
 
 

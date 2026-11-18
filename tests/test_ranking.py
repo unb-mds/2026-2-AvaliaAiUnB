@@ -101,6 +101,48 @@ class TestRanking(unittest.TestCase):
         self.assertNotIn('<script>', html)
         self.assertIn('&lt;script&gt;', html)
 
+    def test_ranking_filtra_por_departamento_e_mantem_minimo(self):
+        self.cliente.tabelas['professores'] = [
+            {'id': 1, 'nome': 'JOSÉ ÁVILA', 'departamento': 'MAT'},
+            {'id': 2, 'nome': 'MARIA LIMA', 'departamento': 'CIC'},
+            {'id': 3, 'nome': 'CARLOS SOUZA', 'departamento': 'CIC'},
+            {'id': 4, 'nome': 'ANA COSTA', 'departamento': 'CIC'},
+        ]
+        self.avaliar(1, nota=5)
+        self.avaliar(2, nota=3)
+        self.avaliar(3, nota=4)
+        self.avaliar(4, quantidade=MINIMO_AVALIACOES_RANKING - 1, nota=5)
 
+        ranking_cic = self.professores.ranking('cic')
+        self.assertEqual(
+            [(p['id'], p['posicao'], p['media']) for p in ranking_cic],
+            [(3, 1, 4), (2, 2, 3)],
+        )
+        self.assertEqual([p['id'] for p in self.professores.ranking()], [1, 3, 2])
+
+    def test_pagina_ranking_filtra_por_departamento_e_exibe_seletor(self):
+        self.cliente.tabelas['professores'] = [
+            {'id': 1, 'nome': 'JOSÉ ÁVILA', 'departamento': 'MAT'},
+            {'id': 2, 'nome': 'MARIA LIMA', 'departamento': 'CIC'},
+            {'id': 3, 'nome': 'ANA COSTA', 'departamento': 'FCTE'},
+        ]
+        self.avaliar(1, nota=5)
+        self.avaliar(2, nota=4)
+
+        filtrado = self.web.get('/ranking?departamento=CIC')
+        self.assertEqual(filtrado.status_code, 200)
+        html_cic = filtrado.get_data(as_text=True)
+        self.assertIn('name="departamento"', html_cic)
+        self.assertIn('<option value="CIC" selected>CIC</option>', html_cic)
+        self.assertIn('Classificação do departamento CIC', html_cic)
+        self.assertIn('MARIA LIMA', html_cic)
+        self.assertNotIn('JOSÉ ÁVILA', html_cic)
+        self.assertIn('Ver ranking geral', html_cic)
+
+        vazio = self.web.get('/ranking?departamento=FCTE')
+        self.assertEqual(vazio.status_code, 200)
+        html_vazio = vazio.get_data(as_text=True)
+        self.assertIn('Ainda não há professores no departamento FCTE com pelo menos 5 avaliações válidas', html_vazio)
+        self.assertIn('Ver ranking geral de todos os departamentos', html_vazio)
 if __name__ == '__main__':
     unittest.main()

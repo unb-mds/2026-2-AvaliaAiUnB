@@ -47,13 +47,31 @@
 
         </p>
 
+        <form method="get" action="{{ url_for('professores.ranking') }}" class="filtros filtro-ranking card">
+            <div class="campo">
+                <label for="departamento">Departamento</label>
+                <select id="departamento" name="departamento">
+                    <option value="">Todos os departamentos (geral)</option>
+                    {% for dep in departamentos %}
+                    <option value="{{ dep }}"{% if dep == departamento_selecionado %} selected{% endif %}>{{ dep }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="acoes-filtro-ranking">
+                <button type="submit" class="botao botao-primario">Filtrar</button>
+                {% if departamento_selecionado %}
+                <a href="{{ url_for('professores.ranking') }}" class="botao botao-secundario">Ver ranking geral</a>
+                {% endif %}
+            </div>
+        </form>
+
         {% if ranking %}
 
         <div class="tabela-ranking-container" role="region" aria-label="Classificação dos professores" tabindex="0">
 
             <table class="tabela-ranking">
 
-                <caption>Classificação geral dos professores</caption>
+                <caption>Classificação {% if departamento_selecionado %}do departamento {{ departamento_selecionado }}{% else %}geral dos professores{% endif %}</caption>
 
                 <thead>
 
@@ -103,9 +121,13 @@
 
         {% else %}
 
-        <p class="mensagem" role="status">Ainda não há professores com pelo menos {{ minimo_avaliacoes }} avaliações válidas para o ranking.</p>
+        <p class="mensagem" role="status">Ainda não há professores{% if departamento_selecionado %} no departamento {{ departamento_selecionado }}{% endif %} com pelo menos {{ minimo_avaliacoes }} avaliações válidas para o ranking.</p>
 
+        {% if departamento_selecionado %}
+        <p><a href="{{ url_for('professores.ranking') }}">Ver ranking geral de todos os departamentos.</a></p>
+        {% else %}
         <p><a href="{{ url_for('professores.listar') }}">Consulte os professores e contribua com sua avaliação.</a></p>
+        {% endif %}
 
         {% endif %}
 
