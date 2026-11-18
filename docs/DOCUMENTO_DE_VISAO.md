@@ -102,7 +102,7 @@ O sistema é estruturado em uma arquitetura modular em camadas:
 
 - **Camada de Apresentação (Frontend / Client UI):** Interface web construída com HTML5/CSS3/JS e templates renderizados dinamicamente via Jinja2.
 - **Camada de Controle (Controllers):** Contém o *Autenticação Controller* (gestão de sessões e segurança), *Avaliação Controller* (cálculo de notas e validação) e *Professor/Turma Controller* (consultas, buscas e filtros).
-- **Camada de Serviços e Repositórios:** Inclui os repositórios de usuários, professores e avaliações, integrados ao Supabase, e o scraper SIGAA executado separadamente. Comentários ainda são uma proposta, não persistência implementada.
+- **Camada de Serviços e Repositórios:** Inclui os repositórios de usuários, professores, avaliações e comentários, integrados ao Supabase, e o scraper SIGAA executado separadamente. A persistência de comentários (listar, publicar, editar e excluir) está implementada; reações, filtro automático, denúncia e moderação ainda são propostas.
 - **Camada de Dados:** Supabase (PostgreSQL e Auth); cookies do navegador guardam tokens de autenticação. O catálogo pode ser mantido em cache por processo no backend.
 
 ---
@@ -111,7 +111,7 @@ O sistema é estruturado em uma arquitetura modular em camadas:
 
 Esta seção registra requisitos da visão do produto, não a situação de entrega.
 Consulte [Funcionalidades](FUNCIONALIDADES.md) para saber o que já existe e
-[Comentários](COMENTARIOS.md) para regras ainda em proposta.
+[Comentários](COMENTARIOS.md) para as regras dos comentários, parte já implementada e parte ainda em proposta.
 
 
 | Código | Nome | Descrição | Prioridade |

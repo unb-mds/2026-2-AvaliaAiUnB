@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   publicar:
-    if: github.repository == 'unb-mds/2026-2-AvaliaAiUnB'
+    if: github.repository == 'unb-mds/2026-2-AvaliaUnB'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

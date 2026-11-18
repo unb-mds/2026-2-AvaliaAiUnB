@@ -13,8 +13,10 @@ separado para executar essas telas.
 | `login.html` | Botão "Entrar com Google" (login e cadastro) e mensagem de erro | `base.css`, `auth.css` |
 | `sobre.html` | Apresentação do projeto, critérios e privacidade | `base.css`, `sobre.css` |
 | `lista_professores.html` | Filtros, catálogo, média geral em estrelas e estados sem resultado | `indicadores.css` (que importa `base.css`), `lista_professores.css` |
-| `perfil_professor.html` | Disciplinas (campo digitável), indicadores, média geral, comparação e avaliação | `indicadores.css`, `perfil_professor.css` |
+| `perfil_professor.html` | Disciplinas (campo digitável), indicadores, média geral, comparação, avaliação e a seção de comentários (filtro por disciplina, lista, formulário de publicar e convite para entrar) | `indicadores.css`, `perfil_professor.css`, `comentarios.css` |
 | `avaliacao.html` | Criação e edição de notas (botões de 1 a 5; dificuldade em barra de crescimento) | `indicadores.css`, `avaliacao.css` |
+| `editar_comentario.html` | Edição do próprio comentário (disciplina e texto) | `indicadores.css`, `avaliacao.css`, `comentarios.css` |
+| `excluir_comentario.html` | Confirmação de exclusão do próprio comentário | `indicadores.css`, `avaliacao.css`, `comentarios.css` |
 | `perfil.html` | Avaliações do usuário e ações de editar e excluir | `base.css`, `perfil.css` |
 | `comparacao.html` | Escolha por nome e comparação de professores | `indicadores.css`, `comparacao.css` |
 | `ranking.html` | Classificação e estado sem professores elegíveis | `indicadores.css`, `ranking.css` |
@@ -53,6 +55,16 @@ e `.tabela-ranking`. As telas de busca, perfil do professor, avaliação e compa
 carregam depois uma folha própria que ajusta o que é específico delas, sem alterar
 `indicadores.css`, porque o ranking depende dele.
 
+Os comentários têm folha própria, `comentarios.css`, carregada depois do CSS da
+tela e só com tokens de `base.css`, então vale nos dois temas. Ela estiliza a
+seção do perfil (filtro "Disciplina", cartão de cada comentário com a disciplina
+em etiqueta, links Editar e Excluir, convite "Entrar para comentar", aviso de
+erro e frase dos 50 comentários) e o formulário, que também aparece na página de
+editar. A confirmação de exclusão usa `.botao-destrutivo` (cor `--cor-erro`) e
+deixa o "Cancelar" em destaque. Em telas de até 600 px, a seção usa coluna única
+e botões em largura total. A confirmação de exclusão do comentário é uma página
+própria, sem JavaScript.
+
 O catálogo mostra mensagens diferentes para ausência de dados e ausência de
 resultados dos filtros e exibe a média
 geral em cinco estrelas ou `N/A (Não avaliado)`. O filtro de departamento é um campo
@@ -79,9 +91,9 @@ O `<select>` continua no formulário, então a tela funciona sem JavaScript.
 
 ## Design system e visual final
 
-A [issue #112](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/112) reúne a
+A [issue #112](https://github.com/unb-mds/2026-2-AvaliaUnB/issues/112) reúne a
 consolidação de cores, tipografia, espaçamentos, componentes e estados. A aplicação do visual nas telas principais está na
-[issue #114](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/114).
+[issue #114](https://github.com/unb-mds/2026-2-AvaliaUnB/issues/114).
 
 O inventário acima registra a interface que existe hoje. O
 [design system](DESIGN_SYSTEM.md) reúne o padrão proposto para os componentes.
@@ -89,9 +101,11 @@ Os [protótipos de comentários](TELAS_COMENTARIOS.md) aplicam esse padrão.
 O [mapa da documentação](GUIA_DOCUMENTACAO.md) conecta as regras de interface,
 [funcionalidades](FUNCIONALIDADES.md) e [contribuição](PROCESSO_CONTRIBUICAO.md).
 
-As telas futuras de comentários devem seguir a
+As telas de comentários seguem a
 [especificação para revisão](COMENTARIOS.md). A #112 depende dessa especificação
-para desenhar os fluxos de listar, escrever, editar e apagar comentários.
+para desenhar os fluxos de listar, escrever, editar e apagar comentários, que
+já estão implementados (#167). Reações, ordenação, denúncia e moderação ainda
+são propostas.
 
 ## Como contribuir com as telas
 
@@ -111,4 +125,5 @@ para desenhar os fluxos de listar, escrever, editar e apagar comentários.
 
 A conferência de contraste e o inventário de estados de carregamento continuam
 no escopo da #112. A aprovação das regras de comentários é uma etapa do grupo
-na #116; o recurso ainda não tem interface implementada.
+na #116; a interface de listar, publicar, editar e excluir comentários está
+implementada, e a de reações, ordenação, denúncia e moderação ainda não.
