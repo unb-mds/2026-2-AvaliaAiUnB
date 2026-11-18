@@ -110,7 +110,7 @@ class TestCampoBuscaUnificada(unittest.TestCase):
 
     def formulario(self, caminho):
         html = self.web.get(caminho).get_data(as_text=True)
-        achado = re.search(r'<form\b[^>]*class="busca-unificada[^"]*"[^>]*>(.*?)</form>', html, re.S)
+        achado = re.search(r'<form\b[^>]*class="[^"]*\bbusca-unificada\b[^"]*"[^>]*>(.*?)</form>', html, re.S)
         self.assertIsNotNone(achado, f'{caminho} não tem o formulário da busca unificada')
         return html, achado.group(0)
 
@@ -125,14 +125,42 @@ class TestCampoBuscaUnificada(unittest.TestCase):
         self.assertIn('<button type="submit"', formulario)
         self.assertIn('src="/static/campo-busca.js"', html)
 
+    def test_comparacao_tem_o_campo_no_contexto_da_comparacao(self):
+        for caminho in ('/comparar', '/comparar?professor_1=1&professor_2=2'):
+            html, formulario = self.formulario(caminho)
+            self.assertIn('action="/comparar"', formulario)
+            self.assertIn('data-contexto="comparacao"', formulario)
+            self.assertRegex(formulario, r'<label\b[^>]*for="busca-unificada"')
+            self.assertRegex(formulario, r'<input\b[^>]*id="busca-unificada"[^>]*name="busca"')
+            self.assertIn('src="/static/campo-busca.js"', html)
+
+    def test_comparacao_sem_javascript_lista_resultados_com_o_tipo(self):
+        html = self.web.get('/comparar?busca=calculo').get_data(as_text=True)
+        self.assertIn('Resultados para “calculo”', html)
+        self.assertIn('href="/comparar?disciplina_id=10"', html)
+        self.assertIn('>Disciplina</span>', html)
+        html = self.web.get('/comparar?busca=maria').get_data(as_text=True)
+        self.assertIn('href="/comparar?professor_1=2"', html)
+        self.assertIn('>Professor</span>', html)
+        html = self.web.get('/comparar?busca=zzz').get_data(as_text=True)
+        self.assertIn('Nenhum professor ou disciplina encontrado', html)
+        self.assertNotIn('Resultados para', self.web.get('/comparar').get_data(as_text=True))
+
+    def test_resultados_escapam_o_termo(self):
+        html = self.web.get('/comparar?busca=%3Cscript%3Ealert(1)%3C/script%3E').text
+        self.assertNotIn('<script>alert(1)', html)
+        self.assertIn('&lt;script&gt;', html)
+
     def test_sem_javascript_inline(self):
-        html = self.web.get('/professores').get_data(as_text=True)
-        for script in re.findall(r'<script\b[^>]*>(.*?)</script>', html, re.S):
-            self.assertEqual(script.strip(), '', 'Script inline seria bloqueado pela CSP')
-        self.assertNotRegex(html, r'\son[a-z]+="', 'Atributos on* seriam bloqueados pela CSP')
-        csp = self.web.get('/professores').headers['Content-Security-Policy']
-        self.assertIn("script-src 'self'", csp)
-        self.assertIn("connect-src 'self'", csp)
+        for caminho in ('/professores', '/comparar', '/comparar?busca=calculo'):
+            resposta = self.web.get(caminho)
+            html = resposta.get_data(as_text=True)
+            for script in re.findall(r'<script\b[^>]*>(.*?)</script>', html, re.S):
+                self.assertEqual(script.strip(), '', f'{caminho}: script inline bloqueado pela CSP')
+            self.assertNotRegex(html, r'\son[a-z]+="', f'{caminho}: atributo on* bloqueado pela CSP')
+            csp = resposta.headers['Content-Security-Policy']
+            self.assertIn("script-src 'self'", csp)
+            self.assertIn("connect-src 'self'", csp)
 
     def test_script_segue_o_padrao_combobox(self):
         script = (Path(__file__).resolve().parent.parent / 'app' / 'static'

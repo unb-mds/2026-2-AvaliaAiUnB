@@ -53,9 +53,10 @@ Os caminhos da tabela são relativos à raiz do repositório.
 | GET | `/login/google/retorno` | Público | Troca o código por sessão, cria o perfil no primeiro acesso e grava os cookies |
 | POST | `/logout` | Autenticado | Revoga a sessão e remove os cookies |
 | GET | `/perfil` | Autenticado | Dados e avaliações do próprio usuário |
-| GET | `/professores` | Público | Catálogo filtrado por `nome`, `disciplina` e `departamento` |
+| GET | `/professores` | Público | Catálogo filtrado por `nome`, `disciplina`, `departamento` e pela busca unificada `q` |
+| GET | `/busca/sugestoes` | Público | Autocompletar (JSON): professores, disciplinas e departamentos para `q`; `limite` (padrão 8, máximo 20) e `contexto` (`consulta` ou `comparacao`); limite de 120 por minuto |
 | GET | `/professores/<int:professor_id>` | Público | Perfil, médias e comentários; `disciplina_id` seleciona a disciplina das médias e `comentarios_disciplina` filtra os comentários |
-| GET | `/comparar` | Público | Compara `professor_1` e `professor_2` |
+| GET | `/comparar` | Público | Compara professores de uma disciplina (`disciplina_id`, `professor`) ou `professor_1` e `professor_2`; `busca` lista resultados da busca unificada |
 | GET | `/ranking` | Público | Classificação por média, com mínimo de cinco avaliações válidas |
 | GET, POST | `/avaliar/<int:professor_id>` | Autenticado | Formulário e registro de notas para uma disciplina vinculada |
 | GET, POST | `/avaliacoes/<int:avaliacao_id>/editar` | Autor autenticado | Formulário e atualização das próprias notas |
@@ -144,6 +145,14 @@ A busca normaliza acentos, maiúsculas e espaços extras. Nome e disciplina usam
 correspondência parcial; departamento exige igualdade após normalização. A
 disciplina pode ser buscada por nome ou código. A lista é ordenada pelo total
 de avaliações, depois por nome e identificador.
+
+A busca unificada (`q`) casa com o nome do professor, o departamento ou o nome
+ou código de alguma disciplina. `ProfessorRepository.sugerir` usa o mesmo
+catálogo em cache para o autocompletar: exige ao menos dois caracteres
+normalizados e ordena quem começa com o termo, depois quem tem uma palavra que
+começa com ele e por fim quem só o contém; entre professores, o mais avaliado
+vem antes. Cada sugestão traz `tipo`, `tipo_rotulo`, `texto`, `detalhe` e a
+`url` de destino no contexto pedido.
 
 ## Avaliações e médias
 

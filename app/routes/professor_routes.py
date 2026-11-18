@@ -15,7 +15,12 @@ CAMPOS_FILTRO = ('nome', 'disciplina', 'departamento', 'q')
 @professor_bp.get('/comparar')
 def comparar():
     contexto = controller.carregar_comparacao(request.args)
-    return render_template('comparacao.html', **contexto,
+    # Busca unificada sem JavaScript: o formulário envia ?busca= e a página lista os resultados.
+    busca = request.args.get('busca', '').strip()
+    resultados_busca = (controller.sugestoes(busca, controller.MAXIMO_SUGESTOES, 'comparacao')
+                        if busca else None)
+    return render_template('comparacao.html', **contexto, busca=busca,
+                           resultados_busca=resultados_busca,
                            usuario=obter_usuario_atual()), 400 if contexto['erros'] else 200
 
 

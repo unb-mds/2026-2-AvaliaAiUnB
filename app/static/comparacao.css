@@ -119,3 +119,55 @@ main > .ajuda {
 .tabela-comparacao caption {
     padding: var(--espaco-3) var(--espaco-2);
 }
+
+/* Busca unificada: campo e botão (lado a lado a partir do tablet) */
+main > form.busca-unificada {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0 var(--espaco-4);
+}
+
+.busca-unificada button {
+    width: 100%;
+    margin: 0;
+}
+
+/* Resultados da busca sem JavaScript: links com o tipo indicado */
+.resultados-busca {
+    margin-bottom: var(--espaco-4);
+}
+
+.resultados-busca h2 {
+    margin: 0 0 var(--espaco-2);
+    font-size: var(--texto-titulo-card);
+}
+
+.lista-resultados-busca {
+    margin: 0;
+    padding: var(--espaco-1);
+    list-style: none;
+    border: 1px solid var(--cor-divisor-suave);
+    border-radius: var(--raio-card);
+    background-color: var(--cor-superficie);
+}
+
+.lista-resultados-busca .sugestao {
+    cursor: auto;
+}
+
+@media (min-width: 481px) {
+    main > form.busca-unificada {
+        grid-template-columns: 1fr auto;
+        align-items: start;
+    }
+
+    .busca-unificada .campo {
+        margin-bottom: 0;
+    }
+
+    /* Alinha o botão com o campo (abaixo do rótulo) */
+    .busca-unificada button {
+        width: auto;
+        margin-top: calc(1.5em + var(--espaco-2));
+    }
+}

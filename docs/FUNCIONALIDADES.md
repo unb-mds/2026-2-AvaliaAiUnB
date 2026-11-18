@@ -22,6 +22,16 @@ chave de professor é a combinação de nome e departamento. Um mesmo docente
 pode aparecer em registros distintos quando leciona em unidades diferentes;
 as médias e avaliações pertencem a cada registro.
 
+### Busca unificada com autocompletar
+
+Um único campo aceita nome do professor, disciplina (nome ou código) ou
+departamento, com as mesmas regras de normalização. Na Consulta, o termo vai
+para `/professores?q=`; ao digitar, as sugestões aparecem com o tipo indicado
+(Professor, Disciplina ou Departamento) e levam ao perfil do professor ou à
+Consulta filtrada pela disciplina ou pelo departamento. Na Comparação, as
+sugestões são só de professores e disciplinas e já abrem a comparação com a
+seleção feita. Busca por ementa ou por turma não faz parte da funcionalidade.
+
 ## Perfil do professor e avaliações
 
 O perfil `/professores/<professor_id>` mostra as disciplinas vinculadas e os
