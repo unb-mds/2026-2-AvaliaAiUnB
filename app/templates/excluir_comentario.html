@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excluir comentário - AvaliaUnb</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='indicadores.css') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='avaliacao.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='comentarios.css') }}">
+    {% include '_tema.html' %}
+</head>
+<body>
+    {% include '_topo.html' %}
+
+    <main class="conteudo">
+    <div class="avaliacao-container card pagina-comentario">
+        <header class="cabecalho-pagina">
+            <p class="selo">Excluir comentário</p>
+            <h1>Excluir comentário sobre {{ professor.nome }}?</h1>
+            <p class="subtitulo">
+                {{ comentario.disciplina_nome }}{% if comentario.disciplina_codigo %} — {{ comentario.disciplina_codigo }}{% endif %}
+            </p>
+        </header>
+
+        <blockquote>{{ comentario.texto|truncate(200, true) }}</blockquote>
+
+        <p class="mensagem mensagem-erro" role="alert">Esta ação não pode ser desfeita. O comentário deixa de aparecer no perfil do professor.</p>
+
+        <form method="post" action="{{ url_for('professores.excluir_comentario', comentario_id=comentario.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="next" value="{{ next_url }}">
+            {% if filtro_comentarios %}<input type="hidden" name="comentarios_disciplina" value="{{ filtro_comentarios }}">{% endif %}
+
+            <div class="acoes">
+                <a class="cancelar botao botao-primario" href="{{ url_voltar }}" autofocus>Cancelar</a>
+                <button type="submit" class="botao botao-destrutivo">Excluir comentário</button>
+            </div>
+        </form>
+    </div>
+    </main>
+    {% include '_rodape.html' %}
+</body>
+</html>

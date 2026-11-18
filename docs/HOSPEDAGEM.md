@@ -91,11 +91,12 @@ estar autorizado pelo provedor. Use uma configuração separada no Preview e
 confira a entrega do link e a confirmação com uma conta de teste.
 
 A titularidade é registrada pelo fluxo do perfil e vale para o endereço
-atual da conta. A implementação de comentários na
-[#167](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/167) deve chamar
-`app.verificacao_email.email_verificado(usuario)` antes de publicar e ao
-consultar o e-mail de um autor. A consulta precisa partir de um comentário
-público e buscar o endereço atual no Supabase Auth pelo ID do autor.
+atual da conta. Os comentários implementados na
+[#167](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/167) não usam essa
+verificação: para comentar basta estar logado, porque o login é só pelo Google,
+e o e-mail do autor nunca é exibido. O fluxo de verificação continua no projeto
+(`app.verificacao_email.email_verificado(usuario)`), disponível para uma
+decisão futura.
 
 ## Staging com Preview
 

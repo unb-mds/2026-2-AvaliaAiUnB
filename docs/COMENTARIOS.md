@@ -1,11 +1,17 @@
 # Especificação de comentários avaliativos
 
 **Status: proposta para revisão do grupo, com origem na issue #116.** Este
-documento descreve o comportamento futuro dos comentários, das reações e da
-moderação.
+documento descreve o comportamento dos comentários, das reações e da
+moderação. A primeira parte já está implementada no perfil do professor
+(issue #167): listar, filtrar por disciplina, publicar, editar e excluir o
+próprio comentário. Reações, ordenação escolhida pela pessoa, filtro
+automático, denúncia, moderação e ocultação continuam sendo planos futuros
+(issues #212 a #217).
 
 A base é a [proposta de dados da #109](Modelo%20de%20Dados.md#6-proposta-tabela-comentarios).
-O SQL dessa proposta permanece como referência e não é aplicado por este trabalho.
+A tabela `comentarios` está versionada em
+[`002_comentarios.sql`](migrations/002_comentarios.sql). O SQL da proposta
+permanece como referência para o que ainda não existe, como as reações.
 
 ## Objetivo
 
@@ -18,15 +24,17 @@ avaliação e disponibilidade, com contexto útil para outros estudantes.
 | Pessoa | Comportamento proposto |
 |---|---|
 | Visitante | Lê comentários publicados no perfil do professor |
-| Usuário autenticado | Usa uma conta comum com e-mail verificado de qualquer domínio para comentar, reagir e denunciar |
+| Usuário autenticado | Usa uma conta comum, bastando estar logado, para comentar, reagir e denunciar |
 | Autor | Edita ou exclui seu próprio comentário e acompanha sua análise em privado |
 | Moderador autorizado | Analisa textos sinalizados e denúncias, com decisão e justificativa registradas |
 
 O perfil do professor tem uma área de comentários sobre a experiência pedagógica.
 A participação usa a mesma conta comum para todos, sem perfil docente, espaço
-de resposta oficial ou selo de professor. O cadastro atual aceita Gmail. Para
-liberar a área de comentários, o fluxo de cadastro e verificação deve aceitar
-outros domínios e preservar as permissões das demais áreas, como o envio de notas.
+de resposta oficial ou selo de professor. Não se exige e-mail verificado para
+comentar: basta estar logado, porque o login é só pelo Google. O fluxo de
+verificação de e-mail por link (`app/verificacao_email.py`) continua no
+projeto, mas não é usado para comentar. Comentar preserva as permissões das
+demais áreas, como o envio de notas.
 Uma conta de comentários não concede acesso à moderação.
 
 ## Texto, quantidade e vínculo
@@ -36,11 +44,14 @@ Uma conta de comentários não concede acesso à moderação.
 | Professor | Obrigatório e existente no catálogo |
 | Disciplina | Obrigatória. Deve ter sido ministrada pelo professor |
 | Quantidade | Sem limite por conta, inclusive para o mesmo professor e disciplina |
+| Limite de envio | 10 comentários por hora por usuário, com contador separado do das avaliações |
 | Tamanho | De 2 a 1.000 caracteres após remover espaços, tabulações e quebras de linha das extremidades |
 | Formato | Texto simples; HTML e Markdown não são interpretados |
-| Identificação pública | Todo comentário publicado mostra o nome de usuário. Ao clicar nele, qualquer visitante pode consultar o e-mail de cadastro do autor |
-| Ordem da lista | Mais recentes por padrão. A pessoa pode escolher Mais curtidos, Mais antigos ou Mais reações |
-| Datas | Exibir a data da primeira publicação em cada comentário e indicar quando houve edição |
+| Identificação pública | Todo comentário publicado mostra o nome de usuário. O e-mail do autor nunca é exibido |
+| Ordem da lista | Mais recentes primeiro, em ordem fixa. Mais curtidos, Mais antigos e Mais reações, escolhidos pela pessoa, ficam para a issue #213 |
+| Quantidade exibida | Os 50 comentários mais recentes, com o filtro de disciplina já aplicado. A página avisa quando há mais; o "ver mais" fica para depois |
+| Filtro | Por disciplina, no perfil do professor. "Todas as disciplinas" é o padrão e um valor inválido volta a "todas" |
+| Datas | Exibir a data da primeira publicação em cada comentário, em dd/mm/aaaa no horário de Brasília, e indicar com "(editado)" quando a atualização for posterior à criação |
 
 O backend deve validar as regras antes da gravação e escapar o texto na saída.
 Um texto curto como «ok» passa pela validação de tamanho. O servidor recusa
@@ -68,6 +79,9 @@ Reações podem mudar a posição de um comentário nas ordenações por curtida
 ou reações. As notas e o ranking são independentes.
 
 ## Ordenação dos comentários
+
+Hoje a lista usa só a ordem Mais recentes, fixa. A escolha da ordem pela
+pessoa fica para a issue #213.
 
 | Opção | Como a lista é ordenada |
 |---|---|
@@ -101,14 +115,19 @@ e comentar depois. Cada ação tem seu próprio formulário e envio.
 
 O perfil do professor apresenta os comentários publicados em uma seção
 separada das notas. A lista vazia convida a escrever o primeiro comentário.
-Visitantes veem a opção de entrar ou criar conta para escrever ou reagir.
+Visitantes veem a opção de entrar com o Google (**Entrar para comentar**) para
+escrever ou reagir.
 Cada relato exibe sua disciplina. Quem já comentou pode editar os próprios
 textos e escrever outro relato para a mesma disciplina ou para outra
 ministrada pelo professor.
 
+A lista mostra os 50 comentários mais recentes e tem um filtro **Disciplina**,
+com "Todas as disciplinas" por padrão. Quando há mais de 50, a página avisa
+"Mostrando os 50 comentários mais recentes."
+
 O formulário informa antes da publicação que o texto e o nome de usuário
-serão públicos e que qualquer visitante poderá clicar no nome para ver o
-e-mail de cadastro. A publicação usa o botão **Publicar**.
+serão públicos: "Seu nome de usuário aparece junto do comentário." O e-mail
+não é exibido. A publicação usa o botão **Publicar**.
 Mostra o limite, exige a escolha de uma disciplina ministrada pelo professor
 e preserva o texto em erros de validação ou moderação. Durante a
 verificação, a interface desabilita o botão de envio e só confirma a
@@ -119,10 +138,12 @@ publicação quando o texto fica público.
 A edição é exclusiva do autor, preserva a data original e atualiza `atualizado_em`.
 O identificador do professor e a autoria não podem ser alterados pela edição.
 A disciplina pode ser trocada por outra ministrada pelo mesmo professor.
+Editar ou excluir o comentário de outra pessoa, ou um que não exista,
+responde HTTP 404.
 
 A exclusão deve pedir confirmação, identificando o professor, a disciplina
-e a consequência. Depois de excluir, o texto e as reações daquele
-comentário saem da lista.
+e a consequência; ela passa por uma página de confirmação. Depois de excluir,
+o texto e as reações daquele comentário saem da lista.
 
 ### Conteúdo ocultado
 
@@ -183,17 +204,11 @@ atender a fila, a publicação de novos comentários fica pausada até haver cob
 
 ## Privacidade e ciclo dos dados
 
-Cada comentário publicado mostra o nome de usuário da conta. Ao clicar ou
-tocar nesse nome, qualquer visitante pode consultar o e-mail de cadastro do
-autor, mesmo sem entrar. O endereço é carregado só quando solicitado e fica
-fora da resposta da listagem. A consulta só funciona enquanto o comentário
-estiver público. Vale o endereço atual da conta.
-
-Um endereço acessível a visitantes pode ser copiado ou coletado mesmo quando
-aparece só após um clique. Antes de liberar essa consulta no site, o grupo
-deve revisar a necessidade de expor o e-mail de cadastro e o aviso apresentado
-ao autor. Nome completo, tokens, dados de denúncias e identificadores internos
-da conta ficam privados.
+Cada comentário publicado mostra o nome de usuário da conta. O e-mail de
+cadastro do autor nunca é exibido: não aparece na listagem, nas páginas de
+editar e excluir nem por consulta ao clicar no nome. O e-mail, o nome
+completo, tokens, dados de denúncias e identificadores internos da conta
+ficam privados.
 
 A orientação ao autor deve pedir que não publique matrículas, contatos,
 documentos, informações pessoais de terceiros ou relatos que exponham pessoas
@@ -213,17 +228,17 @@ rotina de descarte fica para a implementação após revisão do grupo.
 
 | ID | Decisão proposta | Situação |
 |---|---|---|
-| C01 | Leitura pública e participação com conta comum e e-mail verificado de qualquer domínio. Sem espaço ou perfil exclusivo para professores | Aguardando revisão |
+| C01 | Leitura pública e participação com conta comum, bastando estar logado (login só pelo Google), sem exigir e-mail verificado. Sem espaço ou perfil exclusivo para professores | Decidido; implementado na #167 |
 | C02 | Disciplina obrigatória. A pessoa pode comentar quantas vezes quiser para o mesmo professor e disciplina | Aguardando revisão |
 | C03 | Texto simples de 2 a 1.000 caracteres após remover espaços em branco das extremidades | Aguardando revisão |
 | C04 | Estrelas e comentários são independentes e podem ser enviados em qualquer ordem. Uma avaliação por estrelas por estudante, professor e disciplina | Aguardando revisão |
-| C05 | Nome de usuário em todos os comentários públicos. Qualquer visitante pode clicar no nome para ver o e-mail de cadastro. A interface avisa sobre a exibição antes de publicar | Aguardando revisão do grupo antes da publicação no site |
+| C05 | Nome de usuário em todos os comentários públicos. O e-mail nunca é exibido. A interface avisa antes de publicar: "Seu nome de usuário aparece junto do comentário." | Decidido; implementado na #167 |
 | C06 | Denúncia privada e moderação por responsáveis autorizados | Aguardando revisão e projeto de dados |
 | C07 | Ocultação motivada, sem republicação automática por edição | Aguardando revisão |
 | C08 | Dois moderadores designados, primeira análise em até três dias úteis, formulário privado de contestação e retenção de até 90 dias após o encerramento | Aguardando revisão |
 | C09 | Ícones 👍 e 👎 sempre visíveis, com números apenas nas reações recebidas. Uma reação por conta e comentário, com opção de trocar ou remover | Aguardando revisão |
 | C10 | Filtrar no servidor antes de publicar ou editar. Bloquear violações claras e encaminhar casos incertos à moderação | Aguardando revisão |
-| C11 | Data em cada comentário. Ordenação por Mais recentes, Mais curtidos, Mais antigos ou Mais reações | Aguardando revisão |
+| C11 | Data em cada comentário. Ordenação por Mais recentes, Mais curtidos, Mais antigos ou Mais reações | Data e ordem fixa (mais recentes) implementadas na #167; a escolha da ordem aguarda a #213 |
 
 As decisões podem ser revisadas no PR ou na
 [issue #116](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/116).
@@ -233,9 +248,8 @@ acompanham estas regras.
 ## Critérios para a futura implementação
 
 - Visitantes consultam comentários com nome de usuário e contagens de
-  reações. Entrar com conta verificada é obrigatório para comentar, reagir
-  ou denunciar. O fluxo aceita, por exemplo, um e-mail Outlook ou de domínio
-  próprio.
+  reações. Estar logado (login pelo Google) é obrigatório para comentar,
+  reagir ou denunciar; não se exige e-mail verificado.
 - «ok» passa pela validação de tamanho. Campo vazio, texto com menos de
   dois caracteres após retirar os espaços em branco das extremidades e
   texto acima de 1.000 caracteres recebem erro claro.
@@ -246,14 +260,12 @@ acompanham estas regras.
   editar ou apagar.
 - Só o autor edita ou exclui. O servidor nega tentativas de se passar por outro
   usuário e mantém os identificadores de conta fora das respostas públicas.
-- Qualquer visitante pode clicar no nome de um comentário visível para abrir
-  o e-mail de cadastro do autor.
-  O endereço fica fora da resposta da listagem e a consulta deixa de funcionar
-  para aquele comentário se ele for ocultado ou excluído.
+- O e-mail de cadastro do autor não aparece em nenhuma página nem resposta de
+  comentários, nem ao clicar no nome de usuário.
 - Uma conta troca ou desfaz sua reação. Pedidos simultâneos respeitam a
   unicidade, e autores não reagem ao próprio comentário.
 - A lista exibe a data e os dois ícones em cada comentário, inclusive para
-  visitantes sem login e com o e-mail recolhido.
+  visitantes sem login.
   Os números aparecem só para reações recebidas.
   Com 8 curtidas e 1 descurtida, o comentário aparece com 8 e 1 separados.
   Na opção Mais reações, as duas contagens somam 9 para a ordenação.
@@ -274,9 +286,13 @@ acompanham estas regras.
 - A identidade do denunciante e os dados privados não aparecem na listagem pública.
 - As telas cobrem vazio, envio, erro, edição, confirmação de exclusão e ocultação.
 - As permissões de backend e banco seguem o modelo aprovado, com testes de
-  autorização e sem execução de migrações propostas durante a fase de documentação.
+  autorização. A tabela `comentarios` vem da migração `002_comentarios.sql`;
+  as demais tabelas propostas (reações, denúncias e moderação) ainda não têm
+  migração.
 
 Documentos relacionados: [modelo de dados](Modelo%20de%20Dados.md),
 [protótipos](TELAS_COMENTARIOS.md), [frontend](FRONTEND.md) e
-[cibersegurança](CIBERSEGURANCA.md). A execução depende de decisões
-registradas em issue/PR; este arquivo não ativa um sistema de comentários.
+[cibersegurança](CIBERSEGURANCA.md). Os comentários (listar, filtrar por
+disciplina, publicar, editar e excluir) já estão ativos no perfil do professor
+desde a #167; reações, ordenação, filtro automático, denúncia e moderação
+dependem de decisões registradas em issue/PR e das issues #212 a #217.

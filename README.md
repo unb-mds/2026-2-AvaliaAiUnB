@@ -44,7 +44,8 @@ anteriores podem conter apenas parte delas.
 | R1 — fluxo essencial | Cadastro, login, busca de professores e disciplinas, perfil do professor, avaliação por cinco critérios e consulta de médias | Implementado |
 | R2 — consulta e gestão de avaliações | Ranking, comparação entre dois professores, filtro por departamento, busca que ignora acentos e espaços extras e perfil do usuário com edição e exclusão das próprias avaliações | Implementado |
 | Evolução dos filtros | Faixa de nota e volume de avaliações | Pendente |
-| Comentários e moderação | Comentários com nome de usuário, reações, filtro e denúncias | [Proposta para revisão](docs/COMENTARIOS.md) |
+| Comentários | Listar os 50 mais recentes, filtrar por disciplina, publicar, editar e excluir o próprio comentário, com nome de usuário (sem e-mail) | Implementado ([regras](docs/COMENTARIOS.md)) |
+| Reações e moderação | Reações, ordenação escolhida pela pessoa, filtro automático, denúncia e moderação | [Proposta para revisão](docs/COMENTARIOS.md) |
 | Outras funcionalidades planejadas | Favoritos e gráficos de desempenho | Pendente |
 
 A consulta principal fica em `/professores`; ranking e comparação ficam em
@@ -59,7 +60,7 @@ Veja as [regras de busca, notas, comparação e ranking](docs/FUNCIONALIDADES.md
 | Perfil | Acesso | O que pode fazer |
 |---|---|---|
 | Visitante | Sem login | Consultar professores, disciplinas, médias, ranking e comparação |
-| Usuário cadastrado | Conta Google | Consultar e registrar avaliações; listar, editar e excluir as próprias avaliações em `/perfil` |
+| Usuário cadastrado | Conta Google | Consultar e registrar avaliações; listar, editar e excluir as próprias avaliações em `/perfil`; comentar no perfil dos professores e editar ou excluir os próprios comentários |
 
 O público principal são os estudantes da UnB. Docentes também podem consultar
 os indicadores públicos. A entrada é feita somente com a conta Google; a conta
@@ -90,8 +91,8 @@ os repositórios e a integração com o [scraper](docs/COMO_USAR_SCRAPER.md).
 
 ### Dados
 
-O banco contém `professores`, `disciplinas`, `turmas`, `perfis` e
-`avaliacoes`, além da view `vw_professor_disciplina`. A chave de professor
+O banco contém `professores`, `disciplinas`, `turmas`, `perfis`,
+`avaliacoes` e `comentarios`, além da view `vw_professor_disciplina`. A chave de professor
 é nome e departamento; o departamento corresponde à unidade que oferece a
 disciplina no SIGAA. Consulte o
 [modelo de dados e a proposta de comentários](docs/Modelo%20de%20Dados.md).
@@ -194,12 +195,16 @@ A conclusão da auditoria não significa que essas correções já foram aplicad
 O [resumo de cibersegurança](docs/CIBERSEGURANCA.md) relaciona os mecanismos do
 código, a situação do RLS e os resultados da auditoria com cada correção.
 
-Comentários e moderação têm uma [especificação proposta](docs/COMENTARIOS.md),
+Comentários e moderação têm uma [especificação](docs/COMENTARIOS.md),
 baseada na #109, para revisão do grupo na
 [#116](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/116).
-Ela propõe exibir o nome de usuário e permitir consultar o e-mail pelo nome,
-além de participação com conta verificada de qualquer domínio, reações,
-filtro antes da publicação e denúncias. O recurso ainda não está implementado.
+Já estão implementados no perfil do professor (#167): listar os comentários
+(mais recentes primeiro, 50 por vez), filtrar por disciplina, publicar, editar e
+excluir o próprio comentário. O comentário mostra só o nome de usuário, nunca o
+e-mail, e basta estar logado para comentar, com limite de 10 comentários por
+hora por usuário. Reações, ordenação escolhida pela pessoa, filtro antes da
+publicação, denúncias e moderação continuam propostos e ainda não estão
+implementados.
 
 ## Documentação
 
@@ -214,7 +219,7 @@ filtro antes da publicação e denúncias. O recurso ainda não está implementa
 | Arquitetura | [Diagramas do sistema](docs/ARQUITETURA.md) |
 | Coleta | [Guia do scraper](docs/COMO_USAR_SCRAPER.md) |
 | Cibersegurança | [Mecanismos e correções](docs/CIBERSEGURANCA.md) · [Relatório da auditoria](docs/AUDITORIA_SEGURANCA.md) |
-| Comentários | [Especificação para revisão do grupo](docs/COMENTARIOS.md) |
+| Comentários | [Regras dos comentários](docs/COMENTARIOS.md) (parte implementada na #167; o restante para revisão do grupo) |
 | Automação e checks | [Pipeline do GitHub Actions](docs/pipeline.md) · [DoR e DoD](docs/PROCESSO_CONTRIBUICAO.md) |
 | Hospedagem | [Configuração de Preview, produção e lançamento](docs/HOSPEDAGEM.md) |
 | Design | [Board do Figma](https://www.figma.com/board/PgqkPopVXOiSqm9gD5RRNv/AvaliaAi---Template-MDS?node-id=0-1&p=f&t=Rxu6jVCgeVZHCyg2-0) |

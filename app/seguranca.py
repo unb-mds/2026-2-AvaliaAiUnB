@@ -60,6 +60,9 @@ def chave_usuario_ou_ip():
 limitar_login_google = limiter.limit("10 per minute;50 per hour", scope="login-google")
 limitar_avaliacao = limiter.limit("20 per hour", key_func=chave_usuario_ou_ip,
                                   methods=["POST"], scope="avaliacao")
+# Escopo próprio: o contador de comentários não se mistura com o das avaliações.
+limitar_comentario = limiter.limit("10 per hour", key_func=chave_usuario_ou_ip,
+                                   methods=["POST"], scope="comentario")
 
 # --------------------------------------------------------------------------- configuração
 def _verdadeiro(valor):
