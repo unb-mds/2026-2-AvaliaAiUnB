@@ -424,8 +424,11 @@ class TestEsquemaBanco(unittest.TestCase):
         self.assertNotIn('create table if not exists departamentos', sql)
 
         # 2. Constraints únicas exigidas pelo upsert do scraper
-        self.assertRegex(sql, r'unique\s*\(\s*nome\s*,\s*departamento\s*\)')
-        self.assertEqual(CONFLITO_PROFESSORES, 'nome,departamento')
+        # Professores: a 004 (issue #235) troca UNIQUE (nome, departamento) por UNIQUE (nome)
+        sql_004 = Path('docs/migrations/004_professores_unicos.sql').read_text(encoding='utf-8').lower()
+        self.assertIn('drop constraint if exists uq_professores_nome_departamento', sql_004)
+        self.assertRegex(sql_004, r'uq_professores_nome\s+unique\s*\(\s*nome\s*\)')
+        self.assertEqual(CONFLITO_PROFESSORES, 'nome')
         self.assertEqual(CONFLITO_DISCIPLINAS, 'codigo')
         self.assertRegex(
             sql,

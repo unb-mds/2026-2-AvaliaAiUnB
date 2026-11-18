@@ -37,7 +37,7 @@ class Consulta:
     def __init__(self, tabelas, nome, registro_upserts=None):
         self.tabelas, self.nome = tabelas, nome
         self.registro_upserts = registro_upserts
-        self.linhas_upsert, self.conflito = None, None
+        self.linhas_upsert, self.conflito, self.ignorar_duplicados = None, None, False
         self.filtros, self.ordem, self.faixa, self.limite = [], [], None, None
         self.novo, self.atualizacao, self.apagar = None, None, False
         self.ordem_decrescente = set()
@@ -83,8 +83,9 @@ class Consulta:
         self.atualizacao = dados
         return self
 
-    def upsert(self, linhas, on_conflict):
+    def upsert(self, linhas, on_conflict, ignore_duplicates=False):
         self.linhas_upsert, self.conflito = linhas, on_conflict
+        self.ignorar_duplicados = ignore_duplicates
         return self
 
     def delete(self):
@@ -104,6 +105,8 @@ class Consulta:
                 if existente is None:
                     existente = {'id': max((l['id'] for l in tabela), default=0) + 1}
                     tabela.append(existente)
+                elif self.ignorar_duplicados:
+                    continue  # ON CONFLICT DO NOTHING: o Postgres não devolve a linha
                 existente.update(linha)
                 gravadas.append(dict(existente))
             return Resposta(gravadas)

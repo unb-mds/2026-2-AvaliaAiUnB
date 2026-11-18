@@ -65,8 +65,17 @@ python scraper/scraper_sigaa.py --ano 2026 --periodo 1
 ### `--dry-run`
 
 Não lê o `.env` e não grava nada. Além de professores, disciplinas e turmas, lista os
-**professores que aparecem em mais de uma unidade**, útil para decidir a chave de
-unicidade do professor.
+**professores que aparecem em mais de uma unidade**. No banco cada um deles vira um
+registro só (veja abaixo).
+
+### Professores em mais de uma unidade
+
+O professor é único pelo **nome** (`UNIQUE (nome)`, migração
+[`004_professores_unicos.sql`](migrations/004_professores_unicos.sql), issue #235). O
+scraper junta os docentes repetidos de uma execução e grava a primeira unidade em que
+cada um aparece. Quem já está no banco não é alterado (`ignore_duplicates`), então o
+departamento não muda a cada unidade raspada. Depois do upsert, o scraper consulta os
+ids pelo nome, em lotes de 100, para montar as turmas.
 
 ### Resumo e código de saída
 
@@ -93,5 +102,45 @@ criada no diretório onde o comando foi executado e está no `.gitignore`.
 A listagem do SIGAA vem inteira em uma página. Se o scraper detectar algum controle de
 paginação, avisa no log e salva o HTML em `debug/`; nesse caso a extração leria só a
 página atual, então avise a equipe.
+
+## 4. Manutenção do banco
+
+O script `scraper/manutencao_banco.py` usa o mesmo `.env` do scraper e tem dois
+subcomandos. Rode-os da raiz do repositório.
+
+### Verificar duplicatas
+
+```bash
+python scraper/manutencao_banco.py duplicatas
+```
+
+Só faz leitura. Compara nomes sem diferenciar acentos, caixa ou espaços e lista:
+
+- professores com o mesmo nome;
+- disciplinas com o mesmo código;
+- disciplinas com o mesmo nome e códigos diferentes. Esse grupo é só informativo:
+  são ofertas distintas de cada unidade (ex.: `FCE0006` e `FAR0248`, ambas
+  HEMATOLOGIA CLÍNICA) e não contam como duplicata.
+
+Sai com código `0` quando não há duplicatas e `1` quando há.
+
+Se aparecerem professores duplicados, aplique (ou reaplique) a migração
+[`004_professores_unicos.sql`](migrations/004_professores_unicos.sql) no SQL Editor do
+Supabase. Ela junta os registros, leva turmas, avaliações e comentários para o
+registro mantido, apaga os duplicados e cria a constraint `UNIQUE (nome)`. Tudo roda
+numa transação e pode ser executado de novo sem efeito.
+
+### Gerar backup
+
+```bash
+python scraper/manutencao_banco.py backup              # grava em docs/backup/
+python scraper/manutencao_banco.py backup --destino pasta/
+```
+
+Gera `professores_rows.csv`, `disciplinas_rows.csv` e `turmas_rows.csv` no mesmo
+formato do *Export to CSV* do Supabase. Só o catálogo público entra no backup.
+Avaliações, comentários, perfis e e-mails verificados têm dados de usuários (LGPD) e
+não vão para o repositório. Para restaurar, importe os CSVs pelo painel do Supabase
+(*Table editor → Import data from CSV*), na ordem professores, disciplinas e turmas.
 
 Relacionado: [modelo de dados](Modelo%20de%20Dados.md), [backend](BACKEND.md) e [pipeline](pipeline.md).

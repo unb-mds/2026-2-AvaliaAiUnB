@@ -71,7 +71,7 @@ Alimentada pelo scraper do SIGAA.
 | `departamento` | `VARCHAR(255)` | `NOT NULL`, default `''` |
 | `criado_em` | `TIMESTAMPTZ` | default `NOW()` |
 
-- **Unicidade:** `uq_professores_nome_departamento` em `(nome, departamento)`.
+- **Unicidade:** `uq_professores_nome` em `(nome)`, criada por [`004_professores_unicos.sql`](migrations/004_professores_unicos.sql) no lugar da antiga `uq_professores_nome_departamento` em `(nome, departamento)` (issue #235).
 
 ### 2.2 `disciplinas`
 
@@ -183,16 +183,32 @@ Consequência prática: o scraper não deve apagar professores ou disciplinas pa
 
 ## 4. Chave de unicidade do professor e efeito nas buscas
 
-O professor é identificado por **(nome, departamento)**, não só pelo nome.
+O professor é identificado só pelo **nome** (`UNIQUE (nome)`), desde a migração
+[`004_professores_unicos.sql`](migrations/004_professores_unicos.sql) (issue #235).
 
-O **departamento** guardado em `professores` é a **unidade que oferece a disciplina** no SIGAA, e não necessariamente o departamento de lotação do docente. Por isso:
+Antes a chave era **(nome, departamento)**. Como o **departamento** gravado é a
+**unidade que oferece a disciplina** no SIGAA, e não a lotação do docente, quem dava
+aula em mais de uma unidade virava vários registros, cada um com seu `id`, suas
+avaliações e médias separadas. Em 18/11/2026 o banco tinha 142 docentes nessa
+situação (288 registros). A migração 004 juntou cada grupo num registro só.
 
-- Um mesmo docente que leciona disciplinas ofertadas por departamentos diferentes pode aparecer como **mais de um registro** em `professores`, cada um com seu `id` e suas próprias avaliações.
-- Dois docentes homônimos em departamentos diferentes são tratados como pessoas distintas, o que pode estar certo ou errado.
-- Uma busca apenas por `nome` pode retornar vários registros para a mesma pessoa. A interface deve exibir o departamento ao lado do nome, e a busca não deve assumir que o nome é único.
-- Médias de avaliação são calculadas **por registro**, então um docente dividido em dois registros terá notas separadas.
+Consequências da chave atual:
 
-Limitação conhecida: não existe hoje uma identificação única do docente (como matrícula). Unificar registros duplicados seria uma decisão futura.
+- Cada docente tem um único `id`, um único perfil e uma única média.
+- `departamento` guarda **uma** unidade: a do registro mantido na mesclagem (uma
+  unidade acadêmica é preferida a um decanato como o DPG) ou, para professores
+  novos, a primeira unidade em que o scraper o encontrou. O scraper não sobrescreve o
+  departamento de quem já existe. As disciplinas de todas as unidades continuam
+  ligadas ao docente pelas `turmas`.
+- O filtro por departamento usa só essa unidade, então um docente pode não aparecer
+  no filtro de outra unidade em que também leciona.
+- Dois docentes homônimos seriam tratados como a mesma pessoa. Não existe uma
+  identificação única do docente (como a matrícula) no SIGAA público, e homônimos
+  exatos são raros, então esse risco foi aceito.
+
+Para conferir se voltaram a aparecer duplicatas, use
+`python scraper/manutencao_banco.py duplicatas` (veja o
+[guia do scraper](COMO_USAR_SCRAPER.md#4-manutencao-do-banco)).
 
 ## 5. Políticas de RLS
 
@@ -379,5 +395,6 @@ REVOKE ALL ON comentarios_reacoes FROM PUBLIC, anon, authenticated;
    - `FLASK_DEBUG`: `0`, ou `1` somente em desenvolvimento local.
 4. Executar o scraper do SIGAA para popular `professores`, `disciplinas` e `turmas`.
 5. Executar `docs/migrations/002_comentarios.sql`, que depende do esquema inicial, para criar a tabela `comentarios`. Reações, denúncias e moderação ainda não têm migração (seção 6).
+6. Executar `docs/migrations/003_emails_verificados.sql` e `docs/migrations/004_professores_unicos.sql`. A 004 troca a chave do professor para `UNIQUE (nome)`; num banco vazio ela só faz essa troca.
 
 Veja também: [guia do backend](BACKEND.md), [guia do scraper](COMO_USAR_SCRAPER.md) e [mapa da documentação](GUIA_DOCUMENTACAO.md).
