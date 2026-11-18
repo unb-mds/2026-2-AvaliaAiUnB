@@ -1,8 +1,24 @@
 """Lógica de professores e avaliações: resolve o que as rotas exibem e registra avaliações."""
 from flask import abort, request
 
-from app.repositorio import MINIMO_AVALIACOES_RANKING, repositorios
+from app.repositorio import CRITERIOS_RANKING, MINIMO_AVALIACOES_RANKING, repositorios
 from app.validacoes import CRITERIOS, validar_avaliacao
+
+
+def _calcular_media_geral(indicadores):
+    """Média dos critérios positivos (exclui dificuldade, igual ao ranking)."""
+    if not indicadores['quantidade']:
+        return None
+    medias = indicadores['medias']
+    return sum(medias[c] for c in CRITERIOS_RANKING) / len(CRITERIOS_RANKING)
+
+
+def _possui_disciplinas_diferentes(comparacao):
+    """Verdadeiro quando os professores comparados não compartilham nenhuma disciplina."""
+    if len(comparacao) < 2:
+        return False
+    conjuntos = [{d['id'] for d in prof.get('disciplinas', [])} for prof in comparacao]
+    return len(set.intersection(*conjuntos)) == 0
 
 
 def criterios():
@@ -21,9 +37,11 @@ def departamentos():
 
 def _carregar_comparacao_legada(dados):
     repos = repositorios()
-    professores = sorted((p for p, _ in repos.professores.catalogo()),
+    catalogo_completo = repos.professores.catalogo()
+    professores = sorted((p for p, _ in catalogo_completo),
                          key=lambda p: (p['nome'] or '', p['id']))
     por_id = {p['id']: p for p in professores}
+    disciplinas_por_id = {p['id']: vinculos for p, vinculos in catalogo_completo}
     selecionados, erros = {}, {}
     for campo in ('professor_1', 'professor_2'):
         valor = dados.get(campo, '').strip()
@@ -44,10 +62,18 @@ def _carregar_comparacao_legada(dados):
         erros['professor_2'] = 'Selecione dois professores diferentes.'
     comparacao = []
     if len(selecionados) == 2 and not erros:
-        comparacao = [{**por_id[p], 'indicadores': repos.avaliacoes.calcular_medias(p)}
-                      for p in selecionados.values()]
+        for p in selecionados.values():
+            indicadores_prof = repos.avaliacoes.calcular_medias(p)
+            comparacao.append({
+                **por_id[p],
+                'disciplinas': disciplinas_por_id.get(p, []),
+                'indicadores': indicadores_prof,
+                'media_geral': _calcular_media_geral(indicadores_prof),
+            })
     return dict(professores=professores, selecionados=selecionados,
-                erros=erros, comparacao=comparacao, criterios=CRITERIOS, modo_legado=True)
+                erros=erros, comparacao=comparacao, criterios=CRITERIOS,
+                disciplinas_diferentes=_possui_disciplinas_diferentes(comparacao),
+                modo_legado=True, modo_livre=False)
 
 
 def carregar_comparacao(dados):
@@ -74,7 +100,7 @@ def carregar_comparacao(dados):
         for d in sorted(vinculos_previos, key=lambda item: (item['nome'] or '', item['id'])):
             d_id = str(d['id'])
             total_na_disciplina = sum(
-                1 for _, v in catalogo if any(str( vinc['id']) == d_id for vinc in v)
+                1 for _, v in catalogo if any(str(vinc['id']) == d_id for vinc in v)
             )
             if total_na_disciplina >= 2:
                 disciplina_id = d_id
