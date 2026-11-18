@@ -17,6 +17,15 @@ A normalização ignora acentos, maiúsculas e espaços extras. A lista é orden
 pela quantidade de avaliações, com desempate por nome e identificador.
 Essa ordenação é diferente do ranking, que usa a média das notas.
 
+Em cada cartão da lista, cada disciplina mostra a dificuldade média e a
+quantidade de avaliações daquela disciplina, ou "Sem avaliações ainda" quando
+não há nenhuma. A dificuldade usa a mesma regra da página do professor. As
+disciplinas do cartão aparecem com as avaliadas primeiro (a mais avaliada antes)
+e depois as sem avaliações, com desempate por nome. Até 5 disciplinas aparecem
+todas; com mais de 5, aparecem 4 e as demais ficam em "Ver mais N disciplinas"
+dentro do cartão. Nenhuma disciplina deixa de aparecer. O botão Comentários do
+cartão leva à seção de comentários do perfil.
+
 O departamento identifica a unidade que oferece a disciplina no SIGAA, e a
 chave de professor é a combinação de nome e departamento. Um mesmo docente
 pode aparecer em registros distintos quando leciona em unidades diferentes;
@@ -36,6 +45,9 @@ seleção feita. Busca por ementa ou por turma não faz parte da funcionalidade.
 
 O perfil `/professores/<professor_id>` mostra as disciplinas vinculadas e os
 indicadores da disciplina selecionada. A URL pode informar `disciplina_id`.
+O topo do perfil tem um link Comentários que pula para a seção de comentários,
+e a tela de avaliar uma nova avaliação tem uma linha convidando a comentar, com
+link para essa seção, fora do formulário de notas.
 
 Cada usuário autenticado pode registrar uma avaliação por combinação de
 professor e disciplina, com notas inteiras de um a cinco para os cinco critérios:

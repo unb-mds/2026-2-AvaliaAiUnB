@@ -383,6 +383,11 @@ só de interface.
   outros botões de nota, e os rótulos "1 = Muito fácil" e "5 = Muito difícil"
   ficam abaixo.
 - **CSP:** nenhum `style=""`; o nível vem de classes, como em `.preenche-N`.
+- **Compacta (Consulta):** nos itens de disciplina do cartão da Consulta, a
+  barra usa `.barra-hp-compacta` (tamanho fixo pequeno, sem a escala) e é
+  decorativa para leitores de tela (`aria-hidden="true"`), porque o texto
+  "Dificuldade X/5" ao lado traz o valor. Os estilos ficam em
+  `lista_professores.css`, só com tokens.
 
 ## Componentes e estados
 
