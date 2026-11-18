@@ -1,4 +1,22 @@
-{% from '_macros.html' import nota %}
+{% from '_macros.html' import nota, barra_dificuldade %}
+{% macro item_disciplina(disciplina, dif) %}
+                    <li class="disciplina-item">
+                        <span class="disciplina-titulo">{{ disciplina.nome }}{% if disciplina.codigo %} — {{ disciplina.codigo }}{% endif %}</span>
+                        <span class="disciplina-metricas">
+                            {% if dif and dif.quantidade %}
+                            {% if dif.valor is not none %}
+                            <span class="dificuldade-mini">
+                                {{ barra_dificuldade(dif.valor, true) }}
+                                <span class="dificuldade-mini-texto">{{ dif.texto_dificuldade }}</span>
+                            </span>
+                            {% endif %}
+                            <span class="disciplina-avaliacoes">{{ dif.texto_avaliacoes }}</span>
+                            {% else %}
+                            <span class="disciplina-avaliacoes disciplina-sem-avaliacoes">Sem avaliações ainda</span>
+                            {% endif %}
+                        </span>
+                    </li>
+{% endmacro %}
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -44,18 +62,17 @@
         {% endif %}
 
         {% if catalogo %}
-        {# Paginação no template: 100 professores por página #}
-        {% set por_pagina = 100 %}
-        {% set total = catalogo|length %}
-        {% set total_paginas = ((total + por_pagina - 1) // por_pagina) %}
-        {% set pagina = [[request.args.get('pagina', '1')|int(1), 1]|max, total_paginas]|min %}
-        {% set inicio = (pagina - 1) * por_pagina %}
-        {% set fim = [inicio + por_pagina, total]|min %}
+        {# Paginação calculada pelo controller (paginar_catalogo): 100 professores por página #}
+        {% set pagina = paginacao.pagina %}
+        {% set total = paginacao.total %}
+        {% set total_paginas = paginacao.total_paginas %}
+        {% set inicio = paginacao.inicio %}
+        {% set fim = paginacao.fim %}
         {% if total_paginas > 1 %}
         <p class="ajuda resumo-pagina">Mostrando {{ inicio + 1 }}–{{ fim }} de {{ total }} professores.</p>
         {% endif %}
         <ul class="lista-professores">
-            {% for professor, disciplinas in catalogo[inicio:fim] %}
+            {% for professor, disciplinas in paginacao.itens %}
             <li class="card card-interativo">
                 <div class="professor-cabecalho">
                     <div class="professor-identificacao">
@@ -81,11 +98,22 @@
                 </div>
 
                 {% if disciplinas %}
+                {% set grupo = disciplinas_cartao[professor.id] %}
                 <ul class="disciplinas">
-                    {% for disciplina in disciplinas %}
-                    <li>{{ disciplina.nome }}{% if disciplina.codigo %} — {{ disciplina.codigo }}{% endif %}</li>
+                    {% for disciplina in grupo.visiveis %}
+                    {{ item_disciplina(disciplina, (dificuldades or {}).get(professor.id, {}).get(disciplina.id)) }}
                     {% endfor %}
                 </ul>
+                {% if grupo.extras %}
+                <details class="disciplinas-extras">
+                    <summary>Ver mais {{ grupo.extras|length }} {{ 'disciplina' if grupo.extras|length == 1 else 'disciplinas' }}</summary>
+                    <ul class="disciplinas disciplinas-lista-extras">
+                        {% for disciplina in grupo.extras %}
+                        {{ item_disciplina(disciplina, (dificuldades or {}).get(professor.id, {}).get(disciplina.id)) }}
+                        {% endfor %}
+                    </ul>
+                </details>
+                {% endif %}
                 {% else %}
                 <p class="ajuda">Ainda não há disciplinas cadastradas para este professor.</p>
                 {% endif %}
@@ -97,6 +125,7 @@
                     {% elif disciplinas %}
                     <a class="botao botao-primario" href="{{ url_for('professores.perfil', professor_id=professor.id, next=request.full_path) }}">Avaliar</a>
                     {% endif %}
+                    <a class="botao botao-secundario" href="{{ url_for('professores.perfil', professor_id=professor.id, next=request.full_path, _anchor='comentarios') }}" aria-label="Ver comentários de {{ professor.nome }}">Comentários</a>
                     <a class="botao botao-secundario" href="{{ url_for('professores.comparar', professor_1=professor.id) }}">Comparar este professor</a>
                 </div>
             </li>

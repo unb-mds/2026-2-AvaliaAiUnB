@@ -75,6 +75,20 @@ exige dois professores diferentes; e o ranking informa quando ninguém atinge o
 mínimo de avaliações. No perfil do usuário, Apagar abre uma confirmação (`<details>`,
 sem JavaScript) antes de enviar a exclusão.
 
+Na Consulta, cada disciplina do cartão (`.disciplina-item`) mostra o nome e o
+código e, abaixo ou ao lado, a dificuldade média com a barra compacta
+(`barra_dificuldade(valor, true)`, `.barra-hp-compacta`, sem a escala de 1 a 5),
+o texto "Dificuldade X,Y/5" e a quantidade ("N avaliações" ou "1 avaliação"), ou
+só "Sem avaliações ainda". A barra compacta é decorativa para leitores de tela
+(`aria-hidden="true"`, sem `role` nem `aria-label`), porque o texto ao lado já
+traz o valor. Com até 5 disciplinas todas aparecem; com mais de 5, aparecem 4 e
+as demais ficam num `<details class="disciplinas-extras">` com o resumo "Ver mais
+N disciplinas", dentro do cartão e sem JavaScript. O botão Comentários do cartão
+leva à seção de comentários do perfil, o perfil tem o link `.atalho-comentarios`
+no topo e a tela de avaliar (só avaliação nova) tem a linha `.convite-comentario`,
+fora do formulário de notas. Os estilos ficam em `lista_professores.css`,
+`perfil_professor.css` e `avaliacao.css`, só com tokens.
+
 A média geral usa didática, clareza, organização e disponibilidade, sem a
 dificuldade, como o ranking. A política de segurança (`style-src 'self'` em
 `app/seguranca.py`) bloqueia `style=""` inline, então valores dinâmicos de estilo

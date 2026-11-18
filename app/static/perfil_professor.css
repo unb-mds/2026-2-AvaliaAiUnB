@@ -35,6 +35,24 @@ h1 {
     overflow-wrap: anywhere;
 }
 
+/* Atalho discreto para a seção de comentários (foco visível vem de base.css) */
+.atalho-comentarios {
+    margin: var(--espaco-2) 0 0;
+    font-size: var(--texto-pequeno);
+}
+
+.atalho-comentarios a {
+    display: inline-block;
+    padding: var(--espaco-1) 0;
+    color: var(--cor-principal);
+    font-weight: 700;
+    text-underline-offset: 3px;
+}
+
+.atalho-comentarios a:hover {
+    color: var(--cor-principal-hover);
+}
+
 .acoes-professor {
     display: flex;
     flex-direction: column;

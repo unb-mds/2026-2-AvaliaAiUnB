@@ -146,6 +146,17 @@ correspondência parcial; departamento exige igualdade após normalização. A
 disciplina pode ser buscada por nome ou código. A lista é ordenada pelo total
 de avaliações, depois por nome e identificador.
 
+Para os cartões da Consulta, `AvaliacaoRepository.dificuldade_por_professor_disciplina`
+devolve, numa única consulta agrupada para os professores da página, a
+dificuldade média (uma casa decimal) e a quantidade de avaliações por professor
+e disciplina, com a mesma regra de `_resumir_notas` usada no perfil. No
+`professor_controller`, `paginar_catalogo` calcula a paginação da lista (100
+professores por página), `dificuldades_da_pagina` monta os valores e os textos
+exibidos e `organizar_disciplinas` ordena as disciplinas de cada cartão (mais
+avaliações primeiro, depois as sem avaliações, desempate por nome) e separa as
+que ficam em "Ver mais N disciplinas" (com mais de 5, 4 visíveis e as demais
+extras). Nenhuma disciplina é descartada.
+
 A busca unificada (`q`) casa com o nome do professor, o departamento ou o nome
 ou código de alguma disciplina. `ProfessorRepository.sugerir` usa o mesmo
 catálogo em cache para o autocompletar: exige ao menos dois caracteres

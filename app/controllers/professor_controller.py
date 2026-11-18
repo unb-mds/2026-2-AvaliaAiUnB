@@ -66,6 +66,78 @@ def catalogo(nome='', disciplina='', departamento='', q=''):
     return repositorios().professores.catalogo(nome, disciplina, departamento, termo=q)
 
 
+PROFESSORES_POR_PAGINA = 100   # mesmo tamanho de página usado em lista_professores.html
+
+
+def paginar_catalogo(itens, pagina_bruta):
+    """Paginação da Consulta: pagina, total_paginas, total, inicio, fim (índices de fatia)
+    e os `itens` da página. Página ilegível ou fora do intervalo vira a mais próxima."""
+    total = len(itens)
+    total_paginas = max(1, (total + PROFESSORES_POR_PAGINA - 1) // PROFESSORES_POR_PAGINA)
+    pagina = min(max(_inteiro_ou_none(pagina_bruta) or 1, 1), total_paginas)
+    inicio = (pagina - 1) * PROFESSORES_POR_PAGINA
+    fim = min(inicio + PROFESSORES_POR_PAGINA, total)
+    return dict(pagina=pagina, total_paginas=total_paginas, total=total,
+                inicio=inicio, fim=fim, itens=itens[inicio:fim])
+
+
+def _professores_da_pagina(itens, pagina_bruta):
+    return paginar_catalogo(itens, pagina_bruta)['itens']
+
+
+def _texto_avaliacoes(quantidade):
+    return f"{quantidade} {'avaliação' if quantidade == 1 else 'avaliações'}"
+
+
+def dificuldades_da_pagina(itens, pagina_bruta):
+    """{professor_id: {disciplina_id: {valor, texto_dificuldade, texto_avaliacoes}}} para
+    cada disciplina dos professores da página da Consulta (uma consulta só ao banco).
+
+    `valor` (1 a 5, uma casa) alimenta a barra; sem avaliação de dificuldade ele é None
+    e `texto_dificuldade` também."""
+    pagina = _professores_da_pagina(itens, pagina_bruta)
+    medias = repositorios().avaliacoes.dificuldade_por_professor_disciplina(
+        [professor['id'] for professor, _ in pagina])
+    resultado = {}
+    for professor, disciplinas in pagina:
+        do_professor = medias.get(professor['id'], {})
+        resultado[professor['id']] = {}
+        for disciplina in disciplinas:
+            dado = do_professor.get(disciplina['id'], {'media': None, 'quantidade': 0})
+            valor = dado['media']
+            resultado[professor['id']][disciplina['id']] = {
+                'valor': valor,
+                'texto_dificuldade': (None if valor is None
+                                      else f"Dificuldade {valor:.1f}".replace('.', ',') + '/5'),
+                'quantidade': dado['quantidade'],
+                'texto_avaliacoes': _texto_avaliacoes(dado['quantidade'])}
+    return resultado
+
+
+MAXIMO_DISCIPLINAS_SEM_EXTRAS = 5   # até aqui o cartão mostra todas as disciplinas
+DISCIPLINAS_COM_EXTRAS = 4          # acima disso, só estas aparecem; o resto vai no <details>
+
+
+def organizar_disciplinas(itens, dificuldades):
+    """{professor_id: {'visiveis': [...], 'extras': [...]}} para os cartões da Consulta.
+
+    Nenhuma disciplina some. Ordem: mais avaliações primeiro, depois as sem avaliações;
+    empate por nome. Até MAXIMO_DISCIPLINAS_SEM_EXTRAS ficam todas visíveis; com mais,
+    só as DISCIPLINAS_COM_EXTRAS primeiras e as demais em `extras`."""
+    resultado = {}
+    for professor, disciplinas in itens:
+        do_professor = dificuldades.get(professor['id'], {})
+        ordenadas = sorted(disciplinas, key=lambda d: (
+            -(do_professor.get(d['id']) or {}).get('quantidade', 0),
+            normalizar_busca(d['nome']), d['id']))
+        if len(ordenadas) <= MAXIMO_DISCIPLINAS_SEM_EXTRAS:
+            resultado[professor['id']] = {'visiveis': ordenadas, 'extras': []}
+        else:
+            resultado[professor['id']] = {'visiveis': ordenadas[:DISCIPLINAS_COM_EXTRAS],
+                                          'extras': ordenadas[DISCIPLINAS_COM_EXTRAS:]}
+    return resultado
+
+
 ROTULOS_TIPO = {'professor': 'Professor', 'disciplina': 'Disciplina',
                 'departamento': 'Departamento'}
 # Contextos da busca unificada: tipos sugeridos e para onde cada sugestão leva.

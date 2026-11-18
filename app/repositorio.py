@@ -35,6 +35,11 @@ TAMANHO_MINIMO_SUGESTAO = 2    # caracteres (já normalizados) para começar a s
 TIPOS_SUGESTAO = ('professor', 'disciplina', 'departamento')
 
 
+def arredondar_nota(valor):
+    """Nota com uma casa decimal, arredondando meio para cima (igual à macro `nota`)."""
+    return int(valor * 10 + 0.5) / 10
+
+
 def _posicao_do_termo(termo_n, texto):
     """Quão bem `texto` casa com o termo já normalizado: 0 = começa com ele,
     1 = alguma palavra começa com ele, 2 = contém no meio, None = não casa."""
@@ -384,6 +389,31 @@ class AvaliacaoRepository:
                 por_professor[linha['professor_id']].append(linha)
         return {professor_id: self._resumir_notas(notas)
                 for professor_id, notas in por_professor.items()}
+
+    def dificuldade_por_professor_disciplina(self, professor_ids):
+        """{professor_id: {disciplina_id: {'media', 'quantidade'}}} numa única consulta agrupada.
+
+        Mesma regra da página do professor (_resumir_notas): só avaliações válidas entram,
+        `quantidade` conta essas avaliações e `media` (arredondada a uma casa, como a macro
+        `nota`) é None quando a disciplina não tem nenhuma. Professores/disciplinas sem
+        avaliações não aparecem no resultado."""
+        ids = sorted(set(professor_ids))
+        if not ids:
+            return {}
+        colunas = ','.join(('professor_id', 'disciplina_id', *CRITERIOS))
+        linhas = _paginar(lambda: self.cliente.table('avaliacoes').select(colunas)
+                          .in_('professor_id', ids).order('id'))
+        grupos = {}
+        for linha in linhas:
+            grupos.setdefault((linha['professor_id'], linha['disciplina_id']), []).append(linha)
+        resultado = {}
+        for (professor_id, disciplina_id), notas in grupos.items():
+            resumo = self._resumir_notas(notas)
+            media = resumo['medias']['dificuldade']
+            resultado.setdefault(professor_id, {})[disciplina_id] = {
+                'media': None if media is None else arredondar_nota(media),
+                'quantidade': resumo['quantidade']}
+        return resultado
 
     @staticmethod
     def _resumir_notas(linhas):
