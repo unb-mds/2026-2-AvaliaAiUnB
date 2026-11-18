@@ -14,7 +14,7 @@ Plataforma de consulta, comparação e avaliação de professores e disciplinas 
 
 [Acessar o site :material-open-in-new:](https://avaliaunb.com.br/){ .md-button .md-button--primary }
 
-[Código no GitHub :fontawesome-brands-github:](https://github.com/unb-mds/2026-2-AvaliaAiUnB){ .md-button .md-button--primary }
+[Código no GitHub :fontawesome-brands-github:](https://github.com/unb-mds/2026-2-AvaliaUnB){ .md-button .md-button--primary }
 
 [Documento de visão :material-file-document-outline:](DOCUMENTO_DE_VISAO.md){ .md-button .md-button--primary }
 

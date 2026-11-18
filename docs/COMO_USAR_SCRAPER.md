@@ -1,6 +1,6 @@
 # Como executar o scraper do SIGAA
 
-Este guia cobre a coleta do SIGAA e o preparo do banco. Para iniciar a aplicação Flask, use o [README](https://github.com/unb-mds/2026-2-AvaliaAiUnB/blob/main/README.md); para o esquema, consulte o [modelo de dados](Modelo%20de%20Dados.md).
+Este guia cobre a coleta do SIGAA e o preparo do banco. Para iniciar a aplicação Flask, use o [README](https://github.com/unb-mds/2026-2-AvaliaUnB/blob/main/README.md); para o esquema, consulte o [modelo de dados](Modelo%20de%20Dados.md).
 
 ## 1. Instalação de Dependências
 

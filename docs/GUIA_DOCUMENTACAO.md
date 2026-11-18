@@ -1,6 +1,6 @@
 # Mapa da documentação
 
-Este guia organiza a documentação atual do repositório. O [README](https://github.com/unb-mds/2026-2-AvaliaAiUnB/blob/main/README.md)
+Este guia organiza a documentação atual do repositório. O [README](https://github.com/unb-mds/2026-2-AvaliaUnB/blob/main/README.md)
 é a entrada para instalação e resumo do produto; as páginas abaixo concentram
 os detalhes. **Descrição do estado atual não equivale a funcionalidade planejada.**
 
@@ -16,7 +16,7 @@ os detalhes. **Descrição do estado atual não equivale a funcionalidade planej
 | Templates e componentes | [Frontend](FRONTEND.md) | [Design system](DESIGN_SYSTEM.md) |
 | CI, checks e publicação | [Pipeline](pipeline.md) | [Hospedagem](HOSPEDAGEM.md) |
 | Auditoria e plano de correção | [Auditoria de segurança](AUDITORIA_SEGURANCA.md) | [Cibersegurança](CIBERSEGURANCA.md) |
-| Funcionalidade futura de comentários | [Especificação](COMENTARIOS.md) | [Mockups](TELAS_COMENTARIOS.md) |
+| Comentários (parte implementada na #167; reações e moderação ainda futuras) | [Especificação](COMENTARIOS.md) | [Mockups](TELAS_COMENTARIOS.md) |
 | Pronto para começar/concluído | [Critérios de contribuição](PROCESSO_CONTRIBUICAO.md) | Templates de issue/PR em `.github/` |
 
 ## Inventário da revisão (issue #136)
@@ -53,11 +53,13 @@ evitar sobreposição de PRs.
 - **RLS e autorização:** a [auditoria](AUDITORIA_SEGURANCA.md) é um registro
   histórico, enquanto [cibersegurança](CIBERSEGURANCA.md) acompanha mudanças em
   andamento. Não confundir a análise de 02/11 com o estado posterior.
-- **Comentários e moderação:** documentos e desenhos são propostas, não telas
-  funcionais. As regras dependem de aprovação e implementação específica.
-- **Histórico:** [Release 1](https://github.com/unb-mds/2026-2-AvaliaAiUnB/blob/main/RELEASE-v1.0.0.md),
-  [Release 2](https://github.com/unb-mds/2026-2-AvaliaAiUnB/blob/main/RELEASE-v2.0.0.md) e
-  [implementações antigas](https://github.com/unb-mds/2026-2-AvaliaAiUnB/blob/main/docs/IMPLEMENTACAO_26_36_37.md) registram entregas
+- **Comentários e moderação:** listar, filtrar por disciplina, publicar, editar e
+  excluir o próprio comentário estão implementados (#167). Reações, ordenação
+  escolhida pela pessoa, filtro automático, denúncia e moderação são propostas,
+  não telas funcionais, e dependem de aprovação e implementação específica.
+- **Histórico:** [Release 1](https://github.com/unb-mds/2026-2-AvaliaUnB/blob/main/RELEASE-v1.0.0.md),
+  [v1.0.1](https://github.com/unb-mds/2026-2-AvaliaUnB/blob/main/RELEASE-v1.0.1.md) e
+  [implementações antigas](https://github.com/unb-mds/2026-2-AvaliaUnB/blob/main/docs/IMPLEMENTACAO_26_36_37.md) registram entregas
   passadas; não devem substituir as instruções atuais.
 
 ## Manutenção e validação

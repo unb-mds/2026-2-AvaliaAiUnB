@@ -2,9 +2,9 @@
 
 Este guia detalha as funcionalidades já disponíveis na `main`. O resumo das
 entregas e do planejamento fica no
-[README](https://github.com/unb-mds/2026-2-AvaliaAiUnB#funcionalidades-e-releases).
+[README](https://github.com/unb-mds/2026-2-AvaliaUnB#funcionalidades-e-releases).
 
-- **Política de Privacidade e Termos de Uso (`/privacidade`)**: página pública acessível pelo rodapé que descreve em linguagem simples os dados armazenados pelo AvaliaUnB (e-mail, nome de usuário, avaliações e formulário de feedback), as regras contra ofensas e avaliações falsas, e o canal de contato para solicitar a exclusão de dados em conformidade com a LGPD. Documentação detalhada em `docs/POLITICA-DE-PRIVACIDADE.md`.
+- **Política de Privacidade e Termos de Uso (`/privacidade`)**: página pública acessível pelo rodapé que descreve em linguagem simples os dados armazenados pelo AvaliaUnB (e-mail, nome de usuário, avaliações, comentários e formulário de feedback), as regras contra ofensas e avaliações falsas, e o canal de contato para solicitar a exclusão de dados em conformidade com a LGPD. Documentação detalhada em `docs/POLITICA-DE-PRIVACIDADE.md`.
 
 ## Busca de professores e disciplinas
 
@@ -46,6 +46,32 @@ Uma avaliação só entra no cálculo das médias quando todos os cinco critéri
 têm notas inteiras de um a cinco. Sem avaliações válidas, a página informa
 essa condição e não atribui uma nota artificial.
 
+## Comentários no perfil do professor
+
+O perfil do professor tem uma seção **Comentários**, separada das notas.
+
+- **Listagem:** mostra os 50 comentários mais recentes (ordem fixa: mais
+  recentes primeiro) e avisa "Mostrando os 50 comentários mais recentes." quando
+  há mais. O "ver mais" e a escolha da ordem (issue #213) ficam para depois.
+- **Filtro:** o parâmetro `comentarios_disciplina` filtra por disciplina. Vazio ou
+  inválido volta a "Todas as disciplinas", sem erro. Ele é independente do
+  `disciplina_id`, que escolhe as médias.
+- **Exibição:** cada comentário mostra o nome de usuário do autor (nunca o
+  e-mail), a disciplina, a data em dd/mm/aaaa no horário de Brasília e
+  "(editado)" quando a atualização é posterior à criação. O texto é simples,
+  escapado, com as quebras de linha preservadas.
+- **Publicar:** exige login (basta a conta Google; não se exige e-mail
+  verificado). Texto de 2 a 1.000 caracteres e uma disciplina ministrada pelo
+  professor. O autor vem da sessão. Há um limite de 10 comentários por hora por
+  usuário, separado do das avaliações.
+- **Editar e excluir:** só o autor, nas páginas `/comentarios/<id>/editar` e
+  `/comentarios/<id>/excluir` (a exclusão passa por uma confirmação). O
+  comentário de outra pessoa, ou inexistente, responde HTTP 404.
+- Comentários não alteram notas, médias, comparação nem ranking.
+
+Reações, denúncia, moderação, ocultação e filtro automático não fazem parte
+desta entrega; veja as [regras dos comentários](COMENTARIOS.md).
+
 ## Perfil do usuário
 
 A página `/perfil` exige login e lista as avaliações do próprio usuário.
@@ -85,9 +111,13 @@ gerais do par e oferecem acesso à comparação por disciplina.
 
 ## Ranking de professores (RF07)
 
+## Ranking de professores (RF07)
+
 A página `/ranking` mostra posição, média geral, quantidade de avaliações e
-acesso ao perfil. Participam professores com pelo menos cinco avaliações válidas,
-considerando todas as disciplinas e períodos.
+acesso ao perfil. Por padrão exibe o ranking geral, mas aceita o parâmetro
+`departamento` (via seletor na tela ou pela URL) para filtrar a classificação
+por unidade acadêmica, mantendo a exigência de pelo menos cinco avaliações
+válidas.
 
 A média geral é a soma das notas de didática, clareza, organização e
 disponibilidade, dividida pelo número de avaliações válidas vezes quatro.
@@ -103,14 +133,14 @@ catálogo. Se ninguém atingir o mínimo, a página informa esse estado.
 ## Funcionalidades planejadas
 
 Filtros por faixa de nota e volume de avaliações, favoritos, gráficos,
-comentários, reações, denúncias e moderação ainda não têm fluxo implementado.
+reações, ordenação de comentários escolhida pela pessoa, filtro automático,
+denúncias e moderação ainda não têm fluxo implementado.
 
 A [proposta de banco para comentários](Modelo%20de%20Dados.md#6-proposta-tabela-comentarios)
-já está publicada. A [especificação proposta](COMENTARIOS.md) reúne acesso com
-e-mail de qualquer domínio, nome de usuário visível, consulta ao e-mail do
-autor, reações, filtro e denúncias.
+já está publicada. A [especificação](COMENTARIOS.md) reúne nome de usuário
+visível, reações, filtro e denúncias; o que ainda é proposta está indicado nela.
 A proposta começou na
-[issue #116](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/116).
+[issue #116](https://github.com/unb-mds/2026-2-AvaliaUnB/issues/116).
 
 Relacionado: [visão e requisitos](DOCUMENTO_DE_VISAO.md), [backend](BACKEND.md),
 [frontend](FRONTEND.md) e [mapa da documentação](GUIA_DOCUMENTACAO.md).

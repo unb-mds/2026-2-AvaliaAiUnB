@@ -1,10 +1,13 @@
 """Lógica de professores e avaliações: resolve o que as rotas exibem e registra avaliações."""
 import math
 
-from flask import abort, request
+from flask import abort, current_app, request
 
-from app.repositorio import CRITERIOS_RANKING, MINIMO_AVALIACOES_RANKING, repositorios
-from app.validacoes import CRITERIOS, validar_avaliacao
+from app.repositorio import (CRITERIOS_RANKING, LIMITE_COMENTARIOS,
+                             MINIMO_AVALIACOES_RANKING, ComentarioRepository,
+                             repositorios)
+from app.utils import normalizar_busca
+from app.validacoes import CRITERIOS, validar_avaliacao, validar_comentario
 
 MINIMO_AVALIACOES_COMPARACAO = MINIMO_AVALIACOES_RANKING
 
@@ -164,9 +167,20 @@ def carregar_comparacao(dados):
                 minimo_avaliacoes_destaque=MINIMO_AVALIACOES_COMPARACAO)
 
 
-def carregar_ranking():
-    return repositorios().professores.ranking(), MINIMO_AVALIACOES_RANKING
-
+def carregar_ranking(departamento=''):
+    repos = repositorios()
+    lista_departamentos = repos.professores.listar_departamentos()
+    chave = normalizar_busca(departamento)
+    departamento_ativo = next(
+        (dep for dep in lista_departamentos if normalizar_busca(dep) == chave),
+        departamento.strip(),
+    ) if chave else ''
+    return (
+        repos.professores.ranking(departamento_ativo),
+        MINIMO_AVALIACOES_RANKING,
+        lista_departamentos,
+        departamento_ativo,
+    )
 
 def carregar_perfil(professor_id):
     professores = repositorios().professores
@@ -189,6 +203,96 @@ def carregar_perfil(professor_id):
         if disciplina is None:
             abort(404, description='Disciplina não vinculada ao professor.')
     return professor, disciplinas, disciplina
+
+
+def _inteiro_ou_none(bruto):
+    try:
+        return int(bruto)
+    except (TypeError, ValueError):
+        return None
+
+
+def filtro_de_comentarios(bruto, disciplinas):
+    """id da disciplina do filtro, ou None (= todas) se vazio, ilegível ou de outro professor."""
+    disciplina_id = _inteiro_ou_none(bruto)
+    return disciplina_id if any(d['id'] == disciplina_id for d in disciplinas) else None
+
+
+def disciplina_das_medias(disciplinas, bruto):
+    """Disciplina das médias a mostrar depois de um POST: a informada se for do professor,
+    senão a primeira (sem 404, ao contrário de carregar_perfil)."""
+    disciplina_id = _inteiro_ou_none(bruto)
+    return next((d for d in disciplinas if d['id'] == disciplina_id),
+                disciplinas[0] if disciplinas else None)
+
+
+def carregar_professor(professor_id):
+    professor = repositorios().professores.buscar_por_id(professor_id)
+    if professor is None:
+        abort(404)
+    return professor
+
+
+def listar_disciplinas(professor_id):
+    return repositorios().professores.listar_disciplinas(professor_id)
+
+
+def validar_novo_comentario(disciplinas, disciplina_bruta, texto):
+    """(disciplina_id ou None, erros): a disciplina precisa ser uma das do professor."""
+    erros = {}
+    disciplina_id = _inteiro_ou_none(disciplina_bruta)
+    if not any(d['id'] == disciplina_id for d in disciplinas):
+        disciplina_id = None
+        erros['disciplina'] = 'Escolha a disciplina.'
+    _, erro = validar_comentario(texto)
+    if erro:
+        erros['texto'] = erro
+    return disciplina_id, erros
+
+
+def publicar_comentario(usuario, professor_id, disciplina_id, texto):
+    """Grava o comentário do usuário logado. ValueError se o repositório recusar."""
+    return repositorios().comentarios.criar(usuario['id'], professor_id, disciplina_id, texto)
+
+
+def carregar_comentario_do_usuario(comentario_id, usuario):
+    """Comentário do usuário logado; 404 se não existir ou for de outra pessoa (nunca 403)."""
+    comentario = repositorios().comentarios.buscar_do_usuario(comentario_id, usuario['id'])
+    if comentario is None:
+        abort(404, description='Comentário não encontrado.')
+    return comentario
+
+
+def editar_comentario(comentario_id, usuario, disciplina_id, texto):
+    """Muda só texto e disciplina. 404 se o comentário não for do usuário; ValueError se recusado."""
+    if not repositorios().comentarios.atualizar(comentario_id, usuario['id'], disciplina_id, texto):
+        abort(404, description='Comentário não encontrado.')
+    return True
+
+
+def excluir_comentario(comentario_id, usuario):
+    if not repositorios().comentarios.excluir(comentario_id, usuario['id']):
+        abort(404, description='Comentário não encontrado.')
+    return True
+
+
+def carregar_comentarios(professor_id, disciplinas, filtro_bruto, usuario):
+    """Contexto da seção de comentários do perfil. Nunca levanta: se a consulta falhar,
+    registra o erro e devolve erro_comentarios=True para o resto do perfil continuar."""
+    filtro = filtro_de_comentarios(filtro_bruto, disciplinas)
+    contexto = dict(comentarios=[], ha_mais=False, filtro_comentarios=filtro,
+                    erro_comentarios=False, limite_comentarios=LIMITE_COMENTARIOS)
+    try:
+        comentarios, ha_mais = repositorios().comentarios.listar_por_professor(
+            professor_id, filtro, usuario['id'] if usuario else None)
+        for comentario in comentarios:
+            comentario['data'] = ComentarioRepository.formatar_data(comentario['criado_em'])
+    except Exception:
+        current_app.logger.exception('Falha ao carregar os comentários do professor %s', professor_id)
+        contexto['erro_comentarios'] = True
+    else:
+        contexto.update(comentarios=comentarios, ha_mais=ha_mais)
+    return contexto
 
 
 def indicadores(professor_id, disciplina_id):
