@@ -1,4 +1,7 @@
 -r requirements.txt
 selenium
 undetected-chromedriver
+# O undetected-chromedriver ainda importa distutils, removido no Python 3.12;
+# o setuptools fornece um substituto compatível.
+setuptools
 webdriver-manager
