@@ -33,6 +33,15 @@ def sugestoes():
                                                       request.args.get('contexto'))})
 
 
+@professor_bp.get('/busca/professores')
+@limitar_sugestoes
+def sugestoes_professores():
+    """Autocompletar dos campos de professor da comparação (JSON), por nome ou disciplina."""
+    return jsonify({'professores': controller.sugestoes_professores(
+        request.args.get('q', ''), request.args.get('limite'),
+        request.args.get('departamento', ''))})
+
+
 @professor_bp.get('/ranking')
 def ranking():
     departamento = request.args.get('departamento', '').strip()

@@ -172,6 +172,30 @@ def sugestoes(termo, limite_bruto=None, contexto_bruto=None):
             for s in encontradas]
 
 
+MAXIMO_DISCIPLINAS_NA_SUGESTAO = 3  # disciplinas citadas ao lado do nome; o resto vira "+N"
+
+
+def resumir_disciplinas(disciplinas, maximo=MAXIMO_DISCIPLINAS_NA_SUGESTAO):
+    """'CÁLCULO 1 (FGA0001), FÍSICA 1 (FGA0002) +2' para mostrar ao lado do professor."""
+    textos = [f"{d['nome']} ({d['codigo']})" if d.get('codigo') else d['nome']
+              for d in disciplinas[:maximo]]
+    extras = len(disciplinas) - maximo
+    return ', '.join(textos) + (f' +{extras}' if extras > 0 else '')
+
+
+def sugestoes_professores(termo, limite_bruto=None, departamento=''):
+    """Professores para os campos de seleção da comparação (JSON): id, nome,
+    departamento e um resumo das disciplinas que ministra."""
+    limite = _inteiro_ou_none(limite_bruto)
+    limite = LIMITE_SUGESTOES if limite is None else max(1, min(limite, MAXIMO_SUGESTOES))
+    encontrados = repositorios().professores.sugerir_professores(
+        (termo or '')[:100], limite, (departamento or '')[:200])
+    return [{'id': p['id'], 'texto': p['nome'], 'detalhe': p['departamento'],
+             'disciplinas': resumir_disciplinas(p['disciplinas']),
+             'casou_disciplina': p['casou_disciplina']}
+            for p in encontrados]
+
+
 def _carregar_comparacao_legada(dados):
     repos = repositorios()
     catalogo_completo = repos.professores.catalogo()
@@ -280,10 +304,23 @@ def carregar_comparacao(dados):
                     for p in ids
                 ])
 
+        # Filtro por departamento (#239): encurta a lista de opções, inclusive sem
+        # JavaScript. Professores já escolhidos continuam como opção, mesmo de outro
+        # departamento, para a seleção não se perder ao filtrar.
+        departamentos = repos.professores.listar_departamentos()
+        pedido = normalizar_busca(dados.get('departamento', ''))
+        departamento = next((d for d in departamentos if normalizar_busca(d) == pedido), '')
+        opcoes = [p for p in todos_professores_lista
+                  if not departamento or str(p['id']) in campos
+                  or normalizar_busca(p.get('departamento')) == pedido]
+
         return dict(
             disciplinas=sorted(disciplinas.values(), key=lambda d: (d['nome'] or '', d['id'])),
             disciplina=None,
-            professores=todos_professores_lista,
+            professores=opcoes,
+            total_professores=len(todos_professores_lista),
+            departamentos=departamentos,
+            departamento=departamento,
             selecao_previa=selecao_previa,
             campos=campos,
             erros=erros,

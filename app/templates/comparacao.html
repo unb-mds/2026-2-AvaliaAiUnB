@@ -106,10 +106,25 @@
         <p class="ajuda">Selecione dois ou mais professores de qualquer disciplina para comparar suas médias gerais e por critério.</p>
 
         {% if erros.professores %}<p class="campo-erro" role="alert">{{ erros.professores }}</p>{% endif %}
-        {% if professores|length >= 2 %}
+        {% if total_professores >= 2 %}
         <form method="get" action="{{ url_for('professores.comparar') }}" class="filtros">
             <input type="hidden" name="modo" value="livre">
             {% if selecao_previa %}<input type="hidden" name="professor_1" value="{{ selecao_previa }}">{% endif %}
+            {% if departamentos %}
+            <div class="filtro-departamento">
+                <div class="campo">
+                    <label for="departamento">Filtrar a lista por departamento</label>
+                    <select id="departamento" name="departamento" aria-describedby="departamento-ajuda">
+                        <option value="">Todos os departamentos</option>
+                        {% for opcao in departamentos %}
+                        <option value="{{ opcao }}"{% if opcao == departamento %} selected{% endif %}>{{ opcao }}</option>
+                        {% endfor %}
+                    </select>
+                    <p class="campo-ajuda" id="departamento-ajuda">Os professores já escolhidos continuam na lista.</p>
+                </div>
+                <button type="submit" class="botao botao-secundario" name="filtrar" value="1">Filtrar</button>
+            </div>
+            {% endif %}
             <div class="selecao-comparacao">
                 {% for selecionado in campos %}
                 <div class="campo">
@@ -127,7 +142,7 @@
                 {% endfor %}
             </div>
             <div class="acoes-comparacao">
-                {% if campos|length < professores|length %}
+                {% if campos|length < total_professores %}
                 <button type="submit" class="botao botao-secundario" name="adicionar" value="1">+ Adicionar professor</button>
                 {% endif %}
                 <button type="submit" class="botao botao-primario" name="comparar" value="1">Comparar</button>

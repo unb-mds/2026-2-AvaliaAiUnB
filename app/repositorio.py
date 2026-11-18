@@ -333,6 +333,45 @@ class ProfessorRepository:
         candidatos.sort(key=lambda c: c[0])
         return [sugestao for _, sugestao in candidatos[:limite]]
 
+    def sugerir_professores(self, termo, limite=LIMITE_SUGESTOES, departamento=''):
+        """Professores para os campos de seleção da comparação (#239):
+        [{id, nome, departamento, disciplinas, casou_disciplina}].
+
+        Casa pelo nome do professor ou pelo nome/código de uma disciplina que ele
+        ministra (ignorando acento, caixa e espaços). Quem casa pelo nome vem antes;
+        depois vale a posição do termo, o mais avaliado e o nome. Com `departamento`,
+        só entram professores daquele departamento. As disciplinas que casaram com o
+        termo vêm primeiro na lista do professor."""
+        termo_n = normalizar_busca(termo)
+        if len(termo_n) < TAMANHO_MINIMO_SUGESTAO or limite < 1:
+            return []
+        departamento_n = normalizar_busca(departamento)
+        candidatos = []
+        for professor, vinculos in self._carregar_catalogo():
+            if departamento_n and normalizar_busca(professor.get('departamento')) != departamento_n:
+                continue
+            posicoes_disciplina = {}
+            for d in vinculos:
+                encontradas = [p for p in (_posicao_do_termo(termo_n, d['codigo']),
+                                           _posicao_do_termo(termo_n, d['nome'])) if p is not None]
+                if encontradas:
+                    posicoes_disciplina[d['id']] = min(encontradas)
+            posicao_nome = _posicao_do_termo(termo_n, professor['nome'])
+            if posicao_nome is None and not posicoes_disciplina:
+                continue
+            grupo, posicao = ((0, posicao_nome) if posicao_nome is not None
+                              else (1, min(posicoes_disciplina.values())))
+            disciplinas = sorted(vinculos, key=lambda d: (d['id'] not in posicoes_disciplina,
+                                                          normalizar_busca(d['nome']), d['id']))
+            candidatos.append(((grupo, posicao, -professor['total_avaliacoes'],
+                                normalizar_busca(professor['nome']), professor['id']),
+                               {'id': professor['id'], 'nome': professor['nome'],
+                                'departamento': professor.get('departamento') or '',
+                                'disciplinas': disciplinas,
+                                'casou_disciplina': grupo == 1}))
+        candidatos.sort(key=lambda c: c[0])
+        return [professor for _, professor in candidatos[:limite]]
+
     def ranking(self, departamento=''):
         colunas = ','.join(('professor_id', *CRITERIOS))
         avaliacoes = _paginar(lambda: self.cliente.table('avaliacoes')

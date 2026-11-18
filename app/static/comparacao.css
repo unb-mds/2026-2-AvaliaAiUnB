@@ -66,6 +66,40 @@ main > form.filtros .selecao-comparacao {
     margin-top: var(--espaco-3);
 }
 
+/* Filtro por departamento do modo livre (#239) */
+.filtro-departamento {
+    flex-basis: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: var(--espaco-2) var(--espaco-3);
+    padding-bottom: var(--espaco-3);
+    margin-bottom: var(--espaco-3);
+    border-bottom: 1px solid var(--cor-divisor-suave);
+}
+
+.filtro-departamento .campo {
+    flex: 1 1 260px;
+    min-width: 0;
+    margin-bottom: 0;
+}
+
+.filtro-departamento .campo select {
+    width: 100%;
+    max-width: 100%;
+}
+
+.filtro-departamento button {
+    margin-top: calc(1.5em + var(--espaco-2));
+}
+
+@media (max-width: 480px) {
+    .filtro-departamento button {
+        width: 100%;
+        margin-top: 0;
+    }
+}
+
 .selecao-comparacao .remover-professor {
     margin-top: var(--espaco-2);
 }
