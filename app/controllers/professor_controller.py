@@ -69,12 +69,20 @@ def catalogo(nome='', disciplina='', departamento='', q=''):
 PROFESSORES_POR_PAGINA = 100   # mesmo tamanho de página usado em lista_professores.html
 
 
-def _professores_da_pagina(itens, pagina_bruta):
-    """Fatia do catálogo exibida na página, com a mesma regra de paginação do template."""
-    total_paginas = max(1, (len(itens) + PROFESSORES_POR_PAGINA - 1) // PROFESSORES_POR_PAGINA)
+def paginar_catalogo(itens, pagina_bruta):
+    """Paginação da Consulta: pagina, total_paginas, total, inicio, fim (índices de fatia)
+    e os `itens` da página. Página ilegível ou fora do intervalo vira a mais próxima."""
+    total = len(itens)
+    total_paginas = max(1, (total + PROFESSORES_POR_PAGINA - 1) // PROFESSORES_POR_PAGINA)
     pagina = min(max(_inteiro_ou_none(pagina_bruta) or 1, 1), total_paginas)
     inicio = (pagina - 1) * PROFESSORES_POR_PAGINA
-    return itens[inicio:inicio + PROFESSORES_POR_PAGINA]
+    fim = min(inicio + PROFESSORES_POR_PAGINA, total)
+    return dict(pagina=pagina, total_paginas=total_paginas, total=total,
+                inicio=inicio, fim=fim, itens=itens[inicio:fim])
+
+
+def _professores_da_pagina(itens, pagina_bruta):
+    return paginar_catalogo(itens, pagina_bruta)['itens']
 
 
 def _texto_avaliacoes(quantidade):
@@ -101,6 +109,7 @@ def dificuldades_da_pagina(itens, pagina_bruta):
                 'valor': valor,
                 'texto_dificuldade': (None if valor is None
                                       else f"Dificuldade {valor:.1f}".replace('.', ',') + '/5'),
+                'quantidade': dado['quantidade'],
                 'texto_avaliacoes': _texto_avaliacoes(dado['quantidade'])}
     return resultado
 

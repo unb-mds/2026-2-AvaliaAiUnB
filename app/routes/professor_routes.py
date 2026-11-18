@@ -49,6 +49,8 @@ def listar():
     filtros = {campo: request.args.get(campo, '').strip() for campo in CAMPOS_FILTRO}
     catalogo = controller.catalogo(**filtros)
     return render_template('lista_professores.html', catalogo=catalogo,
+                           paginacao=controller.paginar_catalogo(
+                               catalogo, request.args.get('pagina')),
                            dificuldades=controller.dificuldades_da_pagina(
                                catalogo, request.args.get('pagina')),
                            filtros=filtros,
