@@ -100,6 +100,28 @@ main > form.filtros .selecao-comparacao {
     }
 }
 
+/* Campo de professor digitável (campo-busca.js): departamento e disciplinas do escolhido */
+.campo-professor input[role="combobox"] {
+    width: 100%;
+}
+
+.professor-escolhido {
+    margin: var(--espaco-1) 0 0;
+    overflow-wrap: anywhere;
+}
+
+.professor-escolhido:empty {
+    display: none;
+}
+
+/* Disciplinas na sugestão: no máximo duas linhas, para a lista não ficar longa */
+.sugestao-disciplinas {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
 .selecao-comparacao .remover-professor {
     margin-top: var(--espaco-2);
 }

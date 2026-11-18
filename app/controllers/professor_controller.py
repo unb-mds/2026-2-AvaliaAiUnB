@@ -314,10 +314,19 @@ def carregar_comparacao(dados):
                   if not departamento or str(p['id']) in campos
                   or normalizar_busca(p.get('departamento')) == pedido]
 
+        # Departamento e disciplinas de cada professor já escolhido, mostrados abaixo do campo.
+        escolhidos = {p: ' · '.join(filter(None, (
+                          todos_professores[p].get('departamento'),
+                          resumir_disciplinas(sorted(
+                              disciplinas_por_professor.get(p, []),
+                              key=lambda d: (normalizar_busca(d['nome']), d['id']))))))
+                      for p in campos if p in todos_professores}
+
         return dict(
             disciplinas=sorted(disciplinas.values(), key=lambda d: (d['nome'] or '', d['id'])),
             disciplina=None,
             professores=opcoes,
+            escolhidos=escolhidos,
             total_professores=len(todos_professores_lista),
             departamentos=departamentos,
             departamento=departamento,

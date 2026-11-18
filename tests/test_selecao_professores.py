@@ -108,6 +108,33 @@ class TestSelecaoProfessores(unittest.TestCase):
         self.assertEqual(resposta.status_code, 200)
         self.assertEqual(self.opcoes_de_professor(resposta.text), {1, 2, 3, 4})
 
+    # ------------------------------------------------------- campo digitável (JS)
+
+    def test_campos_de_professor_apontam_para_a_busca(self):
+        html = self.web.get('/comparar?modo=livre').text
+        self.assertEqual(html.count('class="campo campo-professor" data-busca="/busca/professores"'), 2)
+        self.assertIn('data-placeholder="Nome do professor ou de uma disciplina"', html)
+        self.assertIn('src="/static/campo-busca.js"', html)
+        # Filtrar, adicionar e remover não exigem os campos preenchidos.
+        self.assertIn('name="filtrar" value="1" formnovalidate', html)
+        self.assertIn('name="adicionar" value="1" formnovalidate', html)
+
+    def test_escolhido_mostra_departamento_e_disciplinas(self):
+        html = self.web.get('/comparar?modo=livre&professor=4&professor=').text
+        self.assertIn('id="professor-1-detalhe">DEPARTAMENTO DE MATEMÁTICA · '
+                      'ÁLGEBRA LINEAR (MAT0031), CÁLCULO 2 (MAT0025)</p>', html)
+        self.assertIn('id="professor-2-detalhe"></p>', html)
+        self.assertIn('aria-describedby="professor-1-detalhe"', html)
+
+    def test_script_do_campo_de_professor(self):
+        from pathlib import Path
+        script = (Path(__file__).resolve().parent.parent / 'app' / 'static'
+                  / 'campo-busca.js').read_text(encoding='utf-8')
+        for trecho in ("'.campo-professor'", 'dados.professores', "'data-busca'",
+                       "select[name=\"departamento\"]", 'setCustomValidity', 'Disciplinas: '):
+            self.assertIn(trecho, script)
+        self.assertNotIn('innerHTML', script)
+
     def test_compara_com_filtro_ativo(self):
         resposta = self.web.get(
             '/comparar?modo=livre&departamento=FCTE&professor=1&professor=4&comparar=1')
