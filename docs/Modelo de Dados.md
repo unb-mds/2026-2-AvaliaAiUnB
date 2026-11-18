@@ -213,9 +213,9 @@ que as políticas já foram aplicadas em cada ambiente Supabase.
 A aplicação Flask em `main` ainda cria clientes com `SUPABASE_SERVICE_KEY`.
 O papel `service_role` ignora o RLS, portanto as permissões no código Flask
 continuam essenciais. A adoção da chave pública e de um token de usuário é
-acompanhada nas issues [#124](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/124),
-[#129](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/129) e
-[#130](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/130).
+acompanhada nas issues [#124](https://github.com/unb-mds/2026-2-AvaliaUnB/issues/124),
+[#129](https://github.com/unb-mds/2026-2-AvaliaUnB/issues/129) e
+[#130](https://github.com/unb-mds/2026-2-AvaliaUnB/issues/130).
 
 As políticas atuais da migração são a **base versionada**, não uma comprovação
 de isolamento suficiente: antes de migrar perfis, definir exatamente quais

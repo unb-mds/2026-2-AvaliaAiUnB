@@ -7,9 +7,9 @@ escolher disciplinas e docentes durante a matrícula. É um projeto da disciplin
 **Métodos de Desenvolvimento de Software (MDS/UnB), semestre 2026/2**.
 
 **Comece por aqui:** [site](https://avaliaunb.com.br/) ·
-[documentação oficial](https://unb-mds.github.io/2026-2-AvaliaAiUnB/) ·
+[documentação oficial](https://unb-mds.github.io/2026-2-AvaliaUnB/) ·
 [documento de visão](docs/DOCUMENTO_DE_VISAO.md) ·
-[issues do projeto](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues)
+[issues do projeto](https://github.com/unb-mds/2026-2-AvaliaUnB/issues)
 
 ## Sumário
 
@@ -78,7 +78,7 @@ no AvaliaUnb é criada automaticamente no primeiro acesso.
 | Execução em contêiner | Docker Compose e Gunicorn |
 | Documentação | MkDocs Material e GitHub Pages |
 | Testes e qualidade | unittest, pip-audit e Bandit |
-| Deploy | Configuração para Vercel adicionada no [PR #131](https://github.com/unb-mds/2026-2-AvaliaAiUnB/pull/131) |
+| Deploy | Configuração para Vercel adicionada no [PR #131](https://github.com/unb-mds/2026-2-AvaliaUnB/pull/131) |
 
 ### Backend
 
@@ -102,8 +102,8 @@ disciplina no SIGAA. Consulte o
 As páginas são renderizadas no servidor a partir de `app/templates/`, com
 recursos em `app/static/`. O design system e a aplicação do visual final estão
 acompanhados nas issues
-[#112](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/112) e
-[#114](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/114).
+[#112](https://github.com/unb-mds/2026-2-AvaliaUnB/issues/112) e
+[#114](https://github.com/unb-mds/2026-2-AvaliaUnB/issues/114).
 
 O [guia do frontend](docs/FRONTEND.md) inventaria as telas, os estilos e os
 estados existentes e explica como contribuir. As definições finais de cores,
@@ -116,8 +116,8 @@ tipografia e componentes serão incorporadas quando a #112 for consolidada.
 Use Python 3.11 ou superior e execute:
 
 ```bash
-git clone https://github.com/unb-mds/2026-2-AvaliaAiUnB.git
-cd 2026-2-AvaliaAiUnB
+git clone https://github.com/unb-mds/2026-2-AvaliaUnB.git
+cd 2026-2-AvaliaUnB
 python -m venv .venv
 ```
 
@@ -148,7 +148,7 @@ python run.py
 
 Acesse `http://127.0.0.1:5000`. O [guia do scraper](docs/COMO_USAR_SCRAPER.md)
 cobre o preparo do banco e a coleta. O esquema inicial passou a incluir RLS
-e políticas de acesso na [#123](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/123).
+e políticas de acesso na [#123](https://github.com/unb-mds/2026-2-AvaliaUnB/issues/123).
 
 ### Docker
 
@@ -182,22 +182,22 @@ exclusão confere o autor da avaliação no backend.
 A [auditoria de 02/11/2026](docs/AUDITORIA_SEGURANCA.md)
 foi concluída na #111. O relatório registra um achado de prioridade alta,
 três de prioridade média e oito de prioridade baixa, sem achados críticos.
-O [PR #139](https://github.com/unb-mds/2026-2-AvaliaAiUnB/pull/139)
+O [PR #139](https://github.com/unb-mds/2026-2-AvaliaUnB/pull/139)
 versionou RLS e políticas no esquema inicial. A aplicação ainda usa a chave
 de serviço. As mudanças seguintes estão nas issues
-[#124](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/124),
-[#125](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/125),
-[#126](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/126),
-[#127](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/127),
-[#129](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/129) e
-[#130](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/130).
+[#124](https://github.com/unb-mds/2026-2-AvaliaUnB/issues/124),
+[#125](https://github.com/unb-mds/2026-2-AvaliaUnB/issues/125),
+[#126](https://github.com/unb-mds/2026-2-AvaliaUnB/issues/126),
+[#127](https://github.com/unb-mds/2026-2-AvaliaUnB/issues/127),
+[#129](https://github.com/unb-mds/2026-2-AvaliaUnB/issues/129) e
+[#130](https://github.com/unb-mds/2026-2-AvaliaUnB/issues/130).
 A conclusão da auditoria não significa que essas correções já foram aplicadas.
 O [resumo de cibersegurança](docs/CIBERSEGURANCA.md) relaciona os mecanismos do
 código, a situação do RLS e os resultados da auditoria com cada correção.
 
 Comentários e moderação têm uma [especificação](docs/COMENTARIOS.md),
 baseada na #109, para revisão do grupo na
-[#116](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/116).
+[#116](https://github.com/unb-mds/2026-2-AvaliaUnB/issues/116).
 Já estão implementados no perfil do professor (#167): listar os comentários
 (mais recentes primeiro, 50 por vez), filtrar por disciplina, publicar, editar e
 excluir o próprio comentário. O comentário mostra só o nome de usuário, nunca o
@@ -232,7 +232,7 @@ Na `main`, o workflow de documentação publica as mudanças em `docs/` ou
 
 ## Como contribuir
 
-1. Escolha uma [issue](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues)
+1. Escolha uma [issue](https://github.com/unb-mds/2026-2-AvaliaUnB/issues)
    e alinhe o escopo com os responsáveis.
 2. Crie uma branch a partir da `main` atualizada para a mudança.
 3. Use mensagens de commit que indiquem a alteração, como
@@ -257,4 +257,4 @@ Projeto desenvolvido no contexto da disciplina **Métodos de Desenvolvimento
 de Software da Universidade de Brasília**, no semestre **2026/2**.
 
 Os integrantes e suas contribuições podem ser consultados no
-[histórico de contribuições](https://github.com/unb-mds/2026-2-AvaliaAiUnB/graphs/contributors).
+[histórico de contribuições](https://github.com/unb-mds/2026-2-AvaliaUnB/graphs/contributors).

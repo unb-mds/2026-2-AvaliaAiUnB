@@ -2,7 +2,7 @@
 
 Este guia detalha as funcionalidades já disponíveis na `main`. O resumo das
 entregas e do planejamento fica no
-[README](https://github.com/unb-mds/2026-2-AvaliaAiUnB#funcionalidades-e-releases).
+[README](https://github.com/unb-mds/2026-2-AvaliaUnB#funcionalidades-e-releases).
 
 - **Política de Privacidade e Termos de Uso (`/privacidade`)**: página pública acessível pelo rodapé que descreve em linguagem simples os dados armazenados pelo AvaliaUnB (e-mail, nome de usuário, avaliações, comentários e formulário de feedback), as regras contra ofensas e avaliações falsas, e o canal de contato para solicitar a exclusão de dados em conformidade com a LGPD. Documentação detalhada em `docs/POLITICA-DE-PRIVACIDADE.md`.
 
@@ -129,7 +129,7 @@ A [proposta de banco para comentários](Modelo%20de%20Dados.md#6-proposta-tabela
 já está publicada. A [especificação](COMENTARIOS.md) reúne nome de usuário
 visível, reações, filtro e denúncias; o que ainda é proposta está indicado nela.
 A proposta começou na
-[issue #116](https://github.com/unb-mds/2026-2-AvaliaAiUnB/issues/116).
+[issue #116](https://github.com/unb-mds/2026-2-AvaliaUnB/issues/116).
 
 Relacionado: [visão e requisitos](DOCUMENTO_DE_VISAO.md), [backend](BACKEND.md),
 [frontend](FRONTEND.md) e [mapa da documentação](GUIA_DOCUMENTACAO.md).
