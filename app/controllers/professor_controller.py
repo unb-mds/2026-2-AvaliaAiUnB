@@ -1,8 +1,8 @@
 """Lógica de professores e avaliações: resolve o que as rotas exibem e registra avaliações."""
-from flask import abort, current_app, request
+from flask import abort, current_app, request, url_for
 
-from app.repositorio import (LIMITE_COMENTARIOS, MINIMO_AVALIACOES_RANKING,
-                             ComentarioRepository, repositorios)
+from app.repositorio import (LIMITE_COMENTARIOS, LIMITE_SUGESTOES, MAXIMO_SUGESTOES,
+                             MINIMO_AVALIACOES_RANKING, ComentarioRepository, repositorios)
 from app.validacoes import CRITERIOS, validar_avaliacao, validar_comentario
 
 
@@ -10,9 +10,44 @@ def criterios():
     return CRITERIOS
 
 
-def catalogo(nome='', disciplina='', departamento=''):
-    """Lista [(professor, disciplinas)] ordenada pela quantidade de avaliações."""
-    return repositorios().professores.catalogo(nome, disciplina, departamento)
+def catalogo(nome='', disciplina='', departamento='', q=''):
+    """Lista [(professor, disciplinas)] ordenada pela quantidade de avaliações.
+    `q` é a busca unificada (professor, disciplina ou departamento)."""
+    return repositorios().professores.catalogo(nome, disciplina, departamento, termo=q)
+
+
+ROTULOS_TIPO = {'professor': 'Professor', 'disciplina': 'Disciplina',
+                'departamento': 'Departamento'}
+# Contextos da busca unificada: tipos sugeridos e para onde cada sugestão leva.
+CONTEXTOS_BUSCA = {
+    'consulta': ('professor', 'disciplina', 'departamento'),
+    'comparacao': ('professor', 'disciplina'),
+}
+
+
+def _url_da_sugestao(sugestao, contexto):
+    tipo, valor = sugestao['tipo'], sugestao['id']
+    if contexto == 'comparacao':
+        campo = 'professor_1' if tipo == 'professor' else 'disciplina_id'
+        return url_for('professores.comparar', **{campo: valor})
+    if tipo == 'professor':
+        return url_for('professores.perfil', professor_id=valor)
+    if tipo == 'disciplina':
+        return url_for('professores.listar', disciplina=sugestao['detalhe'] or sugestao['texto'])
+    return url_for('professores.listar', departamento=valor)
+
+
+def sugestoes(termo, limite_bruto=None, contexto_bruto=None):
+    """Sugestões da busca unificada prontas para o JSON: cada uma com tipo, rótulo do
+    tipo, texto, detalhe e a URL de destino no contexto (Consulta ou Comparação)."""
+    contexto = contexto_bruto if contexto_bruto in CONTEXTOS_BUSCA else 'consulta'
+    limite = _inteiro_ou_none(limite_bruto)
+    limite = LIMITE_SUGESTOES if limite is None else max(1, min(limite, MAXIMO_SUGESTOES))
+    encontradas = repositorios().professores.sugerir(
+        (termo or '')[:100], limite, CONTEXTOS_BUSCA[contexto])
+    return [{'tipo': s['tipo'], 'tipo_rotulo': ROTULOS_TIPO[s['tipo']], 'texto': s['texto'],
+             'detalhe': s['detalhe'], 'url': _url_da_sugestao(s, contexto)}
+            for s in encontradas]
 
 
 def departamentos():

@@ -4,11 +4,12 @@ from flask import Blueprint, abort, jsonify, redirect, render_template, request,
 from app.controllers import professor_controller as controller
 from app.controllers.session_controller import (login_required, obter_usuario_atual,
                                                 sanitizar_destino)
-from app.seguranca import limitar_avaliacao, limitar_comentario, is_safe_url
+from app.seguranca import (is_safe_url, limitar_avaliacao, limitar_comentario,
+                           limitar_sugestoes)
 
 professor_bp = Blueprint('professores', __name__)
 
-CAMPOS_FILTRO = ('nome', 'disciplina', 'departamento')
+CAMPOS_FILTRO = ('nome', 'disciplina', 'departamento', 'q')
 
 
 @professor_bp.get('/comparar')
@@ -16,6 +17,17 @@ def comparar():
     contexto = controller.carregar_comparacao(request.args)
     return render_template('comparacao.html', **contexto,
                            usuario=obter_usuario_atual()), 400 if contexto['erros'] else 200
+
+
+@professor_bp.get('/busca/sugestoes')
+@limitar_sugestoes
+def sugestoes():
+    """Autocompletar da busca unificada (JSON): professores, disciplinas e departamentos."""
+    return jsonify({'sugestoes': controller.sugestoes(request.args.get('q', ''),
+                                                      request.args.get('limite'),
+                                                      request.args.get('contexto'))})
+
+
 @professor_bp.get('/ranking')
 def ranking():
     professores, minimo_avaliacoes = controller.carregar_ranking()

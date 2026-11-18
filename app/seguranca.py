@@ -63,6 +63,8 @@ limitar_avaliacao = limiter.limit("20 per hour", key_func=chave_usuario_ou_ip,
 # Escopo próprio: o contador de comentários não se mistura com o das avaliações.
 limitar_comentario = limiter.limit("10 per hour", key_func=chave_usuario_ou_ip,
                                    methods=["POST"], scope="comentario")
+# Autocompletar: uma requisição por tecla (com espera no cliente); folga para digitação.
+limitar_sugestoes = limiter.limit("120 per minute", scope="sugestoes")
 
 # --------------------------------------------------------------------------- configuração
 def _verdadeiro(valor):

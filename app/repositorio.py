@@ -29,6 +29,27 @@ TAMANHO_PAGINA = 1000          # limite padrão de linhas por requisição do Po
 VALIDADE_CATALOGO = 300        # segundos de cache da listagem completa
 MINIMO_AVALIACOES_RANKING = 5
 CRITERIOS_RANKING = tuple(c for c in CRITERIOS if c != 'dificuldade')
+LIMITE_SUGESTOES = 8           # sugestões da busca unificada por padrão
+MAXIMO_SUGESTOES = 20          # teto aceito no parâmetro `limite`
+TAMANHO_MINIMO_SUGESTAO = 2    # caracteres (já normalizados) para começar a sugerir
+TIPOS_SUGESTAO = ('professor', 'disciplina', 'departamento')
+
+
+def _posicao_do_termo(termo_n, texto):
+    """Quão bem `texto` casa com o termo já normalizado: 0 = começa com ele,
+    1 = alguma palavra começa com ele, 2 = contém no meio, None = não casa."""
+    texto_n = normalizar_busca(texto)
+    if not termo_n or termo_n not in texto_n:
+        return None
+    if texto_n.startswith(termo_n):
+        return 0
+    palavras = re.split(r'[\s\-/()]+', str(texto or ''))
+    return 1 if any(normalizar_busca(p).startswith(termo_n) for p in palavras) else 2
+
+
+def _alguma_disciplina_casa(termo_n, disciplinas):
+    return any(termo_n in normalizar_busca(d['nome']) or termo_n in normalizar_busca(d['codigo'])
+               for d in disciplinas)
 
 
 def _paginar(montar_consulta):
@@ -240,23 +261,72 @@ class ProfessorRepository:
                 unicos.setdefault(normalizar_busca(departamento), departamento)
         return [unicos[chave] for chave in sorted(unicos)]
 
-    def catalogo(self, nome='', disciplina='', departamento=''):
+    def catalogo(self, nome='', disciplina='', departamento='', termo=''):
         """[(professor, disciplinas)] filtrado sem distinguir acento/caixa/espaços,
-        ordenado do mais avaliado para o menos avaliado (desempate: nome)."""
+        ordenado do mais avaliado para o menos avaliado (desempate: nome).
+        `termo` é a busca unificada: casa com o nome do professor, o departamento
+        ou o nome/código de alguma disciplina."""
         nome_n, disciplina_n = normalizar_busca(nome), normalizar_busca(disciplina)
-        departamento_n = normalizar_busca(departamento)
+        departamento_n, termo_n = normalizar_busca(departamento), normalizar_busca(termo)
         resultado = []
         for professor, disciplinas in self._carregar_catalogo():
             if departamento_n and normalizar_busca(professor.get('departamento')) != departamento_n:
                 continue
             if nome_n not in normalizar_busca(professor['nome']):
                 continue
-            if disciplina_n and not any(
-                    disciplina_n in normalizar_busca(d['nome'])
-                    or disciplina_n in normalizar_busca(d['codigo']) for d in disciplinas):
+            if disciplina_n and not _alguma_disciplina_casa(disciplina_n, disciplinas):
+                continue
+            if termo_n and not (termo_n in normalizar_busca(professor['nome'])
+                                or termo_n in normalizar_busca(professor.get('departamento'))
+                                or _alguma_disciplina_casa(termo_n, disciplinas)):
                 continue
             resultado.append((professor, disciplinas))
         return sorted(resultado, key=lambda i: (-i[0]['total_avaliacoes'], i[0]['nome'] or '', i[0]['id']))
+
+    def sugerir(self, termo, limite=LIMITE_SUGESTOES, tipos=TIPOS_SUGESTAO):
+        """Sugestões da busca unificada: [{tipo, id, texto, detalhe}].
+
+        Ignora acentos, caixa e espaços. Quem começa com o termo vem antes de quem só o
+        contém no meio; entre professores, o mais avaliado primeiro. Termos com menos de
+        TAMANHO_MINIMO_SUGESTAO caracteres não geram sugestões."""
+        termo_n = normalizar_busca(termo)
+        if len(termo_n) < TAMANHO_MINIMO_SUGESTAO or limite < 1:
+            return []
+        candidatos = []  # (chave de ordenação, sugestão)
+        disciplinas, departamentos = {}, {}
+        for professor, vinculos in self._carregar_catalogo():
+            if 'professor' in tipos:
+                posicao = _posicao_do_termo(termo_n, professor['nome'])
+                if posicao is not None:
+                    candidatos.append(((posicao, 0, -professor['total_avaliacoes'],
+                                        normalizar_busca(professor['nome']), professor['id']),
+                                       {'tipo': 'professor', 'id': professor['id'],
+                                        'texto': professor['nome'],
+                                        'detalhe': professor.get('departamento') or ''}))
+            for d in vinculos:
+                disciplinas.setdefault(d['id'], d)
+            departamento = (professor.get('departamento') or '').strip()
+            if departamento:
+                chave = normalizar_busca(departamento)
+                departamentos.setdefault(chave, [departamento, 0])[1] += 1
+        if 'disciplina' in tipos:
+            for d in disciplinas.values():
+                posicoes = [p for p in (_posicao_do_termo(termo_n, d['codigo']),
+                                        _posicao_do_termo(termo_n, d['nome'])) if p is not None]
+                if posicoes:
+                    candidatos.append(((min(posicoes), 1, 0, normalizar_busca(d['nome']), d['id']),
+                                       {'tipo': 'disciplina', 'id': d['id'], 'texto': d['nome'],
+                                        'detalhe': d['codigo'] or ''}))
+        if 'departamento' in tipos:
+            for chave, (departamento, total) in departamentos.items():
+                posicao = _posicao_do_termo(termo_n, departamento)
+                if posicao is not None:
+                    candidatos.append(((posicao, 2, -total, chave, 0),
+                                       {'tipo': 'departamento', 'id': departamento,
+                                        'texto': departamento,
+                                        'detalhe': f"{total} {'professor' if total == 1 else 'professores'}"}))
+        candidatos.sort(key=lambda c: c[0])
+        return [sugestao for _, sugestao in candidatos[:limite]]
 
     def ranking(self):
         colunas = ','.join(('professor_id', *CRITERIOS))

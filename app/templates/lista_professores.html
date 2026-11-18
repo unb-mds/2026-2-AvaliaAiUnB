@@ -113,19 +113,19 @@
         {% if total_paginas > 1 %}
         <nav class="paginacao" aria-label="Paginação">
             {% if pagina > 1 %}
-            <a class="botao botao-secundario" rel="prev" href="{{ url_for('professores.listar', nome=filtros.nome, disciplina=filtros.disciplina, departamento=filtros.departamento, pagina=pagina - 1) }}">Anterior</a>
+            <a class="botao botao-secundario" rel="prev" href="{{ url_for('professores.listar', nome=filtros.nome, disciplina=filtros.disciplina, departamento=filtros.departamento, q=filtros.q, pagina=pagina - 1) }}">Anterior</a>
             {% else %}
             <span class="botao botao-secundario" aria-disabled="true">Anterior</span>
             {% endif %}
             <span class="paginacao-posicao" aria-current="page">Página {{ pagina }} de {{ total_paginas }}</span>
             {% if pagina < total_paginas %}
-            <a class="botao botao-secundario" rel="next" href="{{ url_for('professores.listar', nome=filtros.nome, disciplina=filtros.disciplina, departamento=filtros.departamento, pagina=pagina + 1) }}">Próxima</a>
+            <a class="botao botao-secundario" rel="next" href="{{ url_for('professores.listar', nome=filtros.nome, disciplina=filtros.disciplina, departamento=filtros.departamento, q=filtros.q, pagina=pagina + 1) }}">Próxima</a>
             {% else %}
             <span class="botao botao-secundario" aria-disabled="true">Próxima</span>
             {% endif %}
         </nav>
         {% endif %}
-        {% elif filtros.nome or filtros.disciplina or filtros.departamento %}
+        {% elif filtros.nome or filtros.disciplina or filtros.departamento or filtros.q %}
         <p class="mensagem" role="status">Nenhum professor encontrado para os filtros informados.
             <a href="{{ url_for('professores.listar') }}">Limpar filtros</a></p>
         {% else %}
