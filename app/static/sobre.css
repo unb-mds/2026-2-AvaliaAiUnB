@@ -118,28 +118,3 @@ h1 {
     margin: 0;
     padding-left: var(--espaco-5);
 }
-.sobre-secao .sobre-acoes {
-    margin-top: var(--espaco-4);
-}
-
-.link-repositorio {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--espaco-2);
-    box-sizing: border-box;
-    max-width: 100%;
-    padding: var(--espaco-2) var(--espaco-4);
-    border: 1px solid var(--cor-principal);
-    border-radius: var(--raio-card);
-    background-color: var(--cor-principal-suave);
-    color: var(--cor-principal);
-    font-weight: 600;
-    text-decoration: none;
-    transition: opacity 0.15s ease;
-}
-
-.link-repositorio:hover,
-.link-repositorio:focus-visible {
-    opacity: 0.85;
-    text-decoration: underline;
-}

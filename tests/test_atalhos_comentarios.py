@@ -32,7 +32,7 @@ class TestAtalhoNoPerfil(BaseAtalhos):
     def test_visitante_ve_o_link_para_a_secao_de_comentarios(self):
         html = self.web.get('/professores/1').get_data(as_text=True)
 
-        self.assertIn('<p class="atalho-comentarios"><a href="#comentarios">Comentários</a></p>', html)
+        self.assertIn('<a class="btn ghost atalho-comentarios" href="#comentarios">Comentários</a>', html)
         self.assertEqual(html.count('id="comentarios"'), 1)   # o alvo da âncora existe
         self.assertLess(html.index('atalho-comentarios'), html.index('id="comentarios"'))
 
@@ -44,7 +44,7 @@ class TestAtalhoNoPerfil(BaseAtalhos):
 
     def test_link_nao_mostra_contagem(self):
         html = self.web.get('/professores/1').get_data(as_text=True)
-        link = re.search(r'<p class="atalho-comentarios">(.*?)</p>', html, re.S).group(1)
+        link = re.search(r'class="btn ghost atalho-comentarios"[^>]*>(.*?)</a>', html, re.S).group(1)
 
         self.assertNotRegex(link, r'\d')
 

@@ -1,140 +1,36 @@
+{% from '_macros.html' import nota %}
 <!DOCTYPE html>
-
 <html lang="pt-BR">
-
-<head>
-
-    <meta charset="UTF-8">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <title>Ranking de Professores - AvaliaUnb</title>
-
-    <link rel="stylesheet" href="{{ url_for('static', filename='indicadores.css') }}">
-
-    <link rel="stylesheet" href="{{ url_for('static', filename='ranking.css') }}">
-
-    {% include '_tema.html' %}
-</head>
-
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Ranking de Professores - AvaliaUnb</title>{% include '_tema.html' %}</head>
 <body>
-
     {% include '_topo.html' %}
-    <canvas class="fundo-animado" data-densidade="leve" aria-hidden="true"></canvas>
-
-    <main>
-
-        <p class="voltar"><a href="{{ url_for('professores.listar') }}">&larr; Consultar professores</a></p>
-
-        <p class="selo">Ranking</p>
-        <h1>Ranking de Professores</h1>
-
-        <p class="ajuda">
-
-            Professores com pelo menos {{ minimo_avaliacoes }} avaliações válidas, ordenados pela média geral.
-
-            Cada avaliação tem o mesmo peso, considerando todas as disciplinas e períodos.
-
-        </p>
-
-        <p class="ajuda">
-
-            A média vai de 1 a 5 e considera didática, clareza, organização e disponibilidade.
-
-            Dificuldade não entra na média, pois indica o grau de exigência da disciplina.
-
-            Empates são resolvidos pela maior quantidade de avaliações e depois pelo nome.
-
-        </p>
-
-        <form method="get" action="{{ url_for('professores.ranking') }}" class="filtros filtro-ranking card">
-            <div class="campo">
-                <label for="departamento">Departamento</label>
-                <select id="departamento" name="departamento">
-                    <option value="">Todos os departamentos (geral)</option>
-                    {% for dep in departamentos %}
-                    <option value="{{ dep }}"{% if dep == departamento_selecionado %} selected{% endif %}>{{ dep }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="acoes-filtro-ranking">
-                <button type="submit" class="botao botao-primario">Filtrar</button>
-                {% if departamento_selecionado %}
-                <a href="{{ url_for('professores.ranking') }}" class="botao botao-secundario">Ver ranking geral</a>
-                {% endif %}
-            </div>
+    <main class="shell view page" id="conteudo">
+        <div class="eyebrow">Visão geral</div>
+        <h1 class="page-title">Ranking de professores<span class="accent">.</span></h1>
+        <p class="page-lead">Veja os professores em ordem de nota média. O ranking considera pelo menos {{ minimo_avaliacoes }} avaliações válidas para oferecer comparações mais justas.</p>
+        <form method="get" action="{{ url_for('professores.ranking') }}" class="filtro-ranking filtros">
+            <div class="campo"><label for="departamento">Departamento</label><select id="departamento" name="departamento" class="selector"><option value="">Todos os departamentos (geral)</option>{% for dep in departamentos %}<option value="{{ dep }}"{% if dep == departamento_selecionado %} selected{% endif %}>{{ dep }}</option>{% endfor %}</select></div>
+            <button class="btn" type="submit">Filtrar</button>
+            {% if departamento_selecionado %}<a class="text-link" href="{{ url_for('professores.ranking') }}">Ver ranking geral</a>{% endif %}
         </form>
-
+        <details class="ranking-rules"><summary>Como o ranking é calculado</summary><p>Professores com pelo menos {{ minimo_avaliacoes }} avaliações válidas, ordenados pela média geral. Cada avaliação tem o mesmo peso, considerando todas as disciplinas e períodos.</p><p>A média vai de 1 a 5 e considera didática, clareza, organização e disponibilidade. Dificuldade não entra na média, pois indica o grau de exigência da disciplina. Empates são resolvidos pela maior quantidade de avaliações e depois pelo nome.</p></details>
         {% if ranking %}
-
-        <div class="tabela-ranking-container" role="region" aria-label="Classificação dos professores" tabindex="0">
-
-            <table class="tabela-ranking">
-
-                <caption>Classificação {% if departamento_selecionado %}do departamento {{ departamento_selecionado }}{% else %}geral dos professores{% endif %}</caption>
-
-                <thead>
-
-                    <tr>
-
-                        <th scope="col">Posição</th>
-
-                        <th scope="col">Professor</th>
-
-                        <th scope="col">Média geral</th>
-
-                        <th scope="col">Avaliações</th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    {% for professor in ranking %}
-
-                    <tr>
-
-                        <td><span class="posicao{% if professor.posicao <= 3 %} posicao-{{ professor.posicao }}{% endif %}">{{ professor.posicao }}º</span></td>
-
-                        <th scope="row">
-
-                            <a href="{{ url_for('professores.perfil', professor_id=professor.id) }}">{{ professor.nome }}</a>
-
-                            {% if professor.departamento %}<span class="ajuda departamento-ranking">{{ professor.departamento }}</span>{% endif %}
-
-                        </th>
-
-                        <td class="nota-ranking">{{ ('%.2f'|format(professor.media))|replace('.', ',') }} / 5</td>
-
-                        <td>{{ professor.quantidade }}</td>
-
-                    </tr>
-
-                    {% endfor %}
-
-                </tbody>
-
-            </table>
-
-        </div>
-
+        <ol class="ranking" aria-label="Classificação {% if departamento_selecionado %}do departamento {{ departamento_selecionado }}{% else %}geral dos professores{% endif %}">
+            {% for professor in ranking %}
+            <li><a class="rankrow" href="{{ url_for('professores.perfil', professor_id=professor.id) }}">
+                <span class="rankno{% if professor.posicao == 1 %} first{% endif %}" aria-label="Posição {{ professor.posicao }}º lugar">{{ '%02d'|format(professor.posicao) }}</span>
+                <span class="avatar" aria-hidden="true">{% for parte in professor.nome.split()[:2] %}{{ parte[0] }}{% endfor %}</span>
+                <span class="rankname"><strong>{{ professor.nome }}</strong><span>{{ professor.departamento }}</span></span>
+                <span class="rankstar" aria-label="Média geral {{ ('%.2f'|format(professor.media))|replace('.', ',') }} / 5"><span class="accent" aria-hidden="true">★</span> {{ ('%.2f'|format(professor.media))|replace('.', ',') }} <span class="sr-only">/ 5</span></span>
+                <span class="rankcount" aria-label="Avaliações: {{ professor.quantidade }}">{{ professor.quantidade }} avaliações</span>
+            </a></li>
+            {% endfor %}
+        </ol>
         {% else %}
-
-        <p class="mensagem" role="status">Ainda não há professores{% if departamento_selecionado %} no departamento {{ departamento_selecionado }}{% endif %} com pelo menos {{ minimo_avaliacoes }} avaliações válidas para o ranking.</p>
-
-        {% if departamento_selecionado %}
-        <p><a href="{{ url_for('professores.ranking') }}">Ver ranking geral de todos os departamentos.</a></p>
-        {% else %}
-        <p><a href="{{ url_for('professores.listar') }}">Consulte os professores e contribua com sua avaliação.</a></p>
+        <p class="empty mensagem" role="status">Ainda não há professores{% if departamento_selecionado %} no departamento {{ departamento_selecionado }}{% endif %} com pelo menos {{ minimo_avaliacoes }} avaliações válidas para o ranking.</p>
+        {% if departamento_selecionado %}<a class="text-link" href="{{ url_for('professores.ranking') }}">Ver ranking geral de todos os departamentos.</a>{% else %}<a class="text-link" href="{{ url_for('professores.listar') }}">Consulte os professores e contribua com sua avaliação.</a>{% endif %}
         {% endif %}
-
-        {% endif %}
-
     </main>
     {% include '_rodape.html' %}
-    <script src="{{ url_for('static', filename='fundo-animado.js') }}" defer></script>
-
 </body>
-
 </html>

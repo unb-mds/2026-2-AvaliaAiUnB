@@ -1,56 +1,52 @@
+{% from '_macros.html' import nota, simbolo_logo %}
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AvaliaUnb - Início</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AvaliaUnb — O próximo semestre começa aqui</title>
     {% include '_tema.html' %}
 </head>
 <body>
     {% include '_topo.html' %}
-    <canvas class="fundo-animado" data-densidade="normal" aria-hidden="true"></canvas>
-
-    <main class="conteudo">
-        <header class="cabecalho-pagina hero">
-            {% if usuario %}
-            <p class="selo saudacao">Olá, {{ usuario.nome }}!</p>
-            {% else %}
-            <p class="selo">Avaliações de professores da UnB</p>
-            {% endif %}
-            <h1>Bem-vindo ao AvaliaUnb</h1>
-            <p class="apresentacao">A plataforma para consulta e avaliação de professores e disciplinas da UnB.</p>
-
-            <form class="busca-home" method="get" action="{{ url_for('professores.listar') }}" role="search">
-                <label class="sr-only" for="busca-nome">Nome do professor</label>
-                <input type="search" id="busca-nome" name="nome" placeholder="Digite o nome do professor">
-                <button type="submit" class="botao botao-primario">Buscar</button>
-            </form>
-        </header>
-
-        <nav class="acoes" aria-label="Acesso rápido">
-            <a href="{{ url_for('professores.ranking') }}" class="acao">
-                <svg class="acao-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-                    <path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4Z"></path>
-                    <path d="M7 6H4v2a3 3 0 0 0 3 3M17 6h3v2a3 3 0 0 1-3 3"></path>
-                </svg>
-                <span class="acao-titulo">Ranking de Professores</span>
-                <span class="acao-texto">Confira os professores mais bem avaliados.</span>
-            </a>
-            <a href="{{ url_for('professores.comparar') }}" class="acao">
-                <svg class="acao-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-                    <path d="M8 3 4 7l4 4"></path>
-                    <path d="M4 7h16"></path>
-                    <path d="m16 21 4-4-4-4"></path>
-                    <path d="M20 17H4"></path>
-                </svg>
-                <span class="acao-titulo">Comparar Professores</span>
-                <span class="acao-texto">Compare as notas de professores da mesma disciplina.</span>
-            </a>
-        </nav>
+    <main class="shell view" id="conteudo">
+        <section class="hero">
+            <div class="hero-copy">
+                <div class="hero-watermark" aria-hidden="true">{{ simbolo_logo('art-logo standalone') }}</div>
+                <h1>Seu próximo semestre começa com <span>boas escolhas.</span></h1>
+                <p>Pesquise professores, descubra experiências de outros estudantes e escolha com mais confiança. Tudo em um só lugar.</p>
+                <form class="search busca-home" role="search" method="get" action="{{ url_for('professores.listar') }}">
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="10.5" cy="10.5" r="7.5"/><path d="m16 16 5 5"/></svg>
+                    <label class="sr-only" for="busca-nome">Nome do professor</label>
+                    <input type="search" id="busca-nome" name="nome" placeholder="Qual professor você procura?">
+                    <button type="submit" class="btn">Pesquisar ↗</button>
+                </form>
+                <div class="hero-hint">Explore por nome, disciplina ou departamento.</div>
+            </div>
+        </section>
+        <section class="section" aria-labelledby="explore-titulo">
+            <div class="section-head"><div><div class="eyebrow">Seu espaço</div><h2 id="explore-titulo">Encontre o que importa.</h2></div><p class="section-sub">Um caminho mais simples para descobrir professores e comparar experiências acadêmicas.</p></div>
+            <div class="feature-grid">
+                <a class="feature major" href="{{ url_for('professores.listar') }}"><div><div class="eyebrow accent">01 / EXPLORAR</div><h3>Descubra professores<br>com mais clareza.</h3><p>Pesquise por nome, área ou disciplina e veja avaliações organizadas em uma interface feita para estudantes.</p></div><span class="arrow" aria-hidden="true">↗</span><div class="feature-mark" aria-hidden="true">01</div></a>
+                <div class="feature-minor">
+                    <a class="feature" href="{{ url_for('professores.ranking') }}"><div><div class="eyebrow accent">02 / RANKING</div><h3>As experiências falam.</h3><p>Explore as avaliações mais bem classificadas.</p></div><span class="arrow" aria-hidden="true">↗</span></a>
+                    <a class="feature" href="{{ url_for('professores.comparar') }}"><div><div class="eyebrow accent">03 / COMPARAR</div><h3>Compare antes de escolher.</h3><p>Informações lado a lado, sem complicação.</p></div><span class="arrow" aria-hidden="true">↗</span></a>
+                </div>
+            </div>
+        </section>
+        <section class="section" aria-labelledby="destaques-titulo">
+            <div class="section-head"><div><div class="eyebrow">Professores em destaque</div><h2 id="destaques-titulo">Explore outras perspectivas.</h2></div><a class="text-link" href="{{ url_for('professores.listar') }}">Ver todos os professores ↗</a></div>
+            {% if destaques %}<div class="teacher-grid">
+                {% for professor in destaques %}
+                <article class="teacher">
+                    <div class="teacher-head"><div class="avatar" aria-hidden="true">{% for parte in professor.nome.split()[:2] %}{{ parte[0] }}{% endfor %}</div><div class="score"><span class="accent" aria-hidden="true">★</span>{{ nota(professor.media) }}</div></div>
+                    <h3><a href="{{ url_for('professores.perfil', professor_id=professor.id) }}">{{ professor.nome }}</a></h3>
+                    <p>{{ professor.departamento }}</p>
+                    <div class="teacher-foot"><span>{{ professor.quantidade }} avaliações</span><a href="{{ url_for('professores.perfil', professor_id=professor.id) }}">Ver perfil ↗</a></div>
+                </article>
+                {% endfor %}
+            </div>{% elif destaques is none %}<p class="empty">Os destaques estão temporariamente indisponíveis.</p>{% else %}<p class="empty">Os destaques aparecem quando houver professores com avaliações.</p>{% endif %}
+        </section>
     </main>
     {% include '_rodape.html' %}
-    <script src="{{ url_for('static', filename='fundo-animado.js') }}" defer></script>
 </body>
 </html>

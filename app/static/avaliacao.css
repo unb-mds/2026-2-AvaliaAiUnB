@@ -204,23 +204,6 @@ h1 {
     }
 }
 
-/* Convite para comentar: discreto, abaixo dos botões */
-.convite-comentario {
-    margin: var(--espaco-4) 0 0;
-    color: var(--cor-texto-secundario);
-    font-size: var(--texto-pequeno);
-}
-
-.convite-comentario a {
-    color: var(--cor-principal);
-    font-weight: 700;
-    text-underline-offset: 3px;
-}
-
-.convite-comentario a:hover {
-    color: var(--cor-principal-hover);
-}
-
 @media (prefers-reduced-motion: reduce) {
     .notas-opcoes label {
         transition: none;

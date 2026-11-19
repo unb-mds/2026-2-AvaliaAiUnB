@@ -24,30 +24,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Professores - AvaliaUnb</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='indicadores.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='lista_professores.css') }}">
     {% include '_tema.html' %}
 </head>
 <body>
     {% include '_topo.html' %}
-    <canvas class="fundo-animado" data-densidade="leve" aria-hidden="true"></canvas>
 
-    <main class="conteudo">
-        <header class="cabecalho-pagina">
-            <p class="selo">Consulta</p>
-            <h1>Professores</h1>
-            <p class="subtitulo">Ordenados pela quantidade de avaliações.</p>
-        </header>
+    <main class="shell view page" id="conteudo">
+        <header><div class="eyebrow">Conheça melhor seus professores</div><h1 class="page-title">Explorar professores<span class="accent">.</span></h1><p class="page-lead">Encontre avaliações de estudantes da UnB. Use a pesquisa para filtrar por nome, disciplina ou departamento.</p></header>
 
-        <div class="atalhos">
-            <a class="botao botao-secundario" href="{{ url_for('professores.comparar') }}">Comparar professores</a>
-            <a class="botao botao-secundario" href="{{ url_for('professores.ranking') }}">Ver ranking de professores</a>
-        </div>
-
-        <form method="get" action="{{ url_for('professores.listar') }}" class="busca-unificada card" role="search">
+        <form method="get" action="{{ url_for('professores.listar') }}" class="search psearch busca-unificada" role="search">
             <div class="campo campo-sugestoes" data-sugestoes="{{ url_for('professores.sugestoes') }}" data-contexto="consulta">
-                <label for="busca-unificada">Buscar professor, disciplina ou departamento</label>
-                <input type="search" id="busca-unificada" name="q" value="{{ filtros.q }}" autocomplete="off" aria-describedby="busca-unificada-ajuda">
-                <p class="campo-ajuda" id="busca-unificada-ajuda">Ex.: nome do professor, “Cálculo 1”, “FGA0001” ou “FCTE”.</p>
+                <label class="sr-only" for="busca-unificada">Buscar professor, disciplina ou departamento</label>
+                <input type="search" id="busca-unificada" name="q" value="{{ filtros.q }}" placeholder="Buscar professores ou disciplinas..." autocomplete="off" aria-describedby="busca-unificada-ajuda">
+                <p class="sr-only" id="busca-unificada-ajuda">Ex.: nome do professor, “Cálculo 1”, “FGA0001” ou “FCTE”.</p>
             </div>
             <button type="submit" class="botao botao-primario">Buscar</button>
         </form>
@@ -61,6 +50,11 @@
         </p>
         {% endif %}
 
+        <nav class="filters" aria-label="Áreas de busca">
+            <a class="filter{% if not filtros.q and not filtros.nome and not filtros.disciplina and not filtros.departamento %} active{% endif %}" href="{{ url_for('professores.listar') }}">Todos</a>
+            {% for nome in ('Computação', 'Matemática', 'Engenharia') %}<a class="filter{% if filtros.q|lower == nome|lower %} active{% endif %}" href="{{ url_for('professores.listar', q=nome) }}">{{ nome }}</a>{% endfor %}
+        </nav>
+        <div class="results">{{ catalogo|length }} {{ 'professor encontrado' if catalogo|length == 1 else 'professores encontrados' }} · Ordenados pela quantidade de avaliações.</div>
         {% if catalogo %}
         {# Paginação calculada pelo controller (paginar_catalogo): 100 professores por página #}
         {% set pagina = paginacao.pagina %}
@@ -71,32 +65,30 @@
         {% if total_paginas > 1 %}
         <p class="ajuda resumo-pagina">Mostrando {{ inicio + 1 }}–{{ fim }} de {{ total }} professores.</p>
         {% endif %}
-        <ul class="lista-professores">
+        <ul class="lista-professores teacher-grid">
             {% for professor, disciplinas in paginacao.itens %}
             <li class="card card-interativo">
-                <div class="professor-cabecalho">
-                    <div class="professor-identificacao">
-                        <h2><a href="{{ url_for('professores.perfil', professor_id=professor.id, next=request.full_path) }}">{{ professor.nome }}</a></h2>
-                        <p class="departamento">{{ professor.departamento }}</p>
-                    </div>
-                    <div class="professor-resumo">
-                        {% if professor.media_geral is not none %}
-                        {# Preenchimento em %: nota / 5, arredondado a décimos (classe .preenche-N) #}
-                        {% set preenchimento = ((professor.media_geral * 10 + 0.5)|int) * 2 %}
-                        <p class="nota-geral">
-                            <span class="estrelas" role="img" aria-label="Média geral {{ nota(professor.media_geral) }} de 5">
-                                <span class="estrelas-fundo" aria-hidden="true">★★★★★</span>
-                                <span class="estrelas-cheias preenche-{{ preenchimento }}" aria-hidden="true">★★★★★</span>
-                            </span>
-                            <strong>{{ nota(professor.media_geral) }}</strong> <span class="nota-rotulo">média geral</span>
-                        </p>
-                        {% else %}
-                        <p class="nota-geral"><span class="estrela" aria-hidden="true">★</span> <strong>N/A</strong> <span class="nota-rotulo">(Não avaliado)</span></p>
-                        {% endif %}
+                <article class="teacher">
+                    <div class="teacher-head">
+                        <div class="avatar" aria-hidden="true">{% for parte in professor.nome.split()[:2] %}{{ parte[0] }}{% endfor %}</div>
                         <p class="contagem">{{ professor.total_avaliacoes }} {{ 'avaliação' if professor.total_avaliacoes == 1 else 'avaliações' }}</p>
                     </div>
-                </div>
-
+                    <h2><a href="{{ url_for('professores.perfil', professor_id=professor.id, next=request.full_path) }}">{{ professor.nome }}</a></h2>
+                    <p class="teacher-meta">{{ professor.departamento }}</p>
+                    {% if professor.media_geral is not none %}
+                    {# Preenchimento em %: nota / 5, arredondado a décimos (classe .preenche-N) #}
+                    {% set preenchimento = ((professor.media_geral * 10 + 0.5)|int) * 2 %}
+                    <p class="nota-geral">
+                        <span class="estrelas" role="img" aria-label="Média geral {{ nota(professor.media_geral) }} de 5">
+                            <span class="estrelas-fundo" aria-hidden="true">★★★★★</span>
+                            <span class="estrelas-cheias preenche-{{ preenchimento }}" aria-hidden="true">★★★★★</span>
+                        </span>
+                        <strong>{{ nota(professor.media_geral) }}</strong> <span class="nota-rotulo">média geral</span>
+                    </p>
+                    {% else %}
+                    <p class="nota-geral"><span class="estrela" aria-hidden="true">★</span> <strong>N/A</strong> <span class="nota-rotulo">(Não avaliado)</span></p>
+                    {% endif %}
+                    <div class="teacher-disciplinas">
                 {% if disciplinas %}
                 {% set grupo = disciplinas_cartao[professor.id] %}
                 <ul class="disciplinas">
@@ -117,17 +109,18 @@
                 {% else %}
                 <p class="ajuda">Ainda não há disciplinas cadastradas para este professor.</p>
                 {% endif %}
-
+                    </div>
                 <div class="professor-acoes">
                     {# Com várias disciplinas, o perfil permite escolher qual avaliar #}
                     {% if disciplinas|length == 1 %}
-                    <a class="botao botao-primario" href="{{ url_for('professores.avaliar', professor_id=professor.id, disciplina_id=disciplinas[0].id, next=request.full_path) }}">Avaliar</a>
+                    <a class="btn" href="{{ url_for('professores.avaliar', professor_id=professor.id, disciplina_id=disciplinas[0].id, next=request.full_path) }}">Avaliar</a>
                     {% elif disciplinas %}
-                    <a class="botao botao-primario" href="{{ url_for('professores.perfil', professor_id=professor.id, next=request.full_path) }}">Avaliar</a>
+                    <a class="btn" href="{{ url_for('professores.perfil', professor_id=professor.id, next=request.full_path) }}">Avaliar</a>
                     {% endif %}
-                    <a class="botao botao-secundario" href="{{ url_for('professores.perfil', professor_id=professor.id, next=request.full_path, _anchor='comentarios') }}" aria-label="Ver comentários de {{ professor.nome }}">Comentários</a>
-                    <a class="botao botao-secundario" href="{{ url_for('professores.comparar', professor_1=professor.id) }}">Comparar este professor</a>
+                    <a class="btn ghost" href="{{ url_for('professores.perfil', professor_id=professor.id, next=request.full_path, _anchor='comentarios') }}" aria-label="Ver comentários de {{ professor.nome }}">Comentários</a>
+                    <a class="btn ghost" href="{{ url_for('professores.comparar', professor_1=professor.id) }}">Comparar este professor</a>
                 </div>
+                </article>
             </li>
             {% endfor %}
         </ul>
@@ -155,7 +148,6 @@
         {% endif %}
     </main>
     {% include '_rodape.html' %}
-    <script src="{{ url_for('static', filename='fundo-animado.js') }}" defer></script>
     <script src="{{ url_for('static', filename='campo-busca.js') }}" defer></script>
 </body>
 </html>

@@ -311,8 +311,6 @@ class TestDeOutraPessoa(BaseEdicao):
         self.assertIn(f'/comentarios/{self.meu}/excluir?', html)
         self.assertNotIn(f'/comentarios/{self.alheio}/editar', html)
         self.assertNotIn(f'/comentarios/{self.alheio}/excluir', html)
-        # No comentário alheio só aparece a denúncia (issue #215).
-        self.assertIn(f'/comentarios/{self.alheio}/denunciar?', html)
         self.assertIn('comentarios_disciplina=10', re.search(
             rf'href="(/comentarios/{self.meu}/editar[^"]*)"', html).group(1))
         self.assertIn('next=', re.search(

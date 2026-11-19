@@ -1,68 +1,46 @@
 {% from '_macros.html' import nota, barra_dificuldade %}
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ professor.nome }} - AvaliaUnb</title>
-
-    <link rel="stylesheet" href="{{ url_for('static', filename='indicadores.css') }}">
-
-    <link rel="stylesheet" href="{{ url_for('static', filename='perfil_professor.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='comentarios.css') }}">
-    {% include '_tema.html' %}
-</head>
-
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{{ professor.nome }} - AvaliaUnb</title><link rel="stylesheet" href="{{ url_for('static', filename='indicadores.css') }}">{% include '_tema.html' %}</head>
 <body>
     {% include '_topo.html' %}
-
-    <main class="conteudo perfil-card">
-        <p class="voltar"><a href="{{ next_url }}">&larr; Voltar</a></p>
-
-        <section class="card cabecalho-professor" aria-labelledby="titulo-professor">
-            <p class="selo">Professor</p>
-            <h1 id="titulo-professor">{{ professor.nome }}</h1>
-            <p class="departamento">
-                <strong>Departamento:</strong>
-                {{ professor.departamento }}
-            </p>
-            <p class="atalho-comentarios"><a href="#comentarios">Comentários</a></p>
-
-            {# Média geral do professor em todas as disciplinas, sem a dificuldade (como no ranking) #}
-            {% set ns = namespace(soma=0, n=0) %}
-            {% for c in criterios if c != 'dificuldade' and geral.quantidade %}
-            {% set ns.soma = ns.soma + geral.medias[c] %}
-            {% set ns.n = ns.n + 1 %}
-            {% endfor %}
-            <div class="media-geral">
+    <main class="shell view page" id="conteudo">
+        <a class="profile-back" href="{{ next_url }}">← Voltar para professores</a>
+        <div class="eyebrow">Perfil do professor</div>
+        {% set ns = namespace(soma=0, n=0) %}
+        {% for c in criterios if c != 'dificuldade' and geral.quantidade %}{% set ns.soma = ns.soma + geral.medias[c] %}{% set ns.n = ns.n + 1 %}{% endfor %}
+        <header class="profile-top">
+            <div class="profile-avatar" aria-hidden="true">{% for parte in professor.nome.split()[:2] %}{{ parte[0] }}{% endfor %}</div>
+            <div class="profile-title">
+                <h1>{{ professor.nome }}</h1>
+                <p>{{ professor.departamento }}</p>
+                {# Avaliar, Comentar e Comparar no visual novo (.btn e .btn.ghost) #}
+                <nav class="acoes-professor" aria-label="Ações sobre o professor">
+                    {% if disciplinas %}<a class="btn" href="{{ url_for('professores.avaliar', professor_id=professor.id, disciplina_id=disciplina.id, next=next_url) }}">Avaliar este Professor ↗</a>{% endif %}
+                    <a class="btn ghost atalho-comentarios" href="#comentarios">Comentários</a>
+                    <a class="btn ghost" href="{{ url_for('professores.comparar', professor_1=professor.id) }}">Comparar este professor</a>
+                </nav>
+            </div>
+            <div class="profile-rating">
                 {% if ns.n %}
-                <p class="nota-geral"><span class="estrela" aria-hidden="true">★</span> <strong>{{ nota(ns.soma / ns.n) }}</strong> <span class="nota-escala">/ 5</span></p>
-                <p class="ajuda">Média geral · {{ geral.quantidade }} {{ 'avaliação' if geral.quantidade == 1 else 'avaliações' }} em todas as disciplinas. <strong>Não considera a dificuldade.</strong></p>
+                {% set media_geral = ns.soma / ns.n %}
+                <b>{{ nota(media_geral) }}<span class="nota-escala"> / 5</span></b>
+                <span class="estrelas" role="img" aria-label="Média geral {{ nota(media_geral) }} de 5">
+                    <span class="estrelas-fundo" aria-hidden="true">★★★★★</span>
+                    <span class="estrelas-cheias preenche-{{ ((media_geral * 10 + 0.5)|int) * 2 }}" aria-hidden="true">★★★★★</span>
+                </span>
                 {% else %}
-                <p class="nota-geral"><span class="estrela" aria-hidden="true">★</span> <strong>N/A</strong> <span class="nota-escala">(Não avaliado)</span></p>
-                <p class="ajuda">Média geral: ainda não há avaliações para este professor.</p>
+                <b>N/A</b>
+                <span class="estrelas" role="img" aria-label="Ainda não avaliado"><span class="estrelas-fundo" aria-hidden="true">★★★★★</span></span>
                 {% endif %}
+                <div>{{ geral.quantidade }} {{ 'avaliação' if geral.quantidade == 1 else 'avaliações' }}</div><div>Média geral · Não considera a dificuldade.</div>
             </div>
-
-            {% if disciplinas %}
-            <div class="acoes-professor">
-                <a
-                    href="{{ url_for('professores.avaliar', professor_id=professor.id, disciplina_id=disciplina.id, next=next_url) }}"
-                    class="botao botao-primario"
-                >
-                    Avaliar este Professor
-                </a>
-                <a href="{{ url_for('professores.comparar', professor_1=professor.id) }}" class="botao botao-secundario">Comparar este professor</a>
-            </div>
-            {% else %}
-            <div class="acoes-professor">
-                <a href="{{ url_for('professores.comparar', professor_1=professor.id) }}" class="botao botao-secundario">Comparar este professor</a>
-            </div>
-            {% endif %}
-        </section>
-
-        {% if disciplinas %}
-        <form method="get" class="card filtro-disciplina">
+        </header>
+        <div class="profile-main">
+            <aside>
+                <h2 class="detail-title">Panorama das notas</h2>
+                {% if disciplinas %}
+                <form method="get" class="filtro-disciplina">
             <input type="hidden" name="next" value="{{ next_url }}">
             {% if filtro_comentarios %}<input type="hidden" name="comentarios_disciplina" value="{{ filtro_comentarios }}">{% endif %}
             <div class="campo campo-busca">
@@ -79,9 +57,7 @@
 
             <button type="submit" class="botao botao-primario">Consultar</button>
         </form>
-        <script src="{{ url_for('static', filename='campo-busca.js') }}" defer></script>
-
-        <section class="card medias" aria-labelledby="titulo-medias">
+                <section class="medias" aria-labelledby="titulo-medias">
             <h2 id="titulo-medias">Médias Consolidadas</h2>
 
             <p class="ajuda resumo-disciplina">{{ disciplina.nome }} · {{ indicadores.quantidade }} avaliações</p>
@@ -95,7 +71,7 @@
                     {% if criterio == 'dificuldade' %}
                     {{ barra_dificuldade(media) }}
                     {% else %}
-                    <strong>{{ nota(media) }} / 5 <span aria-hidden="true">★</span></strong>
+                    <strong>{{ nota(media) }} / 5 <span class="estrela" aria-hidden="true">★</span></strong>
                     {% if media is not none %}
                     <span class="barra" aria-hidden="true"><span class="barra-cheia preenche-{{ ((media * 10 + 0.5)|int) * 2 }}"></span></span>
                     {% endif %}
@@ -115,28 +91,24 @@
             </p>
             {% endif %}
         </section>
-
-        {% else %}
-        <p class="mensagem" role="status">
-            Ainda não há disciplinas cadastradas para este professor.
-        </p>
-        {% endif %}
-
-        <section class="card comentarios" id="comentarios" aria-labelledby="titulo-comentarios">
-            <h2 id="titulo-comentarios">Comentários</h2>
+                {% else %}<p class="empty">Ainda não há disciplinas cadastradas para este professor.</p>{% endif %}
+            </aside>
+                    <section class="comentarios" id="comentarios" aria-labelledby="titulo-comentarios">
+<div class="section-head"><h2 class="detail-title" id="titulo-comentarios">O que os estudantes dizem</h2><span class="tiny-note">Comentários</span></div>
 
             {% if disciplinas and not usuario %}
             <p class="mensagem convite-comentario" role="status">
                 <a href="{{ login_url }}">Entrar para comentar</a> sobre a experiência com este professor.
             </p>
             {% elif disciplinas and usuario %}
+            <details class="review-composer"{% if erros_comentario %} open{% endif %}><summary class="btn">Escrever um comentário ↗</summary>
             <form method="post" class="formulario-comentario" action="{{ url_for('professores.comentar', professor_id=professor.id) }}">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <input type="hidden" name="next" value="{{ next_url }}">
                 {% if disciplina %}<input type="hidden" name="disciplina_medias" value="{{ disciplina.id }}">{% endif %}
                 {% if filtro_comentarios %}<input type="hidden" name="comentarios_disciplina" value="{{ filtro_comentarios }}">{% endif %}
 
-                <h3>Escrever um comentário</h3>
+
 
                 <div class="campo">
                     <label for="disciplina_comentario">Disciplina do comentário</label>
@@ -167,6 +139,7 @@
 
                 <button type="submit" class="botao botao-primario">Publicar</button>
             </form>
+            </details>
             {% endif %}
 
             {% if disciplinas %}
@@ -193,8 +166,8 @@
             {% elif comentarios %}
             <ul class="lista-professores">
                 {% for c in comentarios %}
-                <li class="comentario">
-                    <p class="comentario-cabecalho">
+                <li class="comentario"><article class="review">
+                    <p class="comentario-cabecalho review-top">
                         <strong>{{ c.username }}</strong>
                         <span class="comentario-disciplina">{{ c.disciplina_nome }}{% if c.disciplina_codigo %} — {{ c.disciplina_codigo }}{% endif %}</span>
                         {% if c.data %}<span class="comentario-data">{{ c.data }}</span>{% endif %}
@@ -211,7 +184,7 @@
                         <a class="acao-denunciar" href="{{ url_for('professores.denunciar_comentario', comentario_id=c.id, next=next_url, comentarios_disciplina=filtro_comentarios) }}">Denunciar</a>
                     </p>
                     {% endif %}
-                </li>
+                </article></li>
                 {% endfor %}
             </ul>
             {% if ha_mais %}
@@ -223,7 +196,9 @@
             </p>
             {% endif %}
         </section>
+        </div>
     </main>
     {% include '_rodape.html' %}
+    <script src="{{ url_for('static', filename='campo-busca.js') }}" defer></script>
 </body>
 </html>
