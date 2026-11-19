@@ -1,3 +1,9 @@
+# Nova interface nesta branch
+
+A branch `nova-interface` aplica a interface editorial e inclui reações opcionais aos comentários, ativadas pela migração 005. Os fluxos atuais de consulta, Google, avaliações e comparação são preservados. Ordenação, filtro automático, denúncias e moderação permanecem pendentes. Consulte [Nova interface](NOVA_INTERFACE.md) para execução, validação e limitações.
+
+---
+
 # Funcionalidades e regras de consulta
 
 Este guia detalha as funcionalidades já disponíveis na `main`. O resumo das

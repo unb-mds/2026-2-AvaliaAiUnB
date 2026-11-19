@@ -1,3 +1,9 @@
+# Nova interface editorial
+
+A branch `nova-interface` aplica a interface editorial e inclui reações opcionais aos comentários, ativadas pela migração 005. Os fluxos atuais de consulta, Google, avaliações e comparação são preservados. Ordenação, filtro automático, denúncias e moderação permanecem pendentes. Consulte [Nova interface](NOVA_INTERFACE.md) para execução, validação e limitações.
+
+---
+
 # Frontend
 
 A interface do AvaliaUnb é renderizada pelo Flask com templates Jinja2 em

@@ -42,9 +42,7 @@ class TestLogo(unittest.TestCase):
                 html = self.web.get(caminho).get_data(as_text=True)
                 self.assertIn('class="logo-simbolo"', html)
                 self.assertIn('Avalia<span class="logo-destaque">UnB</span>', html)
-                for parte in ('logo-capelo', 'logo-base', 'logo-cordao', 'logo-estrela'):
-                    self.assertIn(f'class="{parte}"', html)
-                self.assertNotIn('fill="#', html.split('class="logo-simbolo"')[1].split('</svg>')[0])
+                self.assertIn('src="/static/logo-chapeu-modelo.png"', html)
                 self.assertNotIn('style=', html)
 
     def test_favicon_em_todas_as_telas_e_servido(self):

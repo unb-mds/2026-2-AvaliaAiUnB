@@ -263,9 +263,9 @@ class TestSegurancaRedirecionamento(unittest.TestCase):
     def test_rota_perfil_valida_parametro_next(self):
         # Usamos o cliente de teste nativo do Flask
         cliente = self.app.test_client()
-        
+
         # Teste 1: URL limpa ou ausente deve redirecionar/assumir padrão seguro
         resp_segura = cliente.get('/professores/1?next=/professores?nome=joao')
-        # Como o banco não está mockado neste teste isolado, esperamos um erro 404 (professor não existe), 
+        # Como o banco não está mockado neste teste isolado, esperamos um erro 404 (professor não existe),
         # mas a aplicação NÃO deve quebrar por erro de sintaxe na URL.
         self.assertNotEqual(resp_segura.status_code, 500)

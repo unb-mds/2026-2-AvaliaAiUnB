@@ -577,6 +577,28 @@ class ComentarioRepository:
     def __init__(self, cliente):
         self.cliente = cliente
 
+    def reacoes(self, comentarios_ids, usuario_id=None):
+        """Contagens públicas e escolha do visitante, sem expor quem reagiu."""
+        resultado = {cid: {'curtidas': 0, 'descurtidas': 0, 'minha_reacao': None}
+                     for cid in comentarios_ids}
+        if not resultado:
+            return resultado
+        linhas = self.cliente.rpc('contar_reacoes_comentarios', {
+            'p_ids': list(resultado), 'p_usuario_id': usuario_id,
+        }).execute().data
+        for linha in linhas:
+            resultado[linha['comentario_id']] = {campo: linha[campo] for campo in
+                                               ('curtidas', 'descurtidas', 'minha_reacao')}
+        return resultado
+
+    def alternar_reacao(self, professor_id, comentario_id, usuario_id, reacao):
+        if reacao not in ('curtir', 'descurtir'):
+            raise ValueError('Reação inválida.')
+        return self.cliente.rpc('alternar_reacao_comentario', {
+            'p_professor_id': professor_id, 'p_comentario_id': comentario_id,
+            'p_usuario_id': usuario_id, 'p_reacao': reacao,
+        }).execute().data
+
     def _disciplinas_do_professor(self, professor_id):
         """{disciplina_id: (nome, codigo)} das disciplinas ministradas pelo professor."""
         linhas = (self.cliente.table('vw_professor_disciplina')

@@ -246,10 +246,55 @@ class ClienteFalso:
             'avaliacoes': [],
             'perfis': [],
             'comentarios': [],
+            'reacoes_comentarios': [],
         }
 
     def table(self, nome):
         return Consulta(self.tabelas, nome, self.upserts)
+
+    def rpc(self, nome, parametros):
+        return ReacoesFalsas(self.tabelas, nome, parametros)
+
+
+class ReacoesFalsas:
+    """Respostas das duas funções de reações para os testes de integração HTTP."""
+    def __init__(self, tabelas, nome, parametros):
+        self.tabelas, self.nome, self.p = tabelas, nome, parametros
+
+    def execute(self):
+        reacoes = self.tabelas['reacoes_comentarios']
+        if self.nome == 'contar_reacoes_comentarios':
+            resultado = []
+            for cid in self.p['p_ids']:
+                linhas = [r for r in reacoes if r['comentario_id'] == cid]
+                resultado.append({'comentario_id': cid,
+                    'curtidas': sum(r['reacao'] == 'curtir' for r in linhas),
+                    'descurtidas': sum(r['reacao'] == 'descurtir' for r in linhas),
+                    'minha_reacao': next((r['reacao'] for r in linhas
+                                         if r['usuario_id'] == self.p['p_usuario_id']), None)})
+            return Resposta(resultado)
+        if self.nome != 'alternar_reacao_comentario':
+            raise NotImplementedError(self.nome)
+        comentario = next((c for c in self.tabelas['comentarios']
+                           if c['id'] == self.p['p_comentario_id']
+                           and c['professor_id'] == self.p['p_professor_id']
+                           and c.get('ocultado_em') is None), None)
+        if not comentario:
+            return Resposta('indisponivel')
+        if comentario['usuario_id'] == self.p['p_usuario_id']:
+            return Resposta('autor')
+        existente = next((r for r in reacoes
+                          if r['comentario_id'] == comentario['id']
+                          and r['usuario_id'] == self.p['p_usuario_id']), None)
+        if existente:
+            if existente['reacao'] == self.p['p_reacao']:
+                reacoes.remove(existente)
+            else:
+                existente['reacao'] = self.p['p_reacao']
+        else:
+            reacoes.append({'comentario_id': comentario['id'], 'usuario_id': self.p['p_usuario_id'],
+                            'reacao': self.p['p_reacao']})
+        return Resposta('ok')
 
 
 VERIFICADOR_TESTE = 'verificador-de-teste'

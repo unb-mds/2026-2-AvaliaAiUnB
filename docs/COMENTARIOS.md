@@ -1,3 +1,9 @@
+# Reações nesta branch
+
+A branch `nova-interface` aplica a interface editorial e inclui reações opcionais aos comentários, ativadas pela migração 005. Os fluxos atuais de consulta, Google, avaliações e comparação são preservados. Ordenação, filtro automático, denúncias e moderação permanecem pendentes. Consulte [Nova interface](NOVA_INTERFACE.md) para execução, validação e limitações.
+
+---
+
 # Especificação de comentários avaliativos
 
 **Status: proposta para revisão do grupo, com origem na issue #116.** Este

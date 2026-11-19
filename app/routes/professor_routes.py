@@ -1,11 +1,14 @@
 """Telas de professores: listagem, perfil com médias por disciplina e avaliação."""
-from flask import Blueprint, abort, jsonify, redirect, render_template, request, url_for
+from flask import Blueprint, abort, current_app, jsonify, redirect, render_template, request, url_for
 
 from app.controllers import professor_controller as controller
 from app.controllers.session_controller import (login_required, obter_usuario_atual,
                                                 sanitizar_destino)
 from app.seguranca import (is_safe_url, limitar_avaliacao, limitar_comentario,
                            limitar_sugestoes)
+from app.repositorio import repositorios
+from postgrest.exceptions import APIError
+import httpx
 
 professor_bp = Blueprint('professores', __name__)
 
@@ -198,6 +201,31 @@ def excluir_comentario(comentario_id):
                            usuario=usuario)
 
 
+@professor_bp.post('/professores/<int:professor_id>/comentarios/<int:comentario_id>/reacao')
+@login_required
+@limitar_comentario
+def reagir_comentario(professor_id, comentario_id):
+    reacao = request.form.get('reacao')
+    if reacao not in ('curtir', 'descurtir'):
+        abort(400, description='Reação inválida.')
+    try:
+        resultado = repositorios().comentarios.alternar_reacao(
+            professor_id, comentario_id, obter_usuario_atual()['id'], reacao)
+    except (APIError, httpx.HTTPError, RuntimeError) as erro:
+        current_app.logger.warning('Falha ao registrar reação (%s).', type(erro).__name__)
+        abort(503, description='Reações temporariamente indisponíveis. Tente novamente mais tarde.')
+    if resultado == 'indisponivel':
+        abort(404)
+    if resultado == 'autor':
+        abort(403, description='Você não pode reagir ao próprio comentário.')
+    if resultado != 'ok':
+        abort(503)
+    disciplinas = controller.listar_disciplinas(professor_id)
+    return redirect(_url_perfil(professor_id, _next_seguro(request.form.get('next')),
+                               controller.disciplina_das_medias(disciplinas, request.form.get('disciplina_medias')),
+                               controller.filtro_de_comentarios(request.form.get('comentarios_disciplina'), disciplinas)), code=303)
+
+
 @professor_bp.route('/avaliar/<int:professor_id>', methods=['GET', 'POST'])
 @login_required
 @limitar_avaliacao
@@ -224,9 +252,9 @@ def avaliar(professor_id):
                                     disciplina_id=disciplina['id'], next=next_url), code=303)
         if request.accept_mimetypes.best == 'application/json':
             return jsonify({'erros': erros}), status
-            
-    return render_template('avaliacao.html', professor=professor, disciplina=disciplina, 
-                           criterios=controller.criterios(), erros=erros, dados=request.form, 
+
+    return render_template('avaliacao.html', professor=professor, disciplina=disciplina,
+                           criterios=controller.criterios(), erros=erros, dados=request.form,
                            next_url=next_url, usuario=obter_usuario_atual()), status
 
 

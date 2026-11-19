@@ -63,6 +63,7 @@ nav:
   - Desenvolvimento:
     - Backend: BACKEND.md
     - Frontend: FRONTEND.md
+    - Nova interface: NOVA_INTERFACE.md
     - Como Usar o Scraper: COMO_USAR_SCRAPER.md
     - Pipeline: pipeline.md
     - Hospedagem: HOSPEDAGEM.md

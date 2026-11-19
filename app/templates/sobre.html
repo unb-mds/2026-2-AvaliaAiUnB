@@ -4,18 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sobre - AvaliaUnb</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='sobre.css') }}">
     {% include '_tema.html' %}
 </head>
-<body>
+<body class="pagina-sobre">
     {% include '_topo.html' %}
-    <canvas class="fundo-animado" data-densidade="leve" aria-hidden="true"></canvas>
 
     <main class="conteudo">
         <header class="sobre-cabecalho">
             <p class="selo">Sobre o projeto</p>
-            <h1>Escolha professores com mais informação</h1>
+            <h1>Escolha professores com <span class="accent">mais informação</span></h1>
             <p class="apresentacao">Na matrícula, as opiniões sobre professores ficam espalhadas em grupos de mensagens. O AvaliaUnb reúne avaliações de estudantes da UnB por professor e disciplina, com critérios objetivos.</p>
         </header>
 
@@ -58,6 +55,5 @@
         </section>
     </main>
     {% include '_rodape.html' %}
-    <script src="{{ url_for('static', filename='fundo-animado.js') }}" defer></script>
 </body>
 </html>

@@ -376,7 +376,7 @@ class TestFluxoWeb(unittest.TestCase):
             f'/avaliacoes/{id_aval_ana}/editar', headers={'Accept': 'text/html'}
         ).get_data(as_text=True)
         self.assertIn('JOSÉ ÁVILA', form_edicao)
-        
+
         form_edicao = self.web.get(
             f'/avaliacoes/{id_aval_ana}/editar', headers={'Accept': 'text/html'}
         ).get_data(as_text=True)
@@ -471,6 +471,6 @@ class TestEsquemaBanco(unittest.TestCase):
         self.assertEqual(a.to_dict()['didatica'], 5)
         self.assertEqual(a.to_dict()['disciplina_id'], 10)
 
-        
+
 if __name__ == '__main__':
     unittest.main()

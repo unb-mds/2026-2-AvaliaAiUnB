@@ -29,6 +29,21 @@ class TestComparacao(unittest.TestCase):
         self.assertEqual(resultado['medias']['dificuldade'], 4)
         self.assertEqual(self.repositorio.calcular_medias(1, 10)['medias']['didatica'], 5)
 
+    def test_cartoes_editoriais_usam_as_medias_calculadas(self):
+        self.avaliar(1, 5, dificuldade=1)
+        self.avaliar(1, 3, dificuldade=5)
+        self.avaliar(2, 2, dificuldade=5)
+        resposta = self.web.get('/comparar?professor_1=1&professor_2=2')
+        self.assertEqual(resposta.status_code, 200)
+        resumo = resposta.text.split('aria-label="Resumo da comparação"', 1)[1].split('</div>\n        <details', 1)[0]
+        self.assertEqual(resumo.count('class="compare-card"'), 2)
+        self.assertIn('class="bigscore">4,00', resumo)
+        self.assertIn('class="bigscore">2,00', resumo)
+        self.assertIn('<strong>2</strong> avaliações registradas', resumo)
+        self.assertIn('href="/professores/1"', resumo)
+        self.assertIn('href="/professores/2"', resumo)
+        self.assertNotIn('fictícios', resumo)
+
     def test_medias_ignoram_invalidas_e_paginam(self):
         self.avaliar(1, 4)
         self.avaliar(1, 2)

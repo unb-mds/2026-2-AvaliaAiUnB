@@ -1,0 +1,25 @@
+{% if reacoes_disponiveis %}
+<div class="comentario-reacoes" role="group" aria-label="Reações ao comentário de {{ c.username }}">
+    {% if usuario and not c.e_meu %}
+    <form method="post" action="{{ url_for('professores.reagir_comentario', professor_id=professor.id, comentario_id=c.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="next" value="{{ next_url }}">
+        {% if disciplina %}<input type="hidden" name="disciplina_medias" value="{{ disciplina.id }}">{% endif %}
+        {% if filtro_comentarios %}<input type="hidden" name="comentarios_disciplina" value="{{ filtro_comentarios }}">{% endif %}
+        {% for valor, rotulo, desenho, quantidade in (
+            ('curtir', 'Gostei', 'M7 10v11H3V10h4Zm0 0 5-8 2 1v6h5l2 2-2 10H7', c.curtidas),
+            ('descurtir', 'Não gostei', 'M7 14V3H3v11h4Zm0 0 5 8 2-1v-6h5l2-2L19 3H7', c.descurtidas)
+        ) %}
+        <button type="submit" class="reacao" name="reacao" value="{{ valor }}" aria-pressed="{{ 'true' if c.minha_reacao == valor else 'false' }}" aria-label="{{ rotulo }}: {{ quantidade }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="{{ desenho }}"/></svg>
+            <span>{{ quantidade }}</span>
+        </button>
+        {% endfor %}
+    </form>
+    {% else %}
+    <span class="reacao-contagem" aria-label="{{ c.curtidas }} curtidas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M7 10v11H3V10h4Zm0 0 5-8 2 1v6h5l2 2-2 10H7"/></svg><span>{{ c.curtidas }}</span></span>
+    <span class="reacao-contagem" aria-label="{{ c.descurtidas }} descurtidas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M7 14V3H3v11h4Zm0 0 5 8 2-1v-6h5l2-2L19 3H7"/></svg><span>{{ c.descurtidas }}</span></span>
+    {% if not usuario %}<a class="reacao-entrar" href="{{ login_url }}">Entrar para reagir</a>{% endif %}
+    {% endif %}
+</div>
+{% endif %}

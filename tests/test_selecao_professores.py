@@ -112,7 +112,7 @@ class TestSelecaoProfessores(unittest.TestCase):
 
     def test_campos_de_professor_apontam_para_a_busca(self):
         html = self.web.get('/comparar?modo=livre').text
-        self.assertEqual(html.count('class="campo campo-professor" data-busca="/busca/professores"'), 2)
+        self.assertEqual(html.count('class="campo campo-professor compare-card" data-busca="/busca/professores"'), 2)
         self.assertIn('data-placeholder="Nome do professor ou de uma disciplina"', html)
         self.assertIn('src="/static/campo-busca.js"', html)
         # Filtrar, adicionar e remover não exigem os campos preenchidos.

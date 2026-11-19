@@ -27,18 +27,12 @@
 {%- endif -%}
 {%- endmacro %}
 
-{# Logo do AvaliaUnB (símbolo do capelo com estrela + "Avalia" e "UnB"), igual a
-   docs/logo/lockup-*.svg. As cores vêm dos tokens --cor-logo-* de base.css, então
-   segue o tema: no escuro, branco com estrela e "UnB" amarelos; no claro, capelo
-   azul, base preta e "UnB" azul. Sem style inline (CSP): tudo via classes. #}
+{# Desenho original em docs/logo/lockup-escuro.svg. #}
+{% macro simbolo_logo() -%}
+<img class="logo-simbolo" src="{{ url_for('static', filename='logo-chapeu-modelo.png') }}" alt="" aria-hidden="true">
+{%- endmacro %}
+
 {% macro logo() -%}
-<svg class="logo-simbolo" viewBox="8 40 242 166" aria-hidden="true" focusable="false">
-    <g transform="translate(-9 0)">
-        <path class="logo-base" d="M64 125.6 L128 154 L192 125.6 V174 Q128 206 64 174 Z"></path>
-        <path class="logo-capelo" d="M128 48 L236 96 L128 144 L20 96 Z" stroke-width="6" stroke-linejoin="round"></path>
-        <path class="logo-cordao" d="M228 100 V158" stroke-width="8" stroke-linecap="round" fill="none"></path>
-        <path class="logo-estrela" d="M228 152 L235.34 167.9 L252.73 169.97 L239.87 181.86 L243.28 199.03 L228 190.48 L212.72 199.03 L216.13 181.86 L203.27 169.97 L220.66 167.9 Z" stroke-width="5" stroke-linejoin="round" paint-order="stroke"></path>
-    </g>
-</svg>
+{{ simbolo_logo() }}
 <span class="logo-texto">Avalia<span class="logo-destaque">UnB</span></span>
 {%- endmacro %}

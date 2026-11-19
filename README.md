@@ -1,5 +1,7 @@
 # 🎓 AvaliaUnb
 
+> **Branch nova-interface:** nova identidade editorial para revisão do grupo. Consulte [execução, testes e pendências](docs/NOVA_INTERFACE.md). O site publicado continua sendo a referência da versão principal.
+
 > Consulta, comparação e avaliação de professores e disciplinas da Universidade de Brasília.
 
 O AvaliaUnb reúne avaliações por critérios pedagógicos para ajudar estudantes a

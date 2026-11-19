@@ -28,6 +28,7 @@ def tokens_definidos_no_root(texto):
 class TestTokensCss(unittest.TestCase):
     def test_tokens_usados_estao_definidos_no_root_da_base(self):
         definidos = tokens_definidos_no_root(ler_css(BASE_CSS))
+        definidos.update(tokens_definidos_no_root(ler_css(ESTATICOS / "modelo-editorial.css")))
         self.assertTrue(definidos, "Nenhum token encontrado no :root de base.css")
 
         faltando = []

@@ -13,8 +13,6 @@
 
     <link rel="stylesheet" href="{{ url_for('static', filename='indicadores.css') }}">
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='comparacao.css') }}">
-
     {% include '_tema.html' %}
 </head>
 
@@ -22,18 +20,19 @@
 
     {% include '_topo.html' %}
 
-    <main id="conteudo">
+    <main class="shell view page" id="conteudo">
 
         <p class="voltar"><a href="{{ url_for('professores.listar') }}">&larr; Consultar professores</a></p>
 
-        <p class="selo">Consulta</p>
-        <h1>Comparar professores</h1>
+        <div class="eyebrow">Lado a lado</div>
+        <h1 class="page-title">Uma escolha mais clara<span class="accent">.</span></h1>
+        <p class="page-lead">Compare notas e quantidade de avaliações de professores em uma única visualização.</p>
 
-        <form method="get" action="{{ url_for('professores.comparar') }}" class="filtros busca-unificada" role="search">
+        <form method="get" action="{{ url_for('professores.comparar') }}" class="search psearch busca-unificada" role="search">
             <div class="campo campo-sugestoes" data-sugestoes="{{ url_for('professores.sugestoes') }}" data-contexto="comparacao">
-                <label for="busca-unificada">Buscar professor ou disciplina</label>
-                <input type="search" id="busca-unificada" name="busca" value="{{ busca }}" autocomplete="off" aria-describedby="busca-unificada-ajuda">
-                <p class="campo-ajuda" id="busca-unificada-ajuda">Escolha um professor para compará-lo ou uma disciplina para comparar quem a ministra.</p>
+                <label class="sr-only" for="busca-unificada">Buscar professor ou disciplina</label>
+                <input type="search" id="busca-unificada" name="busca" value="{{ busca }}" placeholder="Buscar professor ou disciplina..." autocomplete="off" aria-describedby="busca-unificada-ajuda">
+                <p class="sr-only" id="busca-unificada-ajuda">Escolha um professor para compará-lo ou uma disciplina para comparar quem a ministra.</p>
             </div>
             <button type="submit" class="botao botao-primario">Buscar</button>
         </form>
@@ -62,6 +61,7 @@
             <a href="{{ url_for('professores.comparar', modo='livre', professor_1=selecao_previa or None) }}" class="modo-link"{% if modo_livre or modo_legado %} aria-current="page"{% endif %}>Disciplinas diferentes (seleção livre)</a>
         </nav>
 
+        <details class="compare-controls" id="opcoes-comparacao"{% if not comparacao %} open{% endif %}><summary>Escolher professores e filtros</summary>
         {% if modo_legado %}
         <p class="ajuda">Este link compara as médias gerais dos dois professores. <a href="{{ url_for('professores.comparar') }}">Comparar por disciplina</a>.</p>
 
@@ -71,7 +71,7 @@
 
             {% for campo in ('professor_1', 'professor_2') %}
 
-            <div class="campo campo-busca">
+            <div class="campo campo-busca compare-card">
 
                 <label for="{{ campo }}">Professor {{ loop.index }}</label>
 
@@ -128,7 +128,7 @@
             {# campo-busca.js troca cada <select> por um campo digitável que busca em /busca/professores; sem JS, o <select> continua valendo. #}
             <div class="selecao-comparacao">
                 {% for selecionado in campos %}
-                <div class="campo campo-professor" data-busca="{{ url_for('professores.sugestoes_professores') }}">
+                <div class="campo campo-professor compare-card" data-busca="{{ url_for('professores.sugestoes_professores') }}">
                     <label for="professor-{{ loop.index }}">Professor {{ loop.index }}</label>
                     <select name="professor" id="professor-{{ loop.index }}" aria-describedby="professor-{{ loop.index }}-detalhe" data-placeholder="Nome do professor ou de uma disciplina">
                         <option value="">Selecione um professor</option>
@@ -182,7 +182,7 @@
             {% if selecao_previa %}<input type="hidden" name="professor_1" value="{{ selecao_previa }}">{% endif %}
             <div class="selecao-comparacao">
                 {% for selecionado in campos %}
-                <div class="campo">
+                <div class="campo compare-card">
                     <label for="professor-{{ loop.index }}">Professor {{ loop.index }}</label>
                     <select name="professor" id="professor-{{ loop.index }}">
                         <option value="">Selecione um professor</option>
@@ -208,6 +208,7 @@
         {% endif %}
         {% endif %}
 
+        </details>
         <script src="{{ url_for('static', filename='campo-busca.js') }}" defer></script>
 
         {% if comparacao %}
@@ -224,6 +225,21 @@
 
         {% endfor %}
 
+        <div class="compare-grid" aria-label="Resumo da comparação">
+            {% for professor in comparacao %}
+            <section class="compare-card">
+                <div class="eyebrow">Professor {{ loop.index }}</div>
+                <h3>{{ professor.nome }}</h3>
+                <p>{{ professor.departamento }}{% if disciplina %} · {{ disciplina.nome }}{% endif %}</p>
+                <div class="bigscore">{% if professor.media_geral is not none %}{{ ('%.2f'|format(professor.media_geral))|replace('.', ',') }}{% else %}N/A{% endif %} <small>★ nota média</small></div>
+                <div class="divider"></div>
+                <p><strong>{{ professor.indicadores.quantidade }}</strong> avaliações registradas</p>
+                <a class="text-link" href="{{ url_for('professores.perfil', professor_id=professor.id, disciplina_id=disciplina.id if disciplina else None) }}">Ver perfil completo ↗</a>
+                <button class="text-link alterar-comparacao" type="button" data-abrir-comparacao>Alterar seleção ↗</button>
+            </section>
+            {% endfor %}
+        </div>
+        <details class="comparison-details"><summary>Ver notas por critério e destaques</summary>
         <div class="comparacao-container" role="region" aria-label="Médias dos professores" tabindex="0">
 
             <table class="tabela-comparacao">
@@ -315,7 +331,8 @@
 
         </div>
 
-        <p class="ajuda">Cada avaliação válida tem o mesmo peso. Dificuldade: 1 = muito fácil; 5 = muito difícil. Nos demais critérios, 5 = excelente.</p>
+        </details>
+        <p class="compare-note ajuda">Cada avaliação válida tem o mesmo peso. Dificuldade: 1 = muito fácil; 5 = muito difícil. Nos demais critérios, 5 = excelente.</p>
         <p class="ajuda">Destaque de desempenho: considera professores com pelo menos {{ minimo_avaliacoes_destaque }} avaliações válidas. No geral (média dos quatro primeiros critérios) e em Didática, Clareza, Organização e Disponibilidade, vence a maior média; em Dificuldade, vence a menor média. Empates na liderança destacam todos os empatados.</p>
         {% endif %}
 

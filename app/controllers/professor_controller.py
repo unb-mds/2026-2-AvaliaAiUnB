@@ -511,6 +511,16 @@ def carregar_comentarios(professor_id, disciplinas, filtro_bruto, usuario):
         contexto['erro_comentarios'] = True
     else:
         contexto.update(comentarios=comentarios, ha_mais=ha_mais)
+        contexto['reacoes_disponiveis'] = True
+        try:
+            reacoes = repositorios().comentarios.reacoes(
+                [c['id'] for c in comentarios], usuario['id'] if usuario else None)
+            for comentario in comentarios:
+                comentario.update(reacoes[comentario['id']])
+        except Exception as erro:
+            # A página segue acessível quando a migração das reações ainda não foi aplicada.
+            current_app.logger.warning('Reações indisponíveis (%s).', type(erro).__name__)
+            contexto['reacoes_disponiveis'] = False
     return contexto
 
 
