@@ -1,3 +1,7 @@
+{% macro icone_seta() -%}
+<span class="icone-seta" aria-hidden="true">&#8599;&#65038;</span>
+{%- endmacro %}
+
 {# Nota com uma casa decimal e vírgula; inteiros sem decimal (5,0 vira 5). #}
 {% macro nota(valor) -%}
 {%- set decimos = (valor * 10 + 0.5)|int -%}

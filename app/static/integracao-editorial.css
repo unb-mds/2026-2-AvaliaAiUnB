@@ -7,6 +7,8 @@
     --cor-divisor-suave: var(--line); --cor-borda-campo: var(--line); --cor-hover-suave: var(--wash);
 }
 body { max-width: none; padding: 0; line-height: normal; }
+.icone-seta { display: inline-block; flex-shrink: 0; color: inherit; font-family: "Inter", "Arial", sans-serif; font-variant-emoji: text; line-height: 1; pointer-events: none; }
+.conta-seta { display: inline-flex; align-items: center; justify-content: center; }
 main { animation: none; }
 [hidden] { display: none !important; }
 .shell.page { padding: 66px 48px 100px; }
@@ -279,4 +281,4 @@ main.conteudo.card p, main.conteudo.card li { max-width: 900px; font-size: 14px;
     .dados-usuario dl, .sobre-secao .criterios { grid-template-columns: minmax(0,1fr); }
 }
 @media(max-width:460px) { .search .btn, .search .botao { padding-inline: 12px; flex: none; } .search { gap: 8px; } .profile-title { flex-basis: calc(100% - 82px); } .profile-rating { width: 100%; } .detail-title { font-size: 21px; } .rankstar { font-size: 15px; } }
-@media(max-width:360px) { .head-inner { gap: 6px; } .brand { font-size: 17px; gap: 3px; } .brand .logo-simbolo { width: 36px; height: 32px; } .head .actions { gap: 6px; } .head .actions .botao-conta { padding: 10px 9px; font-size: 11px; } .botao-conta .conta-seta { display: none; } .mobile-menu-toggle { width: 36px; height: 39px; padding: 8px; flex: none; } }
+@media(max-width:360px) { .head-inner { gap: 6px; } .brand { font-size: 17px; gap: 3px; } .brand .logo-simbolo { width: 36px; height: 32px; } .head .actions { gap: 6px; } .head .actions .botao-conta { padding: 10px 9px; font-size: 11px; } .mobile-menu-toggle { width: 36px; height: 39px; padding: 8px; flex: none; } }

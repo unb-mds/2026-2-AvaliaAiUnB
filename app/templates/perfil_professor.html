@@ -1,4 +1,4 @@
-{% from '_macros.html' import nota, barra_dificuldade %}
+{% from '_macros.html' import icone_seta, nota, barra_dificuldade %}
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{{ professor.nome }} - AvaliaUnb</title><link rel="stylesheet" href="{{ url_for('static', filename='indicadores.css') }}">{% include '_tema.html' %}</head>
@@ -16,7 +16,7 @@
                 <p>{{ professor.departamento }}</p>
                 {# Avaliar, Comentar e Comparar no visual novo (.btn e .btn.ghost) #}
                 <nav class="acoes-professor" aria-label="Ações sobre o professor">
-                    {% if disciplinas %}<a class="btn" href="{{ url_for('professores.avaliar', professor_id=professor.id, disciplina_id=disciplina.id, next=next_url) }}">Avaliar este Professor ↗</a>{% endif %}
+                    {% if disciplinas %}<a class="btn" href="{{ url_for('professores.avaliar', professor_id=professor.id, disciplina_id=disciplina.id, next=next_url) }}">Avaliar este Professor {{ icone_seta() }}</a>{% endif %}
                     <a class="btn ghost atalho-comentarios" href="#comentarios">Comentários</a>
                     <a class="btn ghost" href="{{ url_for('professores.comparar', professor_1=professor.id) }}">Comparar este professor</a>
                 </nav>
@@ -101,7 +101,7 @@
                 <a href="{{ login_url }}">Entrar para comentar</a> sobre a experiência com este professor.
             </p>
             {% elif disciplinas and usuario %}
-            <details class="review-composer"{% if erros_comentario %} open{% endif %}><summary class="btn">Escrever um comentário ↗</summary>
+            <details class="review-composer"{% if erros_comentario %} open{% endif %}><summary class="btn">Escrever um comentário {{ icone_seta() }}</summary>
             <form method="post" class="formulario-comentario" action="{{ url_for('professores.comentar', professor_id=professor.id) }}">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <input type="hidden" name="next" value="{{ next_url }}">
