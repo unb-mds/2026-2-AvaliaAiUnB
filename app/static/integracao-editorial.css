@@ -141,6 +141,11 @@ summary { cursor: pointer; }
 .filtros { display: flex; align-items: end; flex-wrap: wrap; gap: 12px; margin-bottom: 25px; }
 .filtros > .campo { flex: 1; margin: 0; }
 .filtro-ranking { max-width: 650px; }
+.filtro-departamento-consulta { max-width: 760px; margin-top: 24px; }
+.filtro-departamento-consulta > .campo { flex: 1 1 320px; min-width: 0; }
+.filtro-departamento-consulta label { display: block; margin-bottom: 8px; }
+.filtro-departamento-consulta select { width: 100%; max-width: 100%; }
+.filtro-departamento-consulta > .botao { margin: 0; }
 .filtro-ranking .selector { margin-top: 0; }
 .ranking-rules { margin: 0 0 28px; font-size: 12px; line-height: 1.7; color: var(--muted); }
 .ranking { padding: 0; margin: 0; list-style: none; }

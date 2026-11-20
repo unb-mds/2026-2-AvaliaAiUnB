@@ -33,6 +33,9 @@
         <header><div class="eyebrow">Conheça melhor seus professores</div><h1 class="page-title">Explorar professores<span class="accent">.</span></h1><p class="page-lead">Encontre avaliações de estudantes da UnB. Use a pesquisa para filtrar por nome, disciplina ou departamento.</p></header>
 
         <form method="get" action="{{ url_for('professores.listar') }}" class="search psearch busca-unificada" role="search">
+            {% for campo in ('nome', 'disciplina', 'departamento') %}{% if filtros[campo] %}
+            <input type="hidden" name="{{ campo }}" value="{{ filtros[campo] }}">
+            {% endif %}{% endfor %}
             <div class="campo campo-sugestoes" data-sugestoes="{{ url_for('professores.sugestoes') }}" data-contexto="consulta">
                 <label class="sr-only" for="busca-unificada">Buscar professor, disciplina ou departamento</label>
                 <input type="search" id="busca-unificada" name="q" value="{{ filtros.q }}" placeholder="Buscar professores ou disciplinas..." autocomplete="off" aria-describedby="busca-unificada-ajuda">
@@ -43,17 +46,31 @@
 
         {# Filtros vindos da home (nome) ou das sugestões (disciplina/departamento) #}
         {% set ativos = [('Professor', filtros.nome), ('Disciplina', filtros.disciplina), ('Departamento', filtros.departamento)]|selectattr(1)|list %}
-        {% if ativos %}
+        {% if ativos or filtros.q %}
         <p class="filtros-ativos" role="status">
-            Filtrando por {% for rotulo, valor in ativos %}{{ rotulo|lower }} “{{ valor }}”{% if not loop.last %} e {% endif %}{% endfor %}{% if filtros.q %} e pela busca “{{ filtros.q }}”{% endif %}.
+            Filtrando {% if ativos %}por {% for rotulo, valor in ativos %}{{ rotulo|lower }} “{{ valor }}”{% if not loop.last %} e {% endif %}{% endfor %}{% endif %}{% if filtros.q %}{% if ativos %} e {% endif %}pela busca “{{ filtros.q }}”{% endif %}.
             <a href="{{ url_for('professores.listar') }}">Limpar filtros</a>
         </p>
         {% endif %}
 
-        <nav class="filters" aria-label="Áreas de busca">
-            <a class="filter{% if not filtros.q and not filtros.nome and not filtros.disciplina and not filtros.departamento %} active{% endif %}" href="{{ url_for('professores.listar') }}">Todos</a>
-            {% for nome in ('Computação', 'Matemática', 'Engenharia') %}<a class="filter{% if filtros.q|lower == nome|lower %} active{% endif %}" href="{{ url_for('professores.listar', q=nome) }}">{{ nome }}</a>{% endfor %}
-        </nav>
+        <form method="get" action="{{ url_for('professores.listar') }}" class="filtros filtro-departamento-consulta" aria-label="Filtrar por departamento">
+            {% for campo in ('q', 'nome', 'disciplina') %}{% if filtros[campo] %}
+            <input type="hidden" name="{{ campo }}" value="{{ filtros[campo] }}">
+            {% endif %}{% endfor %}
+            <div class="campo">
+                <label for="departamento-consulta">Departamento</label>
+                <select id="departamento-consulta" name="departamento">
+                    <option value=""{% if not filtros.departamento %} selected{% endif %}>Todos os departamentos</option>
+                    {% if filtros.departamento and filtros.departamento not in departamentos %}
+                    <option value="{{ filtros.departamento }}" selected disabled>Departamento não encontrado: {{ filtros.departamento }}</option>
+                    {% endif %}
+                    {% for departamento in departamentos %}
+                    <option value="{{ departamento }}"{% if filtros.departamento == departamento %} selected{% endif %}>{{ departamento }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="botao botao-primario">Filtrar departamento</button>
+        </form>
         <div class="results">{{ catalogo|length }} {{ 'professor encontrado' if catalogo|length == 1 else 'professores encontrados' }} · Ordenados pela quantidade de avaliações.</div>
         {% if catalogo %}
         {# Paginação calculada pelo controller (paginar_catalogo): 100 professores por página #}

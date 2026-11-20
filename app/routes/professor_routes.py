@@ -56,6 +56,8 @@ def ranking():
 @professor_bp.get('/professores')
 def listar():
     filtros = {campo: request.args.get(campo, '').strip() for campo in CAMPOS_FILTRO}
+    departamentos, filtros['departamento'] = controller.carregar_filtro_departamento(
+        filtros['departamento'])
     catalogo = controller.catalogo(**filtros)
     pagina = request.args.get('pagina')
     paginacao = controller.paginar_catalogo(catalogo, pagina)
@@ -64,7 +66,7 @@ def listar():
                            paginacao=paginacao, dificuldades=dificuldades,
                            disciplinas_cartao=controller.organizar_disciplinas(
                                paginacao['itens'], dificuldades),
-                           filtros=filtros,
+                           filtros=filtros, departamentos=departamentos,
                            usuario=obter_usuario_atual())
 
 

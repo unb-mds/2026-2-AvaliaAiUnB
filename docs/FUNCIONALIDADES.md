@@ -17,6 +17,13 @@ A normalização ignora acentos, maiúsculas e espaços extras. A lista é orden
 pela quantidade de avaliações, com desempate por nome e identificador.
 Essa ordenação é diferente do ranking, que usa a média das notas.
 
+O seletor **Departamento** é preenchido com os departamentos distintos do
+catálogo completo, em ordem alfabética. Substitui os atalhos fixos de áreas.
+O botão **Filtrar departamento** combina a seleção com a pesquisa atual e
+reinicia a paginação. A busca também preserva o departamento selecionado.
+**Todos os departamentos** remove somente esse filtro; **Limpar filtros**
+restaura a consulta completa. Os formulários funcionam sem JavaScript.
+
 Em cada cartão da lista, cada disciplina mostra a dificuldade média e a
 quantidade de avaliações daquela disciplina, ou "Sem avaliações ainda" quando
 não há nenhuma. A dificuldade usa a mesma regra da página do professor. As

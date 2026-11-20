@@ -1,6 +1,7 @@
 """Template da lista de Consulta: dificuldade por disciplina, botão Comentários e paginação (issue #201)."""
 import re
 import unittest
+from html.parser import HTMLParser
 from urllib.parse import unquote
 
 from flask import render_template
@@ -200,6 +201,84 @@ class TestPaginacao(BaseLista):
                          ['departamento=FCTE', 'pagina=3'])
         self.assertEqual(sorted(p for p in anterior.replace('&amp;', '&').split('?')[1].split('&') if not p.endswith('=')),
                          ['departamento=FCTE', 'pagina=1'])
+
+
+class FormulariosConsulta(HTMLParser):
+    def __init__(self, html):
+        super().__init__()
+        self.formularios = []
+        self.atual = None
+        self.opcoes = []
+        self.feed(html)
+
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        if tag == 'form':
+            self.atual = {'classe': attrs.get('class', ''), 'ocultos': {}}
+            self.formularios.append(self.atual)
+        elif tag == 'input' and self.atual is not None and attrs.get('type') == 'hidden':
+            self.atual['ocultos'][attrs['name']] = attrs.get('value', '')
+        elif tag == 'option':
+            self.opcoes.append(attrs)
+
+    def handle_endtag(self, tag):
+        if tag == 'form':
+            self.atual = None
+
+
+class TestFiltroDepartamentoConsulta(BaseLista):
+    def setUp(self):
+        super().setUp()
+        self.cliente.tabelas['professores'].extend([
+            {'id': 4, 'nome': 'ANA LIMA', 'departamento': 'Instituto de Artes'},
+            {'id': 5, 'nome': 'PAULA SOUZA', 'departamento': 'Psicologia'},
+        ])
+
+    def test_opcoes_vem_do_catalogo_completo_mesmo_com_filtro_aplicado(self):
+        html = self.lista('/professores?departamento=FCTE')
+        parser = FormulariosConsulta(html)
+        self.assertEqual([o['value'] for o in parser.opcoes],
+                         ['', 'FCTE', 'Instituto de Artes', 'Psicologia'])
+        self.assertEqual([o['value'] for o in parser.opcoes if 'selected' in o], ['FCTE'])
+        self.assertIn('JOSÉ ÁVILA', html)
+        self.assertNotIn('ANA LIMA', html)
+        self.assertNotIn('aria-label="Áreas de busca"', html)
+
+    def test_busca_e_departamento_combinam_e_sao_preservados_nos_dois_formularios(self):
+        html = self.lista('/professores?q=lima&departamento=fcte&pagina=3')
+        parser = FormulariosConsulta(html)
+        busca = next(f for f in parser.formularios if 'busca-unificada' in f['classe'])
+        filtro = next(f for f in parser.formularios if 'filtro-departamento-consulta' in f['classe'])
+        self.assertEqual(busca['ocultos'], {'departamento': 'FCTE'})
+        self.assertEqual(filtro['ocultos'], {'q': 'lima'})
+        self.assertNotIn('pagina', busca['ocultos'])
+        self.assertNotIn('pagina', filtro['ocultos'])
+        self.assertIn('MARIA LIMA', html)
+        self.assertNotIn('ANA LIMA', html)
+        self.assertNotIn('JOSÉ ÁVILA', html)
+
+    def test_todos_departamentos_remove_so_departamento_e_mantem_busca(self):
+        html = self.lista('/professores?q=lima&departamento=FCTE')
+        filtro = next(f for f in FormulariosConsulta(html).formularios
+                      if 'filtro-departamento-consulta' in f['classe'])
+        resposta = self.web.get('/professores', query_string={**filtro['ocultos'], 'departamento': ''})
+        html = resposta.get_data(as_text=True)
+        self.assertEqual(resposta.status_code, 200)
+        self.assertIn('MARIA LIMA', html)
+        self.assertIn('ANA LIMA', html)
+        self.assertNotIn('JOSÉ ÁVILA', html)
+
+    def test_departamento_desconhecido_nao_mostra_catalogo_inteiro(self):
+        html = self.lista('/professores?departamento=Inexistente')
+        self.assertIn('Departamento não encontrado: Inexistente', html)
+        self.assertIn('Nenhum professor encontrado', html)
+        self.assertNotIn('JOSÉ ÁVILA', html)
+
+    def test_lista_vazia_mantem_opcao_todos(self):
+        self.cliente.tabelas['professores'] = []
+        html = self.lista()
+        self.assertEqual([o['value'] for o in FormulariosConsulta(html).opcoes], [''])
+        self.assertIn('Todos os departamentos', html)
 
 
 if __name__ == '__main__':

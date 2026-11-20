@@ -154,7 +154,8 @@ class TestCampoBuscaUnificada(unittest.TestCase):
     def test_consulta_tem_um_unico_campo_de_busca(self):
         html = self.web.get('/professores').get_data(as_text=True)
         self.assertEqual(len(re.findall(r'<input\b[^>]*type="search"', html)), 1)
-        self.assertNotIn('name="departamento"', html)
+        self.assertNotRegex(html, r'<input\b[^>]*name="departamento"[^>]*type="(?:text|search)"')
+        self.assertIn('<select id="departamento-consulta" name="departamento">', html)
         self.assertNotIn('filtros-ativos', html)
 
     def test_filtro_vindo_de_sugestao_aparece_com_limpar(self):
