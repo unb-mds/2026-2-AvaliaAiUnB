@@ -4,9 +4,9 @@
 documento descreve o comportamento dos comentários, das reações e da
 moderação. A primeira parte já está implementada no perfil do professor
 (issue #167): listar, filtrar por disciplina, publicar, editar e excluir o
-próprio comentário. Reações, ordenação escolhida pela pessoa, filtro
-automático, denúncia, moderação e ocultação continuam sendo planos futuros
-(issues #212 a #217).
+próprio comentário. A denúncia está implementada na issue #215. Reações,
+ordenação escolhida pela pessoa, filtro automático, moderação e ocultação
+continuam sendo planos futuros (issues #212 a #217).
 
 A base é a [proposta de dados da #109](Modelo%20de%20Dados.md#6-proposta-tabela-comentarios).
 A tabela `comentarios` está versionada em
@@ -193,6 +193,15 @@ discriminação, ameaça, spam ou conteúdo alheio à experiência pedagógica.
 Uma avaliação negativa ou discordância com a opinião não são, por si só,
 motivos para remoção. O número de denúncias não oculta automaticamente o texto.
 
+Os passos 1 e 2 estão implementados (issue #215): o link «Denunciar» aparece
+para usuários logados nos comentários de outras pessoas e leva a um formulário
+com os seis motivos acima (spam e conteúdo alheio ficam separados) e uma
+explicação opcional de até 500 caracteres. A tabela privada
+`denuncias_comentarios` está em
+[`005_denuncias_comentarios.sql`](migrations/005_denuncias_comentarios.sql);
+veja o [modelo de dados](Modelo%20de%20Dados.md#7-denuncias-de-comentarios-denuncias_comentarios).
+Os passos 3 e 4 ficam para a #216.
+
 A [proposta de banco](Modelo%20de%20Dados.md) descreve a proteção das tabelas
 de comentários e reações. A implementação futura precisa definir o registro
 privado das análises e denúncias e revisar as permissões de moderação,
@@ -233,7 +242,7 @@ rotina de descarte fica para a implementação após revisão do grupo.
 | C03 | Texto simples de 2 a 1.000 caracteres após remover espaços em branco das extremidades | Aguardando revisão |
 | C04 | Estrelas e comentários são independentes e podem ser enviados em qualquer ordem. Uma avaliação por estrelas por estudante, professor e disciplina | Aguardando revisão |
 | C05 | Nome de usuário em todos os comentários públicos. O e-mail nunca é exibido. A interface avisa antes de publicar: "Seu nome de usuário aparece junto do comentário." | Decidido; implementado na #167 |
-| C06 | Denúncia privada e moderação por responsáveis autorizados | Aguardando revisão e projeto de dados |
+| C06 | Denúncia privada e moderação por responsáveis autorizados | Denúncia implementada na #215; moderação aguarda a #216 |
 | C07 | Ocultação motivada, sem republicação automática por edição | Aguardando revisão |
 | C08 | Dois moderadores designados, primeira análise em até três dias úteis, formulário privado de contestação e retenção de até 90 dias após o encerramento | Aguardando revisão |
 | C09 | Ícones 👍 e 👎 sempre visíveis, com números apenas nas reações recebidas. Uma reação por conta e comentário, com opção de trocar ou remover | Aguardando revisão |

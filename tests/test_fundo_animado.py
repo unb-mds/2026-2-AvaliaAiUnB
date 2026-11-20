@@ -43,7 +43,7 @@ class TestFundoAnimadoTemplates(unittest.TestCase):
                 for tag in canvases:
                     self.assertIn('aria-hidden="true"', tag)
 
-        self.assertTrue(com_canvas, "Nenhum template usa o fundo animado")
+        self.assertEqual(com_canvas, [], "O modelo editorial substitui o fundo de partículas")
 
 
 if __name__ == "__main__":

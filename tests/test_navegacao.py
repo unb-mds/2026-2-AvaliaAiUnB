@@ -7,7 +7,7 @@ from tests.fake_supabase import ClienteFalso, entrar_pela_web
 
 
 def aba_ativa(html):
-    encontrada = re.search(r'class="aba" href="[^"]*" aria-current="page">([^<]+)<', html)
+    encontrada = re.search(r'class="aba" href="[^"]*" aria-current="page">[\s\S]*?<span>([^<]+)</span>', html)
     return encontrada.group(1) if encontrada else None
 
 
@@ -24,23 +24,22 @@ class TestNavegacao(unittest.TestCase):
 
     def test_abas_para_visitante(self):
         html = self.html('/')
-        abas = re.findall(r'class="aba" href="([^"]+)"[^>]*>([^<]+)<', html)
-        self.assertEqual(abas, [('/professores', 'Consulta'), ('/ranking', 'Ranking'),
-                                ('/sobre', 'Sobre'), ('/login', 'Entrar')])
+        abas = re.findall(r'class="aba" href="([^"]+)"[^>]*>[\s\S]*?<span>([^<]+)</span>', html)
+        self.assertEqual(abas, [('/', 'Início'), ('/professores', 'Explorar'), ('/ranking', 'Ranking'), ('/comparar', 'Comparar'), ('/sobre', 'Sobre')])
         self.assertNotIn('botao-sair', html)
-        self.assertIsNone(aba_ativa(html))
+        self.assertEqual(aba_ativa(html), 'Início')
 
     def test_abas_para_usuario_logado(self):
         entrar_pela_web(self.web, self.cliente)
         html = self.html('/')
         self.assertIn('href="/perfil" aria-current', self.html('/perfil'))
-        self.assertIn('>Perfil<', html)
+        self.assertRegex(html, r'href="/perfil"[\s\S]*?Perfil')
         self.assertNotIn('>Entrar<', html)
         self.assertIn('botao-sair', html)
 
     def test_aba_ativa_conforme_a_pagina(self):
-        for caminho, esperada in (('/professores', 'Consulta'), ('/professores/1', 'Consulta'),
-                                  ('/comparar', 'Consulta'), ('/ranking', 'Ranking'),
+        for caminho, esperada in (('/professores', 'Explorar'), ('/professores/1', 'Explorar'),
+                                  ('/comparar', 'Comparar'), ('/ranking', 'Ranking'),
                                   ('/sobre', 'Sobre')):
             with self.subTest(caminho=caminho):
                 self.assertEqual(aba_ativa(self.html(caminho)), esperada)

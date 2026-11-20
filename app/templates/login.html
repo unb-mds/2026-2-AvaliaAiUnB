@@ -5,12 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Entrar - AvaliaUnb</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='auth.css') }}">
     {% include '_tema.html' %}
 </head>
 <body class="pagina-auth">
-<canvas class="fundo-animado" data-densidade="leve" aria-hidden="true"></canvas>
+{% include '_topo.html' %}
 <main class="auth card">
     <a class="voltar" href="{{ url_for('main.index') }}">
         <span aria-hidden="true">&larr;</span> Início
@@ -40,8 +38,14 @@
     </a>
 
     <p class="aviso-auth">Usamos seu nome e e-mail do Google para criar seu perfil. Sua senha do Google nunca passa pelo AvaliaUnb.</p>
+    {% if config.PREVIA_VISUAL %}
+    <aside class="mensagem" aria-label="Acesso de teste local">
+        <p>Na prévia local, use uma conta de teste. As ações ficam apenas neste notebook.</p>
+        <p><a class="botao botao-primario" href="{{ url_for('demo_editorial', papel='autor', next=next_url) }}">Entrar como autor de teste</a></p>
+        <p><a class="botao botao-secundario" href="{{ url_for('demo_editorial', papel='leitor', next=next_url) }}">Entrar como leitor de teste</a></p>
+    </aside>
+    {% endif %}
 </main>
 {% include '_rodape.html' %}
-<script src="{{ url_for('static', filename='fundo-animado.js') }}" defer></script>
 </body>
 </html>

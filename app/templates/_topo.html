@@ -1,44 +1,31 @@
-{# Barra do topo compartilhada. Espera `usuario` no contexto. Estilos em base.css. #}
 {% from '_macros.html' import logo %}
 {% set endpoint = request.endpoint or '' %}
-{% if endpoint == 'professores.ranking' %}{% set aba_ativa = 'ranking' %}
-{% elif endpoint.startswith('professores.') %}{% set aba_ativa = 'consulta' %}
-{% elif endpoint == 'main.sobre' %}{% set aba_ativa = 'sobre' %}
-{% elif endpoint.startswith('auth.') %}{% set aba_ativa = 'perfil' %}
-{% else %}{% set aba_ativa = '' %}{% endif %}
-<header class="topo">
-    <div class="topo-conteudo">
-        <a class="marca logo" href="{{ url_for('main.index') }}" title="Voltar ao início">
-            {{ logo() }}
-        </a>
-
-        <nav class="abas" aria-label="Menu principal">
-            <a class="aba" href="{{ url_for('professores.listar') }}"{% if aba_ativa == 'consulta' %} aria-current="page"{% endif %}>Consulta</a>
-            <a class="aba" href="{{ url_for('professores.ranking') }}"{% if aba_ativa == 'ranking' %} aria-current="page"{% endif %}>Ranking</a>
-            <a class="aba" href="{{ url_for('main.sobre') }}"{% if aba_ativa == 'sobre' %} aria-current="page"{% endif %}>Sobre</a>
-            {% if usuario %}
-            <a class="aba" href="{{ url_for('auth.perfil') }}"{% if aba_ativa == 'perfil' %} aria-current="page"{% endif %}>Perfil</a>
-            {% else %}
-            <a class="aba" href="{{ url_for('auth.login') }}"{% if aba_ativa == 'perfil' %} aria-current="page"{% endif %}>Entrar</a>
-            {% endif %}
+{% set ativa = endpoint if endpoint in ('main.index', 'main.sobre', 'professores.ranking', 'professores.comparar') else ('professores.listar' if endpoint.startswith('professores.') else '') %}
+<header class="head topo">
+    <div id="reading-progress" aria-hidden="true"></div>
+    <div class="shell head-inner">
+        <a class="brand marca logo" href="{{ url_for('main.index') }}" title="Voltar ao início">{{ logo() }}<small>UNIVERSIDADE DE BRASÍLIA</small></a>
+        <nav class="nav mobile-web-menu" id="menu-principal" aria-label="Menu principal">
+            <span class="mobile-menu-caption">EXPLORE O AVALIAUNB</span>
+            {% for destino, rotulo in (('main.index', 'Início'), ('professores.listar', 'Explorar'), ('professores.ranking', 'Ranking'), ('professores.comparar', 'Comparar'), ('main.sobre', 'Sobre')) %}
+            <a class="aba" href="{{ url_for(destino) }}"{% if ativa == destino %} aria-current="page"{% endif %}><span>{{ rotulo }}</span></a>
+            {% endfor %}
+            <div class="mobile-menu-footer">
+                <span>FEITO PARA A COMUNIDADE<br>UNIVERSIDADE DE BRASÍLIA</span>
+                <a class="btn ghost" href="{{ url_for('auth.perfil' if usuario else 'auth.login') }}">{{ 'Perfil' if usuario else 'Entrar' }}</a>
+                {% if usuario %}<form action="{{ url_for('auth.logout') }}" method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="formato" value="html"><button class="btn ghost" type="submit">Sair</button></form>{% endif %}
+            </div>
         </nav>
-
-        <button type="button" class="botao-tema" aria-pressed="false" aria-label="Ativar tema claro">
-            <svg class="icone-sol" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-                <circle cx="12" cy="12" r="4"></circle>
-                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
-            </svg>
-            <svg class="icone-lua" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-                <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"></path>
-            </svg>
-        </button>
-
-        {% if usuario %}
-        <form action="{{ url_for('auth.logout') }}" method="POST" class="form-sair">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <input type="hidden" name="formato" value="html">
-            <button type="submit" class="botao-sair">Sair</button>
-        </form>
-        {% endif %}
+        <div class="actions topo-acoes">
+            <button class="mobile-menu-toggle menu-editorial" type="button" aria-label="Menu principal" aria-controls="menu-principal" aria-expanded="false"><span></span><span></span><span></span></button>
+            <button class="icon-button botao-tema" id="themeBtn" type="button" aria-pressed="false" aria-label="Tema claro">
+                <svg class="icone-sol" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.4 1.4m11.2 11.2L19 19M5 19l1.4-1.4M17.6 6.4 19 5"/></svg>
+                <svg class="icone-lua" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+            </button>
+            <a class="btn ghost botao-conta"{% if usuario %} title="Olá, {{ usuario.nome }}"{% endif %} href="{{ url_for('auth.perfil' if usuario else 'auth.login') }}"{% if endpoint in ('auth.perfil', 'auth.login') %} aria-current="page"{% endif %}><span>{{ 'Perfil' if usuario else 'Entrar' }}</span><span class="conta-seta" aria-hidden="true">↗</span></a>
+            {% if usuario %}<form action="{{ url_for('auth.logout') }}" method="post" class="form-sair"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="formato" value="html"><button class="tool-btn botao-sair" type="submit">Sair</button></form>{% endif %}
+        </div>
     </div>
+    <button type="button" class="mobile-menu-backdrop" aria-label="Fechar menu" tabindex="-1"></button>
 </header>
+<script src="{{ url_for('static', filename='editorial.js') }}" defer></script>

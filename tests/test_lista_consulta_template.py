@@ -129,7 +129,7 @@ class TestAvaliacoesSemDificuldade(BaseLista):
 class TestBotaoComentarios(BaseLista):
     def test_link_para_o_perfil_com_next_e_ancora(self):
         html = self.lista('/professores?nome=jose')
-        botao = re.search(r'<a class="botao botao-secundario" href="([^"]+)" '
+        botao = re.search(r'<a class="btn ghost" href="([^"]+)" '
                           r'aria-label="Ver comentários de JOSÉ ÁVILA">Comentários</a>', html)
 
         self.assertIsNotNone(botao)

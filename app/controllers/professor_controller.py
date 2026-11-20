@@ -7,7 +7,8 @@ from app.repositorio import (CRITERIOS_RANKING, LIMITE_COMENTARIOS, LIMITE_SUGES
                              MAXIMO_SUGESTOES, MINIMO_AVALIACOES_RANKING,
                              ComentarioRepository, repositorios)
 from app.utils import normalizar_busca
-from app.validacoes import CRITERIOS, validar_avaliacao, validar_comentario
+from app.validacoes import (CRITERIOS, MOTIVOS_DENUNCIA, validar_avaliacao,
+                            validar_comentario, validar_denuncia)
 
 MINIMO_AVALIACOES_COMPARACAO = MINIMO_AVALIACOES_RANKING
 
@@ -493,6 +494,33 @@ def excluir_comentario(comentario_id, usuario):
     if not repositorios().comentarios.excluir(comentario_id, usuario['id']):
         abort(404, description='Comentário não encontrado.')
     return True
+
+
+def carregar_comentario_denunciavel(comentario_id, usuario):
+    """Comentário publicado de outra pessoa. 404 se não existir, estiver oculto ou for
+    do próprio usuário (o autor não denuncia o próprio texto)."""
+    comentario = repositorios().comentarios.buscar_visivel(comentario_id)
+    if comentario is None or comentario['usuario_id'] == usuario['id']:
+        abort(404, description='Comentário não encontrado.')
+    return comentario
+
+
+def motivos_denuncia():
+    return MOTIVOS_DENUNCIA
+
+
+def validar_dados_denuncia(dados):
+    """(motivo, explicacao, erros) do formulário de denúncia."""
+    return validar_denuncia(dados.get('motivo'), dados.get('explicacao'))
+
+
+def ja_denunciou(comentario_id, usuario):
+    return repositorios().denuncias.tem_denuncia_ativa(comentario_id, usuario['id'])
+
+
+def denunciar_comentario(comentario_id, usuario, motivo, explicacao):
+    """Registra a denúncia do usuário logado. False se ele já tem uma ativa."""
+    return repositorios().denuncias.criar(comentario_id, usuario['id'], motivo, explicacao)
 
 
 def carregar_comentarios(professor_id, disciplinas, filtro_bruto, usuario):

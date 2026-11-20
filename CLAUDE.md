@@ -41,6 +41,7 @@ Layered: routes → controllers → repositories → Supabase (PostgreSQL).
 - `002_comentarios.sql` — dedicated `comentarios` table (FKs to `perfis`, `professores`, `disciplinas`; text length 2–1000 chars; soft-hide via `ocultado_em`; trigger `set_atualizado_em`; RLS policies restricting public reads to non-hidden rows and writes to the author for disciplines taught by that professor).
 - `003_emails_verificados.sql` — `emails_verificados` table (`usuario_id` PK/FK to `perfis`, `endereco_sha256`, RLS restricted to `service_role`).
 - `004_professores_unicos.sql` — merges professors duplicated across units (moves `turmas`, `avaliacoes`, `comentarios` to the kept row) and replaces `UNIQUE (nome, departamento)` with `UNIQUE (nome)` (issue #235).
+- `005_denuncias_comentarios.sql` — private `denuncias_comentarios` table (motivo CHECK, optional explicação ≤ 500, `resolvida_em`; partial unique index = one active report per user/comment; RLS with no grants to `anon`/`authenticated`) (issue #215).
 
 ## Gotchas
 

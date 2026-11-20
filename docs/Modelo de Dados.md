@@ -1,11 +1,11 @@
 # Modelo de dados do AvaliaUnB (Supabase / PostgreSQL)
 
 > Issue #109. Depende da #90 (esquema versionado em `docs/migrations/`).
-> O esquema e as políticas estão versionados em SQL; sua aplicação em cada ambiente deve ser conferida. A tabela `comentarios` está versionada em `docs/migrations/002_comentarios.sql`, existe no banco e é usada pelo perfil do professor; as reações continuam **apenas proposta**, sem migração.
+> O esquema e as políticas estão versionados em SQL; sua aplicação em cada ambiente deve ser conferida. A tabela `comentarios` está versionada em `docs/migrations/002_comentarios.sql`, existe no banco e é usada pelo perfil do professor; as denúncias estão em `docs/migrations/005_denuncias_comentarios.sql` (seção 7); as reações continuam **apenas proposta**, sem migração.
 
 ## 1. Visão geral
 
-O banco tem cinco tabelas e uma view. Três são alimentadas pelo scraper do SIGAA (`professores`, `disciplinas`, `turmas`) e duas pelos usuários autenticados (`perfis`, `avaliacoes`). A tabela `comentarios` (seção 6) foi acrescentada depois e não aparece no diagrama.
+O banco tem cinco tabelas e uma view. Três são alimentadas pelo scraper do SIGAA (`professores`, `disciplinas`, `turmas`) e duas pelos usuários autenticados (`perfis`, `avaliacoes`). As tabelas `comentarios` (seção 6) e `denuncias_comentarios` (seção 7) foram acrescentadas depois e não aparecem no diagrama.
 
 ```mermaid
 erDiagram
@@ -178,6 +178,7 @@ SELECT t.id AS turma_id,
 | `perfis` | `avaliacoes` do usuário |
 | `professores` | `turmas` e `avaliacoes` do professor |
 | `disciplinas` | `turmas` e `avaliacoes` da disciplina |
+| `comentarios` | `denuncias_comentarios` do comentário |
 
 Consequência prática: o scraper não deve apagar professores ou disciplinas para "refazer" a carga, pois isso destrói as avaliações associadas. Deve usar upsert pelas chaves únicas acima.
 
@@ -381,10 +382,42 @@ REVOKE ALL ON comentarios_reacoes FROM PUBLIC, anon, authenticated;
 | Texto de 2 a 1.000 caracteres | O banco verifica o tamanho após retirar os espaços em branco das extremidades. O backend valida antes para devolver mensagem amigável. |
 | Só o autor edita ou apaga | O backend compara a sessão com o autor. A `service_role` ignora o RLS. |
 | Identidade do autor e de quem reage | O servidor usa a sessão verificada e não aceita `usuario_id` enviado pelo cliente. |
+| Uma denúncia ativa por conta e comentário | O índice único parcial garante a unicidade. O backend confere antes, recusa o próprio comentário e não expõe o denunciante (seção 7). |
 | Uma reação por conta e comentário | A chave primária garante a unicidade. O backend valida comentário visível e autor diferente de quem reage. |
 | Filtro antes de publicar ou editar | O backend só grava texto público depois da aprovação automática ou manual. |
 
-## 7. Como recriar o banco
+## 7. Denúncias de comentários (`denuncias_comentarios`)
+
+> Issue #215 (RF10, decisão C06). Versionada em
+> [`005_denuncias_comentarios.sql`](migrations/005_denuncias_comentarios.sql).
+> O painel do moderador fica para a #216.
+
+| Coluna | Tipo | Regra |
+|---|---|---|
+| `id` | `BIGINT` identity | Chave primária |
+| `comentario_id` | `BIGINT` → `comentarios(id)` | `NOT NULL`, `ON DELETE CASCADE` |
+| `usuario_id` | `UUID` → `perfis(id)` | Quem denunciou. `NOT NULL`, `ON DELETE CASCADE`. Nunca sai do backend |
+| `motivo` | `TEXT` | `CHECK` em `ofensa`, `dados_pessoais`, `discriminacao`, `ameaca`, `spam`, `fora_do_tema` |
+| `explicacao` | `TEXT` | Opcional, até 500 caracteres |
+| `criado_em` | `TIMESTAMPTZ` | `DEFAULT NOW()` |
+| `resolvida_em` | `TIMESTAMPTZ` | Nula enquanto a denúncia está ativa; preenchida pela moderação (#216) |
+
+- **Unicidade:** índice único parcial `(comentario_id, usuario_id) WHERE resolvida_em IS NULL`.
+  Cada pessoa tem no máximo uma denúncia ativa por comentário; depois de resolvida,
+  pode denunciar de novo. O backend confere antes de gravar e trata a violação do
+  índice (requisições simultâneas) como denúncia repetida.
+- **Privacidade:** RLS habilitado e nenhum privilégio para `anon` ou `authenticated`;
+  só `service_role` lê e grava. O autor do comentário e os visitantes não veem quem
+  denunciou nem a explicação. O comentário continua visível: o número de denúncias
+  não oculta o texto.
+- **Regras no backend** (`DenunciaRepository`, rota `/comentarios/<id>/denunciar`):
+  exige login e CSRF, limita a 10 envios por hora por usuário, recusa com 404 o
+  comentário oculto, inexistente ou do próprio usuário, e usa o denunciante da
+  sessão (um `usuario_id` enviado no formulário é ignorado).
+- **Retenção:** a proposta da C08 é apagar o registro até 90 dias após encerrar o
+  caso; a rotina de descarte fica para a moderação (#216).
+
+## 8. Como recriar o banco
 
 1. Criar um projeto Supabase vazio.
 2. No **SQL Editor**, executar o script versionado em `docs/migrations/001_initial_schema.sql` e verificar tabelas e políticas. Não executar os blocos de proposta da seção 6: a tabela `comentarios` vem do passo 5.
@@ -394,7 +427,8 @@ REVOKE ALL ON comentarios_reacoes FROM PUBLIC, anon, authenticated;
    - `SUPABASE_SERVICE_KEY`: chave `service_role` em *Project Settings → API*. É secreta: não commitar e não expor em templates.
    - `FLASK_DEBUG`: `0`, ou `1` somente em desenvolvimento local.
 4. Executar o scraper do SIGAA para popular `professores`, `disciplinas` e `turmas`.
-5. Executar `docs/migrations/002_comentarios.sql`, que depende do esquema inicial, para criar a tabela `comentarios`. Reações, denúncias e moderação ainda não têm migração (seção 6).
+5. Executar `docs/migrations/002_comentarios.sql`, que depende do esquema inicial, para criar a tabela `comentarios`. Reações e moderação ainda não têm migração (seção 6).
 6. Executar `docs/migrations/003_emails_verificados.sql` e `docs/migrations/004_professores_unicos.sql`. A 004 troca a chave do professor para `UNIQUE (nome)`; num banco vazio ela só faz essa troca.
+7. Executar `docs/migrations/005_denuncias_comentarios.sql` para criar a tabela privada de denúncias (seção 7).
 
 Veja também: [guia do backend](BACKEND.md), [guia do scraper](COMO_USAR_SCRAPER.md) e [mapa da documentação](GUIA_DOCUMENTACAO.md).

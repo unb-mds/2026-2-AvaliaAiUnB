@@ -91,7 +91,7 @@ class TestRanking(unittest.TestCase):
         self.assertEqual(resposta.status_code, 200)
         html = resposta.get_data(as_text=True)
         for texto in ('Posição', 'Média geral', 'Avaliações', '1º', '2º', '4,75 / 5',
-                      '<td>5</td>', '<td>6</td>', 'href="/professores/1"',
+                      '5 avaliações', '6 avaliações', 'class="rankrow"', 'href="/professores/1"',
                       'href="/professores"', 'href="/"'):
             self.assertIn(texto, html)
         self.assertLess(html.index('JOSÉ ÁVILA'), html.index('MARIA LIMA'))

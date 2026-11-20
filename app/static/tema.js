@@ -44,7 +44,6 @@
         var botoes = document.querySelectorAll(".botao-tema");
         for (var i = 0; i < botoes.length; i++) {
             botoes[i].setAttribute("aria-pressed", claro ? "true" : "false");
-            botoes[i].setAttribute("aria-label", claro ? "Ativar tema escuro" : "Ativar tema claro");
         }
     }
 
@@ -58,6 +57,7 @@
             return;
         }
         var claro = !temaClaro();
+        raiz.classList.add("tema-interagido");
         aplicar(claro);
         salvarEscolha(claro ? "claro" : "escuro");
         sincronizarBotoes();

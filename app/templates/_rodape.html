@@ -1,11 +1,11 @@
-{# Rodapé compartilhado. Estilos em base.css. #}
-<footer class="rodape" role="contentinfo">
-    <nav aria-label="Links institucionais">
-        <a href="{{ url_for('main.privacidade') }}">Política de Privacidade e Termos de Uso</a>
-        <span aria-hidden="true"> · </span>
-        <p>
-            Encontrou um erro ou tem uma sugestão?
+<div class="shell rodape-shell">
+    <footer class="footer rodape">
+        <span><strong>AvaliaUnB</strong> · Feito para a comunidade UnB</span>
+        <nav aria-label="Links do rodapé">
+            <a href="{{ url_for('main.sobre') }}"{% if request.endpoint == 'main.sobre' %} aria-current="page"{% endif %}>Sobre</a>
+            <a href="{{ url_for('main.privacidade') }}">Política de Privacidade</a>
             <a href="https://forms.gle/rC9X1DNocWFvjfQE7" target="_blank" rel="noopener noreferrer">Envie seu feedback<span class="sr-only"> (abre em nova aba)</span></a>
-        </p>
-    </nav>
-</footer>
+        </nav>
+    </footer>
+    {% if aviso_previa_editorial %}<p class="tiny-note previa-editorial-aviso">{{ aviso_previa_editorial }}</p>{% endif %}
+</div>

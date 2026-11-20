@@ -125,7 +125,8 @@
     color: var(--cor-principal);
 }
 
-.comentario-acoes a.acao-excluir:hover {
+.comentario-acoes a.acao-excluir:hover,
+.comentario-acoes a.acao-denunciar:hover {
     background-color: var(--cor-erro-suave);
     color: var(--cor-erro);
 }
@@ -236,6 +237,41 @@
 
 .pagina-comentario .botao-destrutivo:focus-visible {
     outline-color: var(--cor-erro);
+}
+
+/* ---------- Página de denúncia ---------- */
+.motivos-denuncia {
+    margin: 0 0 var(--espaco-4);
+    padding: var(--espaco-4);
+    border: 1px solid var(--cor-divisor-suave);
+    border-radius: 14px;
+    background-color: var(--cor-fundo-suave);
+}
+
+.motivos-denuncia legend {
+    padding: 0 var(--espaco-1);
+    font-weight: 700;
+}
+
+.opcao-motivo {
+    display: flex;
+    align-items: center;
+    gap: var(--espaco-2);
+    min-height: 40px;
+    cursor: pointer;
+}
+
+.opcao-motivo input {
+    width: 1.1rem;
+    height: 1.1rem;
+    margin: 0;
+    accent-color: var(--cor-principal);
+}
+
+.pagina-comentario .denuncia-recebida {
+    border-left: 4px solid var(--cor-principal);
+    background-color: var(--cor-principal-suave);
+    font-weight: 700;
 }
 
 /* ---------- A partir de 601 px ---------- */

@@ -88,7 +88,7 @@ class TestMaisDeCinco(BaseDisciplinas):
         cartao = self.cartao()
 
         self.assertLess(cartao.index('<details'), cartao.index('<div class="professor-acoes">'))
-        self.assertGreater(cartao.index('<details'), cartao.index('<ul class="disciplinas">'))
+        self.assertGreater(cartao.index('<details class="disciplinas-extras">'), cartao.index('<ul class="disciplinas">'))
 
 
 class TestOrdem(BaseDisciplinas):

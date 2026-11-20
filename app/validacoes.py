@@ -28,6 +28,32 @@ def validar_comentario(texto):
     return limpo, None
 
 
+# Motivos de denúncia (docs/COMENTARIOS.md, "Denúncia e moderação"). As chaves são as
+# aceitas pelo CHECK de denuncias_comentarios (docs/migrations/005_denuncias_comentarios.sql).
+MOTIVOS_DENUNCIA = {
+    'ofensa': 'Ofensa ou ataque pessoal',
+    'dados_pessoais': 'Exposição de dados pessoais',
+    'discriminacao': 'Discriminação',
+    'ameaca': 'Ameaça',
+    'spam': 'Spam',
+    'fora_do_tema': 'Conteúdo alheio à experiência pedagógica',
+}
+EXPLICACAO_DENUNCIA_MAXIMO = 500
+
+
+def validar_denuncia(motivo, explicacao):
+    """Valida motivo e explicação opcional. Devolve (motivo, explicacao_ou_None, erros)."""
+    erros = {}
+    motivo = (motivo or '').strip()
+    if motivo not in MOTIVOS_DENUNCIA:
+        erros['motivo'] = 'Escolha o motivo da denúncia.'
+    limpa = (explicacao or '').replace('\r\n', '\n').replace('\r', '\n').strip()
+    if len(limpa) > EXPLICACAO_DENUNCIA_MAXIMO:
+        erros['explicacao'] = (f'A explicação pode ter no máximo '
+                               f'{EXPLICACAO_DENUNCIA_MAXIMO} caracteres.')
+    return motivo, limpa or None, erros
+
+
 def validar_avaliacao(dados, criterios=CRITERIOS):
     notas, erros = {}, {}
     for criterio, titulo in criterios.items():

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Denunciar comentário - AvaliaUnb</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='indicadores.css') }}">
+    {% include '_tema.html' %}
+</head>
+<body>
+    {% include '_topo.html' %}
+
+    <main class="conteudo">
+    <div class="avaliacao-container card pagina-comentario">
+        <header class="cabecalho-pagina">
+            <p class="selo">Denunciar comentário</p>
+            <h1>Denunciar comentário sobre {{ professor.nome }}</h1>
+            <p class="subtitulo">
+                {{ comentario.disciplina_nome }}{% if comentario.disciplina_codigo %} — {{ comentario.disciplina_codigo }}{% endif %}
+            </p>
+        </header>
+
+        <blockquote>{{ comentario.texto|truncate(200, true) }}</blockquote>
+
+        {% if ja_denunciou %}
+        <p class="mensagem denuncia-recebida" role="status">
+            Denúncia recebida. A moderação vai analisar o comentário.
+            Quem escreveu não fica sabendo quem denunciou.
+        </p>
+        <div class="acoes">
+            <a class="botao botao-primario" href="{{ url_voltar }}" autofocus>Voltar ao perfil</a>
+        </div>
+        {% else %}
+        <p class="mensagem" role="note">
+            Sua denúncia é privada: o autor do comentário e os visitantes não veem quem denunciou.
+            Discordar da opinião ou uma avaliação negativa não são, por si só, motivo de remoção.
+        </p>
+
+        <form method="post" action="{{ url_for('professores.denunciar_comentario', comentario_id=comentario.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="next" value="{{ next_url }}">
+            {% if filtro_comentarios %}<input type="hidden" name="comentarios_disciplina" value="{{ filtro_comentarios }}">{% endif %}
+
+            <fieldset class="campo motivos-denuncia"
+                      {% if erros.motivo %}aria-invalid="true" aria-describedby="erro-motivo-denuncia"{% endif %}>
+                <legend>Motivo da denúncia</legend>
+                {% for chave, rotulo in motivos.items() %}
+                <label class="opcao-motivo">
+                    <input type="radio" name="motivo" value="{{ chave }}" required
+                           {% if dados.get('motivo') == chave %}checked{% endif %}>
+                    {{ rotulo }}
+                </label>
+                {% endfor %}
+                {% if erros.motivo %}
+                <p class="campo-erro" id="erro-motivo-denuncia" role="alert">{{ erros.motivo }}</p>
+                {% endif %}
+            </fieldset>
+
+            <div class="campo">
+                <label for="explicacao_denuncia">Explicação (opcional)</label>
+                <textarea name="explicacao" id="explicacao_denuncia" rows="4" maxlength="500"
+                          aria-describedby="ajuda-explicacao-denuncia{% if erros.explicacao %} erro-explicacao-denuncia{% endif %}"
+                          {% if erros.explicacao %}aria-invalid="true"{% endif %}>{{ dados.get('explicacao', '') }}</textarea>
+                <p class="campo-ajuda" id="ajuda-explicacao-denuncia">Até 500 caracteres. Não inclua dados pessoais.</p>
+                {% if erros.explicacao %}
+                <p class="campo-erro" id="erro-explicacao-denuncia" role="alert">{{ erros.explicacao }}</p>
+                {% endif %}
+            </div>
+
+            <div class="acoes">
+                <button type="submit" class="botao botao-destrutivo">Enviar denúncia</button>
+                <a class="cancelar botao botao-secundario" href="{{ url_voltar }}">Cancelar</a>
+            </div>
+        </form>
+        {% endif %}
+    </div>
+    </main>
+    {% include '_rodape.html' %}
+</body>
+</html>
