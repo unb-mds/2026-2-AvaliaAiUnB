@@ -387,16 +387,21 @@ def carregar_comparacao(dados):
                 minimo_avaliacoes_destaque=MINIMO_AVALIACOES_COMPARACAO)
 
 
-def carregar_ranking(departamento=''):
-    repos = repositorios()
-    lista_departamentos = repos.professores.listar_departamentos()
+def carregar_filtro_departamento(departamento=''):
+    """Opções reais do catálogo e grafia canônica do filtro informado."""
+    lista_departamentos = repositorios().professores.listar_departamentos()
     chave = normalizar_busca(departamento)
     departamento_ativo = next(
         (dep for dep in lista_departamentos if normalizar_busca(dep) == chave),
         departamento.strip(),
     ) if chave else ''
+    return lista_departamentos, departamento_ativo
+
+
+def carregar_ranking(departamento=''):
+    lista_departamentos, departamento_ativo = carregar_filtro_departamento(departamento)
     return (
-        repos.professores.ranking(departamento_ativo),
+        repositorios().professores.ranking(departamento_ativo),
         MINIMO_AVALIACOES_RANKING,
         lista_departamentos,
         departamento_ativo,
