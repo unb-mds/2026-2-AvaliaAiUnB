@@ -7,8 +7,7 @@
     --cor-divisor-suave: var(--line); --cor-borda-campo: var(--line); --cor-hover-suave: var(--wash);
 }
 body { max-width: none; padding: 0; line-height: normal; }
-.icone-seta { display: inline-block; width: 1em; height: 1em; flex-shrink: 0; vertical-align: -0.125em; pointer-events: none; }
-.search .icone-seta { color: inherit; }
+.icone-seta { display: inline-block; flex-shrink: 0; color: inherit; font-family: "Inter", "Arial", sans-serif; font-variant-emoji: text; line-height: 1; pointer-events: none; }
 .conta-seta { display: inline-flex; align-items: center; justify-content: center; }
 main { animation: none; }
 [hidden] { display: none !important; }
