@@ -1,4 +1,4 @@
-{% from '_macros.html' import barra_dificuldade %}
+{% from '_macros.html' import icone_seta, barra_dificuldade %}
 <!DOCTYPE html>
 
 <html lang="pt-BR">
@@ -234,8 +234,8 @@
                 <div class="bigscore">{% if professor.media_geral is not none %}{{ ('%.2f'|format(professor.media_geral))|replace('.', ',') }}{% else %}N/A{% endif %} <small>★ nota média</small></div>
                 <div class="divider"></div>
                 <p><strong>{{ professor.indicadores.quantidade }}</strong> avaliações registradas</p>
-                <a class="text-link" href="{{ url_for('professores.perfil', professor_id=professor.id, disciplina_id=disciplina.id if disciplina else None) }}">Ver perfil completo ↗</a>
-                <button class="text-link alterar-comparacao" type="button" data-abrir-comparacao>Alterar seleção ↗</button>
+                <a class="text-link" href="{{ url_for('professores.perfil', professor_id=professor.id, disciplina_id=disciplina.id if disciplina else None) }}">Ver perfil completo {{ icone_seta() }}</a>
+                <button class="text-link alterar-comparacao" type="button" data-abrir-comparacao>Alterar seleção {{ icone_seta() }}</button>
             </section>
             {% endfor %}
         </div>
