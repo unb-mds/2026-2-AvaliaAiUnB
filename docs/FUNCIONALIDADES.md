@@ -75,6 +75,29 @@ Uma avaliação só entra no cálculo das médias quando todos os cinco critéri
 têm notas inteiras de um a cinco. Sem avaliações válidas, a página informa
 essa condição e não atribui uma nota artificial.
 
+### Evolução por semestre (RF12)
+
+Abaixo das médias, a seção **Evolução por semestre** mostra um gráfico de linha
+com a média do professor em cada semestre, somando todas as disciplinas. O
+semestre é o `ano`/`periodo` gravado na avaliação (o da turma mais recente do
+par no momento da avaliação).
+
+- **Critério:** os botões trocam o que o gráfico mostra (parâmetro
+  `evolucao_criterio`): média geral (padrão; média dos quatro critérios, sem a
+  dificuldade, como no topo do perfil) ou um dos cinco critérios. Valor
+  desconhecido volta para a média geral.
+- **Escala fixa de 1 a 5**, para não exagerar pequenas variações. O gráfico mostra
+  os 6 semestres mais recentes; a tabela mostra todos.
+- **Alternativa em texto:** o SVG tem título e descrição (do primeiro ao último
+  semestre), cada ponto mostra semestre, média e número de avaliações ao passar o
+  mouse, e "Ver os dados em tabela" lista todos os semestres e critérios.
+- **Estado vazio:** com avaliações de um só semestre, ou nenhuma, a seção mostra
+  uma mensagem no lugar do gráfico.
+- Só avaliações válidas entram, pela mesma regra das médias. O SVG é gerado no
+  servidor (`app/grafico.py` calcula as coordenadas; o template desenha) e usa
+  apenas classes CSS (`evolucao.css`), sem JavaScript nem `style` inline, por
+  causa da CSP.
+
 ## Comentários no perfil do professor
 
 O perfil do professor tem uma seção **Comentários**, separada das notas.
@@ -169,7 +192,7 @@ catálogo. Se ninguém atingir o mínimo, a página informa esse estado.
 
 ## Funcionalidades planejadas
 
-Filtros por faixa de nota e volume de avaliações, favoritos, gráficos,
+Filtros por faixa de nota e volume de avaliações, favoritos, outros gráficos,
 reações, ordenação de comentários escolhida pela pessoa, filtro automático,
 denúncias e moderação ainda não têm fluxo implementado.
 

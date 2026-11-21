@@ -101,6 +101,9 @@ def _renderizar_perfil(professor, disciplinas, disciplina, next_url, filtro_brut
         indicadores=controller.indicadores(professor_id, disciplina['id']) if disciplina else None,
         criterios=controller.criterios(), next_url=next_url,
         geral=controller.indicadores(professor_id, None),
+        evolucao=controller.evolucao_por_semestre(professor_id,
+                                                  request.args.get('evolucao_criterio')),
+        criterios_evolucao=controller.criterios_evolucao(),
         usuario=usuario, login_url=login_url, **comentarios, **contexto)
     return pagina, status
 

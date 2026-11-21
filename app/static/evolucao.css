@@ -1,0 +1,39 @@
+/* Evolução das notas por semestre (issue #224). Só classes: a CSP bloqueia style
+   inline. Cores pelos tokens do tema (modelo-editorial.css), escuro e claro. */
+.evolucao { margin-top: 36px; padding-top: 24px; border-top: 1px solid var(--line); }
+.evolucao h2 { font: 700 12px Inter, sans-serif; color: var(--muted); margin: 0 0 6px; }
+.evolucao .ajuda { color: var(--muted); font-size: 11px; line-height: 1.6; margin: 0; }
+.evolucao .mensagem { margin-top: 16px; font-size: 12px; }
+
+.evolucao-criterios { gap: 6px; margin: 16px 0 6px; }
+.evolucao-criterios .filter { padding: 7px 10px; font-size: 11px; text-decoration: none; }
+.evolucao-criterios .filter:not(.active):hover { color: var(--text); border-color: var(--accent); }
+
+.evolucao-figura { margin: 0; }
+.grafico-evolucao { display: block; width: 100%; height: auto; max-width: 420px; overflow: visible; }
+.grafico-grade { stroke: var(--line); stroke-width: 1; }
+.grafico-eixo { fill: var(--muted); font: 500 11px Inter, sans-serif; }
+.grafico-linha { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+/* Anel da cor do fundo separa o ponto da linha */
+.grafico-marca { fill: var(--accent); stroke: var(--bg); stroke-width: 2; }
+.grafico-alvo { fill: transparent; }
+.grafico-ponto:hover .grafico-marca { stroke: var(--text); }
+.grafico-valor { fill: var(--text); font: 700 12px Inter, sans-serif; }
+.evolucao-figura figcaption { margin-top: 4px; }
+
+.evolucao-tabela { margin-top: 14px; font-size: 12px; }
+.evolucao-tabela summary { cursor: pointer; color: var(--muted); font-weight: 600; }
+.evolucao-tabela summary:hover { color: var(--text); }
+.tabela-rolagem { overflow-x: auto; margin-top: 10px; }
+.tabela-rolagem:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.evolucao-tabela table { border-collapse: collapse; min-width: 100%; white-space: nowrap; }
+.evolucao-tabela :is(th, td) { padding: 7px 10px 7px 0; border-bottom: 1px solid var(--line); text-align: right; }
+.evolucao-tabela :is(th, td):first-child { text-align: left; }
+.evolucao-tabela thead th { color: var(--muted); font-weight: 600; }
+
+@media (forced-colors: active) {
+    .grafico-linha { stroke: CanvasText; }
+    .grafico-marca { fill: CanvasText; stroke: Canvas; }
+    .grafico-grade { stroke: GrayText; }
+    .grafico-eixo, .grafico-valor { fill: CanvasText; }
+}
