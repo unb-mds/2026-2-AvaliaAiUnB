@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 508" width="400" height="508" role="img" aria-labelledby="title description" font-family="Arial, sans-serif">
+  <title id="title">Confirmar exclusão</title>
+  <desc id="description">Diálogo de confirmação identifica o professor, a disciplina e a consequência. O foco inicial está em Cancelar.</desc>
+  <rect x="0" y="0" width="400" height="508" rx="0" fill="#F2F4F7" stroke="none"/>
+  <rect x="0" y="0" width="400" height="58" rx="0" fill="#174B83" stroke="none"/>
+  <text x="16" y="37" font-size="20" font-weight="700" fill="#FFFFFF" text-anchor="start">AvaliaUnB</text>
+  <text x="16" y="111" font-size="24" font-weight="700" fill="#202124" text-anchor="start">Comentários</text>
+  <rect x="16" y="134" width="368" height="145" rx="12" fill="#FFFFFF" stroke="none"/>
+  <text x="32" y="164" font-size="15" font-weight="700" fill="#202124" text-anchor="start">@estudante · Cálculo 1</text>
+  <text x="32" y="192" font-size="15" font-weight="400" fill="#202124" text-anchor="start">Os exemplos ajudaram a entender o conteúdo.</text>
+  <text x="32" y="238" font-size="15" font-weight="700" fill="#174B83" text-anchor="start">Editar</text>
+  <text x="104" y="238" font-size="15" font-weight="700" fill="#A01818" text-anchor="start">Apagar</text>
+  <rect x="0" y="58" width="400" height="450" fill="#202124" opacity=".45"/>
+  <rect x="16" y="141" width="368" height="232" rx="12" fill="#FFFFFF" stroke="none"/>
+  <text x="32" y="181" font-size="24" font-weight="700" fill="#202124" text-anchor="start">Apagar comentário?</text>
+  <text x="32" y="211" font-size="15" fill="#202124">Seu comentário de Cálculo 1 sobre o</text>
+  <text x="32" y="233" font-size="15" fill="#202124">Professor de exemplo e as reações</text>
+  <text x="32" y="255" font-size="15" fill="#202124">serão apagados.</text>
+  <rect x="28" y="278" width="152" height="52" rx="8" fill="#FFFFFF" stroke="#174B83"/>
+  <rect x="32" y="282" width="144" height="44" rx="8" fill="#FFFFFF" stroke="#174B83"/>
+  <text x="104" y="309" font-size="15" font-weight="700" fill="#174B83" text-anchor="middle">Cancelar</text>
+  <rect x="192" y="282" width="176" height="44" rx="8" fill="#A01818" stroke="none"/>
+  <text x="280" y="309" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">Apagar comentário</text>
+</svg>
