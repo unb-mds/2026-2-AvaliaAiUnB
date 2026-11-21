@@ -1,11 +1,11 @@
 # Modelo de dados do AvaliaUnB (Supabase / PostgreSQL)
 
 > Issue #109. Depende da #90 (esquema versionado em `docs/migrations/`).
-> O esquema e as políticas estão versionados em SQL; sua aplicação em cada ambiente deve ser conferida. A tabela `comentarios` está versionada em `docs/migrations/002_comentarios.sql`, existe no banco e é usada pelo perfil do professor; as denúncias estão em `docs/migrations/005_denuncias_comentarios.sql` (seção 7); as reações continuam **apenas proposta**, sem migração.
+> O esquema e as políticas estão versionados em SQL; sua aplicação em cada ambiente deve ser conferida. A tabela `comentarios` está versionada em `docs/migrations/002_comentarios.sql`, existe no banco e é usada pelo perfil do professor; as denúncias estão em `docs/migrations/005_denuncias_comentarios.sql` (seção 7) e os favoritos em `docs/migrations/006_favoritos.sql` (seção 8); as reações continuam **apenas proposta**, sem migração.
 
 ## 1. Visão geral
 
-O banco tem cinco tabelas e uma view. Três são alimentadas pelo scraper do SIGAA (`professores`, `disciplinas`, `turmas`) e duas pelos usuários autenticados (`perfis`, `avaliacoes`). As tabelas `comentarios` (seção 6) e `denuncias_comentarios` (seção 7) foram acrescentadas depois e não aparecem no diagrama.
+O banco tem cinco tabelas e uma view. Três são alimentadas pelo scraper do SIGAA (`professores`, `disciplinas`, `turmas`) e duas pelos usuários autenticados (`perfis`, `avaliacoes`). As tabelas `comentarios` (seção 6), `denuncias_comentarios` (seção 7) e `favoritos` (seção 8) foram acrescentadas depois e não aparecem no diagrama.
 
 ```mermaid
 erDiagram
@@ -181,6 +181,7 @@ SELECT t.id AS turma_id,
 | `professores` | `turmas` e `avaliacoes` do professor |
 | `disciplinas` | `turmas` e `avaliacoes` da disciplina |
 | `comentarios` | `denuncias_comentarios` do comentário |
+| `perfis` ou `professores` | `favoritos` do usuário ou do professor |
 
 Consequência prática: o scraper não deve apagar professores ou disciplinas para "refazer" a carga, pois isso destrói as avaliações associadas. Deve usar upsert pelas chaves únicas acima.
 
@@ -419,7 +420,29 @@ REVOKE ALL ON comentarios_reacoes FROM PUBLIC, anon, authenticated;
 - **Retenção:** a proposta da C08 é apagar o registro até 90 dias após encerrar o
   caso; a rotina de descarte fica para a moderação (#216).
 
-## 8. Como recriar o banco
+## 8. Professores favoritos (`favoritos`)
+
+> Issue #223 (RF11). Versionada em [`006_favoritos.sql`](migrations/006_favoritos.sql).
+> Notificações quando um favorito recebe avaliação ficam fora do escopo.
+
+| Coluna | Tipo | Regra |
+|---|---|---|
+| `usuario_id` | `UUID` → `perfis(id)` | Dono da lista. `NOT NULL`, `ON DELETE CASCADE` |
+| `professor_id` | `BIGINT` → `professores(id)` | `NOT NULL`, `ON DELETE CASCADE` |
+| `criado_em` | `TIMESTAMPTZ` | `DEFAULT NOW()`; ordena a lista (mais recentes primeiro) |
+
+- **Unicidade:** chave primária `(usuario_id, professor_id)`. O backend grava com
+  upsert `ON CONFLICT DO NOTHING`, então favoritar de novo não duplica.
+- **Privacidade:** RLS habilitado; `anon` não tem acesso e `authenticated` só lê,
+  insere e apaga linhas com `usuario_id = auth.uid()`. A lista aparece só no
+  `/perfil` do próprio dono.
+- **Regras no backend** (`FavoritoRepository`, rota `POST /professores/<id>/favorito`
+  com `acao=adicionar|remover`): exige login e CSRF, limita a 60 envios por hora por
+  usuário, responde 404 para professor inexistente e usa o dono da sessão (um
+  `usuario_id` enviado no formulário é ignorado). O redirecionamento só aceita
+  `destino` interno (`is_safe_url`).
+
+## 9. Como recriar o banco
 
 1. Criar um projeto Supabase vazio.
 2. No **SQL Editor**, executar o script versionado em `docs/migrations/001_initial_schema.sql` e verificar tabelas e políticas. Não executar os blocos de proposta da seção 6: a tabela `comentarios` vem do passo 5.
@@ -432,6 +455,7 @@ REVOKE ALL ON comentarios_reacoes FROM PUBLIC, anon, authenticated;
 5. Executar `docs/migrations/002_comentarios.sql`, que depende do esquema inicial, para criar a tabela `comentarios`. Reações e moderação ainda não têm migração (seção 6).
 6. Executar `docs/migrations/003_emails_verificados.sql` e `docs/migrations/004_professores_unicos.sql`. A 004 troca a chave do professor para `UNIQUE (nome)`; num banco vazio ela só faz essa troca.
 7. Executar `docs/migrations/005_denuncias_comentarios.sql` para criar a tabela privada de denúncias (seção 7).
-8. Executar `docs/migrations/007_avaliacao_por_semestre.sql` para permitir uma avaliação por turma cursada (seção 2.5).
+8. Executar `docs/migrations/006_favoritos.sql` para criar a tabela de favoritos (seção 8).
+9. Executar `docs/migrations/007_avaliacao_por_semestre.sql` para permitir uma avaliação por turma cursada (seção 2.5).
 
 Veja também: [guia do backend](BACKEND.md), [guia do scraper](COMO_USAR_SCRAPER.md) e [mapa da documentação](GUIA_DOCUMENTACAO.md).

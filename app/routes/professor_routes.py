@@ -5,7 +5,7 @@ from app.controllers import professor_controller as controller
 from app.controllers.session_controller import (login_required, obter_usuario_atual,
                                                 sanitizar_destino)
 from app.seguranca import (is_safe_url, limitar_avaliacao, limitar_comentario,
-                           limitar_denuncia, limitar_sugestoes)
+                           limitar_denuncia, limitar_favorito, limitar_sugestoes)
 
 professor_bp = Blueprint('professores', __name__)
 
@@ -112,6 +112,7 @@ def _renderizar_perfil(professor, disciplinas, disciplina, next_url, filtro_brut
         evolucao=controller.evolucao_por_semestre(professor_id,
                                                   request.args.get('evolucao_criterio')),
         criterios_evolucao=controller.criterios_evolucao(),
+        favorito=controller.eh_favorito(usuario, professor_id),
         usuario=usuario, login_url=login_url, **comentarios, **contexto)
     return pagina, status
 
@@ -122,6 +123,25 @@ def perfil(professor_id):
     return _renderizar_perfil(professor, disciplinas, disciplina,
                               _next_seguro(request.args.get('next')),
                               request.args.get('comentarios_disciplina'))
+
+
+@professor_bp.post('/professores/<int:professor_id>/favorito')
+@login_required
+@limitar_favorito
+def favoritar(professor_id):
+    """Favorita (acao=adicionar) ou desfavorita (acao=remover) o professor (issue #223)."""
+    acao = request.form.get('acao')
+    if acao not in ('adicionar', 'remover'):
+        abort(400, description='Ação inválida.')
+    # O dono da lista vem só da sessão; um usuario_id enviado no formulário é ignorado.
+    favorito = controller.alterar_favorito(obter_usuario_atual(), professor_id,
+                                           acao == 'adicionar')
+    if request.accept_mimetypes.best == 'application/json':
+        return jsonify({'professor_id': professor_id, 'favorito': favorito})
+    destino = request.form.get('destino')
+    if not is_safe_url(destino):
+        destino = url_for('professores.perfil', professor_id=professor_id)
+    return redirect(destino, code=303)
 
 
 @professor_bp.post('/professores/<int:professor_id>/comentarios')

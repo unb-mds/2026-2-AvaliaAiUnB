@@ -1,7 +1,7 @@
 """Repositórios sobre o Supabase: usuários (Auth + perfis), professores e avaliações.
 
 Tabelas usadas: auth.users (via Supabase Auth), perfis, professores, disciplinas,
-turmas, avaliacoes, comentarios, denuncias_comentarios e a view vw_professor_disciplina. `repositorios()` entrega as
+turmas, avaliacoes, comentarios, denuncias_comentarios, favoritos e a view vw_professor_disciplina. `repositorios()` entrega as
 instâncias configuradas em create_app.
 """
 import re
@@ -821,13 +821,55 @@ class DenunciaRepository:
         return True
 
 
+class FavoritoRepository:
+    """Professores favoritos de cada usuário (tabela favoritos, issue #223).
+
+    A lista é pessoal: todo método recebe o usuario_id da sessão e filtra por ele.
+    """
+
+    def __init__(self, cliente):
+        self.cliente = cliente
+
+    def eh_favorito(self, usuario_id, professor_id):
+        return bool(self.cliente.table('favoritos').select('professor_id')
+                    .eq('usuario_id', usuario_id).eq('professor_id', professor_id)
+                    .limit(1).execute().data)
+
+    def adicionar(self, usuario_id, professor_id):
+        """Favorita o professor. Repetir não duplica (ON CONFLICT DO NOTHING)."""
+        self.cliente.table('favoritos').upsert(
+            [{'usuario_id': usuario_id, 'professor_id': professor_id}],
+            on_conflict='usuario_id,professor_id', ignore_duplicates=True).execute()
+
+    def remover(self, usuario_id, professor_id):
+        """Desfavorita o professor. True se ele estava na lista."""
+        return bool(self.cliente.table('favoritos').delete()
+                    .eq('usuario_id', usuario_id).eq('professor_id', professor_id)
+                    .execute().data)
+
+    def listar_por_usuario(self, usuario_id):
+        """Professores favoritos (id, nome, departamento), mais recentes primeiro."""
+        linhas = (self.cliente.table('favoritos').select('professor_id,criado_em')
+                  .eq('usuario_id', usuario_id).order('criado_em', desc=True)
+                  .execute().data)
+        ids = [l['professor_id'] for l in linhas]
+        if not ids:
+            return []
+        professores = {p['id']: p for p in (self.cliente.table('professores')
+                                            .select('id,nome,departamento')
+                                            .in_('id', ids).execute().data)}
+        return [professores[i] for i in ids if i in professores]
+
+
 class Repositorios:
-    def __init__(self, usuarios, professores, avaliacoes, comentarios=None, denuncias=None):
+    def __init__(self, usuarios, professores, avaliacoes, comentarios=None, denuncias=None,
+                 favoritos=None):
         self.usuarios = usuarios
         self.professores = professores
         self.avaliacoes = avaliacoes
         self.comentarios = comentarios
         self.denuncias = denuncias
+        self.favoritos = favoritos
 
 
 def configurar_repositorios(app):
@@ -838,7 +880,7 @@ def configurar_repositorios(app):
     app.extensions['repositorios'] = Repositorios(
         UsuarioRepository(cliente, fabrica), ProfessorRepository(cliente),
         AvaliacaoRepository(cliente), ComentarioRepository(cliente),
-        DenunciaRepository(cliente))
+        DenunciaRepository(cliente), FavoritoRepository(cliente))
 
 
 def repositorios() -> Repositorios:

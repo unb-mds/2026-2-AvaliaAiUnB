@@ -52,7 +52,8 @@ Os caminhos da tabela são relativos à raiz do repositório.
 | GET | `/login/google` | Público | Gera o verificador PKCE e redireciona ao Supabase Auth |
 | GET | `/login/google/retorno` | Público | Troca o código por sessão, cria o perfil no primeiro acesso e grava os cookies |
 | POST | `/logout` | Autenticado | Revoga a sessão e remove os cookies |
-| GET | `/perfil` | Autenticado | Dados e avaliações do próprio usuário |
+| GET | `/perfil` | Autenticado | Dados, favoritos e avaliações do próprio usuário |
+| POST | `/professores/<id>/favorito` | Autenticado + CSRF | Favorita (`acao=adicionar`) ou desfavorita (`acao=remover`) o professor |
 | GET | `/professores` | Público | Catálogo filtrado por `nome`, `disciplina`, `departamento` e pela busca unificada `q` |
 | GET | `/busca/sugestoes` | Público | Autocompletar (JSON): professores, disciplinas e departamentos para `q`; `limite` (padrão 8, máximo 20) e `contexto` (`consulta` ou `comparacao`); limite de 120 por minuto |
 | GET | `/professores/<int:professor_id>` | Público | Perfil, médias e comentários; `disciplina_id` seleciona a disciplina das médias, `semestre` (ex.: `2026-2`) restringe as médias a uma turma, `evolucao_criterio` escolhe o critério do gráfico e `comentarios_disciplina` filtra os comentários |
@@ -127,6 +128,9 @@ por `repositorios()` dentro do contexto Flask.
 - `AvaliacaoRepository`: registro, consulta, médias, edição e exclusão de notas.
 - `ComentarioRepository`: listagem, busca, criação, edição e exclusão de
   comentários (veja a seção [Comentários](#comentarios)).
+- `DenunciaRepository`: denúncias privadas de comentários.
+- `FavoritoRepository`: lista pessoal de professores favoritos (adicionar,
+  remover, consultar e listar por usuário).
 
 `supabase_db.py` fornece um cliente compartilhado por processo e a função
 `novo_cliente()` para operações de autenticação que precisam de um cliente

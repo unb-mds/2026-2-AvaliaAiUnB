@@ -19,6 +19,19 @@
                     {% if disciplinas %}<a class="btn" href="{{ url_for('professores.avaliar', professor_id=professor.id, disciplina_id=disciplina.id, semestre=semestre_medias_valor, next=next_url) }}">Avaliar este Professor {{ icone_seta() }}</a>{% endif %}
                     <a class="btn ghost atalho-comentarios" href="#comentarios">Comentários</a>
                     <a class="btn ghost" href="{{ url_for('professores.comparar', professor_1=professor.id) }}">Comparar este professor</a>
+                    {# Favoritar (issue #223): POST com CSRF; volta para esta mesma página #}
+                    {% if usuario %}
+                    <form class="form-favorito" method="POST" action="{{ url_for('professores.favoritar', professor_id=professor.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="acao" value="{{ 'remover' if favorito else 'adicionar' }}">
+                        <input type="hidden" name="destino" value="{{ url_for('professores.perfil', professor_id=professor.id, next=next_url, disciplina_id=disciplina.id if disciplina else None) }}">
+                        <button type="submit" class="btn ghost botao-favorito" aria-pressed="{{ 'true' if favorito else 'false' }}">
+                            {% if favorito %}<span aria-hidden="true">★</span> Favorito · remover{% else %}<span aria-hidden="true">☆</span> Favoritar{% endif %}
+                        </button>
+                    </form>
+                    {% else %}
+                    <a class="btn ghost botao-favorito" href="{{ login_url }}"><span aria-hidden="true">☆</span> Entrar para favoritar</a>
+                    {% endif %}
                 </nav>
             </div>
             <div class="profile-rating">
