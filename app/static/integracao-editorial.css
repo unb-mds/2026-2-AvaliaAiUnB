@@ -97,6 +97,13 @@ summary { cursor: pointer; }
 .profile-title .text-link { display: inline-block; margin-top: 14px; }
 .profile-title .acoes-professor { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
 .profile-title .acoes-professor .btn { min-height: 40px; padding: 9px 16px; font-size: 12px; }
+.profile-title .acoes-professor .form-favorito { display: contents; }
+.botao-favorito { cursor: pointer; }
+.botao-favorito[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+/* Favoritos no perfil do usuário (issue #223) */
+.lista-favoritos { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.favorito-card { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.favorito-card > div { min-width: 0; }
 .profile-rating .estrelas { display: block; margin: 4px 0 8px auto; width: max-content; font-size: 24px; letter-spacing: 1px; }
 .profile-rating .nota-escala { font: 500 14px Inter, sans-serif; letter-spacing: 0; color: var(--muted); }
 .profile-main .indicadores li > strong .estrela { color: var(--cor-estrela); }

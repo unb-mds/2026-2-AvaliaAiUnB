@@ -65,6 +65,9 @@ limitar_comentario = limiter.limit("10 per hour", key_func=chave_usuario_ou_ip,
                                    methods=["POST"], scope="comentario")
 limitar_denuncia = limiter.limit("10 per hour", key_func=chave_usuario_ou_ip,
                                  methods=["POST"], scope="denuncia")
+# Favoritar é um clique barato e reversível: teto folgado só contra automação.
+limitar_favorito = limiter.limit("60 per hour", key_func=chave_usuario_ou_ip,
+                                 methods=["POST"], scope="favorito")
 # Autocompletar: uma requisição por tecla (com espera no cliente); folga para digitação.
 limitar_sugestoes = limiter.limit("120 per minute", scope="sugestoes")
 
