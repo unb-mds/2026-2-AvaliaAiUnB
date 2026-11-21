@@ -110,6 +110,16 @@ seguintes consideram as alterações.
 A autoria é verificada com o identificador do usuário autenticado no backend.
 Tentativas de editar ou excluir uma avaliação de outra pessoa recebem HTTP 404.
 
+### Professores favoritos (RF11)
+
+No perfil do professor, quem está logado usa o botão **Favoritar** para salvar
+o professor numa lista pessoal; o mesmo botão passa a mostrar **Favorito ·
+remover** para desfazer. Visitantes veem um link para entrar. A seção
+**Favoritos** do `/perfil` lista os professores salvos (mais recentes primeiro),
+com link para o perfil e botão para remover. A lista é visível apenas para o
+dono. Os dados ficam na tabela `favoritos`
+([modelo de dados](Modelo%20de%20Dados.md#8-professores-favoritos-favoritos)).
+
 ## Comparação de professores (RF08)
 
 A página `/comparar` oferece dois modos de comparação:
@@ -169,7 +179,7 @@ catálogo. Se ninguém atingir o mínimo, a página informa esse estado.
 
 ## Funcionalidades planejadas
 
-Filtros por faixa de nota e volume de avaliações, favoritos, gráficos,
+Filtros por faixa de nota e volume de avaliações, gráficos,
 reações, ordenação de comentários escolhida pela pessoa, filtro automático,
 denúncias e moderação ainda não têm fluxo implementado.
 
