@@ -67,9 +67,31 @@ professor e disciplina, com notas inteiras de um a cinco para os cinco critério
 | Disponibilidade | De muito ruim (1) a excelente (5) |
 | Dificuldade | De muito fácil (1) a muito difícil (5); indica exigência |
 
-Ano e período são obtidos da turma mais recente disponível para o par. Como
-o semestre não faz parte da chave de unicidade da avaliação, a mesma conta
-não pode criar outra avaliação para o mesmo par em um semestre diferente.
+### Semestre da avaliação: como funciona hoje
+
+- **Uma avaliação por par.** Cada conta avalia uma vez cada combinação de
+  professor e disciplina (`UNIQUE (usuario_id, professor_id, disciplina_id)` em
+  `avaliacoes`). Para mudar as notas, a pessoa edita a avaliação que já fez; não
+  existe uma segunda avaliação do mesmo par em outro semestre.
+- **O semestre é automático.** O formulário não pergunta o semestre. Ao salvar,
+  `AvaliacaoRepository.salvar` grava o `ano`/`periodo` da turma mais recente do
+  par em `turmas` (vindas do scraper do SIGAA). Editar as notas não muda o
+  semestre gravado.
+- **Efeito da carga de um novo semestre.** Quando o scraper grava turmas de um
+  semestre novo (por exemplo, 2027/1), só as avaliações feitas **depois** disso,
+  de pares com turma nesse semestre, recebem o semestre novo. As avaliações
+  antigas não mudam.
+- **Efeito no gráfico de evolução.** O gráfico agrupa as avaliações por esse
+  semestre gravado. Por isso ele mostra quando as avaliações foram feitas (pelo
+  semestre mais recente do par naquele momento), não necessariamente o semestre
+  em que a pessoa cursou a disciplina.
+- **Como gerar pontos em semestres diferentes hoje:** o gráfico junta todas as
+  disciplinas do professor. Avaliar disciplinas do mesmo professor cuja turma
+  mais recente é de semestres diferentes (ou avaliar com contas diferentes antes
+  e depois da carga de um semestre novo) produz pontos em semestres distintos.
+- **Fora do comportamento atual:** escolher o semestre cursado no formulário e
+  permitir uma avaliação por semestre exigiria mudar a regra de negócio e a
+  restrição única do banco (proposta, sem issue aberta).
 
 Uma avaliação só entra no cálculo das médias quando todos os cinco critérios
 têm notas inteiras de um a cinco. Sem avaliações válidas, a página informa
