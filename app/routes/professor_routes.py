@@ -95,10 +95,18 @@ def _renderizar_perfil(professor, disciplinas, disciplina, next_url, filtro_brut
         login_url = url_for('auth.login', next=destino) if destino else url_for('auth.login')
     contexto = dict(erros_comentario={}, texto_form='', disciplina_form=None)
     contexto.update(extra)
+    # Filtro de semestre das médias (issue #252); o topo do perfil segue com todos.
+    semestres_medias, semestre_medias = controller.semestre_das_medias(
+        professor_id, disciplina, request.args.get('semestre'))
     pagina = render_template(
         'perfil_professor.html', professor=professor, disciplinas=disciplinas,
         disciplina=disciplina,
-        indicadores=controller.indicadores(professor_id, disciplina['id']) if disciplina else None,
+        indicadores=(controller.indicadores(professor_id, disciplina['id'], semestre_medias)
+                     if disciplina else None),
+        semestres_medias=semestres_medias,
+        semestre_medias=(controller.rotulo_semestre(semestre_medias) if semestre_medias else None),
+        semestre_medias_valor=(controller.valor_semestre(semestre_medias)
+                               if semestre_medias else None),
         criterios=controller.criterios(), next_url=next_url,
         geral=controller.indicadores(professor_id, None),
         evolucao=controller.evolucao_por_semestre(professor_id,
@@ -278,24 +286,51 @@ def avaliar(professor_id):
     if not is_safe_url(next_url):
         next_url = url_for('professores.perfil', professor_id=professor_id)
 
+    usuario = obter_usuario_atual()
+    origem = request.form if request.method == 'POST' else request.args
+    # Turma cursada (issue #252): um semestre em que o professor deu a disciplina.
+    semestres, escolhida = controller.semestres_para_avaliar(
+        usuario, professor_id, disciplina['id'], origem.get('semestre'))
     erros, status = {}, 200
     if request.method == 'POST':
         notas, erros = controller.validar_notas(request.form)
-        if erros:
-            status = 400
-        elif not controller.registrar_avaliacao(obter_usuario_atual(), professor_id,
-                                                disciplina['id'], notas):
-            erros = {'avaliacao': 'Você já avaliou este professor nesta disciplina.'}
+        bruto = request.form.get('semestre')
+        pedido = controller.ler_semestre(bruto)
+        if bruto is None and semestres:
+            # Sem o campo (clientes antigos da API): a turma mais recente, como antes.
+            pedido = semestres[0]['semestre']
+        opcao = next((o for o in semestres if o['semestre'] == pedido), None)
+        if bruto is not None and opcao is None:
+            erros['semestre'] = 'Escolha uma turma (semestre) em que o professor deu esta disciplina.'
+        elif opcao is not None and opcao['avaliado']:
+            erros['semestre'] = (f"Você já avaliou este professor nesta disciplina em "
+                                 f"{opcao['rotulo']}. Edite a avaliação pelo seu perfil.")
             status = 409
+        semestre = pedido
+        if erros:
+            status = status if status == 409 else 400
         else:
-            return redirect(url_for('professores.perfil', professor_id=professor_id,
-                                    disciplina_id=disciplina['id'], next=next_url), code=303)
+            try:
+                salvou = controller.registrar_avaliacao(usuario, professor_id, disciplina['id'],
+                                                        notas, semestre)
+            except ValueError as erro:
+                erros, status, salvou = {'semestre': str(erro)}, 400, None
+            if salvou is False:
+                erros = {'semestre': 'Você já avaliou este professor nesta disciplina neste semestre.'}
+                status = 409
+            elif salvou:
+                return redirect(url_for('professores.perfil', professor_id=professor_id,
+                                        disciplina_id=disciplina['id'], next=next_url), code=303)
         if request.accept_mimetypes.best == 'application/json':
             return jsonify({'erros': erros}), status
-            
-    return render_template('avaliacao.html', professor=professor, disciplina=disciplina, 
-                           criterios=controller.criterios(), erros=erros, dados=request.form, 
-                           next_url=next_url, usuario=obter_usuario_atual()), status
+        if pedido is not None:
+            escolhida = next((o for o in semestres if o['semestre'] == pedido
+                              and not o['avaliado']), escolhida)
+
+    return render_template('avaliacao.html', professor=professor, disciplina=disciplina,
+                           criterios=controller.criterios(), erros=erros, dados=request.form,
+                           semestres=semestres, semestre_escolhido=escolhida,
+                           next_url=next_url, usuario=usuario), status
 
 
 @professor_bp.route('/avaliacoes/<int:avaliacao_id>/editar', methods=['GET', 'POST'])
@@ -312,6 +347,8 @@ def editar_avaliacao(avaliacao_id):
     }
     erros, status = {}, 200
     dados = {c: str(avaliacao[c]) for c in controller.criterios()}
+    semestre_rotulo = (controller.rotulo_semestre((avaliacao['ano'], avaliacao['periodo']))
+                       if avaliacao.get('ano') and avaliacao.get('periodo') else None)
     if request.method == 'POST':
         dados = request.form
         notas, erros = controller.validar_notas(request.form)
@@ -330,6 +367,7 @@ def editar_avaliacao(avaliacao_id):
         erros=erros,
         dados=dados,
         modo_edicao=True,
+        semestre_rotulo=semestre_rotulo,
         acao_form=url_for('professores.editar_avaliacao', avaliacao_id=avaliacao_id),
         usuario=usuario,
     ), status

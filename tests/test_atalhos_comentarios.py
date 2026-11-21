@@ -76,7 +76,8 @@ class TestConviteNaTelaDeAvaliar(BaseAtalhos):
         self.assertNotIn('convite-comentario', formulario)
         self.assertNotIn('<textarea', html)
         self.assertEqual(sorted(set(re.findall(r'name="([^"]+)"', formulario))),
-                         sorted([*CRITERIOS, 'csrf_token', 'disciplina_id']))
+                         # 'semestre': turma cursada (issue #252), não vem do convite.
+                         sorted([*CRITERIOS, 'csrf_token', 'disciplina_id', 'semestre']))
 
     def test_edicao_nao_mostra_o_convite(self):
         self.assertEqual(self.postar('/avaliar/1', NOTAS).status_code, 303)

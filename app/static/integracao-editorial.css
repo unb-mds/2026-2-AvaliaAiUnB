@@ -317,3 +317,25 @@ main.conteudo.card p, main.conteudo.card li { max-width: 900px; font-size: 14px;
 .sugestao-disciplinas { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .campo-professor .lista-sugestoes { right: auto; width: max(100%, 340px); }
 @media (max-width: 750px) { .campo-professor .lista-sugestoes { right: -1px; width: auto; } }
+
+/* Turma cursada no formulário de avaliação (issue #252): chips no visual das notas */
+.turma-ajuda { margin: -6px 0 14px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+.turma-opcoes { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 10px; }
+.turma-opcao { position: relative; display: grid; }
+.turma-opcoes input { position: absolute; inset: 0; opacity: 0; width: 1px; height: 1px; margin: 0; }
+.turma-opcoes label { margin: 0; display: grid; gap: 2px; justify-items: center; padding: 10px 8px; min-height: 56px; border: 1px solid var(--line); border-radius: 9px; background: var(--bg); color: var(--text); cursor: pointer; text-align: center; }
+.turma-opcoes label strong { font-size: 15px; letter-spacing: -.01em; }
+.turma-opcoes label small { color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: .06em; }
+.turma-opcoes label:hover { border-color: var(--accent); }
+.turma-opcoes input:checked + label { background: var(--accent); border-color: var(--accent); color: var(--dark-on-accent); }
+.turma-opcoes input:checked + label small { color: var(--dark-on-accent); }
+.turma-opcoes input:focus-visible + label { outline: 2px solid var(--accent); outline-offset: 3px; }
+.turma-opcoes input:disabled + label { cursor: not-allowed; opacity: .5; border-style: dashed; }
+.turma-opcoes input:disabled + label strong { text-decoration: line-through; }
+.selo-semestre { display: inline-block; margin-left: 8px; padding: 1px 9px; border: 1px solid var(--line); border-radius: 999px; color: var(--text); font-size: 11px; font-weight: 700; vertical-align: 1px; }
+.turmas-esgotadas p { margin: 0 0 8px; }
+.turmas-esgotadas p:last-child { margin: 0; }
+/* Filtro de semestre das médias do perfil (issue #252) */
+.semestre-filtro { gap: 6px; margin: 0 0 12px; }
+.semestre-filtro .filter { padding: 6px 10px; font-size: 11px; text-decoration: none; }
+.semestre-filtro .filter:not(.active):hover { color: var(--text); border-color: var(--accent); }

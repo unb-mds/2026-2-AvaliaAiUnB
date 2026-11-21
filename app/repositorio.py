@@ -408,12 +408,15 @@ class AvaliacaoRepository:
     def __init__(self, cliente):
         self.cliente = cliente
 
-    def calcular_medias(self, professor_id, disciplina_id=None):
+    def calcular_medias(self, professor_id, disciplina_id=None, semestre=None):
+        """Médias do professor; `semestre` = (ano, periodo) restringe a um semestre."""
         colunas = ','.join(CRITERIOS)
         def consulta():
             consulta = self.cliente.table('avaliacoes').select(colunas).eq('professor_id', professor_id)
             if disciplina_id is not None:
                 consulta = consulta.eq('disciplina_id', disciplina_id)
+            if semestre is not None:
+                consulta = consulta.eq('ano', semestre[0]).eq('periodo', semestre[1])
             return consulta.order('id')
         linhas = _paginar(consulta)
         return self._resumir_notas(linhas)
@@ -480,26 +483,52 @@ class AvaliacaoRepository:
                   for c in CRITERIOS}
         return {'quantidade': len(validas), 'medias': medias}
 
-    def salvar(self, usuario_id, professor_id, disciplina_id, notas):
-        """Grava a avaliação. Retorna False se o usuário já avaliou o par professor/disciplina."""
-        if any(type(notas.get(c)) is not int or not 1 <= notas[c] <= 5 for c in CRITERIOS):
-            raise ValueError('Todos os critérios devem ter notas inteiras de 1 a 5.')
+    def semestres_da_disciplina(self, professor_id, disciplina_id):
+        """Semestres (ano, periodo) em que o professor teve turma da disciplina, do mais
+        recente ao mais antigo. Cada um é uma turma: `turmas` é única por professor,
+        disciplina, ano e período."""
         turmas = (self.cliente.table('vw_professor_disciplina').select('ano,periodo')
                   .eq('professor_id', professor_id).eq('disciplina_id', disciplina_id)
                   .execute().data)
-        if not turmas:
+        return sorted({(t['ano'], t['periodo']) for t in turmas
+                       if type(t.get('ano')) is int and type(t.get('periodo')) is int},
+                      reverse=True)
+
+    def semestres_avaliados(self, usuario_id, professor_id, disciplina_id):
+        """Semestres em que o usuário já avaliou o professor nesta disciplina."""
+        linhas = (self.cliente.table('avaliacoes').select('ano,periodo')
+                  .eq('usuario_id', usuario_id).eq('professor_id', professor_id)
+                  .eq('disciplina_id', disciplina_id).execute().data)
+        return {(l['ano'], l['periodo']) for l in linhas}
+
+    def salvar(self, usuario_id, professor_id, disciplina_id, notas, semestre=None):
+        """Grava a avaliação do semestre cursado (ano, periodo), uma por semestre.
+
+        Sem `semestre`, usa a turma mais recente. ValueError se as notas forem inválidas
+        ou se o professor não teve turma da disciplina no semestre. False se o usuário
+        já avaliou este professor nesta disciplina neste semestre."""
+        if any(type(notas.get(c)) is not int or not 1 <= notas[c] <= 5 for c in CRITERIOS):
+            raise ValueError('Todos os critérios devem ter notas inteiras de 1 a 5.')
+        semestres = self.semestres_da_disciplina(professor_id, disciplina_id)
+        if not semestres:
             raise ValueError('Disciplina não vinculada ao professor.')
-        existente = (self.cliente.table('avaliacoes').select('id').eq('usuario_id', usuario_id)
-                     .eq('professor_id', professor_id).eq('disciplina_id', disciplina_id)
-                     .limit(1).execute().data)
-        if existente:
+        if semestre is None:
+            semestre = semestres[0]
+        elif semestre not in semestres:
+            raise ValueError('O professor não teve turma desta disciplina neste semestre.')
+        if semestre in self.semestres_avaliados(usuario_id, professor_id, disciplina_id):
             return False
-        recente = max(turmas, key=lambda t: (t['ano'] or 0, t['periodo'] or 0))
-        self.cliente.table('avaliacoes').insert({
-            'usuario_id': usuario_id, 'professor_id': professor_id,
-            'disciplina_id': disciplina_id, 'ano': recente['ano'],
-            'periodo': recente['periodo'], **{c: notas[c] for c in CRITERIOS},
-        }).execute()
+        try:
+            self.cliente.table('avaliacoes').insert({
+                'usuario_id': usuario_id, 'professor_id': professor_id,
+                'disciplina_id': disciplina_id, 'ano': semestre[0],
+                'periodo': semestre[1], **{c: notas[c] for c in CRITERIOS},
+            }).execute()
+        except Exception as erro:
+            # Requisições simultâneas (ou banco sem a migração 007): a restrição única recusa.
+            if '23505' in str(erro) or 'duplicate key' in str(erro):
+                return False
+            raise
         return True
 
     def _enriquecer_avaliacoes(self, avaliacoes):

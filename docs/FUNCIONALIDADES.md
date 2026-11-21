@@ -67,31 +67,39 @@ professor e disciplina, com notas inteiras de um a cinco para os cinco critério
 | Disponibilidade | De muito ruim (1) a excelente (5) |
 | Dificuldade | De muito fácil (1) a muito difícil (5); indica exigência |
 
-### Semestre da avaliação: como funciona hoje
+### Turma (semestre) cursada (issue #252)
 
-- **Uma avaliação por par.** Cada conta avalia uma vez cada combinação de
-  professor e disciplina (`UNIQUE (usuario_id, professor_id, disciplina_id)` em
-  `avaliacoes`). Para mudar as notas, a pessoa edita a avaliação que já fez; não
-  existe uma segunda avaliação do mesmo par em outro semestre.
-- **O semestre é automático.** O formulário não pergunta o semestre. Ao salvar,
-  `AvaliacaoRepository.salvar` grava o `ano`/`periodo` da turma mais recente do
-  par em `turmas` (vindas do scraper do SIGAA). Editar as notas não muda o
-  semestre gravado.
-- **Efeito da carga de um novo semestre.** Quando o scraper grava turmas de um
-  semestre novo (por exemplo, 2027/1), só as avaliações feitas **depois** disso,
-  de pares com turma nesse semestre, recebem o semestre novo. As avaliações
-  antigas não mudam.
-- **Efeito no gráfico de evolução.** O gráfico agrupa as avaliações por esse
-  semestre gravado. Por isso ele mostra quando as avaliações foram feitas (pelo
-  semestre mais recente do par naquele momento), não necessariamente o semestre
-  em que a pessoa cursou a disciplina.
-- **Como gerar pontos em semestres diferentes hoje:** o gráfico junta todas as
-  disciplinas do professor. Avaliar disciplinas do mesmo professor cuja turma
-  mais recente é de semestres diferentes (ou avaliar com contas diferentes antes
-  e depois da carga de um semestre novo) produz pontos em semestres distintos.
-- **Fora do comportamento atual:** escolher o semestre cursado no formulário e
-  permitir uma avaliação por semestre exigiria mudar a regra de negócio e a
-  restrição única do banco (proposta, sem issue aberta).
+- **A pessoa escolhe a turma.** O formulário de avaliação tem o campo **Turma
+  cursada**, com os semestres em que o professor deu aquela disciplina (vindos do
+  SIGAA pelo scraper, em `turmas`). Cada turma é a combinação professor +
+  disciplina + semestre: o código de turma do SIGAA não é gravado, então dois
+  horários do mesmo professor na mesma disciplina e semestre contam como uma turma.
+  O padrão é a turma mais recente que a pessoa ainda não avaliou; um link de
+  avaliar com `?semestre=2025-2` já vem com essa turma marcada.
+- **Uma avaliação por semestre cursado.** A restrição única de `avaliacoes` é
+  `(usuario_id, professor_id, disciplina_id, ano, periodo)` (migração
+  [`007_avaliacao_por_semestre.sql`](migrations/007_avaliacao_por_semestre.sql)).
+  Quem cursou a mesma disciplina com o mesmo professor duas vezes pode avaliar as
+  duas turmas. Turmas já avaliadas aparecem riscadas como "já avaliada"; quando
+  todas foram avaliadas, a tela leva ao perfil para editar.
+- **Validação no backend:** o semestre precisa ser de uma turma do professor na
+  disciplina (senão HTTP 400) e não pode repetir uma avaliação da pessoa (HTTP
+  409). A restrição do banco também recusa envios simultâneos.
+- **Clientes sem o campo** (`semestre` ausente no POST) continuam funcionando como
+  antes: a avaliação vai para a turma mais recente.
+- **Edição:** mostra a turma ("Turma de 2026/1"), mas não permite trocá-la; para
+  mudar o semestre, a pessoa exclui e avalia de novo.
+
+### Médias: todos os semestres ou um semestre
+
+- O **topo do perfil** (nota grande e estrelas) é sempre a média de todas as
+  avaliações do professor, em todos os semestres e disciplinas.
+- Em **Médias Consolidadas**, o padrão **Todos** é a média de todas as avaliações
+  da disciplina escolhida. Os botões de semestre (parâmetro `semestre=2026-2`)
+  mostram só as avaliações daquela turma; o resumo indica o recorte
+  ("CÁLCULO 1 · 2025/2 · 3 avaliações"). Semestre inválido volta para Todos. Os
+  botões só aparecem quando a disciplina tem mais de uma turma.
+- O botão **Avaliar este Professor** leva o semestre filtrado para o formulário.
 
 Uma avaliação só entra no cálculo das médias quando todos os cinco critérios
 têm notas inteiras de um a cinco. Sem avaliações válidas, a página informa
@@ -101,8 +109,9 @@ essa condição e não atribui uma nota artificial.
 
 Abaixo das médias, a seção **Evolução por semestre** mostra um gráfico de linha
 com a média do professor em cada semestre, somando todas as disciplinas. O
-semestre é o `ano`/`periodo` gravado na avaliação (o da turma mais recente do
-par no momento da avaliação).
+semestre é a turma cursada que a pessoa escolheu ao avaliar. Avaliações feitas
+antes da #252 ficaram com a turma mais recente do par na época (todas as
+avaliações de produção até 21/11/2026 estão em 2026/2).
 
 - **Critério:** os botões trocam o que o gráfico mostra (parâmetro
   `evolucao_criterio`): média geral (padrão; média dos quatro critérios, sem a
