@@ -581,18 +581,67 @@ def evolucao_por_semestre(professor_id, criterio_bruto=None):
             'maximo_semestres': MAXIMO_SEMESTRES_GRAFICO}
 
 
-def indicadores(professor_id, disciplina_id):
-    return repositorios().avaliacoes.calcular_medias(professor_id, disciplina_id)
+def indicadores(professor_id, disciplina_id, semestre=None):
+    return repositorios().avaliacoes.calcular_medias(professor_id, disciplina_id, semestre)
+
+
+# Semestre cursado (issue #252): na URL e nos formulários vai como "2026-2"; na tela, "2026/2".
+def valor_semestre(semestre):
+    return f'{semestre[0]}-{semestre[1]}'
+
+
+def rotulo_semestre(semestre):
+    return f'{semestre[0]}/{semestre[1]}'
+
+
+def ler_semestre(bruto):
+    """(ano, periodo) a partir de "2026-2"; None se vazio ou ilegível."""
+    partes = (bruto or '').strip().split('-')
+    if len(partes) != 2 or not all(p.isdigit() for p in partes):
+        return None
+    return int(partes[0]), int(partes[1])
+
+
+def _opcoes_semestre(semestres, avaliados=frozenset()):
+    return [{'valor': valor_semestre(s), 'rotulo': rotulo_semestre(s), 'semestre': s,
+             'avaliado': s in avaliados, 'recente': i == 0}
+            for i, s in enumerate(semestres)]
+
+
+def semestres_para_avaliar(usuario, professor_id, disciplina_id, bruto=None):
+    """Turmas (semestres) que a pessoa pode escolher ao avaliar e a pré-selecionada.
+
+    Os já avaliados por ela vêm marcados (`avaliado`) e não são pré-selecionados. A
+    escolhida é a informada em `bruto`, se disponível; senão, a mais recente livre."""
+    avaliacoes = repositorios().avaliacoes
+    semestres = avaliacoes.semestres_da_disciplina(professor_id, disciplina_id)
+    avaliados = avaliacoes.semestres_avaliados(usuario['id'], professor_id, disciplina_id)
+    opcoes = _opcoes_semestre(semestres, avaliados)
+    livres = [o for o in opcoes if not o['avaliado']]
+    pedido = ler_semestre(bruto)
+    escolhida = next((o for o in livres if o['semestre'] == pedido), livres[0] if livres else None)
+    return opcoes, escolhida
+
+
+def semestre_das_medias(professor_id, disciplina, bruto):
+    """Filtro de semestre das médias do perfil: (opções, semestre escolhido ou None = todos).
+    Semestre ilegível ou sem turma da disciplina vale como "todos"."""
+    if disciplina is None:
+        return [], None
+    semestres = repositorios().avaliacoes.semestres_da_disciplina(professor_id, disciplina['id'])
+    pedido = ler_semestre(bruto)
+    return _opcoes_semestre(semestres), (pedido if pedido in semestres else None)
 
 
 def validar_notas(dados):
     return validar_avaliacao(dados, CRITERIOS)
 
 
-def registrar_avaliacao(usuario, professor_id, disciplina_id, notas):
-    """Grava a avaliação do usuário logado. False se ele já avaliou este par."""
+def registrar_avaliacao(usuario, professor_id, disciplina_id, notas, semestre=None):
+    """Grava a avaliação do usuário logado no semestre cursado. False se ele já avaliou
+    este professor nesta disciplina neste semestre."""
     repos = repositorios()
-    salvou = repos.avaliacoes.salvar(usuario['id'], professor_id, disciplina_id, notas)
+    salvou = repos.avaliacoes.salvar(usuario['id'], professor_id, disciplina_id, notas, semestre)
     if salvou:
         repos.professores.invalidar_cache()   # a listagem ordena por total de avaliações
     return salvou

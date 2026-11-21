@@ -21,6 +21,7 @@
                 {% if disciplina.codigo %}
                     — {{ disciplina.codigo }}
                 {% endif %}
+                {% if modo_edicao and semestre_rotulo %}<span class="selo-semestre">Turma de {{ semestre_rotulo }}</span>{% endif %}
             </p>
         </header>
 
@@ -32,14 +33,24 @@
             Sua identidade não será exibida nas avaliações públicas.
         </p>
 
-        {% if erros %}
+        {# O erro da turma aparece junto do campo; os demais, aqui #}
+        {% set outros_erros = erros|dictsort|rejectattr('0', 'equalto', 'semestre')|list %}
+        {% if outros_erros %}
         <ul class="erros mensagem mensagem-erro" role="alert">
-            {% for erro in erros.values() %}
+            {% for _, erro in outros_erros %}
             <li>{{ erro }}</li>
             {% endfor %}
         </ul>
         {% endif %}
 
+        {% if not modo_edicao and not semestre_escolhido %}
+        {# Todas as turmas deste par já foram avaliadas pela pessoa (issue #252) #}
+        <div class="mensagem turmas-esgotadas" role="status">
+            <p>Você já avaliou {{ professor.nome }} em todas as turmas desta disciplina
+               ({% for s in semestres %}{{ s.rotulo }}{% if not loop.last %}, {% endif %}{% endfor %}).</p>
+            <p><a href="{{ url_for('auth.perfil') }}">Editar suas avaliações no perfil</a></p>
+        </div>
+        {% else %}
         <form
             id="formAvaliacao"
             action="{{ acao_form or url_for('professores.avaliar', professor_id=professor.id, next=next_url) }}"
@@ -51,6 +62,29 @@
                 name="disciplina_id"
                 value="{{ disciplina.id }}"
             >
+
+            {% if not modo_edicao %}
+            {# Turma cursada (issue #252): uma avaliação por semestre. As turmas vêm do SIGAA
+               (professor + disciplina + semestre); as já avaliadas ficam desabilitadas. #}
+            <fieldset class="nota-grupo turma-grupo"{% if erros.semestre %} aria-describedby="erro-semestre"{% endif %}>
+                <legend>Turma cursada</legend>
+                <p class="turma-ajuda" id="ajuda-semestre">Escolha o semestre em que você teve aula com este professor nesta disciplina.</p>
+                <div class="turma-opcoes">
+                    {% for s in semestres %}
+                    <div class="turma-opcao">
+                    <input type="radio" name="semestre" id="semestre-{{ s.valor }}" value="{{ s.valor }}"
+                           {% if s.avaliado %}disabled{% elif semestre_escolhido and s.valor == semestre_escolhido.valor %}checked{% endif %}
+                           aria-describedby="ajuda-semestre" required>
+                    <label for="semestre-{{ s.valor }}">
+                        <strong>{{ s.rotulo }}</strong>
+                        <small>{% if s.avaliado %}já avaliada{% elif s.recente %}mais recente{% else %}turma{% endif %}</small>
+                    </label>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% if erros.semestre %}<p class="campo-erro" id="erro-semestre" role="alert">{{ erros.semestre }}</p>{% endif %}
+            </fieldset>
+            {% endif %}
 
             {% for criterio, titulo in criterios.items() %}
             <fieldset class="nota-grupo">
@@ -90,6 +124,7 @@
                 </a>
             </div>
         </form>
+        {% endif %}
 
         {% if not modo_edicao %}
         {# Link comum, fora do formulário de notas: não altera o envio da avaliação #}

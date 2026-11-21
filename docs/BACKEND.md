@@ -55,10 +55,10 @@ Os caminhos da tabela são relativos à raiz do repositório.
 | GET | `/perfil` | Autenticado | Dados e avaliações do próprio usuário |
 | GET | `/professores` | Público | Catálogo filtrado por `nome`, `disciplina`, `departamento` e pela busca unificada `q` |
 | GET | `/busca/sugestoes` | Público | Autocompletar (JSON): professores, disciplinas e departamentos para `q`; `limite` (padrão 8, máximo 20) e `contexto` (`consulta` ou `comparacao`); limite de 120 por minuto |
-| GET | `/professores/<int:professor_id>` | Público | Perfil, médias e comentários; `disciplina_id` seleciona a disciplina das médias e `comentarios_disciplina` filtra os comentários |
+| GET | `/professores/<int:professor_id>` | Público | Perfil, médias e comentários; `disciplina_id` seleciona a disciplina das médias, `semestre` (ex.: `2026-2`) restringe as médias a uma turma, `evolucao_criterio` escolhe o critério do gráfico e `comentarios_disciplina` filtra os comentários |
 | GET | `/comparar` | Público | Compara professores de uma disciplina (`disciplina_id`, `professor`) ou `professor_1` e `professor_2`; `busca` lista resultados da busca unificada |
 | GET | `/ranking` | Público | Classificação por média, com mínimo de cinco avaliações válidas |
-| GET, POST | `/avaliar/<int:professor_id>` | Autenticado | Formulário e registro de notas para uma disciplina vinculada |
+| GET, POST | `/avaliar/<int:professor_id>` | Autenticado | Formulário e registro de notas para uma disciplina vinculada; `semestre` (ex.: `2026-2`) é a turma cursada, uma avaliação por semestre (sem o campo, vale a turma mais recente) |
 | GET, POST | `/avaliacoes/<int:avaliacao_id>/editar` | Autor autenticado | Formulário e atualização das próprias notas |
 | POST | `/avaliacoes/<int:avaliacao_id>/excluir` | Autor autenticado | Exclusão da própria avaliação |
 | POST | `/professores/<int:professor_id>/comentarios` | Autenticado | Publica um comentário em uma disciplina vinculada ao professor; limite de 10 por hora por usuário |

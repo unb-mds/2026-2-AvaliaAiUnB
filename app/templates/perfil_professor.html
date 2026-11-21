@@ -16,7 +16,7 @@
                 <p>{{ professor.departamento }}</p>
                 {# Avaliar, Comentar e Comparar no visual novo (.btn e .btn.ghost) #}
                 <nav class="acoes-professor" aria-label="Ações sobre o professor">
-                    {% if disciplinas %}<a class="btn" href="{{ url_for('professores.avaliar', professor_id=professor.id, disciplina_id=disciplina.id, next=next_url) }}">Avaliar este Professor {{ icone_seta() }}</a>{% endif %}
+                    {% if disciplinas %}<a class="btn" href="{{ url_for('professores.avaliar', professor_id=professor.id, disciplina_id=disciplina.id, semestre=semestre_medias_valor, next=next_url) }}">Avaliar este Professor {{ icone_seta() }}</a>{% endif %}
                     <a class="btn ghost atalho-comentarios" href="#comentarios">Comentários</a>
                     <a class="btn ghost" href="{{ url_for('professores.comparar', professor_1=professor.id) }}">Comparar este professor</a>
                 </nav>
@@ -60,7 +60,20 @@
                 <section class="medias" aria-labelledby="titulo-medias">
             <h2 id="titulo-medias">Médias Consolidadas</h2>
 
-            <p class="ajuda resumo-disciplina">{{ disciplina.nome }} · {{ indicadores.quantidade }} avaliações</p>
+            {# Semestre (issue #252): "Todos" é a média de todas as avaliações da disciplina;
+               cada chip mostra só as avaliações daquela turma. #}
+            {% if semestres_medias|length > 1 %}
+            <nav class="filters semestre-filtro" aria-label="Semestre das médias">
+                <a class="filter{% if not semestre_medias %} active{% endif %}"{% if not semestre_medias %} aria-current="true"{% endif %}
+                   href="{{ url_for('professores.perfil', professor_id=professor.id, next=next_url, disciplina_id=disciplina.id, comentarios_disciplina=filtro_comentarios, _anchor='titulo-medias') }}">Todos</a>
+                {% for s in semestres_medias %}
+                <a class="filter{% if s.valor == semestre_medias_valor %} active{% endif %}"{% if s.valor == semestre_medias_valor %} aria-current="true"{% endif %}
+                   href="{{ url_for('professores.perfil', professor_id=professor.id, next=next_url, disciplina_id=disciplina.id, comentarios_disciplina=filtro_comentarios, semestre=s.valor, _anchor='titulo-medias') }}">{{ s.rotulo }}</a>
+                {% endfor %}
+            </nav>
+            {% endif %}
+
+            <p class="ajuda resumo-disciplina">{{ disciplina.nome }} · {{ semestre_medias if semestre_medias else 'todos os semestres' }} · {{ indicadores.quantidade }} {{ 'avaliação' if indicadores.quantidade == 1 else 'avaliações' }}</p>
 
             {% if indicadores.quantidade %}
             <ul class="indicadores">
@@ -87,7 +100,7 @@
 
             {% else %}
             <p class="mensagem" role="status">
-                Ainda não há avaliações nesta disciplina.
+                {% if semestre_medias %}Ainda não há avaliações desta disciplina na turma de {{ semestre_medias }}.{% else %}Ainda não há avaliações nesta disciplina.{% endif %}
             </p>
             {% endif %}
         </section>
@@ -96,7 +109,7 @@
                    alternativa em texto. Considera todas as disciplinas do professor. #}
                 <section class="evolucao" id="evolucao" aria-labelledby="titulo-evolucao">
                     <h2 id="titulo-evolucao">Evolução por semestre</h2>
-                    <p class="ajuda">Todas as disciplinas · semestre da turma avaliada.</p>
+                    <p class="ajuda">Todas as disciplinas · semestre da turma cursada.</p>
                     {% set rotulo_criterio = criterios_evolucao[evolucao.criterio] %}
                     {% if evolucao.grafico %}
                     {% set g = evolucao.grafico %}

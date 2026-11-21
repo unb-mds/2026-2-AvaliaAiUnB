@@ -267,7 +267,7 @@ class TestFluxoWeb(unittest.TestCase):
         dados = {**{c: '5' for c in CRITERIOS}, 'disciplina_id': '20'}
         self.assertEqual(self.postar('/avaliar/2', data={**dados, 'clareza': '9'}).status_code, 400)
         html = self.postar('/avaliar/2', data=dados, follow_redirects=True).get_data(as_text=True)
-        self.assertIn('1 avaliações', html)
+        self.assertIn('1 avaliação', html)
         gravada, = self.cliente.tabelas['avaliacoes']
         self.assertEqual(gravada['usuario_id'], next(iter(self.cliente.auth.usuarios)))
         self.assertEqual(self.postar('/avaliar/2', data=dados).status_code, 409)

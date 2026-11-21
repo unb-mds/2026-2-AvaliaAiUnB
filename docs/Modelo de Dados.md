@@ -133,7 +133,9 @@ Avaliação por critérios objetivos, com notas inteiras de 1 a 5.
 | `dificuldade` | `INTEGER` | `NOT NULL`, `CHECK (1..5)` |
 | `criado_em` | `TIMESTAMPTZ` | default `NOW()` |
 
-- **Unicidade:** `uq_avaliacoes_usuario_prof_disc` em `(usuario_id, professor_id, disciplina_id)`. Cada usuário avalia uma vez cada combinação professor + disciplina. Como `ano` e `periodo` não entram na chave, não é possível reavaliar a mesma combinação em outro semestre.
+- **Unicidade:** `uq_avaliacoes_usuario_prof_disc_semestre` em `(usuario_id, professor_id, disciplina_id, ano, periodo)`, desde a migração [`007_avaliacao_por_semestre.sql`](migrations/007_avaliacao_por_semestre.sql) (issue #252). Cada usuário avalia uma vez cada **turma cursada** (professor + disciplina + semestre). Antes dela, a chave era `uq_avaliacoes_usuario_prof_disc` em `(usuario_id, professor_id, disciplina_id)`, sem o semestre.
+- **Semestre:** `ano`/`periodo` é a turma escolhida no formulário. O backend confere que existe uma linha em `turmas` para o professor, a disciplina e o semestre (não há FK composta). Avaliações anteriores à #252 têm o semestre da turma mais recente do par na época.
+- **Índice:** `idx_avaliacoes_professor_semestre (professor_id, ano, periodo)` atende o filtro de semestre das médias e o gráfico de evolução.
 
 ### 2.6 View `vw_professor_disciplina`
 
@@ -430,5 +432,6 @@ REVOKE ALL ON comentarios_reacoes FROM PUBLIC, anon, authenticated;
 5. Executar `docs/migrations/002_comentarios.sql`, que depende do esquema inicial, para criar a tabela `comentarios`. Reações e moderação ainda não têm migração (seção 6).
 6. Executar `docs/migrations/003_emails_verificados.sql` e `docs/migrations/004_professores_unicos.sql`. A 004 troca a chave do professor para `UNIQUE (nome)`; num banco vazio ela só faz essa troca.
 7. Executar `docs/migrations/005_denuncias_comentarios.sql` para criar a tabela privada de denúncias (seção 7).
+8. Executar `docs/migrations/007_avaliacao_por_semestre.sql` para permitir uma avaliação por turma cursada (seção 2.5).
 
 Veja também: [guia do backend](BACKEND.md), [guia do scraper](COMO_USAR_SCRAPER.md) e [mapa da documentação](GUIA_DOCUMENTACAO.md).
