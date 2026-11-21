@@ -418,6 +418,24 @@ class AvaliacaoRepository:
         linhas = _paginar(consulta)
         return self._resumir_notas(linhas)
 
+    def medias_por_semestre(self, professor_id):
+        """Médias do professor por semestre (todas as disciplinas), do mais antigo ao mais
+        recente: [{'ano', 'periodo', 'quantidade', 'medias'}]. Mesma regra de
+        _resumir_notas; semestres sem nenhuma avaliação válida não aparecem."""
+        colunas = ','.join(('ano', 'periodo', *CRITERIOS))
+        linhas = _paginar(lambda: self.cliente.table('avaliacoes').select(colunas)
+                          .eq('professor_id', professor_id).order('id'))
+        grupos = {}
+        for linha in linhas:
+            if type(linha.get('ano')) is int and type(linha.get('periodo')) is int:
+                grupos.setdefault((linha['ano'], linha['periodo']), []).append(linha)
+        semestres = []
+        for (ano, periodo) in sorted(grupos):
+            resumo = self._resumir_notas(grupos[(ano, periodo)])
+            if resumo['quantidade']:
+                semestres.append({'ano': ano, 'periodo': periodo, **resumo})
+        return semestres
+
     def calcular_medias_por_disciplina(self, disciplina_id, professor_ids):
         colunas = ','.join(('professor_id', *CRITERIOS))
         linhas = _paginar(lambda: self.cliente.table('avaliacoes').select(colunas)

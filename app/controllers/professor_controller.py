@@ -3,6 +3,7 @@ import math
 
 from flask import abort, current_app, request, url_for
 
+from app.grafico import MAXIMO_SEMESTRES_GRAFICO, montar_grafico
 from app.repositorio import (CRITERIOS_RANKING, LIMITE_COMENTARIOS, LIMITE_SUGESTOES,
                              MAXIMO_SUGESTOES, MINIMO_AVALIACOES_RANKING,
                              ComentarioRepository, repositorios)
@@ -545,6 +546,39 @@ def carregar_comentarios(professor_id, disciplinas, filtro_bruto, usuario):
     else:
         contexto.update(comentarios=comentarios, ha_mais=ha_mais)
     return contexto
+
+
+CRITERIO_GERAL = 'geral'
+MINIMO_SEMESTRES_EVOLUCAO = 2
+
+
+def criterios_evolucao():
+    """Opções do seletor do gráfico: a média geral (sem a dificuldade, como no topo do
+    perfil) e cada critério."""
+    return {CRITERIO_GERAL: 'Média geral', **CRITERIOS}
+
+
+def evolucao_por_semestre(professor_id, criterio_bruto=None):
+    """Evolução das médias do professor por semestre (RF12, issue #224).
+
+    Devolve os semestres (para a tabela), o critério escolhido (inválido vira a média
+    geral) e o gráfico desse critério. O gráfico é None com menos de dois semestres.
+    """
+    criterio = criterio_bruto if criterio_bruto in criterios_evolucao() else CRITERIO_GERAL
+    semestres = []
+    for item in repositorios().avaliacoes.medias_por_semestre(professor_id):
+        medias = item['medias']
+        geral = sum(medias[c] for c in CRITERIOS_RANKING) / len(CRITERIOS_RANKING)
+        semestres.append({'rotulo': f"{item['ano']}/{item['periodo']}",
+                          'quantidade': item['quantidade'],
+                          'medias': {**medias, CRITERIO_GERAL: geral}})
+    grafico = None
+    if len(semestres) >= MINIMO_SEMESTRES_EVOLUCAO:
+        grafico = montar_grafico([{'rotulo': s['rotulo'], 'valor': s['medias'][criterio],
+                                   'quantidade': s['quantidade']} for s in semestres])
+    return {'semestres': semestres, 'criterio': criterio, 'grafico': grafico,
+            'recortado': len(semestres) > MAXIMO_SEMESTRES_GRAFICO,
+            'maximo_semestres': MAXIMO_SEMESTRES_GRAFICO}
 
 
 def indicadores(professor_id, disciplina_id):

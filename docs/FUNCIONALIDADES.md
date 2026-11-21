@@ -67,13 +67,58 @@ professor e disciplina, com notas inteiras de um a cinco para os cinco critério
 | Disponibilidade | De muito ruim (1) a excelente (5) |
 | Dificuldade | De muito fácil (1) a muito difícil (5); indica exigência |
 
-Ano e período são obtidos da turma mais recente disponível para o par. Como
-o semestre não faz parte da chave de unicidade da avaliação, a mesma conta
-não pode criar outra avaliação para o mesmo par em um semestre diferente.
+### Semestre da avaliação: como funciona hoje
+
+- **Uma avaliação por par.** Cada conta avalia uma vez cada combinação de
+  professor e disciplina (`UNIQUE (usuario_id, professor_id, disciplina_id)` em
+  `avaliacoes`). Para mudar as notas, a pessoa edita a avaliação que já fez; não
+  existe uma segunda avaliação do mesmo par em outro semestre.
+- **O semestre é automático.** O formulário não pergunta o semestre. Ao salvar,
+  `AvaliacaoRepository.salvar` grava o `ano`/`periodo` da turma mais recente do
+  par em `turmas` (vindas do scraper do SIGAA). Editar as notas não muda o
+  semestre gravado.
+- **Efeito da carga de um novo semestre.** Quando o scraper grava turmas de um
+  semestre novo (por exemplo, 2027/1), só as avaliações feitas **depois** disso,
+  de pares com turma nesse semestre, recebem o semestre novo. As avaliações
+  antigas não mudam.
+- **Efeito no gráfico de evolução.** O gráfico agrupa as avaliações por esse
+  semestre gravado. Por isso ele mostra quando as avaliações foram feitas (pelo
+  semestre mais recente do par naquele momento), não necessariamente o semestre
+  em que a pessoa cursou a disciplina.
+- **Como gerar pontos em semestres diferentes hoje:** o gráfico junta todas as
+  disciplinas do professor. Avaliar disciplinas do mesmo professor cuja turma
+  mais recente é de semestres diferentes (ou avaliar com contas diferentes antes
+  e depois da carga de um semestre novo) produz pontos em semestres distintos.
+- **Fora do comportamento atual:** escolher o semestre cursado no formulário e
+  permitir uma avaliação por semestre exigiria mudar a regra de negócio e a
+  restrição única do banco (proposta, sem issue aberta).
 
 Uma avaliação só entra no cálculo das médias quando todos os cinco critérios
 têm notas inteiras de um a cinco. Sem avaliações válidas, a página informa
 essa condição e não atribui uma nota artificial.
+
+### Evolução por semestre (RF12)
+
+Abaixo das médias, a seção **Evolução por semestre** mostra um gráfico de linha
+com a média do professor em cada semestre, somando todas as disciplinas. O
+semestre é o `ano`/`periodo` gravado na avaliação (o da turma mais recente do
+par no momento da avaliação).
+
+- **Critério:** os botões trocam o que o gráfico mostra (parâmetro
+  `evolucao_criterio`): média geral (padrão; média dos quatro critérios, sem a
+  dificuldade, como no topo do perfil) ou um dos cinco critérios. Valor
+  desconhecido volta para a média geral.
+- **Escala fixa de 1 a 5**, para não exagerar pequenas variações. O gráfico mostra
+  os 6 semestres mais recentes; a tabela mostra todos.
+- **Alternativa em texto:** o SVG tem título e descrição (do primeiro ao último
+  semestre), cada ponto mostra semestre, média e número de avaliações ao passar o
+  mouse, e "Ver os dados em tabela" lista todos os semestres e critérios.
+- **Estado vazio:** com avaliações de um só semestre, ou nenhuma, a seção mostra
+  uma mensagem no lugar do gráfico.
+- Só avaliações válidas entram, pela mesma regra das médias. O SVG é gerado no
+  servidor (`app/grafico.py` calcula as coordenadas; o template desenha) e usa
+  apenas classes CSS (`evolucao.css`), sem JavaScript nem `style` inline, por
+  causa da CSP.
 
 ## Comentários no perfil do professor
 
@@ -179,7 +224,7 @@ catálogo. Se ninguém atingir o mínimo, a página informa esse estado.
 
 ## Funcionalidades planejadas
 
-Filtros por faixa de nota e volume de avaliações, gráficos,
+Filtros por faixa de nota e volume de avaliações, outros gráficos,
 reações, ordenação de comentários escolhida pela pessoa, filtro automático,
 denúncias e moderação ainda não têm fluxo implementado.
 

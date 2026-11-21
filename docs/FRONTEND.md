@@ -13,7 +13,7 @@ separado para executar essas telas.
 | `login.html` | Botão "Entrar com Google" (login e cadastro) e mensagem de erro | `base.css`, `auth.css` |
 | `sobre.html` | Apresentação do projeto, critérios e privacidade | `base.css`, `sobre.css` |
 | `lista_professores.html` | Filtros, catálogo, média geral em estrelas e estados sem resultado | `indicadores.css` (que importa `base.css`), `lista_professores.css` |
-| `perfil_professor.html` | Disciplinas (campo digitável), indicadores, média geral, comparação, avaliação e a seção de comentários (filtro por disciplina, lista, formulário de publicar e convite para entrar) | `indicadores.css`, `perfil_professor.css`, `comentarios.css` |
+| `perfil_professor.html` | Disciplinas (campo digitável), indicadores, média geral, evolução por semestre (gráfico SVG e tabela), comparação, avaliação e a seção de comentários (filtro por disciplina, lista, formulário de publicar e convite para entrar) | `indicadores.css`, `perfil_professor.css`, `comentarios.css`, `evolucao.css` (gráfico de evolução por semestre) |
 | `avaliacao.html` | Criação e edição de notas (botões de 1 a 5; dificuldade em barra de crescimento) | `indicadores.css`, `avaliacao.css` |
 | `editar_comentario.html` | Edição do próprio comentário (disciplina e texto) | `indicadores.css`, `avaliacao.css`, `comentarios.css` |
 | `excluir_comentario.html` | Confirmação de exclusão do próprio comentário | `indicadores.css`, `avaliacao.css`, `comentarios.css` |

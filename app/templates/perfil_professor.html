@@ -1,7 +1,7 @@
 {% from '_macros.html' import icone_seta, nota, barra_dificuldade %}
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{{ professor.nome }} - AvaliaUnb</title><link rel="stylesheet" href="{{ url_for('static', filename='indicadores.css') }}">{% include '_tema.html' %}</head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{{ professor.nome }} - AvaliaUnb</title><link rel="stylesheet" href="{{ url_for('static', filename='indicadores.css') }}"><link rel="stylesheet" href="{{ url_for('static', filename='evolucao.css') }}">{% include '_tema.html' %}</head>
 <body>
     {% include '_topo.html' %}
     <main class="shell view page" id="conteudo">
@@ -104,6 +104,74 @@
             </p>
             {% endif %}
         </section>
+                {# Evolução por semestre (RF12, issue #224): SVG gerado no servidor, sem
+                   style inline (CSP); seletor por links (sem JavaScript) e tabela como
+                   alternativa em texto. Considera todas as disciplinas do professor. #}
+                <section class="evolucao" id="evolucao" aria-labelledby="titulo-evolucao">
+                    <h2 id="titulo-evolucao">Evolução por semestre</h2>
+                    <p class="ajuda">Todas as disciplinas · semestre da turma avaliada.</p>
+                    {% set rotulo_criterio = criterios_evolucao[evolucao.criterio] %}
+                    {% if evolucao.grafico %}
+                    {% set g = evolucao.grafico %}
+                    <nav class="filters evolucao-criterios" aria-label="Critério do gráfico">
+                        {% for chave, titulo in criterios_evolucao.items() %}
+                        <a class="filter{% if chave == evolucao.criterio %} active{% endif %}"
+                           {% if chave == evolucao.criterio %}aria-current="true"{% endif %}
+                           href="{{ url_for('professores.perfil', professor_id=professor.id, next=next_url, disciplina_id=disciplina.id if disciplina else None, comentarios_disciplina=filtro_comentarios, evolucao_criterio=None if chave == 'geral' else chave, _anchor='evolucao') }}">{{ 'Disponibilidade' if chave == 'disponibilidade' else titulo }}</a>
+                        {% endfor %}
+                    </nav>
+                    {% set primeiro = g.pontos[0] %}{% set ultimo = g.pontos[-1] %}
+                    <figure class="evolucao-figura">
+                        <svg class="grafico-evolucao" viewBox="0 0 {{ g.largura }} {{ g.altura }}" role="img" aria-labelledby="evolucao-titulo evolucao-desc" focusable="false">
+                            <title id="evolucao-titulo">{{ rotulo_criterio }} por semestre</title>
+                            <desc id="evolucao-desc">De {{ nota(primeiro.valor) }} em {{ primeiro.rotulo }} para {{ nota(ultimo.valor) }} em {{ ultimo.rotulo }}, em {{ g.pontos|length }} semestres. Escala de 1 a 5.</desc>
+                            {% for linha in g.grade %}
+                            <line class="grafico-grade" x1="{{ g.x_inicio }}" x2="{{ g.x_fim }}" y1="{{ linha.y }}" y2="{{ linha.y }}"/>
+                            <text class="grafico-eixo" x="{{ g.x_inicio - 10 }}" y="{{ linha.y + 4 }}" text-anchor="end">{{ linha.nota }}</text>
+                            {% endfor %}
+                            <path class="grafico-linha" d="{{ g.caminho }}"/>
+                            {% for p in g.pontos %}
+                            <g class="grafico-ponto">
+                                <title>{{ p.rotulo }}: {{ nota(p.valor) }} ({{ p.quantidade }} {{ 'avaliação' if p.quantidade == 1 else 'avaliações' }})</title>
+                                <circle class="grafico-alvo" cx="{{ p.x }}" cy="{{ p.y }}" r="14"/>
+                                <circle class="grafico-marca" cx="{{ p.x }}" cy="{{ p.y }}" r="4.5"/>
+                            </g>
+                            <text class="grafico-eixo" x="{{ p.x }}" y="{{ g.y_rotulos }}" text-anchor="middle">{{ p.rotulo }}</text>
+                            {% endfor %}
+                            <text class="grafico-valor" x="{{ ultimo.x }}" y="{{ ultimo.y - 11 if ultimo.y > 30 else ultimo.y + 21 }}" text-anchor="middle">{{ nota(ultimo.valor) }}</text>
+                        </svg>
+                        <figcaption class="ajuda">
+                            {% if evolucao.criterio == 'dificuldade' %}Dificuldade: 1 = muito fácil; 5 = muito difícil.{% elif evolucao.criterio == 'geral' %}Média geral: não considera a dificuldade.{% else %}5 = excelente.{% endif %}
+                            {% if evolucao.recortado %}O gráfico mostra os {{ evolucao.maximo_semestres }} semestres mais recentes; a tabela mostra todos.{% endif %}
+                        </figcaption>
+                    </figure>
+                    <details class="evolucao-tabela">
+                        <summary>Ver os dados em tabela</summary>
+                        <div class="tabela-rolagem" role="region" aria-label="Médias por semestre" tabindex="0">
+                            <table>
+                                <thead><tr>
+                                    <th scope="col">Semestre</th>
+                                    <th scope="col">Avaliações</th>
+                                    {% for chave, titulo in criterios_evolucao.items() %}<th scope="col">{{ 'Disponibilidade' if chave == 'disponibilidade' else titulo }}</th>{% endfor %}
+                                </tr></thead>
+                                <tbody>
+                                    {% for s in evolucao.semestres|reverse %}
+                                    <tr>
+                                        <th scope="row">{{ s.rotulo }}</th>
+                                        <td>{{ s.quantidade }}</td>
+                                        {% for chave in criterios_evolucao %}<td>{{ nota(s.medias[chave]) }}</td>{% endfor %}
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </details>
+                    {% elif evolucao.semestres %}
+                    <p class="mensagem" role="status">As avaliações deste professor são de um só semestre ({{ evolucao.semestres[0].rotulo }}). A evolução aparece quando houver avaliações em pelo menos dois semestres.</p>
+                    {% else %}
+                    <p class="mensagem" role="status">Ainda não há avaliações para mostrar a evolução por semestre.</p>
+                    {% endif %}
+                </section>
                 {% else %}<p class="empty">Ainda não há disciplinas cadastradas para este professor.</p>{% endif %}
             </aside>
                     <section class="comentarios" id="comentarios" aria-labelledby="titulo-comentarios">
