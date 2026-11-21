@@ -101,11 +101,13 @@ def logout():
 def perfil():
     usuario_logado = obter_usuario_atual()
     avaliacoes = professor_controller.listar_avaliacoes_usuario(usuario_logado)
+    favoritos = professor_controller.listar_favoritos_usuario(usuario_logado)
     if request.accept_mimetypes.accept_html:
         return render_template(
             "perfil.html",
             usuario=usuario_logado,
             avaliacoes=avaliacoes,
+            favoritos=favoritos,
             criterios=professor_controller.criterios(),
             verificacao_disponivel=verificacao_email.disponivel(),
             email_verificado=verificacao_email.email_verificado(usuario_logado),
@@ -113,6 +115,7 @@ def perfil():
     return jsonify({
         **{k: usuario_logado[k] for k in ("id", "nome", "email", "username")},
         "avaliacoes": avaliacoes,
+        "favoritos": favoritos,
     })
 
 

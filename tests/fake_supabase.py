@@ -103,7 +103,10 @@ class Consulta:
                 existente = next((l for l in tabela
                                   if all(l.get(c) == linha.get(c) for c in colunas)), None)
                 if existente is None:
-                    existente = {'id': max((l['id'] for l in tabela), default=0) + 1}
+                    if self.nome == 'favoritos':   # chave composta, sem id; default do banco
+                        existente = {'criado_em': _agora_comentarios()}
+                    else:
+                        existente = {'id': max((l['id'] for l in tabela), default=0) + 1}
                     tabela.append(existente)
                 elif self.ignorar_duplicados:
                     continue  # ON CONFLICT DO NOTHING: o Postgres não devolve a linha
@@ -255,6 +258,7 @@ class ClienteFalso:
             'perfis': [],
             'comentarios': [],
             'denuncias_comentarios': [],
+            'favoritos': [],
         }
 
     def table(self, nome):

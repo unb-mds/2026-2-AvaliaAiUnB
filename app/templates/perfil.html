@@ -41,6 +41,28 @@
             </dl>
         </section>
 
+        <h2>Favoritos{% if favoritos %} <span class="contador">{{ favoritos|length }}</span>{% endif %}</h2>
+        {% if favoritos %}
+        <ul class="lista-favoritos">
+            {% for prof in favoritos %}
+            <li class="card favorito-card">
+                <div>
+                    <h3><a href="{{ url_for('professores.perfil', professor_id=prof.id, next=url_for('auth.perfil')) }}">{{ prof.nome }}</a></h3>
+                    {% if prof.departamento %}<p class="ajuda">{{ prof.departamento }}</p>{% endif %}
+                </div>
+                <form method="POST" action="{{ url_for('professores.favoritar', professor_id=prof.id) }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="acao" value="remover">
+                    <input type="hidden" name="destino" value="{{ url_for('auth.perfil') }}">
+                    <button type="submit" class="botao botao-secundario" aria-label="Remover {{ prof.nome }} dos favoritos">Remover</button>
+                </form>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+            <p class="mensagem" role="status">Você ainda não favoritou nenhum professor. Use o botão “Favoritar” no perfil de um professor.</p>
+        {% endif %}
+
         <h2>Minhas Avaliações{% if avaliacoes %} <span class="contador">{{ avaliacoes|length }}</span>{% endif %}</h2>
         {% if avaliacoes %}
             {% for av in avaliacoes %}

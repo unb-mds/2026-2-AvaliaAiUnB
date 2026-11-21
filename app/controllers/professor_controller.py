@@ -598,6 +598,26 @@ def registrar_avaliacao(usuario, professor_id, disciplina_id, notas):
     return salvou
 
 
+def eh_favorito(usuario, professor_id):
+    return usuario is not None and repositorios().favoritos.eh_favorito(usuario['id'], professor_id)
+
+
+def alterar_favorito(usuario, professor_id, favoritar):
+    """Favorita (True) ou desfavorita (False) o professor; 404 se ele não existir.
+    Devolve o novo estado. As duas operações são idempotentes."""
+    carregar_professor(professor_id)
+    favoritos = repositorios().favoritos
+    if favoritar:
+        favoritos.adicionar(usuario['id'], professor_id)
+    else:
+        favoritos.remover(usuario['id'], professor_id)
+    return favoritar
+
+
+def listar_favoritos_usuario(usuario):
+    return repositorios().favoritos.listar_por_usuario(usuario['id'])
+
+
 def listar_avaliacoes_usuario(usuario):
     return repositorios().avaliacoes.listar_por_usuario(usuario['id'])
 
